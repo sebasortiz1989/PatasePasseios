@@ -26,6 +26,9 @@ namespace Verion.Treinamento.DapperDemo.View.DependencyInversion
             yield return CreateTransient<LoginView>().WithAbstractions();
             yield return CreateTransient<SignUpView>().WithAbstractions();
             yield return CreateTransient<MainView>().WithAbstractions();
+            yield return CreateTransient<DogDetailView>().WithAbstractions();
+            yield return CreateTransient<TutorDetailView>().WithAbstractions();
+            yield return CreateTransient<ServiceDetailView>().WithAbstractions();
             yield return CreateTransient<DogsView>().WithAbstractions();
             yield return CreateTransient<TutorsView>().WithAbstractions();
             yield return CreateTransient<HomeView>().WithAbstractions();

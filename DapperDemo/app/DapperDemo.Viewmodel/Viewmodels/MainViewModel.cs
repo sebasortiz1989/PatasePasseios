@@ -3,6 +3,7 @@ using PropertyChanged;
 using Verion.Presentation.View;
 using Verion.Presentation.View.UseCase;
 using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
+using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Mock;
 
 namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels;
 
@@ -18,6 +19,7 @@ public class MainViewModel : PresentationModelBase<Void, Void>
 
     public MainViewModel(
         NavigationController navigationController,
+        MockAppData mockAppData,
         Factory<PresenterBase<DogsViewModel, Void, Void>> dogsViewFactory,
         Factory<PresenterBase<TutorsViewModel, Void, Void>> tutorsViewFactory,
         Factory<PresenterBase<HomeViewModel, Void, Void>> homeViewFactory,
@@ -25,6 +27,7 @@ public class MainViewModel : PresentationModelBase<Void, Void>
         Factory<PresenterBase<UsersViewModel, Void, Void>> usersViewFactory)
     {
         BackCommand = new SynchronizedCommand(() => navigationController.PopAsync(this), SynchronizationBehavior.Discard, true);
+        mockAppData.LogoutRequested += () => BackCommand.Execute(null);
         dogsView = dogsViewFactory.Create();
         tutorsView = tutorsViewFactory.Create();
         homeView = homeViewFactory.Create();

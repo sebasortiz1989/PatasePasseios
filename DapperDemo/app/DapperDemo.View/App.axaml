@@ -9,7 +9,7 @@
     <Application.Styles>
         <FluentTheme />
         <avalonia:LayoutStyles />
-        <StyleInclude Source="Components/DapperDemoStyles.axaml" />
+        <StyleInclude Source="Components/ClassicalTheme.axaml" />
     </Application.Styles>
 
 </Application>

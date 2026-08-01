@@ -10,29 +10,46 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Viewbox>
-        <Grid
-            Background="#FDFBF7"
-            Height="1460"
-            Width="720">
-            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                <ItemsControl ItemsSource="{Binding DogsCollection}">
+    <Grid Background="{StaticResource ColorBg}" Height="1460" Width="720">
+        <ScrollViewer>
+            <StackPanel Spacing="0">
+                <StackPanel Margin="32,32,32,16" Spacing="2">
+                    <TextBlock Classes="Heading1" FontSize="52" Text="Cachorros" />
+                    <TextBlock Classes="Kicker" Text="{Binding DogCountLabel}" />
+                </StackPanel>
+
+                <ItemsControl ItemsSource="{Binding DogsCollection}" Margin="32,0,32,32">
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal" Spacing="10">
-                                <TextBlock
-                                    FontSize="32"
-                                    Foreground="Black"
-                                    Text="{Binding Name}" />
-                                <TextBlock
-                                    FontSize="32"
-                                    Foreground="Black"
-                                    Text="{Binding Description}" />
-                            </StackPanel>
+                        <DataTemplate DataType="mainViewViewmodels:DogRow">
+                            <Button Classes="RowButton" Command="{Binding OpenCommand}">
+                                <Border BorderBrush="{StaticResource ColorDivider}" BorderThickness="0,2,0,0" Padding="0,24" VerticalAlignment="Center">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <Border
+                                            BorderBrush="{StaticResource ColorAccent}"
+                                            BorderThickness="2"
+                                            CornerRadius="40"
+                                            Height="80"
+                                            Width="80">
+                                            <TextBlock
+                                                FontFamily="{StaticResource FontHeading}"
+                                                FontSize="28"
+                                                Foreground="{StaticResource ColorAccentDark700}"
+                                                HorizontalAlignment="Center"
+                                                Text="{Binding Initials}"
+                                                VerticalAlignment="Center" />
+                                        </Border>
+                                        <StackPanel Grid.Column="1" Margin="24,0,0,0" VerticalAlignment="Center">
+                                            <TextBlock FontFamily="{StaticResource FontHeading}" FontSize="33" FontWeight="Medium" Foreground="{StaticResource ColorText}" Text="{Binding Name}" />
+                                            <TextBlock FontFamily="{StaticResource FontBody}" FontSize="21" Foreground="{StaticResource ColorTextMuted55}" Text="{Binding Subtitle}" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2" FontSize="28" Foreground="{StaticResource ColorAccent}" Text="→" VerticalAlignment="Center" />
+                                    </Grid>
+                                </Border>
+                            </Button>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-            </Grid>
-        </Grid>
-    </Viewbox>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
 </UserControl>

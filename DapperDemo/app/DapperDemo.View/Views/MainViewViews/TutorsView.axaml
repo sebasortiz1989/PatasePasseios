@@ -3,21 +3,53 @@
     d:DesignWidth="720"
     mc:Ignorable="d"
     x:Class="Verion.Treinamento.DapperDemo.View.Views.MainViewViews.TutorsView"
+    x:DataType="mainViewViewmodels:TutorsViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mainViewViewmodels="clr-namespace:Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;assembly=Verion.Treinamento.DapperDemo.Viewmodel"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Viewbox>
-        <Grid
-            Background="#FDFBF7"
-            Height="1460"
-            Width="720">
-            <TextBlock
-                FontSize="32"
-                Foreground="Black"
-                HorizontalAlignment="Center"
-                Text="Tutors View"
-                VerticalAlignment="Center" />
-        </Grid>
-    </Viewbox>
+
+    <Grid Background="{StaticResource ColorBg}" Height="1460" Width="720">
+        <ScrollViewer>
+            <StackPanel Spacing="0">
+                <StackPanel Margin="32,32,32,16" Spacing="2">
+                    <TextBlock Classes="Heading1" FontSize="52" Text="Tutores" />
+                    <TextBlock Classes="Kicker" Text="{Binding TutorCountLabel}" />
+                </StackPanel>
+
+                <ItemsControl ItemsSource="{Binding TutorsCollection}" Margin="32,0,32,32">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="mainViewViewmodels:TutorRow">
+                            <Button Classes="RowButton" Command="{Binding OpenCommand}">
+                                <Border BorderBrush="{StaticResource ColorDivider}" BorderThickness="0,2,0,0" Padding="0,24" VerticalAlignment="Center">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <Border
+                                            BorderBrush="{StaticResource ColorDivider}"
+                                            BorderThickness="2"
+                                            CornerRadius="40"
+                                            Height="80"
+                                            Width="80">
+                                            <TextBlock
+                                                FontFamily="{StaticResource FontHeading}"
+                                                FontSize="28"
+                                                Foreground="{StaticResource ColorTextMuted70}"
+                                                HorizontalAlignment="Center"
+                                                Text="{Binding Initials}"
+                                                VerticalAlignment="Center" />
+                                        </Border>
+                                        <StackPanel Grid.Column="1" Margin="24,0,0,0" VerticalAlignment="Center">
+                                            <TextBlock FontFamily="{StaticResource FontHeading}" FontSize="33" FontWeight="Medium" Foreground="{StaticResource ColorText}" Text="{Binding Name}" />
+                                            <TextBlock FontFamily="{StaticResource FontBody}" FontSize="21" Foreground="{StaticResource ColorTextMuted55}" Text="{Binding Subtitle}" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2" FontSize="28" Foreground="{StaticResource ColorAccent}" Text="→" VerticalAlignment="Center" />
+                                    </Grid>
+                                </Border>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
 </UserControl>

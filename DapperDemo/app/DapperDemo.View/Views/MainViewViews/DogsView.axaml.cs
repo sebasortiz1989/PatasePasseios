@@ -1,4 +1,3 @@
-using Avalonia.Interactivity;
 using Verion.Apresentacao.Avalonia.Preview;
 using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
 
@@ -9,11 +8,5 @@ public partial class DogsView : UserControl<DogsViewModel, Void, Void>
     public DogsView()
     {
         InitializeComponent();
-    }
-
-    protected override void OnLoaded(RoutedEventArgs e)
-    {
-        base.OnLoaded(e);
-        ModeloApresentacao.InitializeDogs();
     }
 }

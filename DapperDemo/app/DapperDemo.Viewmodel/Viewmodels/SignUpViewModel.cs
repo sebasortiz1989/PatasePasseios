@@ -1,26 +1,33 @@
 using System.Windows.Input;
 using PropertyChanged;
-using Verion.Framework.Aplicacao.Messaging;
 using Verion.Presentation.View;
 using Verion.Presentation.View.UseCase;
+using Verion.Treinamento.Mensagens.Dapper;
 using Verion.Treinamento.Mensagens.Dapper.Aggregates;
 using Verion.Treinamento.Mensagens.Dapper.Dtos;
+using Verion.Treinamento.Mensagens.Dapper.Extensions;
+using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Mock;
 
 namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels;
 
 [AddINotifyPropertyChangedInterface]
 public class SignUpViewModel : PresentationModelBase<Void, Void>
 {
-    private readonly MessageDialog messageDialog;
     private readonly RepositoryPetSitter _repositoryPetSitter;
+    private readonly MockAppData mockAppData;
+    private readonly NavigationController navigationController;
+    private readonly Factory<PresenterBase<MainViewModel, Void, Void>> mainViewFactory;
 
     public SignUpViewModel(
-        MessageDialog messageDialog,
         NavigationController navigationController,
-        RepositoryPetSitter repositoryPetSitter)
+        RepositoryPetSitter repositoryPetSitter,
+        MockAppData mockAppData,
+        Factory<PresenterBase<MainViewModel, Void, Void>> mainViewFactory)
     {
-        this.messageDialog = messageDialog;
         this._repositoryPetSitter = repositoryPetSitter;
+        this.mockAppData = mockAppData;
+        this.navigationController = navigationController;
+        this.mainViewFactory = mainViewFactory;
         BackCommand = new SynchronizedCommand(() => navigationController.PopAsync(this), SynchronizationBehavior.Discard, true);
         BirthDate = DateTime.UtcNow - TimeSpan.FromDays(7000);
         RegisterCommand = new SynchronizedCommand(RegisterFunction, SynchronizationBehavior.Discard, true);
@@ -36,6 +43,10 @@ public class SignUpViewModel : PresentationModelBase<Void, Void>
 
     public DateTime MinimumDate { get; } = new(1950, 1, 1);
 
+    public string SignupError { get; set; } = string.Empty;
+
+    public bool HasSignupError => !string.IsNullOrEmpty(SignupError);
+
     public ICommand BackCommand { get; }
 
     public ICommand RegisterCommand { get; }
@@ -48,7 +59,10 @@ public class SignUpViewModel : PresentationModelBase<Void, Void>
     private async Task RegisterFunction()
     {
         if (Email.IsNullOrEmpty() || Password.IsNullOrEmpty() || Name.IsNullOrEmpty())
+        {
+            SignupError = "Preencha todos os campos.";
             return;
+        }
 
         var result = await _repositoryPetSitter.Add(new PetSitter
         {
@@ -58,6 +72,16 @@ public class SignUpViewModel : PresentationModelBase<Void, Void>
             BirthDate = BirthDate,
             PasswordHash = string.Empty
         }).WithSync();
-        await messageDialog.ShowAsync(result.ToString()).WithSync();
+
+        if (result == Response.Successful)
+        {
+            SignupError = string.Empty;
+            mockAppData.SetCurrentUserName(Name);
+            await navigationController.PushAsync(mainViewFactory.Create()).WithSync();
+        }
+        else
+        {
+            SignupError = result.GetDescription();
+        }
     }
 }
