@@ -1,0 +1,36 @@
+﻿using System.Collections.Generic;
+using Verion.Apresentacao.Avalonia.DependencyInversion;
+using Verion.Infraestrutura.Dependency;
+using Verion.Treinamento.DapperDemo.View.Views;
+using Verion.Treinamento.DapperDemo.View.Views.MainViewViews;
+using Verion.Treinamento.DapperDemo.Viewmodel.DependencyInversion;
+
+namespace Verion.Treinamento.DapperDemo.View.DependencyInversion
+{
+    public class DapperDemoViewContainerBuilder : ImmutableContainerBuilder
+    {
+        public DapperDemoViewContainerBuilder()
+            : base(GetBuilders())
+        {
+        }
+
+        private static IEnumerable<ContainerBuilder> GetBuilders()
+        {
+            yield return new AvaloniaViewContainerBuilder();
+            yield return new DapperDemoViewmodelContainerBuilder();
+            yield return new ImmutableContainerBuilder(GetRegistrations());
+        }
+
+        private static IEnumerable<ContainerRegistration> GetRegistrations()
+        {
+            yield return CreateTransient<LoginView>().WithAbstractions();
+            yield return CreateTransient<SignUpView>().WithAbstractions();
+            yield return CreateTransient<MainView>().WithAbstractions();
+            yield return CreateTransient<DogsView>().WithAbstractions();
+            yield return CreateTransient<TutorsView>().WithAbstractions();
+            yield return CreateTransient<HomeView>().WithAbstractions();
+            yield return CreateTransient<UsersView>().WithAbstractions();
+            yield return CreateTransient<ServicesView>().WithAbstractions();
+        }
+    }
+}

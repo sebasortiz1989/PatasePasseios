@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AssemblyName>Verion.Treinamento.DapperDemo.Viewmodel</AssemblyName>
+        <RootNamespace>Verion.Treinamento.DapperDemo.Viewmodel</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" PrivateAssets="All" />
+        <PackageReference Include="Verion.Infraestrutura.Dependency" Version="19.0.0" />
+        <PackageReference Include="Verion.Presentation.View" Version="19.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\1. Contrato\Mensagens.Dapper\Mensagens.Dapper.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,38 @@
+<UserControl
+    d:DesignHeight="1460"
+    d:DesignWidth="720"
+    mc:Ignorable="d"
+    x:Class="Verion.Treinamento.DapperDemo.View.Views.MainViewViews.DogsView"
+    x:DataType="mainViewViewmodels:DogsViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mainViewViewmodels="clr-namespace:Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;assembly=Verion.Treinamento.DapperDemo.Viewmodel"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Viewbox>
+        <Grid
+            Background="#FDFBF7"
+            Height="1460"
+            Width="720">
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ItemsControl ItemsSource="{Binding DogsCollection}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <TextBlock
+                                    FontSize="32"
+                                    Foreground="Black"
+                                    Text="{Binding Name}" />
+                                <TextBlock
+                                    FontSize="32"
+                                    Foreground="Black"
+                                    Text="{Binding Description}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+        </Grid>
+    </Viewbox>
+</UserControl>

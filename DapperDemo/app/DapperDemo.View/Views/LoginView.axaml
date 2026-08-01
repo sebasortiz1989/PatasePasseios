@@ -1,0 +1,55 @@
+<UserControl
+    d:DesignHeight="1560"
+    d:DesignWidth="720"
+    mc:Ignorable="d"
+    x:Class="Verion.Treinamento.DapperDemo.View.Views.LoginView"
+    x:DataType="viewmodels:LoginViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:buttons="clr-namespace:Verion.Apresentacao.Avalonia.Buttons;assembly=Verion.Apresentacao.Avalonia"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:inputs="clr-namespace:Verion.Apresentacao.Avalonia.Inputs;assembly=Verion.Apresentacao.Avalonia"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="clr-namespace:Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels;assembly=Verion.Treinamento.DapperDemo.Viewmodel"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Viewbox>
+        <Grid
+            Background="#FDFBF7"
+            Height="1560"
+            Width="720">
+            <StackPanel Spacing="50" VerticalAlignment="Center">
+                <TextBlock
+                    Classes="Title"
+                    HorizontalAlignment="Center"
+                    Text="Login" />
+                <inputs:VTextBoxWithLabel
+                    Classes="StandardTextBoxWithLabel"
+                    VDescriptionText="Email"
+                    VText="{Binding Email}"
+                    VTextWatermark="Seu email" />
+
+                <inputs:VTextBoxWithLabel
+                    Classes="StandardTextBoxWithLabel"
+                    VDescriptionText="Senha"
+                    VPasswordChar="*"
+                    VText="{Binding Password}"
+                    VTextWatermark="Sua senha" />
+
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="50">
+                    <buttons:VButton
+                        Classes="DapperButton"
+                        Command="{Binding LoginCommand}"
+                        VText="Entrar" />
+
+                    <buttons:VButton
+                        Classes="DapperButton"
+                        Command="{Binding SignUpCommand}"
+                        VText="Cadastrarse" />
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Viewbox>
+</UserControl>

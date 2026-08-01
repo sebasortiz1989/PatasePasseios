@@ -1,0 +1,7 @@
+include:
+    - project: "computador/framework/gitlab-templates"
+      file: "/dotnet-pwsh.yml"
+
+variables:
+    PUBLISH_NUGET: 'true'
+    COLLECT_COVERAGE: 'false'
