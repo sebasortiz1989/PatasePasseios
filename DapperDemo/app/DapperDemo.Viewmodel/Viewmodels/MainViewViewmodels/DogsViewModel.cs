@@ -2,6 +2,7 @@ using AvaloniaFramework.Presentation;
 using AvaloniaFramework.Presentation.UseCase;
 using AvaloniaFramework.Threading;
 using DapperDemo.Mensagens.Dapper.Aggregates;
+using DapperDemo.Mensagens.Dapper.Services;
 using DapperDemo.Viewmodel.Viewmodels.Session;
 using PropertyChanged;
 using System.Collections.ObjectModel;
@@ -68,7 +69,7 @@ public class DogsViewModel : PresentationModelBase<Unit, Unit>
 #pragma warning disable CA2000
             var openCommand = new SynchronizedCommand(() => Open(dog.DogId), SynchronizationBehavior.Discard, true);
 #pragma warning restore CA2000
-            DogsCollection.Add(new DogRow(AppSession.Initials(dog.Name), dog.Name, subtitle, openCommand));
+            DogsCollection.Add(new DogRow(AppSession.Initials(dog.Name), dog.Name, subtitle, DogImageStore.ResolvePath(dog.Image), openCommand));
         }
 
         DogCountLabel = dogs.Length == 1 ? "1 cadastrado" : $"{dogs.Length} cadastrados";

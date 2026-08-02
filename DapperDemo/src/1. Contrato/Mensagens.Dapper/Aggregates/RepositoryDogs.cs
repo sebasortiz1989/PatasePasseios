@@ -19,10 +19,10 @@ public class RepositoryDogs(DapperDatabaseService dapperDatabaseService) : Repos
             await connection.OpenAsync().ConfigureAwait(false);
             await connection.ExecuteAsync(
                 sql: """
-                     INSERT INTO Dogs (TutorId, Name, Breed, Description)
-                     VALUES (@TutorId, @Name, @Breed, @Description)
+                     INSERT INTO Dogs (TutorId, Name, Breed, Description, Image)
+                     VALUES (@TutorId, @Name, @Breed, @Description, @Image)
                      """,
-                param: new { dog.TutorId, dog.Name, dog.Breed, dog.Description }).ConfigureAwait(false);
+                param: new { dog.TutorId, dog.Name, dog.Breed, dog.Description, dog.Image }).ConfigureAwait(false);
 
             return Response.Successful;
         }
@@ -40,7 +40,7 @@ public class RepositoryDogs(DapperDatabaseService dapperDatabaseService) : Repos
         await connection.OpenAsync().ConfigureAwait(false);
         var dogs = await connection.QueryAsync<Dogs>(
             sql: """
-                 SELECT d.DogId, d.TutorId, d.Name, d.Breed, d.Description
+                 SELECT d.DogId, d.TutorId, d.Name, d.Breed, d.Description, d.Image
                  FROM Dogs d
                  INNER JOIN PetSitterTutors pst ON pst.TutorId = d.TutorId
                  WHERE pst.PetSitterId = @PetSitterId
@@ -57,7 +57,7 @@ public class RepositoryDogs(DapperDatabaseService dapperDatabaseService) : Repos
         using var connection = DapperDatabaseService.Connection;
         await connection.OpenAsync().ConfigureAwait(false);
         var dogs = await connection.QueryAsync<Dogs>(
-            sql: "SELECT DogId, TutorId, Name, Breed, Description FROM Dogs WHERE TutorId = @TutorId ORDER BY Name",
+            sql: "SELECT DogId, TutorId, Name, Breed, Description, Image FROM Dogs WHERE TutorId = @TutorId ORDER BY Name",
             param: new { TutorId = tutorId }).ConfigureAwait(false);
 
         return [.. dogs];
@@ -68,7 +68,7 @@ public class RepositoryDogs(DapperDatabaseService dapperDatabaseService) : Repos
         using var connection = DapperDatabaseService.Connection;
         await connection.OpenAsync().ConfigureAwait(false);
         return await connection.QueryFirstOrDefaultAsync<Dogs>(
-            sql: "SELECT DogId, TutorId, Name, Breed, Description FROM Dogs WHERE DogId = @DogId",
+            sql: "SELECT DogId, TutorId, Name, Breed, Description, Image FROM Dogs WHERE DogId = @DogId",
             param: new { DogId = dogId }).ConfigureAwait(false);
     }
 
@@ -112,7 +112,35 @@ public class RepositoryDogs(DapperDatabaseService dapperDatabaseService) : Repos
     public override void GetAll(Action<Dogs[]> onComplete, Action<Exception>? onError = null) =>
         throw new NotSupportedException($"Use {nameof(ListForPetSitterAsync)} — dogs are scoped to an account.");
 
-    public override Task<Response> Update(Dogs entity) => throw new NotImplementedException();
+    /// <summary>
+    /// Saves an edit from the dog detail screen. The DogId identifies the row; every other
+    /// column is overwritten, including Image, so clearing the photo is a normal update.
+    /// </summary>
+    public override async Task<Response> Update(Dogs entity)
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+
+        try
+        {
+            using var connection = DapperDatabaseService.Connection;
+            await connection.OpenAsync().ConfigureAwait(false);
+            await connection.ExecuteAsync(
+                sql: """
+                     UPDATE Dogs
+                     SET TutorId = @TutorId, Name = @Name, Breed = @Breed,
+                         Description = @Description, Image = @Image
+                     WHERE DogId = @DogId
+                     """,
+                param: new { entity.DogId, entity.TutorId, entity.Name, entity.Breed, entity.Description, entity.Image }).ConfigureAwait(false);
+
+            return Response.Successful;
+        }
+        catch (SqliteException e)
+        {
+            Console.WriteLine(e);
+            return Response.Failed;
+        }
+    }
 
     public override Task<Response> DeleteAll() => throw new NotImplementedException();
 }

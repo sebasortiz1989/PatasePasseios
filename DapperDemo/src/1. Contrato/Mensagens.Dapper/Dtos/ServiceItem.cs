@@ -25,6 +25,9 @@ public sealed class ServiceItem
 
     public required string DogName { get; init; }
 
+    /// <summary>Gets the dog's photo file name, or null when it has none. See DogImageStore.</summary>
+    public string? DogImage { get; init; }
+
     public required string TutorName { get; init; }
 
     public DateTime Date { get; init; }

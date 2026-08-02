@@ -50,30 +50,6 @@ public sealed class DapperDatabaseService
         connection.Execute($"PRAGMA user_version = {SchemaVersion};");
     }
 
-    /// <summary>
-    /// Where the SQLite file lives, per platform. LocalApplicationData is the one folder .NET
-    /// maps sensibly everywhere the app runs — AppData\Local on Windows, ~/.local/share on Linux,
-    /// ~/Library/Application Support on macOS, and the app's own writable sandbox on iOS and
-    /// Android. That last part matters: the mobile heads have no usable current directory (the
-    /// iOS bundle is read-only), so they must not fall back to one.
-    /// </summary>
-    private static string GetAppDataFolder()
-    {
-        var baseFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-
-        if (string.IsNullOrEmpty(baseFolder))
-        {
-            baseFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-        }
-
-        if (string.IsNullOrEmpty(baseFolder))
-        {
-            baseFolder = AppContext.BaseDirectory;
-        }
-
-        return Path.Combine(baseFolder, "DapperDemo");
-    }
-
     private static void CreatePetSitterTableIfNotExists(SqliteConnection connection)
     {
         connection.Execute(
@@ -146,14 +122,8 @@ public sealed class DapperDatabaseService
 
     private void InitializeDatabase()
     {
-        var appDataFolder = GetAppDataFolder();
-        if (!Directory.Exists(appDataFolder))
-        {
-            Directory.CreateDirectory(appDataFolder);
-        }
-
         string databaseFileName = "DapperDemo.db";
-        var databasePath = Path.Combine(appDataFolder, databaseFileName);
+        var databasePath = Path.Combine(AppStorage.Folder, databaseFileName);
         connectionString = new SqliteConnectionStringBuilder
         {
             DataSource = databasePath,
