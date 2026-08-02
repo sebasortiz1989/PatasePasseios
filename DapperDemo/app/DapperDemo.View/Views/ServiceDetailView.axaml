@@ -19,12 +19,10 @@
             <ScrollViewer>
                 <StackPanel Spacing="0">
                     <buttons:VButton
-                        Classes="BtnGhost"
+                        Classes="BtnBack"
                         Command="{Binding BackCommand}"
-                        HorizontalAlignment="Left"
                         Margin="32,32,0,0"
-                        VText="← Voltar"
-                        Width="180" />
+                        VText="← Voltar" />
 
                     <StackPanel Margin="32,24,32,56" Spacing="0">
                         <TextBlock Classes="Kicker" Text="{Binding TypeLabel}" />

@@ -37,8 +37,12 @@ public class NewDogViewModel : PresentationModelBase<Unit, Unit>
 
     public ObservableCollection<TutorOption> TutorOptions { get; } = [];
 
-    /// <summary>Gets a value indicating whether a dog needs an owner, so with no tutors yet the form points the user there first.</summary>
-    public bool HasNoTutors { get; private set; }
+    /// <summary>
+    /// Gets a value indicating whether a dog needs an owner, so with no tutors yet the form points
+    /// the user there first. Defaults to true so the empty state shows while the list loads,
+    /// rather than a picker with nothing in it.
+    /// </summary>
+    public bool HasNoTutors { get; private set; } = true;
 
     public bool HasTutors => !HasNoTutors;
 
@@ -54,8 +58,22 @@ public class NewDogViewModel : PresentationModelBase<Unit, Unit>
 
     public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
 
-    protected override async Task OnRunStarting(Unit input)
+    /// <summary>
+    /// Public because the View calls it from OnLoaded: this screen is shown by assigning
+    /// CurrentView.ViewShown rather than by pushing it, so it is never RunAsync'd and
+    /// OnRunStarting never fires. Without this the tutor picker stays empty. OnLoaded also
+    /// re-runs on every reopen, so a tutor added since last time shows up.
+    /// </summary>
+    public async Task ReloadAsync()
     {
+        // The form starts blank on every open: the presenter instance is reused, so without this
+        // the fields would still hold the dog added last time.
+        Name = string.Empty;
+        Breed = string.Empty;
+        Description = string.Empty;
+        ErrorMessage = string.Empty;
+        SelectedTutor = null;
+
         var tutors = await repositoryTutors.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
 
         TutorOptions.Clear();
@@ -66,6 +84,8 @@ public class NewDogViewModel : PresentationModelBase<Unit, Unit>
 
         HasNoTutors = TutorOptions.Count == 0;
     }
+
+    protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
 
     private async Task Save()
     {

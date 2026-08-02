@@ -19,6 +19,6 @@ public partial class ServicesView : PresenterUserControl<ServicesViewModel, Unit
     protected override void OnLoaded(RoutedEventArgs e)
     {
         base.OnLoaded(e);
-        AppSession.FireAndForget(PresentationModel.ReloadDogsAsync());
+        AppSession.FireAndForget(PresentationModel.ReopenAsync());
     }
 }

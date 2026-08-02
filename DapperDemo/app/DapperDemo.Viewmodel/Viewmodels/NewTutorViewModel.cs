@@ -43,7 +43,20 @@ public class NewTutorViewModel : PresentationModelBase<Unit, Unit>
 
     public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
 
-    protected override Task OnRunStarting(Unit input) => Task.CompletedTask;
+    /// <summary>
+    /// Clears the form. Called from the View's OnLoaded, so reopening the screen never shows the
+    /// values from the tutor added last time — the presenter instance is reused.
+    /// </summary>
+    public Task ReloadAsync()
+    {
+        Name = string.Empty;
+        Phone = string.Empty;
+        Neighborhood = string.Empty;
+        ErrorMessage = string.Empty;
+        return Task.CompletedTask;
+    }
+
+    protected override Task OnRunStarting(Unit input) => ReloadAsync();
 
     private async Task Save()
     {

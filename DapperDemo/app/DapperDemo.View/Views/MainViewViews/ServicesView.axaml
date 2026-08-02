@@ -70,6 +70,23 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
+
+                        <!--  Confirms which tutor the booking is with, derived from the chosen dog.  -->
+                        <StackPanel
+                            IsVisible="{Binding HasSelectedTutor}"
+                            Orientation="Horizontal"
+                            Spacing="10">
+                            <TextBlock
+                                Classes="Kicker"
+                                Text="Tutor"
+                                VerticalAlignment="Center" />
+                            <TextBlock
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="27"
+                                Foreground="{StaticResource ColorText}"
+                                Text="{Binding SelectedTutorName}"
+                                VerticalAlignment="Center" />
+                        </StackPanel>
                     </StackPanel>
 
                     <!--  Hotel: check-in / check-out / walks / price per day  -->
@@ -145,8 +162,61 @@
                     <!--  Walk / pet sitting: single date + price  -->
                     <StackPanel IsVisible="{Binding SvcIsSingleDate}" Spacing="24">
                         <StackPanel Spacing="10">
-                            <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted70}" Text="Data e hora" />
-                            <Grid ColumnDefinitions="*,16,Auto">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="25"
+                                    Foreground="{StaticResource ColorTextMuted70}"
+                                    Text="Datas"
+                                    VerticalAlignment="Center" />
+                                <buttons:VButton
+                                    Classes="BtnGhost"
+                                    Command="{Binding AddDateCommand}"
+                                    Grid.Column="1"
+                                    Height="56"
+                                    IsVisible="{Binding SvcUsesDateList}"
+                                    VText="+ Data" />
+                            </Grid>
+
+                            <CheckBox
+                                Content="Usar intervalo de datas"
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="27"
+                                Foreground="{StaticResource ColorTextMuted70}"
+                                IsChecked="{Binding SvcUseDateRange}" />
+
+                            <!--  Individual days: the 1st, 3rd and 10th rather than a run.  -->
+                            <ItemsControl IsVisible="{Binding SvcUsesDateList}" ItemsSource="{Binding SvcDates}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="mainViewViewmodels:ServiceDateSlot">
+                                        <Grid ColumnDefinitions="*,12,Auto" Margin="0,0,0,12">
+                                            <CalendarDatePicker
+                                                Background="Transparent"
+                                                BorderBrush="{StaticResource ColorDivider}"
+                                                BorderThickness="2"
+                                                CornerRadius="7"
+                                                FontFamily="{StaticResource FontBody}"
+                                                FontSize="29"
+                                                Foreground="{StaticResource ColorText}"
+                                                HorizontalAlignment="Stretch"
+                                                MinHeight="74"
+                                                SelectedDate="{Binding Date}" />
+                                            <buttons:VButton
+                                                Classes="BtnGhost"
+                                                Command="{Binding RemoveCommand}"
+                                                Grid.Column="2"
+                                                Height="74"
+                                                IsVisible="{Binding CanRemove}"
+                                                VText="Remover"
+                                                Width="150" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <!--  Continuous range: every day from one date through another.  -->
+                            <StackPanel IsVisible="{Binding SvcUseDateRange}" Spacing="10">
+                                <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted70}" Text="De" />
                                 <CalendarDatePicker
                                     Background="Transparent"
                                     BorderBrush="{StaticResource ColorDivider}"
@@ -155,15 +225,69 @@
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="29"
                                     Foreground="{StaticResource ColorText}"
+                                    HorizontalAlignment="Stretch"
                                     MinHeight="74"
-                                    SelectedDate="{Binding SvcDatePart}" />
-                                <TimePicker
-                                    ClockIdentifier="24HourClock"
-                                    Grid.Column="2"
+                                    SelectedDate="{Binding SvcRangeFromPart}" />
+                                <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted70}" Text="Até" />
+                                <CalendarDatePicker
+                                    Background="Transparent"
+                                    BorderBrush="{StaticResource ColorDivider}"
+                                    BorderThickness="2"
+                                    CornerRadius="7"
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="29"
+                                    Foreground="{StaticResource ColorText}"
+                                    HorizontalAlignment="Stretch"
                                     MinHeight="74"
-                                    SelectedTime="{Binding SvcTimePart}" />
-                            </Grid>
+                                    SelectedDate="{Binding SvcRepeatUntilPart}" />
+                            </StackPanel>
                         </StackPanel>
+
+                        <!--  Extra times of day — a sitting often runs morning and night.  -->
+                        <StackPanel Spacing="10">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="25"
+                                    Foreground="{StaticResource ColorTextMuted70}"
+                                    Text="Horários por dia"
+                                    VerticalAlignment="Center" />
+                                <buttons:VButton
+                                    Classes="BtnGhost"
+                                    Command="{Binding AddTimeCommand}"
+                                    Grid.Column="1"
+                                    Height="56"
+                                    VText="+ Horário" />
+                            </Grid>
+
+                            <ItemsControl ItemsSource="{Binding SvcTimes}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="mainViewViewmodels:ServiceTimeSlot">
+                                        <Grid ColumnDefinitions="*,12,Auto" Margin="0,0,0,12">
+                                            <TimePicker
+                                                ClockIdentifier="24HourClock"
+                                                HorizontalAlignment="Stretch"
+                                                MinHeight="74"
+                                                SelectedTime="{Binding Time}" />
+                                            <!--  Hidden on the last remaining row: the form needs at least one time.  -->
+                                            <buttons:VButton
+                                                Classes="BtnGhost"
+                                                Command="{Binding RemoveCommand}"
+                                                Grid.Column="2"
+                                                Height="74"
+                                                IsVisible="{Binding CanRemove}"
+                                                VText="Remover"
+                                                Width="150" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+
+                        <TextBlock
+                            Classes="Kicker"
+                            IsVisible="{Binding HasSvcOccurrenceSummary}"
+                            Text="{Binding SvcOccurrenceSummary}" />
 
                         <StackPanel Spacing="10">
                             <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted70}" Text="Preço (R$)" />
