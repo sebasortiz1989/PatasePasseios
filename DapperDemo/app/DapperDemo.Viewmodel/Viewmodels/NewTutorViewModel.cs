@@ -1,5 +1,3 @@
-using System.Windows.Input;
-using PropertyChanged;
 using AvaloniaFramework.Presentation;
 using AvaloniaFramework.Presentation.UseCase;
 using AvaloniaFramework.Threading;
@@ -7,6 +5,8 @@ using DapperDemo.Mensagens.Dapper;
 using DapperDemo.Mensagens.Dapper.Aggregates;
 using DapperDemo.Mensagens.Dapper.Dtos;
 using DapperDemo.Viewmodel.Viewmodels.Session;
+using PropertyChanged;
+using System.Windows.Input;
 
 namespace DapperDemo.Viewmodel.Viewmodels;
 
@@ -43,7 +43,20 @@ public class NewTutorViewModel : PresentationModelBase<Unit, Unit>
 
     public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
 
-    protected override Task OnRunStarting(Unit input) => Task.CompletedTask;
+    /// <summary>
+    /// Clears the form. Called from the View's OnLoaded, so reopening the screen never shows the
+    /// values from the tutor added last time — the presenter instance is reused.
+    /// </summary>
+    public Task ReloadAsync()
+    {
+        Name = string.Empty;
+        Phone = string.Empty;
+        Neighborhood = string.Empty;
+        ErrorMessage = string.Empty;
+        return Task.CompletedTask;
+    }
+
+    protected override Task OnRunStarting(Unit input) => ReloadAsync();
 
     private async Task Save()
     {
@@ -58,7 +71,7 @@ public class NewTutorViewModel : PresentationModelBase<Unit, Unit>
             {
                 Name = Name.Trim(),
                 Telephone = Phone.Trim(),
-                Address = Neighborhood.Trim()
+                Address = Neighborhood.Trim(),
             },
             session.CurrentPetSitterId).WithSync();
 

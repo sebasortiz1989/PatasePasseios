@@ -15,7 +15,7 @@ public class PetHotelService
 
     public DateTime EndDate { get; init; }
 
-    /// <summary>Daily rate, not the total for the stay.</summary>
+    /// <summary>Gets daily rate, not the total for the stay.</summary>
     public decimal PricePerDay { get; init; }
 
     public bool RequiresWalking { get; init; }

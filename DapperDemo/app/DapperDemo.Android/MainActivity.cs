@@ -54,17 +54,3 @@ public class MainActivity : AvaloniaMainActivity
 #pragma warning restore CA1422 // Validate platform compatibility
     }
 }
-
-/// <summary>
-/// Special activity to handle OpenUri activation.
-/// `AvaloniaActivity` internally will redirect parameters to the Avalonia Application.
-/// </summary>
-[Activity(NoHistory = true, LaunchMode = LaunchMode.SingleTop, Exported = true, Theme = "@android:style/Theme.NoDisplay")]
-// [IntentFilter(new[] { ActionView }, Categories = new[] { CategoryDefault, CategoryBrowsable }, DataScheme = "avln")]
-public class DataSchemeActivity : AvaloniaActivity
-{
-    protected override void OnCreate(Bundle? savedInstanceState)
-    {
-        base.OnCreate(savedInstanceState);
-    }
-}

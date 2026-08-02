@@ -19,32 +19,64 @@
             <ScrollViewer>
                 <StackPanel Spacing="0">
                     <buttons:VButton
-                        Classes="BtnGhost"
+                        Classes="BtnBack"
                         Command="{Binding BackCommand}"
-                        HorizontalAlignment="Left"
                         Margin="32,32,0,0"
-                        VText="← Voltar"
-                        Width="180" />
+                        VText="← Voltar" />
 
                     <StackPanel
                         HorizontalAlignment="Center"
                         Margin="32,32,32,24"
                         Spacing="12">
-                        <Border
-                            BorderBrush="{StaticResource ColorAccent}"
-                            BorderThickness="2"
-                            CornerRadius="84"
+                        <!--  Photo when there is one, initials otherwise, so the layout never collapses.  -->
+                        <Panel
                             Height="168"
                             HorizontalAlignment="Center"
                             Width="168">
-                            <TextBlock
-                                FontFamily="{StaticResource FontHeading}"
-                                FontSize="71"
-                                Foreground="{StaticResource ColorAccentDark700}"
-                                HorizontalAlignment="Center"
-                                Text="{Binding Initials}"
-                                VerticalAlignment="Center" />
-                        </Border>
+                            <Image
+                                IsVisible="{Binding HasPhoto}"
+                                Source="{Binding PhotoPath, Converter={StaticResource ImagePathConverter}}"
+                                Stretch="UniformToFill">
+                                <Image.Clip>
+                                    <EllipseGeometry Rect="0,0,168,168" />
+                                </Image.Clip>
+                            </Image>
+                            <Border
+                                BorderBrush="{StaticResource ColorAccent}"
+                                BorderThickness="2"
+                                CornerRadius="84">
+                                <TextBlock
+                                    FontFamily="{StaticResource FontHeading}"
+                                    FontSize="71"
+                                    Foreground="{StaticResource ColorAccentDark700}"
+                                    HorizontalAlignment="Center"
+                                    IsVisible="{Binding NoPhoto}"
+                                    Text="{Binding Initials}"
+                                    VerticalAlignment="Center" />
+                            </Border>
+                        </Panel>
+
+                        <!--  Photo controls only while editing; reading a record should not offer to change it.  -->
+                        <StackPanel
+                            HorizontalAlignment="Center"
+                            IsVisible="{Binding IsEditing}"
+                            Orientation="Horizontal"
+                            Spacing="12">
+                            <buttons:VButton
+                                Classes="BtnSecondary"
+                                Command="{Binding ChoosePhotoCommand}"
+                                Height="64"
+                                VText="Escolher foto"
+                                Width="240" />
+                            <buttons:VButton
+                                Classes="BtnGhost"
+                                Command="{Binding RemovePhotoCommand}"
+                                Height="64"
+                                IsVisible="{Binding HasPhoto}"
+                                VText="Remover"
+                                Width="180" />
+                        </StackPanel>
+
                         <TextBlock
                             Classes="Heading1"
                             FontSize="67"
@@ -57,110 +89,182 @@
                     </StackPanel>
 
                     <StackPanel Margin="32,0,32,56" Spacing="28">
-                        <Border
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="0,2,0,0"
-                            Padding="0,20,0,0">
-                            <StackPanel Spacing="6">
-                                <TextBlock Classes="Kicker" Text="Tutor" />
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="31"
-                                    Foreground="{StaticResource ColorText}"
-                                    Text="{Binding OwnerName}" />
-                            </StackPanel>
-                        </Border>
+                        <!--  Read view  -->
+                        <StackPanel IsVisible="{Binding IsViewing}" Spacing="28">
+                            <Border
+                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderThickness="0,2,0,0"
+                                Padding="0,20,0,0">
+                                <StackPanel Spacing="6">
+                                    <TextBlock Classes="Kicker" Text="Tutor" />
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="31"
+                                        Foreground="{StaticResource ColorText}"
+                                        Text="{Binding OwnerName}" />
+                                </StackPanel>
+                            </Border>
 
-                        <Border
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="0,2,0,0"
-                            Padding="0,20,0,0">
-                            <StackPanel Spacing="6">
-                                <TextBlock Classes="Kicker" Text="Descrição" />
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="31"
-                                    Foreground="{StaticResource ColorText}"
-                                    LineHeight="48"
-                                    Text="{Binding Description}"
-                                    TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
+                            <Border
+                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderThickness="0,2,0,0"
+                                Padding="0,20,0,0">
+                                <StackPanel Spacing="6">
+                                    <TextBlock Classes="Kicker" Text="Descrição" />
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="31"
+                                        Foreground="{StaticResource ColorText}"
+                                        LineHeight="48"
+                                        Text="{Binding Description}"
+                                        TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
 
-                        <Border
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="0,2,0,0"
-                            Padding="0,20,0,0">
-                            <StackPanel Spacing="12">
-                                <TextBlock Classes="Kicker" Text="Próximos serviços" />
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="29"
-                                    FontStyle="Italic"
-                                    Foreground="{StaticResource ColorTextMuted45}"
-                                    IsVisible="{Binding NoFuture}"
-                                    Text="Nada agendado." />
-                                <ItemsControl ItemsSource="{Binding FutureServices}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate DataType="viewmodels:FutureServiceRow">
-                                            <Border
-                                                BorderBrush="{StaticResource ColorDivider}"
-                                                BorderThickness="0,0,0,2"
-                                                Margin="0,0,0,12"
-                                                Padding="0,0,0,12">
-                                                <Grid ColumnDefinitions="*,Auto">
-                                                    <TextBlock
-                                                        FontFamily="{StaticResource FontBody}"
-                                                        FontSize="29"
-                                                        Foreground="{StaticResource ColorText}"
-                                                        Text="{Binding TypeLabel}" />
-                                                    <TextBlock
-                                                        FontFamily="{StaticResource FontBody}"
-                                                        FontSize="26"
-                                                        Foreground="{StaticResource ColorTextMuted55}"
-                                                        Grid.Column="1"
-                                                        Text="{Binding DateLabel}" />
-                                                </Grid>
-                                            </Border>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </StackPanel>
-                        </Border>
+                            <Border
+                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderThickness="0,2,0,0"
+                                Padding="0,20,0,0">
+                                <StackPanel Spacing="12">
+                                    <TextBlock Classes="Kicker" Text="Próximos serviços" />
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="29"
+                                        FontStyle="Italic"
+                                        Foreground="{StaticResource ColorTextMuted45}"
+                                        IsVisible="{Binding NoFuture}"
+                                        Text="Nada agendado." />
+                                    <ItemsControl ItemsSource="{Binding FutureServices}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate DataType="viewmodels:FutureServiceRow">
+                                                <Border
+                                                    BorderBrush="{StaticResource ColorDivider}"
+                                                    BorderThickness="0,0,0,2"
+                                                    Margin="0,0,0,12"
+                                                    Padding="0,0,0,12">
+                                                    <Grid ColumnDefinitions="*,Auto">
+                                                        <TextBlock
+                                                            FontFamily="{StaticResource FontBody}"
+                                                            FontSize="29"
+                                                            Foreground="{StaticResource ColorText}"
+                                                            Text="{Binding TypeLabel}" />
+                                                        <TextBlock
+                                                            FontFamily="{StaticResource FontBody}"
+                                                            FontSize="26"
+                                                            Foreground="{StaticResource ColorTextMuted55}"
+                                                            Grid.Column="1"
+                                                            Text="{Binding DateLabel}" />
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </Border>
 
-                        <!--  Destructive, so it takes two taps: the button swaps for confirm/cancel  -->
-                        <StackPanel Margin="0,32,0,0" Spacing="16">
                             <buttons:VButton
-                                Classes="BtnSecondary"
-                                Command="{Binding AskDeleteCommand}"
+                                Classes="BtnPrimary"
+                                Command="{Binding EditCommand}"
                                 Height="80"
                                 HorizontalAlignment="Stretch"
-                                IsVisible="{Binding NotConfirmingDelete}"
-                                VText="Excluir cachorro" />
-                            <StackPanel IsVisible="{Binding ConfirmingDelete}" Spacing="12">
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="26"
-                                    FontStyle="Italic"
-                                    Foreground="{StaticResource ColorAccentDark800}"
-                                    HorizontalAlignment="Center"
-                                    Text="Isso remove o cachorro e todos os serviços dele."
-                                    TextAlignment="Center"
-                                    TextWrapping="Wrap" />
-                                <Grid ColumnDefinitions="*,16,*">
-                                    <buttons:VButton
-                                        Classes="BtnSecondary"
-                                        Command="{Binding CancelDeleteCommand}"
-                                        Height="80"
-                                        VText="Cancelar" />
-                                    <buttons:VButton
-                                        Classes="BtnPrimary"
-                                        Command="{Binding ConfirmDeleteCommand}"
-                                        Grid.Column="2"
-                                        Height="80"
-                                        VText="Excluir" />
-                                </Grid>
+                                Margin="0,16,0,0"
+                                VText="Editar cachorro" />
+
+                            <!--  Destructive, so it takes two taps: the button swaps for confirm/cancel  -->
+                            <StackPanel Spacing="16">
+                                <buttons:VButton
+                                    Classes="BtnSecondary"
+                                    Command="{Binding AskDeleteCommand}"
+                                    Height="80"
+                                    HorizontalAlignment="Stretch"
+                                    IsVisible="{Binding NotConfirmingDelete}"
+                                    VText="Excluir cachorro" />
+                                <StackPanel IsVisible="{Binding ConfirmingDelete}" Spacing="12">
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="26"
+                                        FontStyle="Italic"
+                                        Foreground="{StaticResource ColorAccentDark800}"
+                                        HorizontalAlignment="Center"
+                                        Text="Isso remove o cachorro e todos os serviços dele."
+                                        TextAlignment="Center"
+                                        TextWrapping="Wrap" />
+                                    <Grid ColumnDefinitions="*,16,*">
+                                        <buttons:VButton
+                                            Classes="BtnSecondary"
+                                            Command="{Binding CancelDeleteCommand}"
+                                            Height="80"
+                                            VText="Cancelar" />
+                                        <buttons:VButton
+                                            Classes="BtnPrimary"
+                                            Command="{Binding ConfirmDeleteCommand}"
+                                            Grid.Column="2"
+                                            Height="80"
+                                            VText="Excluir" />
+                                    </Grid>
+                                </StackPanel>
                             </StackPanel>
+                        </StackPanel>
+
+                        <!--  Editor. Same fields as the new-dog form, so the two screens agree on what a dog is.  -->
+                        <StackPanel IsVisible="{Binding IsEditing}" Spacing="28">
+                            <StackPanel Spacing="10">
+                                <TextBlock Classes="FormLabel" Text="Nome" />
+                                <TextBox Classes="FormInput" Text="{Binding EditName}" />
+                            </StackPanel>
+
+                            <StackPanel Spacing="10">
+                                <TextBlock Classes="FormLabel" Text="Raça" />
+                                <TextBox Classes="FormInput" Text="{Binding EditBreed}" />
+                            </StackPanel>
+
+                            <StackPanel Spacing="10">
+                                <TextBlock Classes="FormLabel" Text="Tutor" />
+                                <ComboBox
+                                    Classes="FormInput"
+                                    ItemsSource="{Binding TutorOptions}"
+                                    PlaceholderText="Selecione…"
+                                    SelectedItem="{Binding EditTutor}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate DataType="viewmodels:TutorOption">
+                                            <TextBlock Text="{Binding Label}" />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </StackPanel>
+
+                            <StackPanel Spacing="10">
+                                <TextBlock Classes="FormLabel" Text="Descrição" />
+                                <TextBox
+                                    AcceptsReturn="True"
+                                    Classes="FormInput Multiline"
+                                    Text="{Binding EditDescription}"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+
+                            <TextBlock
+                                Classes="FormMsg Error"
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="28"
+                                FontStyle="Italic"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding HasEditError}"
+                                Text="{Binding EditError}"
+                                TextAlignment="Center" />
+
+                            <Grid ColumnDefinitions="*,16,*">
+                                <buttons:VButton
+                                    Classes="BtnSecondary"
+                                    Command="{Binding CancelEditCommand}"
+                                    Height="88"
+                                    VText="Cancelar" />
+                                <buttons:VButton
+                                    Classes="BtnPrimary"
+                                    Command="{Binding SaveEditCommand}"
+                                    Grid.Column="2"
+                                    Height="88"
+                                    VText="Salvar" />
+                            </Grid>
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>

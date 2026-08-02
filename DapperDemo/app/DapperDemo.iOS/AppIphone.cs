@@ -3,9 +3,10 @@ using DapperDemo.View;
 
 namespace DapperDemo.iOS;
 
-internal sealed class AppIphone: App
+internal sealed class AppIphone : App
 {
-    public AppIphone() : base(new IPhoneContainerBuilder().Build())
+    public AppIphone()
+        : base(new IPhoneContainerBuilder().Build())
     {
     }
 }

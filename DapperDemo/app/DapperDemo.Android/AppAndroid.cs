@@ -5,7 +5,8 @@ namespace DapperDemo.Android;
 
 public class AppAndroid : App
 {
-    public AppAndroid() : base(new DroidContainerBuilder().Build())
+    public AppAndroid()
+        : base(new DroidContainerBuilder().Build())
     {
     }
 }

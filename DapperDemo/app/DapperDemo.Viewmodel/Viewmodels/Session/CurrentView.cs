@@ -5,12 +5,14 @@ namespace DapperDemo.Viewmodel.Viewmodels.Session;
 
 public class CurrentView : INotifyPropertyChanged
 {
-    private object viewShown;
-    private object lastView;
+    private object? viewShown;
+    private object? lastView;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public object ViewShown
+    // Nullable: nothing is shown before the first tab is selected, and GoBack from the first
+    // screen has no previous view to return to.
+    public object? ViewShown
     {
         get => viewShown;
         set

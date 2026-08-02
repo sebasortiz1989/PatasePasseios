@@ -1,10 +1,38 @@
 <Application
-    RequestedThemeVariant="Default"
+    RequestedThemeVariant="Light"
     x:Class="DapperDemo.View.App"
     xmlns="https://github.com/avaloniaui"
+    xmlns:converters="using:DapperDemo.View.Converters"
     xmlns:framework="using:AvaloniaFramework"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!--  "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options.  -->
+    <!--
+        Pinned to Light on purpose. "Default" follows the OS, and on a machine in dark mode Fluent
+        resolves its dark variant for anything it themes itself — combobox dropdowns, focus and
+        selection states, calendar and clock popups — which came out near-black against the
+        Classical palette's hardcoded light surfaces. The design is a light one, so the variant is
+        fixed rather than left to the OS.
+    -->
+
+    <!--
+        Fluent derives selection rings, focus adorners and the calendar/clock highlights from its
+        own accent. Repointing it at the Classical brown keeps the parts of those popups that are
+        not restyled in ClassicalTheme.axaml on-palette rather than Windows blue.
+        Light/dark variants exist because Fluent looks them up per theme variant.
+    -->
+    <Application.Resources>
+        <ResourceDictionary>
+            <!--  Dog photos arrive as a file path through a binding, which Avalonia cannot turn into an image on its own.  -->
+            <converters:ImagePathConverter x:Key="ImagePathConverter" />
+
+            <Color x:Key="SystemAccentColor">#B68235</Color>
+            <Color x:Key="SystemAccentColorLight1">#C28D41</Color>
+            <Color x:Key="SystemAccentColorLight2">#E1AD66</Color>
+            <Color x:Key="SystemAccentColorLight3">#FACB8D</Color>
+            <Color x:Key="SystemAccentColorDark1">#A06F24</Color>
+            <Color x:Key="SystemAccentColorDark2">#7D5411</Color>
+            <Color x:Key="SystemAccentColorDark3">#5A3B0A</Color>
+        </ResourceDictionary>
+    </Application.Resources>
 
     <Application.Styles>
         <FluentTheme />

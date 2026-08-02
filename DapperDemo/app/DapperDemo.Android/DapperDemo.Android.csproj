@@ -9,6 +9,14 @@
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
         <AndroidPackageFormat>apk</AndroidPackageFormat>
         <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+        <!--
+            Release trims this head, and TreatWarningsAsErrors would turn every IL2xxx trim-analysis
+            warning into a build failure. Most come from third-party assemblies (Avalonia, Dapper)
+            and are not actionable here. AvaloniaFramework's reflection-based container also trips
+            IL2060/IL2070 — a real limitation documented in that repo's README, to be fixed there
+            with DynamicallyAccessedMembers annotations rather than papered over from this project.
+        -->
+        <EnsureCodeQualityWarningsAsErrors>false</EnsureCodeQualityWarningsAsErrors>
         <AssemblyName>DapperDemo.Android</AssemblyName>
         <RootNamespace>DapperDemo.Android</RootNamespace>
     </PropertyGroup>

@@ -15,7 +15,7 @@ public enum Response : byte
 
     [Description("The provided email address exists.")]
     EmailExists = 3,
-    
+
     [Description("Incorrect password.")]
     WrongPassword = 4,
 

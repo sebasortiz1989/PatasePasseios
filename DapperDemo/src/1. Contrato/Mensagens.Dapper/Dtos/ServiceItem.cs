@@ -8,7 +8,7 @@ public enum ServiceKind
 {
     Walk,
     Sitting,
-    Hotel
+    Hotel,
 }
 
 /// <summary>
@@ -25,29 +25,20 @@ public sealed class ServiceItem
 
     public required string DogName { get; init; }
 
+    /// <summary>Gets the dog's photo file name, or null when it has none. See DogImageStore.</summary>
+    public string? DogImage { get; init; }
+
     public required string TutorName { get; init; }
 
     public DateTime Date { get; init; }
 
-    /// <summary>Check-out date; only hotel stays have one.</summary>
+    /// <summary>Gets check-out date; only hotel stays have one.</summary>
     public DateTime? EndDate { get; init; }
 
-    /// <summary>A one-off fee for walks and pet sitting; a daily rate for hotel stays.</summary>
+    /// <summary>Gets a one-off fee for walks and pet sitting; a daily rate for hotel stays.</summary>
     public decimal Price { get; init; }
 
     public bool RequiresWalking { get; init; }
 
     public bool ServicePaid { get; init; }
-}
-
-/// <summary>Billing totals for one month, split the way the Perfil screen shows them.</summary>
-public sealed class MonthlyIncome
-{
-    public decimal Walk { get; init; }
-
-    public decimal Sitting { get; init; }
-
-    public decimal Hotel { get; init; }
-
-    public decimal Total => Walk + Sitting + Hotel;
 }

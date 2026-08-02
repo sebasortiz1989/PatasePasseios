@@ -23,30 +23,6 @@ public sealed class DapperDatabaseService
 
     public SqliteConnection Connection => new(connectionString);
 
-    private void InitializeDatabase()
-    {
-        var appDataFolder = GetAppDataFolder();
-        if (!Directory.Exists(appDataFolder))
-        {
-            Directory.CreateDirectory(appDataFolder);
-        }
-
-        string databaseFileName = "DapperDemo.db";
-        var databasePath = Path.Combine(appDataFolder, databaseFileName);
-        connectionString = new SqliteConnectionStringBuilder
-        {
-            DataSource = databasePath,
-        }.ToString();
-
-        using (var connection = Connection)
-        {
-            connection.Open();
-            RecreateTablesIfSchemaIsStale(connection);
-            CreatePetSitterTableIfNotExists(connection);
-            CreateMockData(connection);
-        }
-    }
-
     /// <summary>
     /// Drops every table when the file on disk was built by an older schema, so the CREATE TABLE
     /// IF NOT EXISTS statements below can lay it out again correctly. Runs at most once per
@@ -72,30 +48,6 @@ public sealed class DapperDatabaseService
                  """);
 
         connection.Execute($"PRAGMA user_version = {SchemaVersion};");
-    }
-
-    /// <summary>
-    /// Where the SQLite file lives, per platform. LocalApplicationData is the one folder .NET
-    /// maps sensibly everywhere the app runs — AppData\Local on Windows, ~/.local/share on Linux,
-    /// ~/Library/Application Support on macOS, and the app's own writable sandbox on iOS and
-    /// Android. That last part matters: the mobile heads have no usable current directory (the
-    /// iOS bundle is read-only), so they must not fall back to one.
-    /// </summary>
-    private static string GetAppDataFolder()
-    {
-        var baseFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-
-        if (string.IsNullOrEmpty(baseFolder))
-        {
-            baseFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-        }
-
-        if (string.IsNullOrEmpty(baseFolder))
-        {
-            baseFolder = AppContext.BaseDirectory;
-        }
-
-        return Path.Combine(baseFolder, "DapperDemo");
     }
 
     private static void CreatePetSitterTableIfNotExists(SqliteConnection connection)
@@ -166,6 +118,24 @@ public sealed class DapperDatabaseService
                      FOREIGN KEY (DogId) REFERENCES Dogs(DogId),
                      FOREIGN KEY (PetSitterId) REFERENCES PetSitter(PetSitterId));
                  """);
+    }
+
+    private void InitializeDatabase()
+    {
+        string databaseFileName = "DapperDemo.db";
+        var databasePath = Path.Combine(AppStorage.Folder, databaseFileName);
+        connectionString = new SqliteConnectionStringBuilder
+        {
+            DataSource = databasePath,
+        }.ToString();
+
+        using (var connection = Connection)
+        {
+            connection.Open();
+            RecreateTablesIfSchemaIsStale(connection);
+            CreatePetSitterTableIfNotExists(connection);
+            CreateMockData(connection);
+        }
     }
 
     private void CreateMockData(SqliteConnection connection)

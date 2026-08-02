@@ -1,7 +1,7 @@
 using Dapper;
-using Microsoft.Data.Sqlite;
 using DapperDemo.Mensagens.Dapper.Dtos;
 using DapperDemo.Mensagens.Dapper.Services;
+using Microsoft.Data.Sqlite;
 
 namespace DapperDemo.Mensagens.Dapper.Aggregates;
 
@@ -118,7 +118,34 @@ public sealed class RepositoryTutors(DapperDatabaseService dapperDatabaseService
     public override void GetAll(Action<Tutors[]> onComplete, Action<Exception>? onError = null) =>
         throw new NotSupportedException($"Use {nameof(ListForPetSitterAsync)} — tutors are scoped to an account.");
 
-    public override Task<Response> Update(Tutors entity) => throw new NotImplementedException();
+    /// <summary>
+    /// Saves an edit from the tutor detail screen. The account link in PetSitterTutors is
+    /// untouched — editing a tutor never moves them to another pet sitter.
+    /// </summary>
+    public override async Task<Response> Update(Tutors entity)
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+
+        try
+        {
+            using var connection = DapperDatabaseService.Connection;
+            await connection.OpenAsync().ConfigureAwait(false);
+            await connection.ExecuteAsync(
+                sql: """
+                     UPDATE Tutors
+                     SET Name = @Name, Telephone = @Telephone, Address = @Address
+                     WHERE TutorId = @TutorId
+                     """,
+                param: new { entity.TutorId, entity.Name, entity.Telephone, entity.Address }).ConfigureAwait(false);
+
+            return Response.Successful;
+        }
+        catch (SqliteException e)
+        {
+            Console.WriteLine(e);
+            return Response.Failed;
+        }
+    }
 
     public override Task<Response> DeleteAll() => throw new NotImplementedException();
 }

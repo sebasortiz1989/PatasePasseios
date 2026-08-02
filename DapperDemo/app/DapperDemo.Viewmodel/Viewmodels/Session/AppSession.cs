@@ -1,5 +1,5 @@
-using System.Globalization;
 using DapperDemo.Mensagens.Dapper.Dtos;
+using System.Globalization;
 
 namespace DapperDemo.Viewmodel.Viewmodels.Session;
 
@@ -10,6 +10,15 @@ namespace DapperDemo.Viewmodel.Viewmodels.Session;
 /// </summary>
 public class AppSession
 {
+    /// <summary>
+    /// Raised after any write. MainViewModel builds all five tab presenters once, so OnRunStarting
+    /// does not run again on a tab switch — without this, a record added on one tab would not
+    /// appear on another until relaunch.
+    /// </summary>
+    public event EventHandler? DataChanged;
+
+    public event EventHandler? LogoutRequested;
+
     public int CurrentPetSitterId { get; private set; }
 
     public string CurrentUserName { get; private set; } = string.Empty;
@@ -25,35 +34,6 @@ public class AppSession
     public ServiceKind? SelectedServiceKind { get; set; }
 
     public int? SelectedServiceId { get; set; }
-
-    /// <summary>
-    /// Raised after any write. MainViewModel builds all five tab presenters once, so OnRunStarting
-    /// does not run again on a tab switch — without this, a record added on one tab would not
-    /// appear on another until relaunch.
-    /// </summary>
-    public event EventHandler? DataChanged;
-
-    public event EventHandler? LogoutRequested;
-
-    public void SignIn(PetSitter petSitter)
-    {
-        CurrentPetSitterId = petSitter.PetSitterId;
-        CurrentUserName = petSitter.Name;
-    }
-
-    public void SignOut()
-    {
-        CurrentPetSitterId = 0;
-        CurrentUserName = string.Empty;
-        SelectedDogId = null;
-        SelectedTutorId = null;
-        SelectedServiceKind = null;
-        SelectedServiceId = null;
-    }
-
-    public void NotifyDataChanged() => DataChanged?.Invoke(this, EventArgs.Empty);
-
-    public void RequestLogout() => LogoutRequested?.Invoke(this, EventArgs.Empty);
 
     /// <summary>
     /// Starts a reload without awaiting it, but reports failures. A bare <c>_ = SomeAsync()</c>
@@ -76,7 +56,7 @@ public class AppSession
         ServiceKind.Walk => "Passeio",
         ServiceKind.Sitting => "Pet sitting",
         ServiceKind.Hotel => "Hotel",
-        _ => string.Empty
+        _ => string.Empty,
     };
 
     /// <summary>Brazilian currency shape (R$ 0,00), independent of the host machine's locale.</summary>
@@ -84,4 +64,24 @@ public class AppSession
 
     /// <summary>Date shape used across the app's detail screens (dd/MM/yyyy, HH:mm).</summary>
     public static string DateTimeLabel(DateTime value) => value.ToString("dd/MM/yyyy, HH:mm", CultureInfo.InvariantCulture);
+
+    public void SignIn(PetSitter petSitter)
+    {
+        CurrentPetSitterId = petSitter.PetSitterId;
+        CurrentUserName = petSitter.Name;
+    }
+
+    public void SignOut()
+    {
+        CurrentPetSitterId = 0;
+        CurrentUserName = string.Empty;
+        SelectedDogId = null;
+        SelectedTutorId = null;
+        SelectedServiceKind = null;
+        SelectedServiceId = null;
+    }
+
+    public void NotifyDataChanged() => DataChanged?.Invoke(this, EventArgs.Empty);
+
+    public void RequestLogout() => LogoutRequested?.Invoke(this, EventArgs.Empty);
 }

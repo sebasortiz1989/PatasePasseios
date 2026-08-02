@@ -1,7 +1,7 @@
 using Avalonia;
 using Avalonia.iOS;
-using Foundation;
 using DapperDemo.View;
+using Foundation;
 
 namespace DapperDemo.iOS;
 

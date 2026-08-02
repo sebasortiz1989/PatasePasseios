@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using AvaloniaFramework.DependencyInjection;
 using AvaloniaFramework.Hosting.DependencyInjection;
-using AvaloniaFramework.DependencyInjection;
+using DapperDemo.View.Services;
 using DapperDemo.View.Views;
 using DapperDemo.View.Views.MainViewViews;
 using DapperDemo.Viewmodel.DependencyInversion;
+using System.Collections.Generic;
 
 namespace DapperDemo.View.DependencyInversion
 {
@@ -23,6 +24,10 @@ namespace DapperDemo.View.DependencyInversion
 
         private static IEnumerable<ContainerRegistration> GetRegistrations()
         {
+            // Picking a file needs a TopLevel, which only this layer can reach — the view models
+            // take the ImagePicker abstraction from DapperDemo.Viewmodel.
+            yield return CreateSingleton<StorageProviderImagePicker>().WithAbstractions();
+
             yield return CreateTransient<LoginView>().WithAbstractions();
             yield return CreateTransient<SignUpView>().WithAbstractions();
             yield return CreateTransient<MainView>().WithAbstractions();

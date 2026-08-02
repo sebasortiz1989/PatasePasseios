@@ -9,7 +9,7 @@ public class DapperTestsBasic
 {
     public DapperTestsBasic()
     {
-        SQLitePCL.Batteries.Init(); 
+        SQLitePCL.Batteries.Init();
     }
 
     [Table("Products")] // Optional, can be deleted and Dapper assumes is a table
@@ -19,7 +19,7 @@ public class DapperTestsBasic
         public required string ProductName { get; set; }
         public required decimal Price { get; set; }
     }
-    
+
     [Fact]
     public void Test1()
     {
@@ -29,7 +29,7 @@ public class DapperTestsBasic
             {
                 Mode = SqliteOpenMode.Memory,
             }.ToString();
-            
+
             using (var connection = new SqliteConnection(connectionString))
             {
                 connection.Open();
@@ -46,15 +46,13 @@ public class DapperTestsBasic
                     new { ProductName = "Test Product 1", Price = 10.99 });
                 connection.Execute("INSERT INTO Products (ProductName, Price) VALUES (@ProductName, @Price)",
                     new { ProductName = "Test Product 2", Price = (decimal)20.50 });
-                
+
                 var products = connection.Query<Product>("SELECT * FROM Products").ToList();
 
                 Assert.Equal(2, products.Count);
                 Assert.Contains(products, p => p is { ProductName: "Test Product 1", Price: 10.99m });
                 Assert.Contains(products, p => p is { ProductName: "Test Product 2", Price: 20.50m });
             }
-
-            var a = 1;
         }
         catch (Exception e)
         {

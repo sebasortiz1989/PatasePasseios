@@ -11,12 +11,18 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Background="{StaticResource ColorBg}" Height="1460" Width="720">
+    <Grid
+        Background="{StaticResource ColorBg}"
+        Height="1460"
+        Width="720">
         <ScrollViewer>
             <StackPanel Spacing="0">
                 <Grid ColumnDefinitions="*,Auto" Margin="32,32,32,16">
                     <StackPanel Spacing="2">
-                        <TextBlock Classes="Heading1" FontSize="62" Text="Tutores" />
+                        <TextBlock
+                            Classes="Heading1"
+                            FontSize="62"
+                            Text="Tutores" />
                         <TextBlock Classes="Kicker" Text="{Binding TutorCountLabel}" />
                     </StackPanel>
                     <buttons:VButton
@@ -29,7 +35,12 @@
                         Width="180" />
                 </Grid>
 
-                <Border BorderBrush="{StaticResource ColorDivider}" BorderThickness="0,2,0,0" IsVisible="{Binding IsEmpty}" Margin="32,0,32,0" Padding="32,64">
+                <Border
+                    BorderBrush="{StaticResource ColorDivider}"
+                    BorderThickness="0,2,0,0"
+                    IsVisible="{Binding IsEmpty}"
+                    Margin="32,0,32,0"
+                    Padding="32,64">
                     <TextBlock
                         FontFamily="{StaticResource FontBody}"
                         FontSize="29"
@@ -45,13 +56,20 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="mainViewViewmodels:TutorRow">
                             <Button Classes="RowButton" Command="{Binding OpenCommand}">
-                                <Border BorderBrush="{StaticResource ColorDivider}" BorderThickness="0,2,0,0" Padding="0,24" VerticalAlignment="Center">
+                                <Border
+                                    BorderBrush="{StaticResource ColorDivider}"
+                                    BorderThickness="0,2,0,0"
+                                    HorizontalAlignment="Stretch"
+                                    Padding="0,24"
+                                    VerticalAlignment="Center">
                                     <Grid ColumnDefinitions="Auto,*,Auto">
                                         <Border
                                             BorderBrush="{StaticResource ColorDivider}"
                                             BorderThickness="2"
                                             CornerRadius="40"
+                                            Grid.Column="0"
                                             Height="80"
+                                            Margin="25,0,0,0"
                                             Width="80">
                                             <TextBlock
                                                 FontFamily="{StaticResource FontHeading}"
@@ -61,11 +79,30 @@
                                                 Text="{Binding Initials}"
                                                 VerticalAlignment="Center" />
                                         </Border>
-                                        <StackPanel Grid.Column="1" Margin="24,0,0,0" VerticalAlignment="Center">
-                                            <TextBlock FontFamily="{StaticResource FontHeading}" FontSize="40" FontWeight="Medium" Foreground="{StaticResource ColorText}" Text="{Binding Name}" />
-                                            <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted55}" Text="{Binding Subtitle}" />
+                                        <StackPanel
+                                            Grid.Column="1"
+                                            Margin="24,0,0,0"
+                                            VerticalAlignment="Center">
+                                            <TextBlock
+                                                FontFamily="{StaticResource FontHeading}"
+                                                FontSize="40"
+                                                FontWeight="Medium"
+                                                Foreground="{StaticResource ColorText}"
+                                                Text="{Binding Name}" />
+                                            <TextBlock
+                                                FontFamily="{StaticResource FontBody}"
+                                                FontSize="25"
+                                                Foreground="{StaticResource ColorTextMuted55}"
+                                                Text="{Binding Subtitle}" />
                                         </StackPanel>
-                                        <TextBlock Grid.Column="2" FontSize="34" Foreground="{StaticResource ColorAccent}" Text="→" VerticalAlignment="Center" />
+                                        <TextBlock
+                                            FontSize="34"
+                                            Foreground="{StaticResource ColorAccent}"
+                                            Grid.Column="2"
+                                            HorizontalAlignment="Right"
+                                            Margin="0,0,25,0"
+                                            Text="→"
+                                            VerticalAlignment="Center" />
                                     </Grid>
                                 </Border>
                             </Button>

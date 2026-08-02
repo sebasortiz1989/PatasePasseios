@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using AvaloniaFramework.DependencyInjection;
+﻿using AvaloniaFramework.DependencyInjection;
 using DapperDemo.Infrastructure.DependencyInversion;
+using System.Collections.Generic;
 
 namespace DapperDemo.iOS.DependencyInversion;
 

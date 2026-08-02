@@ -1,7 +1,7 @@
 using Dapper;
-using Microsoft.Data.Sqlite;
 using DapperDemo.Mensagens.Dapper.Dtos;
 using DapperDemo.Mensagens.Dapper.Services;
+using Microsoft.Data.Sqlite;
 
 namespace DapperDemo.Mensagens.Dapper.Aggregates;
 
@@ -21,8 +21,8 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
     /// not map to DateTime?. Querying each table on its own keeps every date a real DATETIME.
     /// </summary>
     private const string WalkSelect = """
-        SELECT w.WalkingServiceId AS ServiceId, 0 AS Kind, w.DogId, d.Name AS DogName, t.Name AS TutorName,
-               w.Date, w.Price, w.ServicePaid
+        SELECT w.WalkingServiceId AS ServiceId, 0 AS Kind, w.DogId, d.Name AS DogName, d.Image AS DogImage,
+               t.Name AS TutorName, w.Date, w.Price, w.ServicePaid
         FROM WalkingService w
         INNER JOIN Dogs d ON d.DogId = w.DogId
         INNER JOIN Tutors t ON t.TutorId = d.TutorId
@@ -30,8 +30,8 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
         """;
 
     private const string SittingSelect = """
-        SELECT s.PetSittingServiceId AS ServiceId, 1 AS Kind, s.DogId, d.Name AS DogName, t.Name AS TutorName,
-               s.Date, s.Price, s.ServicePaid
+        SELECT s.PetSittingServiceId AS ServiceId, 1 AS Kind, s.DogId, d.Name AS DogName, d.Image AS DogImage,
+               t.Name AS TutorName, s.Date, s.Price, s.ServicePaid
         FROM PetSittingService s
         INNER JOIN Dogs d ON d.DogId = s.DogId
         INNER JOIN Tutors t ON t.TutorId = d.TutorId
@@ -39,8 +39,8 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
         """;
 
     private const string HotelSelect = """
-        SELECT h.PetHotelServiceId AS ServiceId, 2 AS Kind, h.DogId, d.Name AS DogName, t.Name AS TutorName,
-               h.StartDate AS Date, h.EndDate, h.PricePerDay AS Price, h.RequiresWalking, h.ServicePaid
+        SELECT h.PetHotelServiceId AS ServiceId, 2 AS Kind, h.DogId, d.Name AS DogName, d.Image AS DogImage,
+               t.Name AS TutorName, h.StartDate AS Date, h.EndDate, h.PricePerDay AS Price, h.RequiresWalking, h.ServicePaid
         FROM PetHotelService h
         INNER JOIN Dogs d ON d.DogId = h.DogId
         INNER JOIN Tutors t ON t.TutorId = d.TutorId
@@ -96,6 +96,53 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
         VALUES (@DogId, @PetSitterId, @StartDate, @EndDate, @PricePerDay, @RequiresWalking, @ServicePaid)
         """,
         new { service.DogId, service.PetSitterId, service.StartDate, service.EndDate, service.PricePerDay, service.RequiresWalking, service.ServicePaid });
+
+    /// <summary>
+    /// Saves an edit to an existing booking: its date, its price, and for a hotel stay the
+    /// check-out date and whether walks are included.
+    /// </summary>
+    /// <remarks>
+    /// The dog and the kind are not editable. Each kind lives in its own table, so changing one
+    /// would mean deleting the row and inserting into another — a different operation from an
+    /// edit, and one that would silently break anything holding the old id.
+    /// </remarks>
+    /// <param name="service">The booking, carrying its new values. Kind and ServiceId locate the row.</param>
+    /// <returns>Whether the write succeeded.</returns>
+    public async Task<Response> UpdateAsync(ServiceItem service)
+    {
+        ArgumentNullException.ThrowIfNull(service);
+
+        var (sql, param) = service.Kind switch
+        {
+            ServiceKind.Walk => (
+                "UPDATE WalkingService SET Date = @Date, Price = @Price WHERE WalkingServiceId = @ServiceId",
+                (object)new { service.Date, service.Price, service.ServiceId }),
+            ServiceKind.Sitting => (
+                "UPDATE PetSittingService SET Date = @Date, Price = @Price WHERE PetSittingServiceId = @ServiceId",
+                new { service.Date, service.Price, service.ServiceId }),
+            ServiceKind.Hotel => (
+                """
+                UPDATE PetHotelService
+                SET StartDate = @Date, EndDate = @EndDate, PricePerDay = @Price, RequiresWalking = @RequiresWalking
+                WHERE PetHotelServiceId = @ServiceId
+                """,
+                new { service.Date, service.EndDate, service.Price, service.RequiresWalking, service.ServiceId }),
+            _ => throw new ArgumentOutOfRangeException(nameof(service)),
+        };
+
+        try
+        {
+            using var connection = DapperDatabaseService.Connection;
+            await connection.OpenAsync().ConfigureAwait(false);
+            await connection.ExecuteAsync(sql, param).ConfigureAwait(false);
+            return Response.Successful;
+        }
+        catch (SqliteException e)
+        {
+            Console.WriteLine(e);
+            return Response.Failed;
+        }
+    }
 
     /// <summary>Removes a single booking, whichever of the three tables it lives in.</summary>
     public async Task<Response> DeleteAsync(ServiceKind kind, int serviceId)
@@ -156,7 +203,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
         {
             Walk = paidThisMonth.Where(s => s.Kind == ServiceKind.Walk).Sum(s => s.Price),
             Sitting = paidThisMonth.Where(s => s.Kind == ServiceKind.Sitting).Sum(s => s.Price),
-            Hotel = paidThisMonth.Where(s => s.Kind == ServiceKind.Hotel).Sum(s => s.Price)
+            Hotel = paidThisMonth.Where(s => s.Kind == ServiceKind.Hotel).Sum(s => s.Price),
         };
     }
 
@@ -165,7 +212,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
         ServiceKind.Walk => ("WalkingService", "WalkingServiceId"),
         ServiceKind.Sitting => ("PetSittingService", "PetSittingServiceId"),
         ServiceKind.Hotel => ("PetHotelService", "PetHotelServiceId"),
-        _ => throw new ArgumentOutOfRangeException(nameof(kind))
+        _ => throw new ArgumentOutOfRangeException(nameof(kind)),
     };
 
     private async Task<Response> InsertAsync(string sql, object param)

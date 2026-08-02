@@ -19,12 +19,10 @@
             <ScrollViewer>
                 <StackPanel Spacing="0">
                     <buttons:VButton
-                        Classes="BtnGhost"
+                        Classes="BtnBack"
                         Command="{Binding BackCommand}"
-                        HorizontalAlignment="Left"
                         Margin="32,32,0,0"
-                        VText="← Voltar"
-                        Width="180" />
+                        VText="← Voltar" />
 
                     <StackPanel
                         HorizontalAlignment="Center"
@@ -57,111 +55,164 @@
                     </StackPanel>
 
                     <StackPanel Margin="32,0,32,56" Spacing="28">
-                        <Border
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="0,2,0,0"
-                            Padding="0,20,0,0">
-                            <StackPanel Spacing="6">
-                                <TextBlock Classes="Kicker" Text="Telefone" />
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="31"
-                                    Foreground="{StaticResource ColorText}"
-                                    Text="{Binding Phone}" />
-                            </StackPanel>
-                        </Border>
+                        <!--  Read view  -->
+                        <StackPanel IsVisible="{Binding IsViewing}" Spacing="28">
+                            <Border
+                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderThickness="0,2,0,0"
+                                Padding="0,20,0,0">
+                                <StackPanel Spacing="6">
+                                    <TextBlock Classes="Kicker" Text="Telefone" />
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="31"
+                                        Foreground="{StaticResource ColorText}"
+                                        Text="{Binding Phone}" />
+                                </StackPanel>
+                            </Border>
 
-                        <Border
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="0,2,0,0"
-                            Padding="0,20,0,0">
-                            <StackPanel Spacing="6">
-                                <TextBlock Classes="Kicker" Text="Cachorros" />
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="31"
-                                    Foreground="{StaticResource ColorText}"
-                                    Text="{Binding DogNames}" />
-                            </StackPanel>
-                        </Border>
+                            <Border
+                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderThickness="0,2,0,0"
+                                Padding="0,20,0,0">
+                                <StackPanel Spacing="6">
+                                    <TextBlock Classes="Kicker" Text="Cachorros" />
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="31"
+                                        Foreground="{StaticResource ColorText}"
+                                        Text="{Binding DogNames}" />
+                                </StackPanel>
+                            </Border>
 
-                        <Border
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="0,2,0,0"
-                            Padding="0,20,0,0">
-                            <StackPanel Spacing="12">
-                                <TextBlock Classes="Kicker" Text="Próximos serviços" />
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="29"
-                                    FontStyle="Italic"
-                                    Foreground="{StaticResource ColorTextMuted45}"
-                                    IsVisible="{Binding NoFuture}"
-                                    Text="Nada agendado." />
-                                <ItemsControl ItemsSource="{Binding FutureServices}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate DataType="viewmodels:TutorFutureServiceRow">
-                                            <Border
-                                                BorderBrush="{StaticResource ColorDivider}"
-                                                BorderThickness="0,0,0,2"
-                                                Margin="0,0,0,12"
-                                                Padding="0,0,0,12">
-                                                <Grid ColumnDefinitions="*,Auto">
-                                                    <TextBlock
-                                                        FontFamily="{StaticResource FontBody}"
-                                                        FontSize="29"
-                                                        Foreground="{StaticResource ColorText}">
-                                                        <Run Text="{Binding DogName}" />
-                                                        <Run Text=" · " />
-                                                        <Run Text="{Binding TypeLabel}" />
-                                                    </TextBlock>
-                                                    <TextBlock
-                                                        FontFamily="{StaticResource FontBody}"
-                                                        FontSize="26"
-                                                        Foreground="{StaticResource ColorTextMuted55}"
-                                                        Grid.Column="1"
-                                                        Text="{Binding DateLabel}" />
-                                                </Grid>
-                                            </Border>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </StackPanel>
-                        </Border>
+                            <Border
+                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderThickness="0,2,0,0"
+                                Padding="0,20,0,0">
+                                <StackPanel Spacing="12">
+                                    <TextBlock Classes="Kicker" Text="Próximos serviços" />
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="29"
+                                        FontStyle="Italic"
+                                        Foreground="{StaticResource ColorTextMuted45}"
+                                        IsVisible="{Binding NoFuture}"
+                                        Text="Nada agendado." />
+                                    <ItemsControl ItemsSource="{Binding FutureServices}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate DataType="viewmodels:TutorFutureServiceRow">
+                                                <Border
+                                                    BorderBrush="{StaticResource ColorDivider}"
+                                                    BorderThickness="0,0,0,2"
+                                                    Margin="0,0,0,12"
+                                                    Padding="0,0,0,12">
+                                                    <Grid ColumnDefinitions="*,Auto">
+                                                        <TextBlock
+                                                            FontFamily="{StaticResource FontBody}"
+                                                            FontSize="29"
+                                                            Foreground="{StaticResource ColorText}">
+                                                            <Run Text="{Binding DogName}" />
+                                                            <Run Text=" · " />
+                                                            <Run Text="{Binding TypeLabel}" />
+                                                        </TextBlock>
+                                                        <TextBlock
+                                                            FontFamily="{StaticResource FontBody}"
+                                                            FontSize="26"
+                                                            Foreground="{StaticResource ColorTextMuted55}"
+                                                            Grid.Column="1"
+                                                            Text="{Binding DateLabel}" />
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </Border>
 
-                        <!--  Destructive, so it takes two taps: the button swaps for confirm/cancel  -->
-                        <StackPanel Margin="0,32,0,0" Spacing="16">
                             <buttons:VButton
-                                Classes="BtnSecondary"
-                                Command="{Binding AskDeleteCommand}"
+                                Classes="BtnPrimary"
+                                Command="{Binding EditCommand}"
                                 Height="80"
                                 HorizontalAlignment="Stretch"
-                                IsVisible="{Binding NotConfirmingDelete}"
-                                VText="Excluir tutor" />
-                            <StackPanel IsVisible="{Binding ConfirmingDelete}" Spacing="12">
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="26"
-                                    FontStyle="Italic"
-                                    Foreground="{StaticResource ColorAccentDark800}"
-                                    HorizontalAlignment="Center"
-                                    Text="Isso remove o tutor, seus cachorros e os serviços deles."
-                                    TextAlignment="Center"
-                                    TextWrapping="Wrap" />
-                                <Grid ColumnDefinitions="*,16,*">
-                                    <buttons:VButton
-                                        Classes="BtnSecondary"
-                                        Command="{Binding CancelDeleteCommand}"
-                                        Height="80"
-                                        VText="Cancelar" />
-                                    <buttons:VButton
-                                        Classes="BtnPrimary"
-                                        Command="{Binding ConfirmDeleteCommand}"
-                                        Grid.Column="2"
-                                        Height="80"
-                                        VText="Excluir" />
-                                </Grid>
+                                Margin="0,16,0,0"
+                                VText="Editar tutor" />
+
+                            <!--  Destructive, so it takes two taps: the button swaps for confirm/cancel  -->
+                            <StackPanel Spacing="16">
+                                <buttons:VButton
+                                    Classes="BtnSecondary"
+                                    Command="{Binding AskDeleteCommand}"
+                                    Height="80"
+                                    HorizontalAlignment="Stretch"
+                                    IsVisible="{Binding NotConfirmingDelete}"
+                                    VText="Excluir tutor" />
+                                <StackPanel IsVisible="{Binding ConfirmingDelete}" Spacing="12">
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="26"
+                                        FontStyle="Italic"
+                                        Foreground="{StaticResource ColorAccentDark800}"
+                                        HorizontalAlignment="Center"
+                                        Text="Isso remove o tutor, seus cachorros e os serviços deles."
+                                        TextAlignment="Center"
+                                        TextWrapping="Wrap" />
+                                    <Grid ColumnDefinitions="*,16,*">
+                                        <buttons:VButton
+                                            Classes="BtnSecondary"
+                                            Command="{Binding CancelDeleteCommand}"
+                                            Height="80"
+                                            VText="Cancelar" />
+                                        <buttons:VButton
+                                            Classes="BtnPrimary"
+                                            Command="{Binding ConfirmDeleteCommand}"
+                                            Grid.Column="2"
+                                            Height="80"
+                                            VText="Excluir" />
+                                    </Grid>
+                                </StackPanel>
                             </StackPanel>
+                        </StackPanel>
+
+                        <!--  Editor. The dogs list is not here: a dog is moved from its own screen.  -->
+                        <StackPanel IsVisible="{Binding IsEditing}" Spacing="28">
+                            <StackPanel Spacing="10">
+                                <TextBlock Classes="FormLabel" Text="Nome" />
+                                <TextBox Classes="FormInput" Text="{Binding EditName}" />
+                            </StackPanel>
+
+                            <StackPanel Spacing="10">
+                                <TextBlock Classes="FormLabel" Text="Telefone" />
+                                <TextBox Classes="FormInput" Text="{Binding EditPhone}" />
+                            </StackPanel>
+
+                            <StackPanel Spacing="10">
+                                <TextBlock Classes="FormLabel" Text="Endereço" />
+                                <TextBox Classes="FormInput" Text="{Binding EditAddress}" />
+                            </StackPanel>
+
+                            <TextBlock
+                                Classes="FormMsg Error"
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="28"
+                                FontStyle="Italic"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding HasEditError}"
+                                Text="{Binding EditError}"
+                                TextAlignment="Center" />
+
+                            <Grid ColumnDefinitions="*,16,*">
+                                <buttons:VButton
+                                    Classes="BtnSecondary"
+                                    Command="{Binding CancelEditCommand}"
+                                    Height="88"
+                                    VText="Cancelar" />
+                                <buttons:VButton
+                                    Classes="BtnPrimary"
+                                    Command="{Binding SaveEditCommand}"
+                                    Grid.Column="2"
+                                    Height="88"
+                                    VText="Salvar" />
+                            </Grid>
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>

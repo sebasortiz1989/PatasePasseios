@@ -112,6 +112,7 @@ The canonical schema is the SQL string in `DapperDatabaseService.CreatePetSitter
 
 ## Conventions
 
-- `.editorconfig` + `stylecop.json` are enforced; `Directory.Packages.props` suppresses a long `NoWarn` list. Analyzer warnings (CA1305, CA2000) are currently tolerated in the Viewmodel project.
+- **StyleCop conventions.** `stylecop.json` at the solution root holds the shared settings described in the global `~/.claude/CLAUDE.md` — write code to them: `using` directives **outside** the namespace, `System.*` **not** sorted first, XML docs on public interfaces but not on `internal` members. Note the settings are currently **advisory only**: no project references `StyleCop.Analyzers` or registers the file via `AdditionalFiles`, so nothing enforces them at build time (that wiring came from the removed `Verion.Development` package). Follow them anyway, and treat a violation as a defect even though the compiler stays silent.
+- `.editorconfig` is applied by the IDE; `Directory.Packages.props` suppresses a long `NoWarn` list. Analyzer warnings (CA1305, CA2000) are currently tolerated in the Viewmodel project.
 - Assembly/root namespaces are `DapperDemo.<Project>`; the data layer is `DapperDemo.Mensagens.Dapper`. These are set per-csproj, not derived in `Directory.Packages.props`.
 - `NoSync()` / `WithSync()` (from `AvaloniaFramework.Threading`) are used instead of `ConfigureAwait` in the view and view-model layers.

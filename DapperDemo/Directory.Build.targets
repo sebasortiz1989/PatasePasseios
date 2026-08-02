@@ -1,0 +1,36 @@
+<Project>
+
+  <!--
+    Shared code-quality settings (StyleCop + .NET analyzers) come from AvaloniaFramework.Development,
+    which lives inside the AvaloniaFramework git submodule at external/AvaloniaFramework.
+
+    It is imported directly rather than referenced: it is a build-props package, and a
+    ProjectReference does not import a referenced project's build/ folder — only a PackageReference
+    would, and there is no package in a submodule checkout.
+
+    Imported from Directory.Build.targets (not .props) so IsTestProject is already set by the time
+    the conditions inside are evaluated.
+
+    Override the location when the submodule is not where the build expects it:
+        dotnet build -p:AvaloniaFrameworkDevelopmentDir=/path/to/AvaloniaFramework.Development
+  -->
+  <PropertyGroup Condition="'$(AvaloniaFrameworkDevelopmentDir)' == ''">
+    <AvaloniaFrameworkDevelopmentDir>$(MSBuildThisFileDirectory)../external/AvaloniaFramework/AvaloniaFramework.Development</AvaloniaFrameworkDevelopmentDir>
+  </PropertyGroup>
+
+  <Import
+    Condition="Exists('$(AvaloniaFrameworkDevelopmentDir)/build/Analyzer.CodeQuality.targets')"
+    Project="$(AvaloniaFrameworkDevelopmentDir)/build/Analyzer.CodeQuality.targets" />
+
+  <!--
+    A missing submodule should be a loud warning, not silently unanalysed code: the settings file
+    shipping without the analyzer running is exactly the failure mode this package exists to avoid.
+  -->
+  <Target
+    AfterTargets="Build"
+    Condition="!Exists('$(AvaloniaFrameworkDevelopmentDir)/build/Analyzer.CodeQuality.targets')"
+    Name="WarnMissingDevelopmentPackage">
+    <Warning Text="AvaloniaFramework.Development not found at '$(AvaloniaFrameworkDevelopmentDir)'. Code-quality analyzers are NOT running. Run: git submodule update --init --recursive" />
+  </Target>
+
+</Project>
