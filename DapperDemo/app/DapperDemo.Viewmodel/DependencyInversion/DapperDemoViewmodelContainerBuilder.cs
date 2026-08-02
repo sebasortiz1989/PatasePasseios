@@ -26,7 +26,7 @@ namespace DapperDemo.Viewmodel.DependencyInversion
             yield return CreateTransient<ServiceDetailViewModel>().WithAbstractions();
             yield return CreateTransient<DogsViewModel>().WithAbstractions();
             yield return CreateTransient<TutorsViewModel>().WithAbstractions();
-            yield return CreateTransient<HomeViewModel>().WithAbstractions();
+            yield return CreateTransient<AgendaViewModel>().WithAbstractions();
             yield return CreateTransient<UsersViewModel>().WithAbstractions();
             yield return CreateTransient<ServicesViewModel>().WithAbstractions();
         }

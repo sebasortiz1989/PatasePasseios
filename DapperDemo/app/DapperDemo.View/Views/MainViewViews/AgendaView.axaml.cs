@@ -5,9 +5,9 @@ using DapperDemo.Viewmodel.Viewmodels.Session;
 
 namespace DapperDemo.View.Views.MainViewViews;
 
-public partial class HomeView : PresenterUserControl<HomeViewModel, Unit, Unit>
+public partial class AgendaView : PresenterUserControl<AgendaViewModel, Unit, Unit>
 {
-    public HomeView()
+    public AgendaView()
     {
         InitializeComponent();
     }

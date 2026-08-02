@@ -14,17 +14,15 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
 {
     private readonly RepositoryServices repositoryServices;
     private readonly AppSession session;
-    private readonly NavigationController navigationController;
 
     public ServiceDetailViewModel(
-        NavigationController navigationController,
+        CurrentView currentView,
         RepositoryServices repositoryServices,
         AppSession session)
     {
         this.repositoryServices = repositoryServices;
         this.session = session;
-        this.navigationController = navigationController;
-        BackCommand = new SynchronizedCommand(() => navigationController.PopAsync(this), SynchronizationBehavior.Discard, true);
+        BackCommand = new SynchronizedCommand(currentView.GoBack, SynchronizationBehavior.Discard, true);
         TogglePaidCommand = new SynchronizedCommand(TogglePaid, SynchronizationBehavior.Discard, true);
         AskDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = true, SynchronizationBehavior.Discard, true);
         CancelDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = false, SynchronizationBehavior.Discard, true);
@@ -93,7 +91,7 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
         session.SelectedServiceKind = null;
         session.SelectedServiceId = null;
         session.NotifyDataChanged();
-        await navigationController.PopAsync(this).WithSync();
+        BackCommand.Execute(null);
     }
 
     private async Task LoadAsync()

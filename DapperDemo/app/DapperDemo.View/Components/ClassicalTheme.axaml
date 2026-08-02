@@ -30,6 +30,51 @@
 
         <FontFamily x:Key="FontHeading">Times New Roman,Georgia,serif</FontFamily>
         <FontFamily x:Key="FontBody">Georgia,Times New Roman,serif</FontFamily>
+
+        <!--
+            Bottom-navigation icons, transcribed from the design system's 24×24 stroke icons.
+            They are stroked (never filled) so a single geometry serves both the muted and the
+            accent state — the stroke follows the tab's Foreground.
+        -->
+        <StreamGeometry x:Key="IconDogs">M11.25 16.25h1.5L12 17z M16 14v.5 M8 14v.5 M11.5 21.5a5 5 0 0 1-5-5c0-2 .5-3 1.5-4.5.6-.9 1.2-1.6 1.2-2.5a2.7 2.7 0 0 0-.7-1.8 M12.5 21.5a5 5 0 0 0 5-5c0-2-.5-3-1.5-4.5-.6-.9-1.2-1.6-1.2-2.5a2.7 2.7 0 0 1 .7-1.8 M6.5 7.5C5 6.5 4 5 4 3.5c1.5 0 3 .5 4 2 M17.5 7.5C19 6.5 20 5 20 3.5c-1.5 0-3 .5-4 2</StreamGeometry>
+        <StreamGeometry x:Key="IconTutors">M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0z M22 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75</StreamGeometry>
+        <StreamGeometry x:Key="IconAgenda">M8 2v4 M16 2v4 M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z M3 10h18</StreamGeometry>
+        <StreamGeometry x:Key="IconNew">M12 5v14 M5 12h14</StreamGeometry>
+        <StreamGeometry x:Key="IconProfile">M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2 M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0z</StreamGeometry>
+
+        <!--
+            A bottom-navigation tab: stroked icon over a small caption, accent when selected and
+            muted otherwise. Content is the icon; Tag is the caption.
+        -->
+        <ControlTheme TargetType="RadioButton" x:Key="NavTab">
+            <Setter Property="Foreground" Value="{StaticResource ColorTextMuted50}" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Background="Transparent" Padding="0,16,0,8">
+                        <StackPanel
+                            HorizontalAlignment="Center"
+                            Spacing="5"
+                            VerticalAlignment="Center">
+                            <ContentPresenter
+                                Content="{TemplateBinding Content}"
+                                HorizontalAlignment="Center" />
+                            <TextBlock
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="17"
+                                Foreground="{TemplateBinding Foreground}"
+                                HorizontalAlignment="Center"
+                                LetterSpacing="0.7"
+                                Text="{TemplateBinding Tag}" />
+                        </StackPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+
+            <Style Selector="^:checked">
+                <Setter Property="Foreground" Value="{StaticResource ColorAccent}" />
+            </Style>
+        </ControlTheme>
     </Styles.Resources>
 
     <Design.PreviewWith>

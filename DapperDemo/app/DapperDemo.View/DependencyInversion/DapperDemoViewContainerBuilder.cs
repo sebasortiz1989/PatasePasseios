@@ -33,7 +33,7 @@ namespace DapperDemo.View.DependencyInversion
             yield return CreateTransient<ServiceDetailView>().WithAbstractions();
             yield return CreateTransient<DogsView>().WithAbstractions();
             yield return CreateTransient<TutorsView>().WithAbstractions();
-            yield return CreateTransient<HomeView>().WithAbstractions();
+            yield return CreateTransient<AgendaView>().WithAbstractions();
             yield return CreateTransient<UsersView>().WithAbstractions();
             yield return CreateTransient<ServicesView>().WithAbstractions();
         }

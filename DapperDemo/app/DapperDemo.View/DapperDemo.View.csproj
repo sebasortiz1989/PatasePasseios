@@ -56,5 +56,8 @@
         <DependentUpon>UsersView.axaml</DependentUpon>
         <SubType>Code</SubType>
       </Compile>
+      <Compile Update="Views\MainViewViews\AgendaView.axaml.cs">
+        <DependentUpon>HomeView.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

@@ -5,7 +5,6 @@
     x:Class="DapperDemo.View.Views.MainView"
     x:DataType="viewmodels:MainViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels;assembly=DapperDemo.Viewmodel"
@@ -23,94 +22,101 @@
                 </TransitioningContentControl.PageTransition>
             </TransitioningContentControl>
 
-            <!--  Bottom navigation bar  -->
+            <!--  Bottom navigation bar: five equal columns spanning the full canvas width.  -->
             <Border
                 Background="{StaticResource ColorBg}"
                 BorderBrush="{StaticResource ColorDivider}"
                 BorderThickness="0,2,0,0"
                 Grid.Row="1">
-                <StackPanel
-                    HorizontalAlignment="Center"
-                    Orientation="Horizontal"
-                    Spacing="-2">
+                <Grid ColumnDefinitions="*,*,*,*,*">
+                <RadioButton
+                    Command="{Binding DogsViewCommand}"
+                    Grid.Column="0"
+                    GroupName="MainTabs"
+                    Tag="Cães"
+                    Theme="{StaticResource NavTab}">
+                    <Path
+                        Data="{StaticResource IconDogs}"
+                        Height="37"
+                        Stretch="Uniform"
+                        Stroke="{Binding $parent[RadioButton].Foreground}"
+                        StrokeJoin="Round"
+                        StrokeLineCap="Round"
+                        StrokeThickness="1.4"
+                        Width="37" />
+                </RadioButton>
 
-                    <!--  Dog Tap  -->
-                    <buttons:GroupButton
-                        Command="{Binding DogsViewCommand}"
-                        GroupName="tes2"
-                        Height="100"
-                        VCheckedBackground="Transparent"
-                        VCheckedImageOne="../Assets/DogIconSelected.png"
-                        VCornerRadius="0"
-                        VImageOneHeight="64"
-                        VImageOneWidth="64"
-                        VNormalBackground="Transparent"
-                        VNormalImageOne="../Assets/DogIconUnselected.png"
-                        VPointeroverBackgroundColor="Transparent"
-                        Width="146" />
+                <RadioButton
+                    Command="{Binding TutorsViewCommand}"
+                    Grid.Column="1"
+                    GroupName="MainTabs"
+                    Tag="Tutores"
+                    Theme="{StaticResource NavTab}">
+                    <Path
+                        Data="{StaticResource IconTutors}"
+                        Height="37"
+                        Stretch="Uniform"
+                        Stroke="{Binding $parent[RadioButton].Foreground}"
+                        StrokeJoin="Round"
+                        StrokeLineCap="Round"
+                        StrokeThickness="1.4"
+                        Width="37" />
+                </RadioButton>
 
-                    <!--  Tutor Tap  -->
-                    <buttons:GroupButton
-                        Command="{Binding TutorsViewCommand}"
-                        GroupName="tes2"
-                        Height="100"
-                        VCheckedBackground="Transparent"
-                        VCheckedImageOne="../Assets/TutorIconSelected.png"
-                        VCornerRadius="0"
-                        VImageOneHeight="64"
-                        VImageOneWidth="64"
-                        VNormalBackground="Transparent"
-                        VNormalImageOne="../Assets/TutorIconUnselected.png"
-                        VPointeroverBackgroundColor="Transparent"
-                        Width="146" />
+                <RadioButton
+                    Command="{Binding HomeViewCommand}"
+                    Grid.Column="2"
+                    GroupName="MainTabs"
+                    IsChecked="True"
+                    Tag="Agenda"
+                    Theme="{StaticResource NavTab}">
+                    <Path
+                        Data="{StaticResource IconAgenda}"
+                        Height="37"
+                        Stretch="Uniform"
+                        Stroke="{Binding $parent[RadioButton].Foreground}"
+                        StrokeJoin="Round"
+                        StrokeLineCap="Round"
+                        StrokeThickness="1.4"
+                        Width="37" />
+                </RadioButton>
 
-                    <!--  Home Tap  -->
-                    <buttons:GroupButton
-                        Command="{Binding HomeViewCommand}"
-                        GroupName="tes2"
-                        Height="100"
-                        IsChecked="True"
-                        VCheckedBackground="Transparent"
-                        VCheckedImageOne="../Assets/HomeIconSelected.png"
-                        VCornerRadius="0"
-                        VImageOneHeight="64"
-                        VImageOneWidth="64"
-                        VNormalBackground="Transparent"
-                        VNormalImageOne="../Assets/HomeIconUnselected.png"
-                        VPointeroverBackgroundColor="Transparent"
-                        Width="146" />
+                <RadioButton
+                    Command="{Binding ServicesViewCommand}"
+                    Grid.Column="3"
+                    GroupName="MainTabs"
+                    Tag="Novo"
+                    Theme="{StaticResource NavTab}">
+                    <Path
+                        Data="{StaticResource IconNew}"
+                        Height="37"
+                        Stretch="Uniform"
+                        Stroke="{Binding $parent[RadioButton].Foreground}"
+                        StrokeJoin="Round"
+                        StrokeLineCap="Round"
+                        StrokeThickness="1.4"
+                        Width="37" />
+                </RadioButton>
 
-                    <!--  Services Tap  -->
-                    <buttons:GroupButton
-                        Command="{Binding ServicesViewCommand}"
-                        GroupName="tes2"
-                        Height="100"
-                        VCheckedBackground="Transparent"
-                        VCheckedImageOne="../Assets/ServiceIconSelected.png"
-                        VCornerRadius="0"
-                        VImageOneHeight="64"
-                        VImageOneWidth="64"
-                        VNormalBackground="Transparent"
-                        VNormalImageOne="../Assets/ServiceIconUnselected.png"
-                        VPointeroverBackgroundColor="Transparent"
-                        Width="146" />
-
-                    <!--  Users Tap  -->
-                    <buttons:GroupButton
-                        Command="{Binding UsersViewCommand}"
-                        GroupName="tes2"
-                        Height="100"
-                        VCheckedBackground="Transparent"
-                        VCheckedImageOne="../Assets/UserIconSelected.png"
-                        VCornerRadius="0"
-                        VImageOneHeight="64"
-                        VImageOneWidth="64"
-                        VNormalBackground="Transparent"
-                        VNormalImageOne="../Assets/UserIconUnselected.png"
-                        VPointeroverBackgroundColor="Transparent"
-                        Width="146" />
-                </StackPanel>
+                <RadioButton
+                    Command="{Binding UsersViewCommand}"
+                    Grid.Column="4"
+                    GroupName="MainTabs"
+                    Tag="Perfil"
+                    Theme="{StaticResource NavTab}">
+                    <Path
+                        Data="{StaticResource IconProfile}"
+                        Height="37"
+                        Stretch="Uniform"
+                        Stroke="{Binding $parent[RadioButton].Foreground}"
+                        StrokeJoin="Round"
+                        StrokeLineCap="Round"
+                        StrokeThickness="1.4"
+                        Width="37" />
+                </RadioButton>
+                </Grid>
             </Border>
+
         </Grid>
     </Viewbox>
 

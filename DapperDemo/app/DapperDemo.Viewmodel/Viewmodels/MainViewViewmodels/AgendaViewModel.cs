@@ -52,26 +52,26 @@ public sealed class ServiceRow(string dayNum, string monthShort, string dogName,
 }
 
 [AddINotifyPropertyChangedInterface]
-public class HomeViewModel : PresentationModelBase<Unit, Unit>
+public class AgendaViewModel : PresentationModelBase<Unit, Unit>
 {
     private static readonly string[] MonthsShort = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 
-    private readonly NavigationController navigationController;
     private readonly RepositoryServices repositoryServices;
     private readonly AppSession session;
     private readonly EventHandler dataChangedHandler;
-    private readonly Factory<PresenterBase<ServiceDetailViewModel, Unit, Unit>> serviceDetailFactory;
+    private readonly PresenterBase<ServiceDetailViewModel, Unit, Unit> serviceDetailView;
+    private readonly CurrentView currentView;
 
-    public HomeViewModel(
-        NavigationController navigationController,
+    public AgendaViewModel(
+        CurrentView currentView,
         RepositoryServices repositoryServices,
         AppSession session,
         Factory<PresenterBase<ServiceDetailViewModel, Unit, Unit>> serviceDetailFactory)
     {
-        this.navigationController = navigationController;
         this.repositoryServices = repositoryServices;
         this.session = session;
-        this.serviceDetailFactory = serviceDetailFactory;
+        serviceDetailView = serviceDetailFactory.Create();
+        this.currentView = currentView;
 
         // Marking a service paid from the detail screen must show up here on return, and this
         // view-model outlives a single OnRunStarting (MainViewModel builds all five tabs once).
@@ -245,10 +245,11 @@ public class HomeViewModel : PresentationModelBase<Unit, Unit>
         session.NotifyDataChanged();
     }
 
-    private async Task Open(ServiceKind kind, int serviceId)
+    private Task Open(ServiceKind kind, int serviceId)
     {
         session.SelectedServiceKind = kind;
         session.SelectedServiceId = serviceId;
-        await navigationController.PushAsync(serviceDetailFactory.Create()).WithSync();
+        currentView.ViewShown = serviceDetailView;
+        return Task.CompletedTask;
     }
 }

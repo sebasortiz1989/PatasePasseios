@@ -14,7 +14,7 @@ public class MainViewModel : PresentationModelBase<Unit, Unit>
     private readonly EventHandler logoutHandler;
     private readonly PresenterBase<DogsViewModel, Unit, Unit> dogsView;
     private readonly PresenterBase<TutorsViewModel, Unit, Unit> tutorsView;
-    private readonly PresenterBase<HomeViewModel, Unit, Unit> homeView;
+    private readonly PresenterBase<AgendaViewModel, Unit, Unit> homeView;
     private readonly PresenterBase<ServicesViewModel, Unit, Unit> servicesView;
     private readonly PresenterBase<UsersViewModel, Unit, Unit> usersView;
 
@@ -24,7 +24,7 @@ public class MainViewModel : PresentationModelBase<Unit, Unit>
         CurrentView currentView,
         Factory<PresenterBase<DogsViewModel, Unit, Unit>> dogsViewFactory,
         Factory<PresenterBase<TutorsViewModel, Unit, Unit>> tutorsViewFactory,
-        Factory<PresenterBase<HomeViewModel, Unit, Unit>> homeViewFactory,
+        Factory<PresenterBase<AgendaViewModel, Unit, Unit>> homeViewFactory,
         Factory<PresenterBase<ServicesViewModel, Unit, Unit>> servicesViewFactory,
         Factory<PresenterBase<UsersViewModel, Unit, Unit>> usersViewFactory)
     {

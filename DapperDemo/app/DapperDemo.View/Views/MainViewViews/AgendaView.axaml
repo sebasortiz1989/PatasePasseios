@@ -2,35 +2,75 @@
     d:DesignHeight="1460"
     d:DesignWidth="720"
     mc:Ignorable="d"
-    x:Class="DapperDemo.View.Views.MainViewViews.HomeView"
-    x:DataType="mainViewViewmodels:HomeViewModel"
+    x:Class="DapperDemo.View.Views.MainViewViews.AgendaView"
+    x:DataType="mainViewViewmodels:AgendaViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mainViewViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Background="{StaticResource ColorBg}" Height="1460" Width="720">
+    <Grid
+        Background="{StaticResource ColorBg}"
+        Height="1460"
+        Width="720">
         <ScrollViewer>
             <StackPanel Spacing="0">
                 <StackPanel Margin="32,32,32,16" Spacing="2">
-                    <TextBlock Classes="Heading1" FontSize="62" Text="Agenda" />
+                    <TextBlock
+                        Classes="Heading1"
+                        FontSize="62"
+                        Text="Agenda" />
                     <TextBlock Classes="Kicker" Text="{Binding TodayLabel}" />
                 </StackPanel>
 
                 <!--  Date range filters  -->
-                <StackPanel Margin="32,16,32,0" Orientation="Horizontal" Spacing="16">
-                    <Button Classes="Chip" Classes.Active="{Binding IsRangeHoje}" Command="{Binding SetRangeHoje}" Content="Hoje" />
-                    <Button Classes="Chip" Classes.Active="{Binding IsRangeSemana}" Command="{Binding SetRangeSemana}" Content="Semana" />
-                    <Button Classes="Chip" Classes.Active="{Binding IsRangeTodos}" Command="{Binding SetRangeTodos}" Content="Todos" />
+                <StackPanel
+                    Margin="32,16,32,0"
+                    Orientation="Horizontal"
+                    Spacing="16">
+                    <Button
+                        Classes="Chip"
+                        Classes.Active="{Binding IsRangeHoje}"
+                        Command="{Binding SetRangeHoje}"
+                        Content="Hoje" />
+                    <Button
+                        Classes="Chip"
+                        Classes.Active="{Binding IsRangeSemana}"
+                        Command="{Binding SetRangeSemana}"
+                        Content="Semana" />
+                    <Button
+                        Classes="Chip"
+                        Classes.Active="{Binding IsRangeTodos}"
+                        Command="{Binding SetRangeTodos}"
+                        Content="Todos" />
                 </StackPanel>
 
                 <!--  Service type filters  -->
-                <StackPanel Margin="32,16,32,0" Orientation="Horizontal" Spacing="16">
-                    <Button Classes="Chip" Classes.Active="{Binding IsTypeTodos}" Command="{Binding SetTypeTodos}" Content="Tudo" />
-                    <Button Classes="Chip" Classes.Active="{Binding IsTypeWalk}" Command="{Binding SetTypeWalk}" Content="Passeio" />
-                    <Button Classes="Chip" Classes.Active="{Binding IsTypeSitting}" Command="{Binding SetTypeSitting}" Content="Pet sitting" />
-                    <Button Classes="Chip" Classes.Active="{Binding IsTypeHotel}" Command="{Binding SetTypeHotel}" Content="Hotel" />
+                <StackPanel
+                    Margin="32,16,32,0"
+                    Orientation="Horizontal"
+                    Spacing="16">
+                    <Button
+                        Classes="Chip"
+                        Classes.Active="{Binding IsTypeTodos}"
+                        Command="{Binding SetTypeTodos}"
+                        Content="Tudo" />
+                    <Button
+                        Classes="Chip"
+                        Classes.Active="{Binding IsTypeWalk}"
+                        Command="{Binding SetTypeWalk}"
+                        Content="Passeio" />
+                    <Button
+                        Classes="Chip"
+                        Classes.Active="{Binding IsTypeSitting}"
+                        Command="{Binding SetTypeSitting}"
+                        Content="Pet sitting" />
+                    <Button
+                        Classes="Chip"
+                        Classes.Active="{Binding IsTypeHotel}"
+                        Command="{Binding SetTypeHotel}"
+                        Content="Hotel" />
                 </StackPanel>
 
                 <CheckBox
@@ -41,7 +81,12 @@
                     IsChecked="{Binding HomeShowPaid}"
                     Margin="32,24,32,16" />
 
-                <Border BorderBrush="{StaticResource ColorDivider}" BorderThickness="0,2,0,0" IsVisible="{Binding HasNoServices}" Margin="32,0,32,0" Padding="32,64">
+                <Border
+                    BorderBrush="{StaticResource ColorDivider}"
+                    BorderThickness="0,2,0,0"
+                    IsVisible="{Binding HasNoServices}"
+                    Margin="32,0,32,0"
+                    Padding="32,64">
                     <TextBlock
                         FontFamily="{StaticResource FontBody}"
                         FontSize="29"
@@ -55,9 +100,16 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="mainViewViewmodels:ServiceRow">
                             <Button Classes="RowButton" Command="{Binding OpenCommand}">
-                                <Border BorderBrush="{StaticResource ColorDivider}" BorderThickness="0,2,0,0" Padding="0,24">
+                                <Border
+                                    BorderBrush="{StaticResource ColorDivider}"
+                                    BorderThickness="0,2,0,0"
+                                    Padding="0,24">
                                     <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
-                                        <Border BorderBrush="{StaticResource ColorDivider}" BorderThickness="0,0,2,0" Padding="0,0,16,0" Width="91">
+                                        <Border
+                                            BorderBrush="{StaticResource ColorDivider}"
+                                            BorderThickness="0,0,2,0"
+                                            Padding="0,0,16,0"
+                                            Width="91">
                                             <StackPanel VerticalAlignment="Center">
                                                 <TextBlock
                                                     FontFamily="{StaticResource FontHeading}"
@@ -74,9 +126,20 @@
                                                     Text="{Binding MonthShort}" />
                                             </StackPanel>
                                         </Border>
-                                        <StackPanel Grid.Column="1" Margin="24,0,16,0" VerticalAlignment="Center">
-                                            <TextBlock FontFamily="{StaticResource FontHeading}" FontSize="37" FontWeight="Medium" Foreground="{StaticResource ColorText}" Text="{Binding DogName}" />
-                                            <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted55}">
+                                        <StackPanel
+                                            Grid.Column="1"
+                                            Margin="24,0,16,0"
+                                            VerticalAlignment="Center">
+                                            <TextBlock
+                                                FontFamily="{StaticResource FontHeading}"
+                                                FontSize="37"
+                                                FontWeight="Medium"
+                                                Foreground="{StaticResource ColorText}"
+                                                Text="{Binding DogName}" />
+                                            <TextBlock
+                                                FontFamily="{StaticResource FontBody}"
+                                                FontSize="25"
+                                                Foreground="{StaticResource ColorTextMuted55}">
                                                 <Run Text="{Binding TypeLabel}" />
                                                 <Run Text=" · " />
                                                 <Run Text="{Binding TimeLabel}" />
