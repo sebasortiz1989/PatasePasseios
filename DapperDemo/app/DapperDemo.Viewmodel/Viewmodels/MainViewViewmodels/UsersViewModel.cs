@@ -13,30 +13,6 @@ namespace DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
 [AddINotifyPropertyChangedInterface]
 public class UsersViewModel : PresentationModelBase<Unit, Unit>
 {
-    /// <summary>Public because the View calls it from OnLoaded — see the class remarks.</summary>
-    public async Task ReloadAsync()
-    {
-        CurrentUserName = session.CurrentUserName;
-
-        var now = DateTime.Now;
-        var income = await repositoryServices.GetMonthlyIncomeAsync(session.CurrentPetSitterId, now.Year, now.Month).WithSync();
-        var services = await repositoryServices.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
-        var dogs = await repositoryDogs.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
-        var tutors = await repositoryTutors.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
-
-        MonthTotalLabel = AppSession.Money(income.Total);
-
-        IncomeBreakdown.Clear();
-        IncomeBreakdown.Add(new IncomeRow("Passeio", AppSession.Money(income.Walk)));
-        IncomeBreakdown.Add(new IncomeRow("Pet sitting", AppSession.Money(income.Sitting)));
-        IncomeBreakdown.Add(new IncomeRow("Hotel", AppSession.Money(income.Hotel)));
-
-        DogCountLabel = dogs.Length.ToString(CultureInfo.InvariantCulture);
-        TutorCountLabel = tutors.Length.ToString(CultureInfo.InvariantCulture);
-        ServiceCountLabel = services.Length.ToString(CultureInfo.InvariantCulture);
-        PendingCountLabel = services.Count(s => !s.ServicePaid).ToString(CultureInfo.InvariantCulture);
-    }
-
     private readonly RepositoryServices repositoryServices;
     private readonly RepositoryDogs repositoryDogs;
     private readonly RepositoryTutors repositoryTutors;
@@ -102,6 +78,30 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     public string ServiceCountLabel { get; private set; } = string.Empty;
 
     public string PendingCountLabel { get; private set; } = string.Empty;
+
+    /// <summary>Public because the View calls it from OnLoaded — see the class remarks.</summary>
+    public async Task ReloadAsync()
+    {
+        CurrentUserName = session.CurrentUserName;
+
+        var now = DateTime.Now;
+        var income = await repositoryServices.GetMonthlyIncomeAsync(session.CurrentPetSitterId, now.Year, now.Month).WithSync();
+        var services = await repositoryServices.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
+        var dogs = await repositoryDogs.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
+        var tutors = await repositoryTutors.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
+
+        MonthTotalLabel = AppSession.Money(income.Total);
+
+        IncomeBreakdown.Clear();
+        IncomeBreakdown.Add(new IncomeRow("Passeio", AppSession.Money(income.Walk)));
+        IncomeBreakdown.Add(new IncomeRow("Pet sitting", AppSession.Money(income.Sitting)));
+        IncomeBreakdown.Add(new IncomeRow("Hotel", AppSession.Money(income.Hotel)));
+
+        DogCountLabel = dogs.Length.ToString(CultureInfo.InvariantCulture);
+        TutorCountLabel = tutors.Length.ToString(CultureInfo.InvariantCulture);
+        ServiceCountLabel = services.Length.ToString(CultureInfo.InvariantCulture);
+        PendingCountLabel = services.Count(s => !s.ServicePaid).ToString(CultureInfo.InvariantCulture);
+    }
 
     protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
 

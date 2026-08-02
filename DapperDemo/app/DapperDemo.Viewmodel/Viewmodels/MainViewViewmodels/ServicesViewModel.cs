@@ -15,22 +15,6 @@ namespace DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
 [AddINotifyPropertyChangedInterface]
 public class ServicesViewModel : PresentationModelBase<Unit, Unit>
 {
-    /// <summary>Public because the View calls it from OnLoaded — see the class remarks.</summary>
-    public async Task ReloadDogsAsync()
-    {
-        var dogs = await repositoryDogs.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
-        var previouslySelectedId = SelectedDog?.Id;
-
-        DogOptions.Clear();
-        foreach (var dog in dogs)
-        {
-            DogOptions.Add(new DogOption(dog.DogId, dog.Name));
-        }
-
-        SelectedDog = previouslySelectedId is int id ? DogOptions.FirstOrDefault(o => o.Id == id) : null;
-        HasNoDogs = DogOptions.Count == 0;
-    }
-
     private readonly RepositoryDogs repositoryDogs;
     private readonly RepositoryServices repositoryServices;
     private readonly AppSession session;
@@ -110,6 +94,22 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
     public bool HasSvcMsg => !string.IsNullOrEmpty(SvcMsg);
 
     public bool SvcMsgIsError { get; set; }
+
+    /// <summary>Public because the View calls it from OnLoaded — see the class remarks.</summary>
+    public async Task ReloadDogsAsync()
+    {
+        var dogs = await repositoryDogs.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
+        var previouslySelectedId = SelectedDog?.Id;
+
+        DogOptions.Clear();
+        foreach (var dog in dogs)
+        {
+            DogOptions.Add(new DogOption(dog.DogId, dog.Name));
+        }
+
+        SelectedDog = previouslySelectedId is int id ? DogOptions.FirstOrDefault(o => o.Id == id) : null;
+        HasNoDogs = DogOptions.Count == 0;
+    }
 
     protected override async Task OnRunStarting(Unit input) => await ReloadDogsAsync().WithSync();
 

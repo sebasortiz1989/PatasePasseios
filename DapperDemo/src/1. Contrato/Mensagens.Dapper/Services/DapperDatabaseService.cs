@@ -50,30 +50,6 @@ public sealed class DapperDatabaseService
         connection.Execute($"PRAGMA user_version = {SchemaVersion};");
     }
 
-    private void InitializeDatabase()
-    {
-        var appDataFolder = GetAppDataFolder();
-        if (!Directory.Exists(appDataFolder))
-        {
-            Directory.CreateDirectory(appDataFolder);
-        }
-
-        string databaseFileName = "DapperDemo.db";
-        var databasePath = Path.Combine(appDataFolder, databaseFileName);
-        connectionString = new SqliteConnectionStringBuilder
-        {
-            DataSource = databasePath,
-        }.ToString();
-
-        using (var connection = Connection)
-        {
-            connection.Open();
-            RecreateTablesIfSchemaIsStale(connection);
-            CreatePetSitterTableIfNotExists(connection);
-            CreateMockData(connection);
-        }
-    }
-
     /// <summary>
     /// Where the SQLite file lives, per platform. LocalApplicationData is the one folder .NET
     /// maps sensibly everywhere the app runs — AppData\Local on Windows, ~/.local/share on Linux,
@@ -166,6 +142,30 @@ public sealed class DapperDatabaseService
                      FOREIGN KEY (DogId) REFERENCES Dogs(DogId),
                      FOREIGN KEY (PetSitterId) REFERENCES PetSitter(PetSitterId));
                  """);
+    }
+
+    private void InitializeDatabase()
+    {
+        var appDataFolder = GetAppDataFolder();
+        if (!Directory.Exists(appDataFolder))
+        {
+            Directory.CreateDirectory(appDataFolder);
+        }
+
+        string databaseFileName = "DapperDemo.db";
+        var databasePath = Path.Combine(appDataFolder, databaseFileName);
+        connectionString = new SqliteConnectionStringBuilder
+        {
+            DataSource = databasePath,
+        }.ToString();
+
+        using (var connection = Connection)
+        {
+            connection.Open();
+            RecreateTablesIfSchemaIsStale(connection);
+            CreatePetSitterTableIfNotExists(connection);
+            CreateMockData(connection);
+        }
     }
 
     private void CreateMockData(SqliteConnection connection)

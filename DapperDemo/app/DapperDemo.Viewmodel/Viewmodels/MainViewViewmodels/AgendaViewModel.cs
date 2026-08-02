@@ -21,71 +21,6 @@ public enum HomeRangeFilter
 [AddINotifyPropertyChangedInterface]
 public class AgendaViewModel : PresentationModelBase<Unit, Unit>
 {
-    /// <summary>Public because the View calls it from OnLoaded — see the class remarks.</summary>
-    public async Task ReloadAsync()
-    {
-        var all = await repositoryServices.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
-
-        var now = DateTime.Now;
-        var startToday = now.Date;
-        var weekEnd = startToday.AddDays(7);
-
-        var filtered = all.Where(sv =>
-        {
-            if (HomeRange == HomeRangeFilter.Hoje && sv.Date.Date != now.Date)
-            {
-                return false;
-            }
-
-            if (HomeRange == HomeRangeFilter.Semana && (sv.Date < startToday || sv.Date >= weekEnd))
-            {
-                return false;
-            }
-
-            if (HomeType != null && sv.Kind != HomeType)
-            {
-                return false;
-            }
-
-            if (!HomeShowPaid && sv.ServicePaid)
-            {
-                return false;
-            }
-
-            return true;
-        }).OrderBy(sv => sv.Date).ToArray();
-
-        ClearRows();
-        foreach (var sv in filtered)
-        {
-            var priceLabel = sv.Kind == ServiceKind.Hotel
-                ? AppSession.Money(sv.Price) + " / dia"
-                : AppSession.Money(sv.Price);
-
-            // CA2000: ownership passes to the ServiceRow below, which disposes both commands
-            // when this list is rebuilt (see ClearRows).
-#pragma warning disable CA2000
-            var openCommand = new SynchronizedCommand(() => Open(sv.Kind, sv.ServiceId), SynchronizationBehavior.Discard, true);
-            var toggleCommand = new SynchronizedCommand(() => TogglePaid(sv.Kind, sv.ServiceId, !sv.ServicePaid), SynchronizationBehavior.Discard, true);
-#pragma warning restore CA2000
-
-            FilteredServices.Add(new ServiceRow(
-                sv.Date.Day.ToString("00", CultureInfo.InvariantCulture),
-                MonthsShort[sv.Date.Month - 1],
-                sv.DogName,
-                AppSession.TypeLabel(sv.Kind),
-                sv.Date.ToString("HH:mm", CultureInfo.InvariantCulture),
-                priceLabel,
-                sv.ServicePaid,
-                sv.ServicePaid ? "Pago" : "Pendente",
-                openCommand,
-                toggleCommand));
-        }
-
-        HasNoServices = filtered.Length == 0;
-        HasNothingBooked = all.Length == 0;
-    }
-
     private static readonly string[] MonthsShort = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 
     private readonly RepositoryServices repositoryServices;
@@ -165,6 +100,71 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
     public bool HasNothingBooked { get; private set; }
 
     public ObservableCollection<ServiceRow> FilteredServices { get; } = [];
+
+    /// <summary>Public because the View calls it from OnLoaded — see the class remarks.</summary>
+    public async Task ReloadAsync()
+    {
+        var all = await repositoryServices.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
+
+        var now = DateTime.Now;
+        var startToday = now.Date;
+        var weekEnd = startToday.AddDays(7);
+
+        var filtered = all.Where(sv =>
+        {
+            if (HomeRange == HomeRangeFilter.Hoje && sv.Date.Date != now.Date)
+            {
+                return false;
+            }
+
+            if (HomeRange == HomeRangeFilter.Semana && (sv.Date < startToday || sv.Date >= weekEnd))
+            {
+                return false;
+            }
+
+            if (HomeType != null && sv.Kind != HomeType)
+            {
+                return false;
+            }
+
+            if (!HomeShowPaid && sv.ServicePaid)
+            {
+                return false;
+            }
+
+            return true;
+        }).OrderBy(sv => sv.Date).ToArray();
+
+        ClearRows();
+        foreach (var sv in filtered)
+        {
+            var priceLabel = sv.Kind == ServiceKind.Hotel
+                ? AppSession.Money(sv.Price) + " / dia"
+                : AppSession.Money(sv.Price);
+
+            // CA2000: ownership passes to the ServiceRow below, which disposes both commands
+            // when this list is rebuilt (see ClearRows).
+#pragma warning disable CA2000
+            var openCommand = new SynchronizedCommand(() => Open(sv.Kind, sv.ServiceId), SynchronizationBehavior.Discard, true);
+            var toggleCommand = new SynchronizedCommand(() => TogglePaid(sv.Kind, sv.ServiceId, !sv.ServicePaid), SynchronizationBehavior.Discard, true);
+#pragma warning restore CA2000
+
+            FilteredServices.Add(new ServiceRow(
+                sv.Date.Day.ToString("00", CultureInfo.InvariantCulture),
+                MonthsShort[sv.Date.Month - 1],
+                sv.DogName,
+                AppSession.TypeLabel(sv.Kind),
+                sv.Date.ToString("HH:mm", CultureInfo.InvariantCulture),
+                priceLabel,
+                sv.ServicePaid,
+                sv.ServicePaid ? "Pago" : "Pendente",
+                openCommand,
+                toggleCommand));
+        }
+
+        HasNoServices = filtered.Length == 0;
+        HasNothingBooked = all.Length == 0;
+    }
 
     protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
 

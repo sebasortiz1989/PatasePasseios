@@ -10,6 +10,15 @@ namespace DapperDemo.Viewmodel.Viewmodels.Session;
 /// </summary>
 public class AppSession
 {
+    /// <summary>
+    /// Raised after any write. MainViewModel builds all five tab presenters once, so OnRunStarting
+    /// does not run again on a tab switch — without this, a record added on one tab would not
+    /// appear on another until relaunch.
+    /// </summary>
+    public event EventHandler? DataChanged;
+
+    public event EventHandler? LogoutRequested;
+
     public int CurrentPetSitterId { get; private set; }
 
     public string CurrentUserName { get; private set; } = string.Empty;
@@ -27,15 +36,6 @@ public class AppSession
     public int? SelectedServiceId { get; set; }
 
     /// <summary>
-    /// Raised after any write. MainViewModel builds all five tab presenters once, so OnRunStarting
-    /// does not run again on a tab switch — without this, a record added on one tab would not
-    /// appear on another until relaunch.
-    /// </summary>
-    public event EventHandler? DataChanged;
-
-    public event EventHandler? LogoutRequested;
-
-    /// <summary>
     /// Starts a reload without awaiting it, but reports failures. A bare <c>_ = SomeAsync()</c>
     /// swallows the exception, which turns a broken query into a screen that is silently blank
     /// with no clue why.
@@ -45,6 +45,25 @@ public class AppSession
         task.ContinueWith(
             t => Console.WriteLine($"[DapperDemo] background reload failed: {t.Exception?.GetBaseException()}"),
             TaskContinuationOptions.OnlyOnFaulted);
+
+    public static string Initials(string name) =>
+        string.Concat(name.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Take(2)
+            .Select(w => char.ToUpperInvariant(w[0])));
+
+    public static string TypeLabel(ServiceKind kind) => kind switch
+    {
+        ServiceKind.Walk => "Passeio",
+        ServiceKind.Sitting => "Pet sitting",
+        ServiceKind.Hotel => "Hotel",
+        _ => string.Empty,
+    };
+
+    /// <summary>Brazilian currency shape (R$ 0,00), independent of the host machine's locale.</summary>
+    public static string Money(decimal value) => "R$ " + value.ToString("F2", CultureInfo.InvariantCulture).Replace('.', ',');
+
+    /// <summary>Date shape used across the app's detail screens (dd/MM/yyyy, HH:mm).</summary>
+    public static string DateTimeLabel(DateTime value) => value.ToString("dd/MM/yyyy, HH:mm", CultureInfo.InvariantCulture);
 
     public void SignIn(PetSitter petSitter)
     {
@@ -65,23 +84,4 @@ public class AppSession
     public void NotifyDataChanged() => DataChanged?.Invoke(this, EventArgs.Empty);
 
     public void RequestLogout() => LogoutRequested?.Invoke(this, EventArgs.Empty);
-
-    public static string Initials(string name) =>
-        string.Concat(name.Split(' ', StringSplitOptions.RemoveEmptyEntries)
-            .Take(2)
-            .Select(w => char.ToUpperInvariant(w[0])));
-
-    public static string TypeLabel(ServiceKind kind) => kind switch
-    {
-        ServiceKind.Walk => "Passeio",
-        ServiceKind.Sitting => "Pet sitting",
-        ServiceKind.Hotel => "Hotel",
-        _ => string.Empty,
-    };
-
-    /// <summary>Brazilian currency shape (R$ 0,00), independent of the host machine's locale.</summary>
-    public static string Money(decimal value) => "R$ " + value.ToString("F2", CultureInfo.InvariantCulture).Replace('.', ',');
-
-    /// <summary>Date shape used across the app's detail screens (dd/MM/yyyy, HH:mm).</summary>
-    public static string DateTimeLabel(DateTime value) => value.ToString("dd/MM/yyyy, HH:mm", CultureInfo.InvariantCulture);
 }
