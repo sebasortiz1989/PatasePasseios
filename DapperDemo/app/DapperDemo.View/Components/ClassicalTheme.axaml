@@ -42,6 +42,10 @@
         <StreamGeometry x:Key="IconNew">M12 5v14 M5 12h14</StreamGeometry>
         <StreamGeometry x:Key="IconProfile">M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2 M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0z</StreamGeometry>
 
+        <!--  Same stroked 24×24 convention: the billing eye, open and struck through.  -->
+        <StreamGeometry x:Key="IconEyeOpen">M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z</StreamGeometry>
+        <StreamGeometry x:Key="IconEyeClosed">M17.9 17.9A10.1 10.1 0 0 1 12 19c-6.4 0-10-7-10-7a18.4 18.4 0 0 1 5.1-5.9 M10.9 5.2A9.1 9.1 0 0 1 12 5c6.4 0 10 7 10 7a18.5 18.5 0 0 1-2.2 3.2 M14.1 14.1a3 3 0 1 1-4.2-4.2 M2 2l20 20</StreamGeometry>
+
         <!--
             A bottom-navigation tab: stroked icon over a small caption, accent when selected and
             muted otherwise. Content is the icon; Tag is the caption.
@@ -254,6 +258,23 @@
         <Setter Property="VTextFontSize" Value="31" />
         <Setter Property="VCaretBrush" Value="{StaticResource ColorAccent}" />
         <Setter Property="VCaretBrushFocus" Value="{StaticResource ColorAccent}" />
+    </Style>
+
+    <!--  Icon-only button, sized for a thumb. Used for the billing eye.  -->
+    <Style Selector="Button.IconToggle">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="CornerRadius" Value="7" />
+        <Setter Property="Width" Value="72" />
+        <Setter Property="Height" Value="72" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.IconToggle:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
+        <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
     </Style>
 
     <!--

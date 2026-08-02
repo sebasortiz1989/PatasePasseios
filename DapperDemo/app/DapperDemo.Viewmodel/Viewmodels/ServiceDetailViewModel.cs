@@ -244,6 +244,12 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
 
     private async Task LoadAsync()
     {
+        // Before the early returns below, so arriving here always lands on the reading state —
+        // leaving mid-edit and coming back should not resume a half-finished form.
+        IsEditing = false;
+        EditError = string.Empty;
+        ConfirmingDelete = false;
+
         if (session.SelectedServiceKind is not ServiceKind kind || session.SelectedServiceId is not int serviceId)
         {
             return;
@@ -256,8 +262,6 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
         }
 
         current = service;
-        IsEditing = false;
-        ConfirmingDelete = false;
 
         TypeLabel = AppSession.TypeLabel(service.Kind);
         DogName = service.DogName;

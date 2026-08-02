@@ -137,6 +137,14 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
     /// </summary>
     public async Task ReloadAsync()
     {
+        // Before the early returns below, so arriving here always lands on the reading state —
+        // leaving mid-edit and coming back should not resume a half-finished form. Discarding
+        // the photo too stops a picked-then-abandoned file from being orphaned on disk.
+        DiscardUnsavedPhoto();
+        IsEditing = false;
+        EditError = string.Empty;
+        ConfirmingDelete = false;
+
         if (session.SelectedDogId is not int dogId)
         {
             return;
@@ -147,11 +155,6 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
         {
             return;
         }
-
-        // A reload means a different dog or a fresh read, so any half-finished edit is dropped.
-        IsEditing = false;
-        EditError = string.Empty;
-        ConfirmingDelete = false;
 
         Initials = AppSession.Initials(dog.Name);
         Name = dog.Name;

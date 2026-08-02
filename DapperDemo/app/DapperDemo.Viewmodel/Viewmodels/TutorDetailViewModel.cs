@@ -99,6 +99,12 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     /// </summary>
     public async Task ReloadAsync()
     {
+        // Before the early returns below, so arriving here always lands on the reading state —
+        // leaving mid-edit and coming back should not resume a half-finished form.
+        IsEditing = false;
+        EditError = string.Empty;
+        ConfirmingDelete = false;
+
         if (session.SelectedTutorId is not int tutorId)
         {
             return;
@@ -109,11 +115,6 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         {
             return;
         }
-
-        // A reload means a different tutor or a fresh read, so a half-finished edit is dropped.
-        IsEditing = false;
-        EditError = string.Empty;
-        ConfirmingDelete = false;
 
         Initials = AppSession.Initials(tutor.Name);
         Name = tutor.Name;

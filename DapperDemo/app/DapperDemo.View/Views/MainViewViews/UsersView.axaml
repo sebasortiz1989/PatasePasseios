@@ -9,6 +9,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mainViewViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sys="using:System"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Grid Background="{StaticResource ColorBg}" Height="1460" Width="720">
@@ -20,54 +21,168 @@
                 </StackPanel>
 
                 <StackPanel Margin="32,16,32,48" Spacing="32">
+                    <!--  Profile card  -->
+                    <Border Classes="Card">
+                        <StackPanel Spacing="16">
+                            <!--  Reading state  -->
+                            <StackPanel IsVisible="{Binding IsViewingProfile}" Spacing="16">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Classes="CardTitle" FontSize="37" Text="Perfil" VerticalAlignment="Center" />
+                                    <buttons:VButton
+                                        Classes="BtnSecondary"
+                                        Command="{Binding EditProfileCommand}"
+                                        Grid.Column="1"
+                                        Height="64"
+                                        VText="Editar"
+                                        VerticalAlignment="Center"
+                                        Width="160" />
+                                </Grid>
+                                <StackPanel Spacing="12">
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Classes="Kicker" Text="E-mail" />
+                                        <TextBlock
+                                            FontFamily="{StaticResource FontBody}"
+                                            FontSize="29"
+                                            Foreground="{StaticResource ColorText}"
+                                            Text="{Binding Email}" />
+                                    </StackPanel>
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Classes="Kicker" Text="Chave Pix" />
+                                        <TextBlock
+                                            FontFamily="{StaticResource FontBody}"
+                                            FontSize="29"
+                                            Foreground="{StaticResource ColorText}"
+                                            Text="{Binding PixLabel}"
+                                            TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Classes="Kicker" Text="Nascimento" />
+                                        <TextBlock
+                                            FontFamily="{StaticResource FontBody}"
+                                            FontSize="29"
+                                            Foreground="{StaticResource ColorText}"
+                                            Text="{Binding BirthDateLabel}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <!--  Editing state  -->
+                            <StackPanel IsVisible="{Binding IsEditingProfile}" Spacing="16">
+                                <TextBlock Classes="CardTitle" Text="Editar perfil" />
+                                <StackPanel Spacing="8">
+                                    <TextBlock Classes="FormLabel" Text="Nome" />
+                                    <TextBox Classes="FormInput" FontSize="29" MinHeight="74" Text="{Binding EditName}" />
+                                </StackPanel>
+                                <!--
+                                    Shown but not editable: the e-mail is the login, so it is
+                                    fixed once the account exists. Kept visible rather than
+                                    dropped, so it does not look like it went missing.
+                                -->
+                                <StackPanel Spacing="8">
+                                    <TextBlock Classes="FormLabel" Text="E-mail" />
+                                    <Border
+                                        BorderBrush="{StaticResource ColorDivider}"
+                                        BorderThickness="2"
+                                        CornerRadius="7"
+                                        MinHeight="74"
+                                        Padding="18,0">
+                                        <TextBlock
+                                            FontFamily="{StaticResource FontBody}"
+                                            FontSize="29"
+                                            Foreground="{StaticResource ColorTextMuted50}"
+                                            Text="{Binding Email}"
+                                            VerticalAlignment="Center" />
+                                    </Border>
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="23"
+                                        FontStyle="Italic"
+                                        Foreground="{StaticResource ColorTextMuted45}"
+                                        Text="O e-mail identifica a conta e não pode ser alterado."
+                                        TextWrapping="Wrap" />
+                                </StackPanel>
+                                <StackPanel Spacing="8">
+                                    <TextBlock Classes="FormLabel" Text="Chave Pix" />
+                                    <TextBox
+                                        Classes="FormInput"
+                                        FontSize="29"
+                                        MinHeight="74"
+                                        PlaceholderText="telefone, e-mail, CPF ou chave aleatória"
+                                        Text="{Binding EditPix}" />
+                                </StackPanel>
+                                <StackPanel Spacing="8">
+                                    <TextBlock Classes="FormLabel" Text="Nascimento" />
+                                    <CalendarDatePicker
+                                        Background="Transparent"
+                                        BorderBrush="{StaticResource ColorDivider}"
+                                        BorderThickness="2"
+                                        CornerRadius="7"
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="29"
+                                        Foreground="{StaticResource ColorText}"
+                                        MinHeight="74"
+                                        SelectedDate="{Binding EditBirthDate}" />
+                                </StackPanel>
+                                <TextBlock
+                                    Classes="FormMsg Error"
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="28"
+                                    FontStyle="Italic"
+                                    IsVisible="{Binding HasProfileMsg}"
+                                    Text="{Binding ProfileMsg}"
+                                    TextWrapping="Wrap" />
+                                <Grid ColumnDefinitions="*,16,*">
+                                    <buttons:VButton Classes="BtnSecondary" Command="{Binding CancelProfileCommand}" Height="70" VText="Cancelar" />
+                                    <buttons:VButton Classes="BtnPrimary" Command="{Binding SaveProfileCommand}" Grid.Column="2" Height="70" VText="Salvar" />
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
                     <!--  Password card  -->
                     <Border Classes="Card">
                         <StackPanel Spacing="16">
                             <!--  Editing state  -->
                             <StackPanel IsVisible="{Binding ShowPasswordForm}" Spacing="16">
                                 <TextBlock Classes="CardTitle" Text="Alterar senha" />
+                                <!--  The current one is required: the app has no lock of its own.  -->
                                 <TextBox
-                                    Background="Transparent"
-                                    BorderBrush="{StaticResource ColorDivider}"
-                                    BorderThickness="2"
-                                    CaretBrush="{StaticResource ColorAccent}"
-                                    CornerRadius="7"
-                                    FontFamily="{StaticResource FontBody}"
+                                    Classes="FormInput"
                                     FontSize="29"
-                                    Foreground="{StaticResource ColorText}"
                                     MinHeight="74"
-                                    Padding="18,0"
                                     PasswordChar="•"
-                                    Text="{Binding NewPw}"
-                                    VerticalContentAlignment="Center"
-                                    PlaceholderText="Nova senha" />
+                                    PlaceholderText="Senha atual"
+                                    Text="{Binding CurrentPw}" />
                                 <TextBox
-                                    Background="Transparent"
-                                    BorderBrush="{StaticResource ColorDivider}"
-                                    BorderThickness="2"
-                                    CaretBrush="{StaticResource ColorAccent}"
-                                    CornerRadius="7"
-                                    FontFamily="{StaticResource FontBody}"
+                                    Classes="FormInput"
                                     FontSize="29"
-                                    Foreground="{StaticResource ColorText}"
                                     MinHeight="74"
-                                    Padding="18,0"
                                     PasswordChar="•"
-                                    Text="{Binding ConfirmPw}"
-                                    VerticalContentAlignment="Center"
-                                    PlaceholderText="Confirmar senha" />
-                                <TextBlock
-                                    Classes="FormMsg Error"
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="28"
-                                    FontStyle="Italic"
-                                    IsVisible="{Binding HasPwMsg}"
-                                    Text="{Binding PwMsg}" />
+                                    PlaceholderText="Nova senha"
+                                    Text="{Binding NewPw}" />
+                                <TextBox
+                                    Classes="FormInput"
+                                    FontSize="29"
+                                    MinHeight="74"
+                                    PasswordChar="•"
+                                    PlaceholderText="Confirmar senha"
+                                    Text="{Binding ConfirmPw}" />
                                 <Grid ColumnDefinitions="*,16,*">
                                     <buttons:VButton Classes="BtnSecondary" Command="{Binding CancelPasswordFormCommand}" Height="70" VText="Cancelar" />
                                     <buttons:VButton Classes="BtnPrimary" Command="{Binding SavePasswordCommand}" Grid.Column="2" Height="70" VText="Salvar" />
                                 </Grid>
                             </StackPanel>
+
+                            <!--  Outside both states: a success has to survive the form closing.  -->
+                            <TextBlock
+                                Classes="FormMsg"
+                                Classes.Error="{Binding PwMsgIsError}"
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="28"
+                                FontStyle="Italic"
+                                IsVisible="{Binding HasPwMsg}"
+                                Text="{Binding PwMsg}"
+                                TextWrapping="Wrap" />
 
                             <!--  Summary state  -->
                             <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding ShowPasswordSummary}">
@@ -102,9 +217,10 @@
                             <TextBlock FontFamily="{StaticResource FontHeading}" FontSize="46" Foreground="{StaticResource ColorText}" Text="{Binding DogCountLabel}" />
                             <TextBlock Classes="Kicker" Text="Cães" />
                         </StackPanel>
+                        <!--  Scoped to the month selected below, unlike the three around it.  -->
                         <StackPanel Grid.Column="2" Spacing="2">
                             <TextBlock FontFamily="{StaticResource FontHeading}" FontSize="46" Foreground="{StaticResource ColorText}" Text="{Binding ServiceCountLabel}" />
-                            <TextBlock Classes="Kicker" Text="Serviços" />
+                            <TextBlock Classes="Kicker" Text="No mês" />
                         </StackPanel>
                         <StackPanel Grid.Column="3" Spacing="2">
                             <TextBlock FontFamily="{StaticResource FontHeading}" FontSize="46" Foreground="{StaticResource ColorAccentDark700}" Text="{Binding PendingCountLabel}" />
@@ -120,12 +236,62 @@
                             Foreground="{StaticResource ColorAccent}"
                             LetterSpacing="2"
                             Text="FATURAMENTO" />
-                        <TextBlock FontFamily="{StaticResource FontHeading}" FontSize="46" Foreground="{StaticResource ColorText}" Text="{Binding CurrentMonthLabel}" />
+
+                        <!--  Month and year pick the period; the eye hides the figures.  -->
+                        <Grid ColumnDefinitions="*,12,Auto,12,Auto" Margin="0,10,0,0">
+                            <ComboBox
+                                Classes="FormInput"
+                                FontSize="29"
+                                ItemsSource="{Binding MonthOptions}"
+                                MinHeight="72"
+                                SelectedItem="{Binding SelectedMonth}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate DataType="mainViewViewmodels:MonthOption">
+                                        <TextBlock Text="{Binding Label}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <ComboBox
+                                Classes="FormInput"
+                                FontSize="29"
+                                Grid.Column="2"
+                                ItemsSource="{Binding YearOptions}"
+                                MinHeight="72"
+                                MinWidth="150"
+                                SelectedItem="{Binding SelectedYear}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate DataType="sys:Int32">
+                                        <TextBlock Text="{Binding}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <Button
+                                Classes="IconToggle"
+                                Command="{Binding ToggleMoneyVisibleCommand}"
+                                Grid.Column="4"
+                                ToolTip.Tip="Mostrar ou ocultar valores">
+                                <Viewbox Height="36" Width="36">
+                                    <Panel>
+                                        <Path
+                                            Data="{StaticResource IconEyeOpen}"
+                                            IsVisible="{Binding MoneyVisible}"
+                                            Stroke="{StaticResource ColorAccent}"
+                                            StrokeThickness="1.8" />
+                                        <Path
+                                            Data="{StaticResource IconEyeClosed}"
+                                            IsVisible="{Binding MoneyHidden}"
+                                            Stroke="{StaticResource ColorAccent}"
+                                            StrokeThickness="1.8" />
+                                    </Panel>
+                                </Viewbox>
+                            </Button>
+                        </Grid>
+
                         <TextBlock
                             FontFamily="{StaticResource FontHeading}"
                             FontSize="88"
                             Foreground="{StaticResource ColorText}"
-                            Margin="0,10,0,16"
+                            Margin="0,16,0,16"
                             Text="{Binding MonthTotalLabel}" />
 
                         <ItemsControl ItemsSource="{Binding IncomeBreakdown}">
@@ -147,7 +313,7 @@
                                 FontSize="23"
                                 FontStyle="Italic"
                                 Foreground="{StaticResource ColorTextMuted45}"
-                                Text="Considera apenas serviços marcados como pagos."
+                                Text="Considera apenas serviços marcados como pagos. Pendentes conta todos os meses."
                                 TextWrapping="Wrap" />
                         </Border>
                     </StackPanel>

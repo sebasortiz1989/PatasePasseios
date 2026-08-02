@@ -16,9 +16,11 @@ public partial class UsersView : PresenterUserControl<UsersViewModel, Unit, Unit
     // NavigationController, so they are never RunAsync'd and OnRunStarting never fires for them.
     // OnLoaded is the reliable hook, and it runs again when the tab is shown after popping back
     // from a pushed screen — which is what keeps the list fresh after adding a record.
+    // ReopenAsync rather than ReloadAsync, so leaving the tab mid-edit and coming back lands on
+    // the reading state instead of a half-finished form.
     protected override void OnLoaded(RoutedEventArgs e)
     {
         base.OnLoaded(e);
-        AppSession.FireAndForget(PresentationModel.ReloadAsync());
+        AppSession.FireAndForget(PresentationModel.ReopenAsync());
     }
 }

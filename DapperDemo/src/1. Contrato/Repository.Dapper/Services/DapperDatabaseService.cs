@@ -50,6 +50,35 @@ public sealed class DapperDatabaseService
         connection.Execute($"PRAGMA user_version = {SchemaVersion};");
     }
 
+    /// <summary>
+    /// Adds columns introduced after a table first shipped.
+    /// </summary>
+    /// <remarks>
+    /// The CREATE TABLE statements below are all IF NOT EXISTS, so they do nothing to a database
+    /// that already has the table — a new column would never appear. Bumping
+    /// <see cref="SchemaVersion"/> would pick it up, but only by dropping every table and taking
+    /// the user's records with it. An ALTER is the additive route: existing rows keep their data
+    /// and get NULL for the new column.
+    /// </remarks>
+    private static void AddMissingColumns(SqliteConnection connection)
+    {
+        AddColumnIfMissing(connection, "PetSitter", "Pix", "VARCHAR(255)");
+        AddColumnIfMissing(connection, "PetSitter", "HideMoney", "INTEGER NOT NULL DEFAULT 0");
+    }
+
+    private static void AddColumnIfMissing(SqliteConnection connection, string table, string column, string type)
+    {
+        // PRAGMA table_info is the only portable way to ask SQLite what a table looks like;
+        // there is no ADD COLUMN IF NOT EXISTS.
+        var columns = connection.Query<string>($"SELECT name FROM pragma_table_info('{table}')");
+        if (columns.Any(name => string.Equals(name, column, StringComparison.OrdinalIgnoreCase)))
+        {
+            return;
+        }
+
+        connection.Execute($"ALTER TABLE {table} ADD COLUMN {column} {type};");
+    }
+
     private static void CreatePetSitterTableIfNotExists(SqliteConnection connection)
     {
         connection.Execute(
@@ -59,7 +88,9 @@ public sealed class DapperDatabaseService
                      Email VARCHAR(255) NOT NULL UNIQUE,
                      PasswordHash VARCHAR(255) NOT NULL,
                      Name VARCHAR(100) NOT NULL,
-                     BirthDate DATETIME);
+                     BirthDate DATETIME,
+                     Pix VARCHAR(255),
+                     HideMoney INTEGER NOT NULL DEFAULT 0);
                  
                  CREATE TABLE IF NOT EXISTS Tutors (
                      TutorId INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -134,6 +165,7 @@ public sealed class DapperDatabaseService
             connection.Open();
             RecreateTablesIfSchemaIsStale(connection);
             CreatePetSitterTableIfNotExists(connection);
+            AddMissingColumns(connection);
             CreateMockData(connection);
         }
     }
