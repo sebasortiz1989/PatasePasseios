@@ -15,17 +15,17 @@ public class NewTutorViewModel : PresentationModelBase<Unit, Unit>
 {
     private readonly RepositoryTutors repositoryTutors;
     private readonly AppSession session;
-    private readonly NavigationController navigationController;
+    private readonly CurrentView currentView;
 
     public NewTutorViewModel(
-        NavigationController navigationController,
+        CurrentView currentView,
         RepositoryTutors repositoryTutors,
         AppSession session)
     {
         this.repositoryTutors = repositoryTutors;
         this.session = session;
-        this.navigationController = navigationController;
-        BackCommand = new SynchronizedCommand(() => navigationController.PopAsync(this), SynchronizationBehavior.Discard, true);
+        this.currentView = currentView;
+        BackCommand = new SynchronizedCommand(currentView.GoBack, SynchronizationBehavior.Discard, true);
         SaveCommand = new SynchronizedCommand(Save, SynchronizationBehavior.Discard, true);
     }
 
@@ -70,6 +70,6 @@ public class NewTutorViewModel : PresentationModelBase<Unit, Unit>
 
         ErrorMessage = string.Empty;
         session.NotifyDataChanged();
-        await navigationController.PopAsync(this).WithSync();
+        currentView.GoBack();
     }
 }

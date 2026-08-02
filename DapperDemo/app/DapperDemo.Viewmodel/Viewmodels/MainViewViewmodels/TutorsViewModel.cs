@@ -25,28 +25,30 @@ public sealed class TutorRow(string initials, string name, string subtitle, ICom
 [AddINotifyPropertyChangedInterface]
 public class TutorsViewModel : PresentationModelBase<Unit, Unit>
 {
-    private readonly NavigationController navigationController;
+    private readonly CurrentView currentView;
     private readonly RepositoryTutors repositoryTutors;
     private readonly RepositoryDogs repositoryDogs;
     private readonly AppSession session;
     private readonly EventHandler dataChangedHandler;
-    private readonly Factory<PresenterBase<TutorDetailViewModel, Unit, Unit>> tutorDetailFactory;
-    private readonly Factory<PresenterBase<NewTutorViewModel, Unit, Unit>> newTutorFactory;
+    private readonly PresenterBase<TutorDetailViewModel, Unit, Unit> tutorDetailView;
+    private readonly PresenterBase<NewTutorViewModel, Unit, Unit> newTutorView;
 
     public TutorsViewModel(
-        NavigationController navigationController,
+        CurrentView currentView,
         RepositoryTutors repositoryTutors,
         RepositoryDogs repositoryDogs,
         AppSession session,
         Factory<PresenterBase<TutorDetailViewModel, Unit, Unit>> tutorDetailFactory,
         Factory<PresenterBase<NewTutorViewModel, Unit, Unit>> newTutorFactory)
     {
-        this.navigationController = navigationController;
+        this.currentView = currentView;
         this.repositoryTutors = repositoryTutors;
         this.repositoryDogs = repositoryDogs;
         this.session = session;
-        this.tutorDetailFactory = tutorDetailFactory;
-        this.newTutorFactory = newTutorFactory;
+        // CurrentView.ViewShown is typed `object` and is bound straight to a ContentControl, so it
+        // needs the created presenter — assigning the factory itself compiles but renders blank.
+        tutorDetailView = tutorDetailFactory.Create();
+        newTutorView = newTutorFactory.Create();
 
         dataChangedHandler = (_, _) => AppSession.FireAndForget(ReloadAsync());
         session.DataChanged += dataChangedHandler;
@@ -107,11 +109,16 @@ public class TutorsViewModel : PresentationModelBase<Unit, Unit>
         TutorsCollection.Clear();
     }
 
-    private async Task Open(int tutorId)
+    private Task Open(int tutorId)
     {
         session.SelectedTutorId = tutorId;
-        await navigationController.PushAsync(tutorDetailFactory.Create()).WithSync();
+        currentView.ViewShown = tutorDetailView;
+        return Task.CompletedTask;
     }
 
-    private async Task OpenNewTutor() => await navigationController.PushAsync(newTutorFactory.Create()).WithSync();
+    private Task OpenNewTutor()
+    {
+        currentView.ViewShown = newTutorView;
+        return Task.CompletedTask;
+    }
 }

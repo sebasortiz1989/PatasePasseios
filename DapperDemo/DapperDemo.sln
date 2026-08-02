@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DapperDemo.Infrastructure",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaloniaFramework", "..\external\AvaloniaFramework\AvaloniaFramework\AvaloniaFramework.csproj", "{9C8AC8B8-0DEA-410A-A185-470800A45B81}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0modules", "0modules", "{5EE961B0-FD0B-47E1-B98A-37562210EE28}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -190,6 +192,7 @@ Global
 		{D52F669B-1AE1-4D94-BA2E-F7E70A77E29E} = {1ACEDD09-D58B-4117-B2ED-419164389BE2}
 		{2CF9BCE2-4E1F-4845-9F67-4DF6E664CD16} = {DA8C79BD-55EB-446A-8D01-406D31B8E908}
 		{38B5AD33-AFB3-44DF-B4B1-091CFBCD92B5} = {68DEE712-5AF3-4DF8-A5BF-27A575ED013D}
+		{9C8AC8B8-0DEA-410A-A185-470800A45B81} = {5EE961B0-FD0B-47E1-B98A-37562210EE28}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {83CB65B8-011F-4ED7-BCD3-A6CFA935EF7E}

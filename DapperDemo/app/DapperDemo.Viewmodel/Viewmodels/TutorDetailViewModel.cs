@@ -18,10 +18,10 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     private readonly RepositoryDogs repositoryDogs;
     private readonly RepositoryServices repositoryServices;
     private readonly AppSession session;
-    private readonly NavigationController navigationController;
+    private readonly CurrentView currentView;
 
     public TutorDetailViewModel(
-        NavigationController navigationController,
+        CurrentView currentView,
         RepositoryTutors repositoryTutors,
         RepositoryDogs repositoryDogs,
         RepositoryServices repositoryServices,
@@ -31,8 +31,8 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         this.repositoryDogs = repositoryDogs;
         this.repositoryServices = repositoryServices;
         this.session = session;
-        this.navigationController = navigationController;
-        BackCommand = new SynchronizedCommand(() => navigationController.PopAsync(this), SynchronizationBehavior.Discard, true);
+        this.currentView = currentView;
+        BackCommand = new SynchronizedCommand(currentView.GoBack, SynchronizationBehavior.Discard, true);
         AskDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = true, SynchronizationBehavior.Discard, true);
         CancelDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = false, SynchronizationBehavior.Discard, true);
         ConfirmDeleteCommand = new SynchronizedCommand(Delete, SynchronizationBehavior.Discard, true);
@@ -106,7 +106,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
 
     private async Task Delete()
     {
-        if (session.SelectedTutorId is not int tutorId)
+        if (session.SelectedTutorId is not { } tutorId)
         {
             return;
         }
@@ -115,6 +115,6 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         await repositoryTutors.Delete(tutorId).WithSync();
         session.SelectedTutorId = null;
         session.NotifyDataChanged();
-        await navigationController.PopAsync(this).WithSync();
+        currentView.GoBack();
     }
 }
