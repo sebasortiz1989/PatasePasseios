@@ -53,8 +53,6 @@ public class DapperTestsBasic
                 Assert.Contains(products, p => p is { ProductName: "Test Product 1", Price: 10.99m });
                 Assert.Contains(products, p => p is { ProductName: "Test Product 2", Price: 20.50m });
             }
-
-            var a = 1;
         }
         catch (Exception e)
         {
