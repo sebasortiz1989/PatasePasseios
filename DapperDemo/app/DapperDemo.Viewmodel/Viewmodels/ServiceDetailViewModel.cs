@@ -74,9 +74,9 @@ public class ServiceDetailViewModel : PresentationModelBase<Void, Void>
         TypeLabel = MockAppData.TypeLabel(service.Kind);
         DogName = dog?.Name ?? string.Empty;
         TutorName = tutor?.Name ?? string.Empty;
-        DateLabel = service.Date.ToString("dd/MM/yyyy, HH:mm");
+        DateLabel = MockAppData.DateTimeLabel(service.Date);
         IsHotel = service.Kind == ServiceKind.Hotel;
-        EndLabel = service.EndDate?.ToString("dd/MM/yyyy, HH:mm") ?? string.Empty;
+        EndLabel = service.EndDate is DateTime end ? MockAppData.DateTimeLabel(end) : string.Empty;
         WalkingLabel = service.RequiresWalking ? "Incluídos" : "Não incluídos";
         PriceFieldLabel = service.Kind == ServiceKind.Hotel ? "Preço por dia" : "Preço";
         PriceLabel = service.Kind == ServiceKind.Hotel

@@ -52,7 +52,11 @@ public class DogsViewModel : PresentationModelBase<Void, Void>
         foreach (var dog in mockAppData.Dogs)
         {
             var owner = mockAppData.TutorById(dog.OwnerId);
+            // CA2000: the row owns this command for the lifetime of this view-model; the list is
+            // built once from static mock data and never rebuilt, so there is nothing to release early.
+#pragma warning disable CA2000
             var openCommand = new SynchronizedCommand(() => Open(dog.Id), SynchronizationBehavior.Discard, true);
+#pragma warning restore CA2000
             DogsCollection.Add(new DogRow(MockAppData.Initials(dog.Name), dog.Name, $"{dog.Breed} · {owner?.Name}", openCommand));
         }
 

@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+
 namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Mock;
 
 public enum ServiceKind
@@ -17,7 +19,7 @@ public sealed record MockTutor
 
     public required string Neighborhood { get; init; }
 
-    public required List<int> DogIds { get; init; }
+    public required Collection<int> DogIds { get; init; }
 }
 
 public sealed record MockDog

@@ -1,23 +1,140 @@
 <UserControl
-    d:DesignHeight="450"
-    d:DesignWidth="800"
+    d:DesignHeight="1460"
+    d:DesignWidth="720"
     mc:Ignorable="d"
     x:Class="Verion.Treinamento.DapperDemo.View.Views.MainViewViews.UsersView"
+    x:DataType="mainViewViewmodels:UsersViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:buttons="clr-namespace:Verion.Apresentacao.Avalonia.Buttons;assembly=Verion.Apresentacao.Avalonia"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mainViewViewmodels="clr-namespace:Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;assembly=Verion.Treinamento.DapperDemo.Viewmodel"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Viewbox>
-        <Grid
-            Background="#FDFBF7"
-            Height="1460"
-            Width="720">
-            <TextBlock
-                FontSize="32"
-                Foreground="Black"
-                HorizontalAlignment="Center"
-                Text="Users View"
-                VerticalAlignment="Center" />
-        </Grid>
-    </Viewbox>
+
+    <Grid Background="{StaticResource ColorBg}" Height="1460" Width="720">
+        <ScrollViewer>
+            <StackPanel Spacing="0">
+                <StackPanel Margin="32,32,32,16" Spacing="2">
+                    <TextBlock Classes="Heading1" FontSize="62" Text="{Binding CurrentUserName}" />
+                    <TextBlock Classes="Kicker" Text="Conta" />
+                </StackPanel>
+
+                <StackPanel Margin="32,16,32,48" Spacing="32">
+                    <!--  Password card  -->
+                    <Border Classes="Card">
+                        <StackPanel Spacing="16">
+                            <!--  Editing state  -->
+                            <StackPanel IsVisible="{Binding ShowPasswordForm}" Spacing="16">
+                                <TextBlock Classes="CardTitle" Text="Alterar senha" />
+                                <TextBox
+                                    Background="Transparent"
+                                    BorderBrush="{StaticResource ColorDivider}"
+                                    BorderThickness="2"
+                                    CaretBrush="{StaticResource ColorAccent}"
+                                    CornerRadius="7"
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="29"
+                                    Foreground="{StaticResource ColorText}"
+                                    MinHeight="74"
+                                    Padding="18,0"
+                                    PasswordChar="•"
+                                    Text="{Binding NewPw}"
+                                    VerticalContentAlignment="Center"
+                                    PlaceholderText="Nova senha" />
+                                <TextBox
+                                    Background="Transparent"
+                                    BorderBrush="{StaticResource ColorDivider}"
+                                    BorderThickness="2"
+                                    CaretBrush="{StaticResource ColorAccent}"
+                                    CornerRadius="7"
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="29"
+                                    Foreground="{StaticResource ColorText}"
+                                    MinHeight="74"
+                                    Padding="18,0"
+                                    PasswordChar="•"
+                                    Text="{Binding ConfirmPw}"
+                                    VerticalContentAlignment="Center"
+                                    PlaceholderText="Confirmar senha" />
+                                <TextBlock
+                                    Classes="FormMsg Error"
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="28"
+                                    FontStyle="Italic"
+                                    IsVisible="{Binding HasPwMsg}"
+                                    Text="{Binding PwMsg}" />
+                                <Grid ColumnDefinitions="*,16,*">
+                                    <buttons:VButton Classes="BtnSecondary" Command="{Binding CancelPasswordFormCommand}" Height="70" VText="Cancelar" />
+                                    <buttons:VButton Classes="BtnPrimary" Command="{Binding SavePasswordCommand}" Grid.Column="2" Height="70" VText="Salvar" />
+                                </Grid>
+                            </StackPanel>
+
+                            <!--  Summary state  -->
+                            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding ShowPasswordSummary}">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Classes="CardTitle" FontSize="37" Text="Senha" />
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="25"
+                                        Foreground="{StaticResource ColorTextMuted50}"
+                                        LetterSpacing="3"
+                                        Text="••••••••" />
+                                </StackPanel>
+                                <buttons:VButton
+                                    Classes="BtnSecondary"
+                                    Command="{Binding OpenPasswordFormCommand}"
+                                    Grid.Column="1"
+                                    Height="64"
+                                    VText="Alterar"
+                                    VerticalAlignment="Center"
+                                    Width="160" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!--  Monthly billing  -->
+                    <StackPanel Spacing="4">
+                        <TextBlock
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="23"
+                            Foreground="{StaticResource ColorAccent}"
+                            LetterSpacing="2"
+                            Text="FATURAMENTO" />
+                        <TextBlock FontFamily="{StaticResource FontHeading}" FontSize="46" Foreground="{StaticResource ColorText}" Text="{Binding CurrentMonthLabel}" />
+                        <TextBlock
+                            FontFamily="{StaticResource FontHeading}"
+                            FontSize="88"
+                            Foreground="{StaticResource ColorText}"
+                            Margin="0,10,0,16"
+                            Text="{Binding MonthTotalLabel}" />
+
+                        <ItemsControl ItemsSource="{Binding IncomeBreakdown}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="mainViewViewmodels:IncomeRow">
+                                    <Border BorderBrush="{StaticResource ColorDivider}" BorderThickness="0,2,0,0" Padding="0,16">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <TextBlock FontFamily="{StaticResource FontBody}" FontSize="29" Foreground="{StaticResource ColorTextMuted75}" Text="{Binding Label}" />
+                                            <TextBlock Grid.Column="1" FontFamily="{StaticResource FontHeading}" FontSize="36" Foreground="{StaticResource ColorText}" Text="{Binding Amount}" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <Border BorderBrush="{StaticResource ColorDivider}" BorderThickness="0,2,0,0" Padding="0,16,0,0">
+                            <TextBlock
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="23"
+                                FontStyle="Italic"
+                                Foreground="{StaticResource ColorTextMuted45}"
+                                Text="Considera apenas serviços marcados como pagos."
+                                TextWrapping="Wrap" />
+                        </Border>
+                    </StackPanel>
+
+                    <buttons:VButton Classes="BtnGhost" Command="{Binding LogoutCommand}" Height="70" HorizontalAlignment="Stretch" VText="Sair da conta" />
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
 </UserControl>

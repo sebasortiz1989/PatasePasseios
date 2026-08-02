@@ -14,7 +14,7 @@
         <ScrollViewer>
             <StackPanel Spacing="0">
                 <StackPanel Margin="32,32,32,16" Spacing="2">
-                    <TextBlock Classes="Heading1" FontSize="52" Text="Tutores" />
+                    <TextBlock Classes="Heading1" FontSize="62" Text="Tutores" />
                     <TextBlock Classes="Kicker" Text="{Binding TutorCountLabel}" />
                 </StackPanel>
 
@@ -32,17 +32,17 @@
                                             Width="80">
                                             <TextBlock
                                                 FontFamily="{StaticResource FontHeading}"
-                                                FontSize="28"
+                                                FontSize="34"
                                                 Foreground="{StaticResource ColorTextMuted70}"
                                                 HorizontalAlignment="Center"
                                                 Text="{Binding Initials}"
                                                 VerticalAlignment="Center" />
                                         </Border>
                                         <StackPanel Grid.Column="1" Margin="24,0,0,0" VerticalAlignment="Center">
-                                            <TextBlock FontFamily="{StaticResource FontHeading}" FontSize="33" FontWeight="Medium" Foreground="{StaticResource ColorText}" Text="{Binding Name}" />
-                                            <TextBlock FontFamily="{StaticResource FontBody}" FontSize="21" Foreground="{StaticResource ColorTextMuted55}" Text="{Binding Subtitle}" />
+                                            <TextBlock FontFamily="{StaticResource FontHeading}" FontSize="40" FontWeight="Medium" Foreground="{StaticResource ColorText}" Text="{Binding Name}" />
+                                            <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted55}" Text="{Binding Subtitle}" />
                                         </StackPanel>
-                                        <TextBlock Grid.Column="2" FontSize="28" Foreground="{StaticResource ColorAccent}" Text="→" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="2" FontSize="34" Foreground="{StaticResource ColorAccent}" Text="→" VerticalAlignment="Center" />
                                     </Grid>
                                 </Border>
                             </Button>

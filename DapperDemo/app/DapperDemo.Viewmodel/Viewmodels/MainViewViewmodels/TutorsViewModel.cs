@@ -52,7 +52,11 @@ public class TutorsViewModel : PresentationModelBase<Void, Void>
         foreach (var tutor in mockAppData.Tutors)
         {
             var dogCountLabel = tutor.DogIds.Count == 1 ? "1 cachorro" : $"{tutor.DogIds.Count} cachorros";
+            // CA2000: the row owns this command for the lifetime of this view-model; the list is
+            // built once from static mock data and never rebuilt, so there is nothing to release early.
+#pragma warning disable CA2000
             var openCommand = new SynchronizedCommand(() => Open(tutor.Id), SynchronizationBehavior.Discard, true);
+#pragma warning restore CA2000
             TutorsCollection.Add(new TutorRow(MockAppData.Initials(tutor.Name), tutor.Name, $"{tutor.Neighborhood} · {dogCountLabel}", openCommand));
         }
 

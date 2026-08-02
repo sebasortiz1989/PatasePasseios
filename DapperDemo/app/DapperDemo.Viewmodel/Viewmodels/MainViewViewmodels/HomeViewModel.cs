@@ -16,7 +16,11 @@ public enum HomeRangeFilter
     Todos
 }
 
-public class ServiceRow(string dayNum, string monthShort, string dogName, string typeLabel, string timeLabel, string priceLabel, bool paid, string paidLabel, ICommand openCommand, ICommand toggleCommand)
+/// <summary>
+/// One row of the agenda. Owns its two commands, so the list can dispose them when the
+/// filters rebuild it rather than leaking a pair per row on every filter change.
+/// </summary>
+public sealed class ServiceRow(string dayNum, string monthShort, string dogName, string typeLabel, string timeLabel, string priceLabel, bool paid, string paidLabel, ICommand openCommand, ICommand toggleCommand) : IDisposable
 {
     public string DayNum { get; } = dayNum;
 
@@ -37,6 +41,12 @@ public class ServiceRow(string dayNum, string monthShort, string dogName, string
     public ICommand OpenCommand { get; } = openCommand;
 
     public ICommand ToggleCommand { get; } = toggleCommand;
+
+    public void Dispose()
+    {
+        (OpenCommand as IDisposable)?.Dispose();
+        (ToggleCommand as IDisposable)?.Dispose();
+    }
 }
 
 [AddINotifyPropertyChangedInterface]
@@ -46,6 +56,7 @@ public class HomeViewModel : PresentationModelBase<Void, Void>
 
     private readonly NavigationController navigationController;
     private readonly MockAppData mockAppData;
+    private readonly EventHandler dataChangedHandler;
     private readonly Factory<PresenterBase<ServiceDetailViewModel, Void, Void>> serviceDetailFactory;
 
     public HomeViewModel(
@@ -56,7 +67,10 @@ public class HomeViewModel : PresentationModelBase<Void, Void>
         this.navigationController = navigationController;
         this.mockAppData = mockAppData;
         this.serviceDetailFactory = serviceDetailFactory;
-        mockAppData.DataChanged += Refresh;
+        // Marking a service paid from the detail screen must show up here on return, and this
+        // view-model outlives a single OnRunStarting (MainViewModel builds all five tabs once).
+        dataChangedHandler = (_, _) => Refresh();
+        mockAppData.DataChanged += dataChangedHandler;
 
         SetRangeHoje = new SynchronizedCommand(() => { HomeRange = HomeRangeFilter.Hoje; Refresh(); }, SynchronizationBehavior.Discard, true);
         SetRangeSemana = new SynchronizedCommand(() => { HomeRange = HomeRangeFilter.Semana; Refresh(); }, SynchronizationBehavior.Discard, true);
@@ -65,7 +79,6 @@ public class HomeViewModel : PresentationModelBase<Void, Void>
         SetTypeWalk = new SynchronizedCommand(() => { HomeType = ServiceKind.Walk; Refresh(); }, SynchronizationBehavior.Discard, true);
         SetTypeSitting = new SynchronizedCommand(() => { HomeType = ServiceKind.Sitting; Refresh(); }, SynchronizationBehavior.Discard, true);
         SetTypeHotel = new SynchronizedCommand(() => { HomeType = ServiceKind.Hotel; Refresh(); }, SynchronizationBehavior.Discard, true);
-        ToggleShowPaidCommand = new SynchronizedCommand(() => { HomeShowPaid = !HomeShowPaid; Refresh(); }, SynchronizationBehavior.Discard, true);
 
         TodayLabel = FormatToday();
         HomeRange = HomeRangeFilter.Semana;
@@ -86,15 +99,14 @@ public class HomeViewModel : PresentationModelBase<Void, Void>
 
     public ICommand SetTypeHotel { get; }
 
-    public ICommand ToggleShowPaidCommand { get; }
-
     public string TodayLabel { get; private set; }
 
     public HomeRangeFilter HomeRange { get; private set; }
 
     public ServiceKind? HomeType { get; private set; }
 
-    public bool HomeShowPaid { get; private set; }
+    /// <summary>Two-way bound to the "incluir pagos" checkbox; Fody calls OnHomeShowPaidChanged on every change.</summary>
+    public bool HomeShowPaid { get; set; }
 
     public bool IsRangeHoje => HomeRange == HomeRangeFilter.Hoje;
 
@@ -118,6 +130,21 @@ public class HomeViewModel : PresentationModelBase<Void, Void>
     {
         return Task.CompletedTask;
     }
+
+    protected override Task OnRunFinishing()
+    {
+        mockAppData.DataChanged -= dataChangedHandler;
+        foreach (var row in FilteredServices)
+        {
+            row.Dispose();
+        }
+
+        FilteredServices.Clear();
+        return Task.CompletedTask;
+    }
+
+    /// <summary>PropertyChanged.Fody convention hook — invoked whenever HomeShowPaid changes.</summary>
+    protected void OnHomeShowPaidChanged() => Refresh();
 
     private static string FormatToday()
     {
@@ -156,6 +183,11 @@ public class HomeViewModel : PresentationModelBase<Void, Void>
             return true;
         }).OrderBy(sv => sv.Date).ToList();
 
+        foreach (var stale in FilteredServices)
+        {
+            stale.Dispose();
+        }
+
         FilteredServices.Clear();
         foreach (var sv in filtered)
         {
@@ -163,15 +195,19 @@ public class HomeViewModel : PresentationModelBase<Void, Void>
             var priceLabel = sv.Kind == ServiceKind.Hotel
                 ? MockAppData.Money(sv.PricePerDay ?? 0) + " / dia"
                 : MockAppData.Money(sv.Price ?? 0);
+            // CA2000: ownership passes to the ServiceRow below, which disposes both commands
+            // when this list is rebuilt (see the Dispose loop above).
+#pragma warning disable CA2000
             var openCommand = new SynchronizedCommand(() => Open(sv.Id), SynchronizationBehavior.Discard, true);
             var toggleCommand = new SynchronizedCommand(() => mockAppData.TogglePaid(sv.Id), SynchronizationBehavior.Discard, true);
+#pragma warning restore CA2000
 
             FilteredServices.Add(new ServiceRow(
-                sv.Date.Day.ToString("00"),
+                sv.Date.Day.ToString("00", CultureInfo.InvariantCulture),
                 MonthsShort[sv.Date.Month - 1],
                 dog?.Name ?? string.Empty,
                 MockAppData.TypeLabel(sv.Kind),
-                sv.Date.ToString("HH:mm"),
+                sv.Date.ToString("HH:mm", CultureInfo.InvariantCulture),
                 priceLabel,
                 sv.Paid,
                 sv.Paid ? "Pago" : "Pendente",

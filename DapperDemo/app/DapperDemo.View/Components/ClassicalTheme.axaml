@@ -13,20 +13,20 @@
         720-wide canvas versus the design's 412-wide canvas).
     -->
     <Styles.Resources>
-        <SolidColorBrush x:Key="ColorBg" Color="#F3F2F2" />
-        <SolidColorBrush x:Key="ColorSurface" Color="#EAE9E9" />
-        <SolidColorBrush x:Key="ColorText" Color="#201F1D" />
-        <SolidColorBrush x:Key="ColorTextMuted45" Color="#73201F1D" />
-        <SolidColorBrush x:Key="ColorTextMuted50" Color="#80201F1D" />
-        <SolidColorBrush x:Key="ColorTextMuted55" Color="#8C201F1D" />
-        <SolidColorBrush x:Key="ColorTextMuted65" Color="#A6201F1D" />
-        <SolidColorBrush x:Key="ColorTextMuted70" Color="#B3201F1D" />
-        <SolidColorBrush x:Key="ColorTextMuted75" Color="#BF201F1D" />
-        <SolidColorBrush x:Key="ColorDivider" Color="#29201F1D" />
-        <SolidColorBrush x:Key="ColorAccent" Color="#B68235" />
-        <SolidColorBrush x:Key="ColorAccentDark700" Color="#7D5411" />
-        <SolidColorBrush x:Key="ColorAccentDark800" Color="#5A3B0A" />
-        <SolidColorBrush x:Key="ColorAccentTint12" Color="#1FB68235" />
+        <SolidColorBrush Color="#F3F2F2" x:Key="ColorBg" />
+        <SolidColorBrush Color="#EAE9E9" x:Key="ColorSurface" />
+        <SolidColorBrush Color="#201F1D" x:Key="ColorText" />
+        <SolidColorBrush Color="#73201F1D" x:Key="ColorTextMuted45" />
+        <SolidColorBrush Color="#80201F1D" x:Key="ColorTextMuted50" />
+        <SolidColorBrush Color="#8C201F1D" x:Key="ColorTextMuted55" />
+        <SolidColorBrush Color="#A6201F1D" x:Key="ColorTextMuted65" />
+        <SolidColorBrush Color="#B3201F1D" x:Key="ColorTextMuted70" />
+        <SolidColorBrush Color="#BF201F1D" x:Key="ColorTextMuted75" />
+        <SolidColorBrush Color="#29201F1D" x:Key="ColorDivider" />
+        <SolidColorBrush Color="#B68235" x:Key="ColorAccent" />
+        <SolidColorBrush Color="#7D5411" x:Key="ColorAccentDark700" />
+        <SolidColorBrush Color="#5A3B0A" x:Key="ColorAccentDark800" />
+        <SolidColorBrush Color="#1FB68235" x:Key="ColorAccentTint12" />
 
         <FontFamily x:Key="FontHeading">Times New Roman,Georgia,serif</FontFamily>
         <FontFamily x:Key="FontBody">Georgia,Times New Roman,serif</FontFamily>
@@ -42,21 +42,21 @@
     <Style Selector="TextBlock.Heading1">
         <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
         <Setter Property="FontWeight" Value="Normal" />
-        <Setter Property="FontSize" Value="52" />
+        <Setter Property="FontSize" Value="62" />
         <Setter Property="Foreground" Value="{StaticResource ColorText}" />
-        <Setter Property="LineHeight" Value="56" />
+        <Setter Property="LineHeight" Value="68" />
     </Style>
 
     <Style Selector="TextBlock.CardTitle">
         <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
         <Setter Property="FontWeight" Value="Medium" />
-        <Setter Property="FontSize" Value="33" />
+        <Setter Property="FontSize" Value="40" />
         <Setter Property="Foreground" Value="{StaticResource ColorText}" />
     </Style>
 
     <Style Selector="TextBlock.Kicker">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="FontSize" Value="19" />
+        <Setter Property="FontSize" Value="23" />
         <Setter Property="LetterSpacing" Value="2" />
         <Setter Property="Foreground" Value="{StaticResource ColorTextMuted50}" />
     </Style>
@@ -65,7 +65,7 @@
     <Style Selector="buttons|VButton.BtnPrimary">
         <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
         <Setter Property="VFontWeight" Value="600" />
-        <Setter Property="VFontSize" Value="24" />
+        <Setter Property="VFontSize" Value="29" />
         <Setter Property="VBorderThickness" Value="2" />
         <Setter Property="VCornerRadius" Value="7" />
         <Setter Property="VNormalBackground" Value="Transparent" />
@@ -81,7 +81,7 @@
     <Style Selector="buttons|VButton.BtnSecondary">
         <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
         <Setter Property="VFontWeight" Value="600" />
-        <Setter Property="VFontSize" Value="24" />
+        <Setter Property="VFontSize" Value="29" />
         <Setter Property="VBorderThickness" Value="2" />
         <Setter Property="VCornerRadius" Value="7" />
         <Setter Property="VNormalBackground" Value="Transparent" />
@@ -97,7 +97,7 @@
     <Style Selector="buttons|VButton.BtnGhost">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
         <Setter Property="VFontWeight" Value="Normal" />
-        <Setter Property="VFontSize" Value="22" />
+        <Setter Property="VFontSize" Value="26" />
         <Setter Property="VBorderThickness" Value="0" />
         <Setter Property="VCornerRadius" Value="7" />
         <Setter Property="VNormalBackground" Value="Transparent" />
@@ -127,7 +127,7 @@
     -->
     <Style Selector="Button.Tag">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="FontSize" Value="19" />
+        <Setter Property="FontSize" Value="23" />
         <Setter Property="Padding" Value="17,5" />
         <Setter Property="CornerRadius" Value="3" />
         <Setter Property="BorderThickness" Value="2" />
@@ -145,7 +145,7 @@
 
     <Style Selector="Button.Chip">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="FontSize" Value="21" />
+        <Setter Property="FontSize" Value="25" />
         <Setter Property="Padding" Value="21,9" />
         <Setter Property="CornerRadius" Value="7" />
         <Setter Property="BorderThickness" Value="2" />
@@ -162,7 +162,7 @@
 
     <Style Selector="Button.SegOption">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="FontSize" Value="23" />
+        <Setter Property="FontSize" Value="28" />
         <Setter Property="Padding" Value="21,12" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{StaticResource ColorTextMuted65}" />
@@ -187,18 +187,26 @@
         <Setter Property="Background" Value="{StaticResource ColorSurface}" />
     </Style>
 
+    <!--  Inline form feedback — success in the accent, errors in the deepest accent step  -->
+    <Style Selector="TextBlock.FormMsg">
+        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark700}" />
+    </Style>
+    <Style Selector="TextBlock.FormMsg.Error">
+        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+    </Style>
+
     <!--  Form fields  -->
     <Style Selector="inputs|VTextBoxWithLabel.ClassicInput">
         <Setter Property="VBorderBrush" Value="{StaticResource ColorDivider}" />
         <Setter Property="VBorderBrushFocus" Value="{StaticResource ColorAccent}" />
-        <Setter Property="VContentFontSize" Value="26" />
+        <Setter Property="VContentFontSize" Value="31" />
         <Setter Property="VCornerRadius" Value="7" />
-        <Setter Property="VDescriptionFontSize" Value="21" />
+        <Setter Property="VDescriptionFontSize" Value="25" />
         <Setter Property="VDescriptionForeground" Value="{StaticResource ColorTextMuted70}" />
         <Setter Property="VDescriptionBackground" Value="{StaticResource ColorBg}" />
         <Setter Property="VTextForeground" Value="{StaticResource ColorText}" />
         <Setter Property="VTextForegroundFocus" Value="{StaticResource ColorText}" />
-        <Setter Property="VTextFontSize" Value="26" />
+        <Setter Property="VTextFontSize" Value="31" />
         <Setter Property="VCaretBrush" Value="{StaticResource ColorAccent}" />
         <Setter Property="VCaretBrushFocus" Value="{StaticResource ColorAccent}" />
     </Style>

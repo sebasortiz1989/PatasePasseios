@@ -50,7 +50,7 @@
         <Grid Background="{StaticResource ColorBg}" Height="1560" Width="720">
             <StackPanel HorizontalAlignment="Center" Spacing="24" VerticalAlignment="Center" Width="560">
                 <StackPanel HorizontalAlignment="Center" Margin="0,0,0,8" Spacing="8">
-                    <TextBlock Classes="Heading1" FontSize="56" HorizontalAlignment="Center" Text="Cadastro" />
+                    <TextBlock Classes="Heading1" FontSize="67" HorizontalAlignment="Center" Text="Cadastro" />
                     <Border Background="{StaticResource ColorAccent}" Height="2" HorizontalAlignment="Center" Margin="0,8,0,0" Width="63" />
                 </StackPanel>
 
@@ -87,7 +87,7 @@
                         CornerRadius="7"
                         DisplayDateStart="{Binding MinimumDate}"
                         FontFamily="{StaticResource FontBody}"
-                        FontSize="26"
+                        FontSize="31"
                         Foreground="{StaticResource ColorText}"
                         Height="77"
                         HorizontalAlignment="Stretch"
@@ -99,7 +99,7 @@
                         <TextBlock
                             Background="Transparent"
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="21"
+                            FontSize="25"
                             Foreground="{StaticResource ColorTextMuted70}"
                             Margin="3,0,3,0"
                             Text="Data de nascimento" />
@@ -108,7 +108,7 @@
 
                 <TextBlock
                     FontFamily="{StaticResource FontBody}"
-                    FontSize="23"
+                    FontSize="28"
                     FontStyle="Italic"
                     Foreground="{StaticResource ColorAccentDark800}"
                     HorizontalAlignment="Center"

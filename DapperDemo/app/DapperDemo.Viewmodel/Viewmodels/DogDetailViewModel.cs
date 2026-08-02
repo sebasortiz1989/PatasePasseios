@@ -54,7 +54,7 @@ public class DogDetailViewModel : PresentationModelBase<Void, Void>
         var future = mockAppData.Services
             .Where(s => s.DogId == dog.Id && s.Date >= now)
             .OrderBy(s => s.Date)
-            .Select(s => new FutureServiceRow(MockAppData.TypeLabel(s.Kind), s.Date.ToString("dd/MM/yyyy, HH:mm")))
+            .Select(s => new FutureServiceRow(MockAppData.TypeLabel(s.Kind), MockAppData.DateTimeLabel(s.Date)))
             .ToList();
 
         FutureServices.Clear();

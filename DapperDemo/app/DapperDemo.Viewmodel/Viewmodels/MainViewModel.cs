@@ -10,7 +10,8 @@ namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels;
 [AddINotifyPropertyChangedInterface]
 public class MainViewModel : PresentationModelBase<Void, Void>
 {
-    private readonly NavigationController navigationController;
+    private readonly MockAppData mockAppData;
+    private readonly EventHandler logoutHandler;
     private readonly PresenterBase<DogsViewModel, Void, Void> dogsView;
     private readonly PresenterBase<TutorsViewModel, Void, Void> tutorsView;
     private readonly PresenterBase<HomeViewModel, Void, Void> homeView;
@@ -27,7 +28,13 @@ public class MainViewModel : PresentationModelBase<Void, Void>
         Factory<PresenterBase<UsersViewModel, Void, Void>> usersViewFactory)
     {
         BackCommand = new SynchronizedCommand(() => navigationController.PopAsync(this), SynchronizationBehavior.Discard, true);
-        mockAppData.LogoutRequested += () => BackCommand.Execute(null);
+
+        // The Perfil tab has no handle on this screen's navigation entry, so it raises a logout
+        // request on the shared data instead. Unsubscribed in OnRunFinishing so repeated
+        // login/logout cycles don't leave earlier MainViewModels listening on the singleton.
+        this.mockAppData = mockAppData;
+        logoutHandler = (_, _) => BackCommand.Execute(null);
+        mockAppData.LogoutRequested += logoutHandler;
         dogsView = dogsViewFactory.Create();
         tutorsView = tutorsViewFactory.Create();
         homeView = homeViewFactory.Create();
@@ -57,6 +64,12 @@ public class MainViewModel : PresentationModelBase<Void, Void>
     protected override Task OnRunStarting(Void input)
     {
         HomeViewCommand.Execute(null);
+        return Task.CompletedTask;
+    }
+
+    protected override Task OnRunFinishing()
+    {
+        mockAppData.LogoutRequested -= logoutHandler;
         return Task.CompletedTask;
     }
 }

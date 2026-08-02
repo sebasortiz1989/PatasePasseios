@@ -8,6 +8,16 @@ A learning project for Dapper: a cross-platform Avalonia app for a pet-sitting b
 
 Everything lives under the `DapperDemo/` subdirectory (solution root). All commands below assume you are in `DapperDemo/`.
 
+## Avalonia docs connector
+
+An Avalonia MCP connector is configured for this repo. Before writing or editing any `.axaml`, custom control, style selector, or binding, call `get_avalonia_expert_rules` once per session, then `search_avalonia_docs` for the specific topic. Prefer it over recalling Avalonia from memory — this project is on Avalonia **12.1.1**, so verify anything version-sensitive rather than assuming 11.x behaviour.
+
+Limits worth knowing:
+
+- `lookup_avalonia_api` has gaps (e.g. no entry for `InputPane`, which `UserControlMobile` relies on). `search_avalonia_docs` is the more reliable of the two.
+- It covers stock Avalonia only. `Verion.Apresentacao.Avalonia` types (`VTextBoxWithLabel`, `PresenterBase`, `NavigationController`, `SynchronizedCommand`) are absent — read existing code or the package itself for those.
+- The migration tools (`analyze_wpf_project`, `migrate_to_avalonia`, `migrate_to_xpf`, `lookup_wpf_to_avalonia_mapping`) are for WPF ports and are not relevant here.
+
 ## Commands
 
 ```bash

@@ -1,3 +1,6 @@
+using System.Collections.ObjectModel;
+using System.Globalization;
+
 namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Mock;
 
 /// <summary>
@@ -44,11 +47,11 @@ public class MockAppData
         nextServiceId = Services.Max(s => s.Id) + 1;
     }
 
-    public List<MockTutor> Tutors { get; }
+    public Collection<MockTutor> Tutors { get; }
 
-    public List<MockDog> Dogs { get; }
+    public Collection<MockDog> Dogs { get; }
 
-    public List<MockService> Services { get; }
+    public Collection<MockService> Services { get; }
 
     public string CurrentUserName { get; set; } = "Ana Ferreira";
 
@@ -58,9 +61,9 @@ public class MockAppData
 
     public int? SelectedServiceId { get; set; }
 
-    public event Action? DataChanged;
+    public event EventHandler? DataChanged;
 
-    public event Action? LogoutRequested;
+    public event EventHandler? LogoutRequested;
 
     public MockDog? DogById(int id) => Dogs.FirstOrDefault(d => d.Id == id);
 
@@ -85,7 +88,11 @@ public class MockAppData
         _ => string.Empty
     };
 
-    public static string Money(decimal value) => "R$ " + value.ToString("F2").Replace('.', ',');
+    /// <summary>Brazilian currency shape (R$ 0,00), independent of the host machine's locale.</summary>
+    public static string Money(decimal value) => "R$ " + value.ToString("F2", CultureInfo.InvariantCulture).Replace('.', ',');
+
+    /// <summary>Date shape used across the app's detail screens (dd/MM/yyyy, HH:mm).</summary>
+    public static string DateTimeLabel(DateTime value) => value.ToString("dd/MM/yyyy, HH:mm", CultureInfo.InvariantCulture);
 
     public void TogglePaid(int serviceId)
     {
@@ -96,26 +103,26 @@ public class MockAppData
         }
 
         service.Paid = !service.Paid;
-        DataChanged?.Invoke();
+        DataChanged?.Invoke(this, EventArgs.Empty);
     }
 
     public void AddService(MockService service)
     {
         Services.Add(service with { Id = nextServiceId++ });
-        DataChanged?.Invoke();
+        DataChanged?.Invoke(this, EventArgs.Empty);
     }
 
     public void ChangePassword(string newPassword)
     {
         // Front-end only for now: nothing to persist against yet, this just completes the round-trip.
-        DataChanged?.Invoke();
+        DataChanged?.Invoke(this, EventArgs.Empty);
     }
 
     public void SetCurrentUserName(string name)
     {
         CurrentUserName = name;
-        DataChanged?.Invoke();
+        DataChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    public void RequestLogout() => LogoutRequested?.Invoke();
+    public void RequestLogout() => LogoutRequested?.Invoke(this, EventArgs.Empty);
 }

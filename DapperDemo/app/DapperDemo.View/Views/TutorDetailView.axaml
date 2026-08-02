@@ -33,7 +33,7 @@
                             Width="168">
                             <TextBlock
                                 FontFamily="{StaticResource FontHeading}"
-                                FontSize="59"
+                                FontSize="71"
                                 Foreground="{StaticResource ColorTextMuted70}"
                                 HorizontalAlignment="Center"
                                 Text="{Binding Initials}"
@@ -41,7 +41,7 @@
                         </Border>
                         <TextBlock
                             Classes="Heading1"
-                            FontSize="56"
+                            FontSize="67"
                             HorizontalAlignment="Center"
                             Text="{Binding Name}" />
                         <TextBlock
@@ -54,14 +54,14 @@
                         <Border BorderThickness="0,2,0,0" BorderBrush="{StaticResource ColorDivider}" Padding="0,20,0,0">
                             <StackPanel Spacing="6">
                                 <TextBlock Classes="Kicker" Text="Telefone" />
-                                <TextBlock FontFamily="{StaticResource FontBody}" FontSize="26" Foreground="{StaticResource ColorText}" Text="{Binding Phone}" />
+                                <TextBlock FontFamily="{StaticResource FontBody}" FontSize="31" Foreground="{StaticResource ColorText}" Text="{Binding Phone}" />
                             </StackPanel>
                         </Border>
 
                         <Border BorderThickness="0,2,0,0" BorderBrush="{StaticResource ColorDivider}" Padding="0,20,0,0">
                             <StackPanel Spacing="6">
                                 <TextBlock Classes="Kicker" Text="Cachorros" />
-                                <TextBlock FontFamily="{StaticResource FontBody}" FontSize="26" Foreground="{StaticResource ColorText}" Text="{Binding DogNames}" />
+                                <TextBlock FontFamily="{StaticResource FontBody}" FontSize="31" Foreground="{StaticResource ColorText}" Text="{Binding DogNames}" />
                             </StackPanel>
                         </Border>
 
@@ -70,7 +70,7 @@
                                 <TextBlock Classes="Kicker" Text="Próximos serviços" />
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="24"
+                                    FontSize="29"
                                     FontStyle="Italic"
                                     Foreground="{StaticResource ColorTextMuted45}"
                                     IsVisible="{Binding NoFuture}"
@@ -80,7 +80,7 @@
                                         <DataTemplate DataType="viewmodels:TutorFutureServiceRow">
                                             <Border BorderThickness="0,0,0,2" BorderBrush="{StaticResource ColorDivider}" Margin="0,0,0,12" Padding="0,0,0,12">
                                                 <Grid ColumnDefinitions="*,Auto">
-                                                    <TextBlock FontFamily="{StaticResource FontBody}" FontSize="24" Foreground="{StaticResource ColorText}">
+                                                    <TextBlock FontFamily="{StaticResource FontBody}" FontSize="29" Foreground="{StaticResource ColorText}">
                                                         <Run Text="{Binding DogName}" />
                                                         <Run Text=" · " />
                                                         <Run Text="{Binding TypeLabel}" />
@@ -88,7 +88,7 @@
                                                     <TextBlock
                                                         Grid.Column="1"
                                                         FontFamily="{StaticResource FontBody}"
-                                                        FontSize="22"
+                                                        FontSize="26"
                                                         Foreground="{StaticResource ColorTextMuted55}"
                                                         Text="{Binding DateLabel}" />
                                                 </Grid>

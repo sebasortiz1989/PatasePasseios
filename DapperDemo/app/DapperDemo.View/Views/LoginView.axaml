@@ -13,12 +13,37 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Viewbox>
-        <Grid Background="{StaticResource ColorBg}" Height="1560" Width="720">
-            <StackPanel HorizontalAlignment="Center" Spacing="32" VerticalAlignment="Center" Width="560">
-                <StackPanel HorizontalAlignment="Center" Margin="0,0,0,8" Spacing="8">
-                    <TextBlock Classes="Heading1" FontSize="66" FontWeight="Normal" HorizontalAlignment="Center" Text="Patas &amp; Passeios" />
-                    <Border Background="{StaticResource ColorAccent}" Height="2" HorizontalAlignment="Center" Margin="0,8,0,0" Width="77" />
-                    <TextBlock Classes="Kicker" HorizontalAlignment="Center" Margin="0,8,0,0" Text="Serviços para cães" />
+        <Grid
+            Background="{StaticResource ColorBg}"
+            Height="1560"
+            Width="720">
+            <StackPanel
+                HorizontalAlignment="Center"
+                Spacing="32"
+                VerticalAlignment="Center"
+                Width="560">
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    Margin="0,0,0,8"
+                    Spacing="8">
+                    <TextBlock
+                        Classes="Heading1"
+                        FontSize="79"
+                        FontWeight="Normal"
+                        Height="100"
+                        HorizontalAlignment="Center"
+                        Text="Patas &amp; Passeios" />
+                    <Border
+                        Background="{StaticResource ColorAccent}"
+                        Height="2"
+                        HorizontalAlignment="Center"
+                        Margin="0,8,0,0"
+                        Width="77" />
+                    <TextBlock
+                        Classes="Kicker"
+                        HorizontalAlignment="Center"
+                        Margin="0,8,0,0"
+                        Text="Serviços para cães" />
                 </StackPanel>
 
                 <inputs:VTextBoxWithLabel
@@ -38,11 +63,16 @@
                     VTextWatermark="••••••••"
                     VWidth="560" />
 
-                <CheckBox Content="Entrar automaticamente" FontFamily="{StaticResource FontBody}" FontSize="23" Foreground="{StaticResource ColorTextMuted70}" IsChecked="{Binding RememberMe}" />
+                <CheckBox
+                    Content="Entrar automaticamente"
+                    FontFamily="{StaticResource FontBody}"
+                    FontSize="28"
+                    Foreground="{StaticResource ColorTextMuted70}"
+                    IsChecked="{Binding RememberMe}" />
 
                 <TextBlock
                     FontFamily="{StaticResource FontBody}"
-                    FontSize="23"
+                    FontSize="28"
                     FontStyle="Italic"
                     Foreground="{StaticResource ColorAccentDark800}"
                     HorizontalAlignment="Center"
@@ -50,8 +80,18 @@
                     Text="{Binding LoginError}"
                     TextAlignment="Center" />
 
-                <buttons:VButton Classes="BtnPrimary" Command="{Binding LoginCommand}" Height="80" VText="Entrar" Width="560" />
-                <buttons:VButton Classes="BtnGhost" Command="{Binding SignUpCommand}" Height="70" VText="Criar uma conta" Width="560" />
+                <buttons:VButton
+                    Classes="BtnPrimary"
+                    Command="{Binding LoginCommand}"
+                    Height="80"
+                    VText="Entrar"
+                    Width="560" />
+                <buttons:VButton
+                    Classes="BtnGhost"
+                    Command="{Binding SignUpCommand}"
+                    Height="70"
+                    VText="Criar uma conta"
+                    Width="560" />
             </StackPanel>
         </Grid>
     </Viewbox>

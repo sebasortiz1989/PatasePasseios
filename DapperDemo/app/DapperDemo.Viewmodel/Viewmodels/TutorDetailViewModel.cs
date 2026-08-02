@@ -54,7 +54,7 @@ public class TutorDetailViewModel : PresentationModelBase<Void, Void>
         var future = mockAppData.Services
             .Where(s => tutor.DogIds.Contains(s.DogId) && s.Date >= now)
             .OrderBy(s => s.Date)
-            .Select(s => new TutorFutureServiceRow(mockAppData.DogById(s.DogId)?.Name ?? string.Empty, MockAppData.TypeLabel(s.Kind), s.Date.ToString("dd/MM/yyyy, HH:mm")))
+            .Select(s => new TutorFutureServiceRow(mockAppData.DogById(s.DogId)?.Name ?? string.Empty, MockAppData.TypeLabel(s.Kind), MockAppData.DateTimeLabel(s.Date)))
             .ToList();
 
         FutureServices.Clear();

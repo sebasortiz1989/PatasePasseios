@@ -18,6 +18,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".root", ".root", "{1AD6F0B4-B6DE-43AD-907E-F153D3A22471}"
 	ProjectSection(SolutionItems) = preProject
 		Directory.Packages.props = Directory.Packages.props
+		..\CLAUDE.md = ..\CLAUDE.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DapperDemo.Viewmodel", "app\DapperDemo.Viewmodel\DapperDemo.Viewmodel.csproj", "{84D8633E-53D0-4B72-A0A8-017C844FD3EF}"

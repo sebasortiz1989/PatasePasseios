@@ -13,7 +13,7 @@
 
     <Viewbox>
         <Grid
-            Background="#FDFBF7"
+            Background="{StaticResource ColorBg}"
             RowDefinitions="1460, 100"
             Width="720">
 
@@ -23,19 +23,11 @@
                 </TransitioningContentControl.PageTransition>
             </TransitioningContentControl>
 
-            <buttons:VButton
-                Classes="DapperButton"
-                Command="{Binding BackCommand}"
-                Grid.Row="0"
-                HorizontalAlignment="Left"
-                Margin="50"
-                VText="Voltar"
-                VerticalAlignment="Top" />
-
             <!--  Bottom navigation bar  -->
             <Border
-                BorderBrush="Black"
-                BorderThickness="0,3,0,0"
+                Background="{StaticResource ColorBg}"
+                BorderBrush="{StaticResource ColorDivider}"
+                BorderThickness="0,2,0,0"
                 Grid.Row="1">
                 <StackPanel
                     HorizontalAlignment="Center"
@@ -50,8 +42,8 @@
                         VCheckedBackground="Transparent"
                         VCheckedImageOne="../Assets/DogIconSelected.png"
                         VCornerRadius="0"
-                        VImageOneHeight="80"
-                        VImageOneWidth="80"
+                        VImageOneHeight="64"
+                        VImageOneWidth="64"
                         VNormalBackground="Transparent"
                         VNormalImageOne="../Assets/DogIconUnselected.png"
                         VPointeroverBackgroundColor="Transparent"
@@ -65,8 +57,8 @@
                         VCheckedBackground="Transparent"
                         VCheckedImageOne="../Assets/TutorIconSelected.png"
                         VCornerRadius="0"
-                        VImageOneHeight="80"
-                        VImageOneWidth="80"
+                        VImageOneHeight="64"
+                        VImageOneWidth="64"
                         VNormalBackground="Transparent"
                         VNormalImageOne="../Assets/TutorIconUnselected.png"
                         VPointeroverBackgroundColor="Transparent"
@@ -81,8 +73,8 @@
                         VCheckedBackground="Transparent"
                         VCheckedImageOne="../Assets/HomeIconSelected.png"
                         VCornerRadius="0"
-                        VImageOneHeight="80"
-                        VImageOneWidth="80"
+                        VImageOneHeight="64"
+                        VImageOneWidth="64"
                         VNormalBackground="Transparent"
                         VNormalImageOne="../Assets/HomeIconUnselected.png"
                         VPointeroverBackgroundColor="Transparent"
@@ -96,8 +88,8 @@
                         VCheckedBackground="Transparent"
                         VCheckedImageOne="../Assets/ServiceIconSelected.png"
                         VCornerRadius="0"
-                        VImageOneHeight="80"
-                        VImageOneWidth="80"
+                        VImageOneHeight="64"
+                        VImageOneWidth="64"
                         VNormalBackground="Transparent"
                         VNormalImageOne="../Assets/ServiceIconUnselected.png"
                         VPointeroverBackgroundColor="Transparent"
@@ -111,8 +103,8 @@
                         VCheckedBackground="Transparent"
                         VCheckedImageOne="../Assets/UserIconSelected.png"
                         VCornerRadius="0"
-                        VImageOneHeight="80"
-                        VImageOneWidth="80"
+                        VImageOneHeight="64"
+                        VImageOneWidth="64"
                         VNormalBackground="Transparent"
                         VNormalImageOne="../Assets/UserIconUnselected.png"
                         VPointeroverBackgroundColor="Transparent"
