@@ -1,0 +1,3 @@
+[submodule "external/AvaloniaFramework"]
+	path = external/AvaloniaFramework
+	url = git@github.com:sebasortiz1989/AvaloniaFramework.git

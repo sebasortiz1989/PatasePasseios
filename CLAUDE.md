@@ -40,13 +40,21 @@ dotnet run --project app/DapperDemo.MacOS/DapperDemo.MacOS.csproj
 
 ## AvaloniaFramework dependency
 
-The MVP, navigation, DI, and custom-control infrastructure comes from the `AvaloniaFramework` NuGet package, built from the sibling repo at `../../AvaloniaFramework`. Until it is published to nuget.org, `NuGet.Config` restores it from that repo's pack output, so **a framework change only reaches this app after rebuilding the framework**:
+The MVP, navigation, DI, and custom-control infrastructure comes from **AvaloniaFramework**, which is vendored as a **git submodule** at `external/AvaloniaFramework` (repo root, one level above the solution) and consumed by `ProjectReference` — not as a NuGet package. It is also listed in `DapperDemo.sln`, which restore requires.
+
+Cloning therefore needs the submodule:
 
 ```bash
-dotnet build ../../AvaloniaFramework/AvaloniaFramework.slnx
+git clone --recursive git@github.com:sebasortiz1989/DapperDemo.git
 ```
 
-If a restore picks up a stale copy, clear it with `rm -rf ~/.nuget/packages/avaloniaframework`.
+If a clone was made without `--recursive`, the build fails with `NU1105`. Fix it with:
+
+```bash
+git submodule update --init --recursive
+```
+
+Because it is a project reference, **editing framework source takes effect on the next `dotnet build` — there is no pack or restore step**. The trade-off is that the submodule pins a specific framework commit: after committing framework changes in `external/AvaloniaFramework`, push them, then stage the moved pointer from the DapperDemo repo root (`git add external/AvaloniaFramework`) or other machines will still get the old commit.
 
 `DapperDemo.Viewmodel` and `DapperDemo.View` declare `AvaloniaFramework` and `AvaloniaFramework.DependencyInjection` as global usings (`<Using Include=... />`), which is why `Unit`, `Factory<T>`, and `Container` resolve without a per-file using. The data layer (`Mensagens.Dapper`) deliberately does **not** reference the framework — keep it free of UI dependencies, and use `ConfigureAwait` there rather than the framework's `WithSync()`/`NoSync()` helpers.
 

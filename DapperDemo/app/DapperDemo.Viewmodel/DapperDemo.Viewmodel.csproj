@@ -16,7 +16,10 @@
 
     <ItemGroup>
         <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" PrivateAssets="All" />
-        <PackageReference Include="AvaloniaFramework" Version="1.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\external\AvaloniaFramework\AvaloniaFramework\AvaloniaFramework.csproj" />
     </ItemGroup>
 
     <ItemGroup>
