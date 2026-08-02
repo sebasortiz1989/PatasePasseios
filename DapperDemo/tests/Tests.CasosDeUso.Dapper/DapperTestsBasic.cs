@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Dapper;
 using Microsoft.Data.Sqlite;
-using Dapper;
+using System.ComponentModel.DataAnnotations.Schema;
 using Xunit;
 
 namespace Tests.CasosDeUso.Dapper;

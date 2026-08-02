@@ -1,5 +1,5 @@
-using System.Globalization;
 using DapperDemo.Repository.Dapper.Dtos;
+using System.Globalization;
 
 namespace DapperDemo.Viewmodel.Viewmodels.Session;
 
