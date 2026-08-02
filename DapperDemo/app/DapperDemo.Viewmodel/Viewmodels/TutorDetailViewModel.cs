@@ -65,7 +65,13 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
 
     public ObservableCollection<TutorFutureServiceRow> FutureServices { get; } = [];
 
-    protected override async Task OnRunStarting(Unit input)
+    protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
+
+    /// <summary>
+    /// Public because the View calls it from OnLoaded — see <see cref="DogDetailViewModel"/> for
+    /// why OnRunStarting is not enough for a screen shown through CurrentView.
+    /// </summary>
+    public async Task ReloadAsync()
     {
         if (session.SelectedTutorId is not int tutorId)
         {

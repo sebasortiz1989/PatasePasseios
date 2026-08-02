@@ -64,7 +64,15 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
 
     public ObservableCollection<FutureServiceRow> FutureServices { get; } = [];
 
-    protected override async Task OnRunStarting(Unit input)
+    protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
+
+    /// <summary>
+    /// Public because the View calls it from OnLoaded: this screen is shown by assigning
+    /// CurrentView.ViewShown rather than by pushing it, so it is never RunAsync'd and
+    /// OnRunStarting never fires. OnLoaded also re-runs each time the screen is reopened,
+    /// which is what picks up a newly selected dog on the reused presenter instance.
+    /// </summary>
+    public async Task ReloadAsync()
     {
         if (session.SelectedDogId is not int dogId)
         {

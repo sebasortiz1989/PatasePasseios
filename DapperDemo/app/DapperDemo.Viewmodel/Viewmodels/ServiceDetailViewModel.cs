@@ -66,7 +66,13 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
 
     public string PaidActionLabel { get; private set; } = string.Empty;
 
-    protected override async Task OnRunStarting(Unit input) => await LoadAsync().WithSync();
+    protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
+
+    /// <summary>
+    /// Public because the View calls it from OnLoaded — see <see cref="DogDetailViewModel"/> for
+    /// why OnRunStarting is not enough for a screen shown through CurrentView.
+    /// </summary>
+    public Task ReloadAsync() => LoadAsync();
 
     private async Task TogglePaid()
     {
