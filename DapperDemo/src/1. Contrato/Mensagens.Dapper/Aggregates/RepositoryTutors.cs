@@ -1,9 +1,9 @@
 using Dapper;
 using Microsoft.Data.Sqlite;
-using Verion.Treinamento.Mensagens.Dapper.Dtos;
-using Verion.Treinamento.Mensagens.Dapper.Services;
+using DapperDemo.Mensagens.Dapper.Dtos;
+using DapperDemo.Mensagens.Dapper.Services;
 
-namespace Verion.Treinamento.Mensagens.Dapper.Aggregates;
+namespace DapperDemo.Mensagens.Dapper.Aggregates;
 
 /// <summary>
 /// Tutors always belong to the pet sitter who created them (via the PetSitterTutors join table),
@@ -21,8 +21,8 @@ public sealed class RepositoryTutors(DapperDatabaseService dapperDatabaseService
         try
         {
             using var connection = DapperDatabaseService.Connection;
-            await connection.OpenAsync().NoSync();
-            using var transaction = await connection.BeginTransactionAsync().NoSync();
+            await connection.OpenAsync().ConfigureAwait(false);
+            using var transaction = await connection.BeginTransactionAsync().ConfigureAwait(false);
 
             var tutorId = await connection.ExecuteScalarAsync<int>(
                 sql: """
@@ -30,14 +30,14 @@ public sealed class RepositoryTutors(DapperDatabaseService dapperDatabaseService
                      SELECT last_insert_rowid();
                      """,
                 param: new { tutor.Name, tutor.Telephone, tutor.Address },
-                transaction: transaction).NoSync();
+                transaction: transaction).ConfigureAwait(false);
 
             await connection.ExecuteAsync(
                 sql: "INSERT INTO PetSitterTutors (PetSitterId, TutorId) VALUES (@PetSitterId, @TutorId)",
                 param: new { PetSitterId = petSitterId, TutorId = tutorId },
-                transaction: transaction).NoSync();
+                transaction: transaction).ConfigureAwait(false);
 
-            await transaction.CommitAsync().NoSync();
+            await transaction.CommitAsync().ConfigureAwait(false);
             return Response.Successful;
         }
         catch (SqliteException e)
@@ -51,7 +51,7 @@ public sealed class RepositoryTutors(DapperDatabaseService dapperDatabaseService
     public async Task<Tutors[]> ListForPetSitterAsync(int petSitterId)
     {
         using var connection = DapperDatabaseService.Connection;
-        await connection.OpenAsync().NoSync();
+        await connection.OpenAsync().ConfigureAwait(false);
         var tutors = await connection.QueryAsync<Tutors>(
             sql: """
                  SELECT t.TutorId, t.Name, t.Telephone, t.Address
@@ -60,7 +60,7 @@ public sealed class RepositoryTutors(DapperDatabaseService dapperDatabaseService
                  WHERE pst.PetSitterId = @PetSitterId
                  ORDER BY t.Name
                  """,
-            param: new { PetSitterId = petSitterId }).NoSync();
+            param: new { PetSitterId = petSitterId }).ConfigureAwait(false);
 
         return [.. tutors];
     }
@@ -68,10 +68,10 @@ public sealed class RepositoryTutors(DapperDatabaseService dapperDatabaseService
     public async Task<Tutors?> GetAsync(int tutorId)
     {
         using var connection = DapperDatabaseService.Connection;
-        await connection.OpenAsync().NoSync();
+        await connection.OpenAsync().ConfigureAwait(false);
         return await connection.QueryFirstOrDefaultAsync<Tutors>(
             sql: "SELECT TutorId, Name, Telephone, Address FROM Tutors WHERE TutorId = @TutorId",
-            param: new { TutorId = tutorId }).NoSync();
+            param: new { TutorId = tutorId }).ConfigureAwait(false);
     }
 
     public override Task<Response> Add(Tutors entity) =>
@@ -86,8 +86,8 @@ public sealed class RepositoryTutors(DapperDatabaseService dapperDatabaseService
         try
         {
             using var connection = DapperDatabaseService.Connection;
-            await connection.OpenAsync().NoSync();
-            using var transaction = await connection.BeginTransactionAsync().NoSync();
+            await connection.OpenAsync().ConfigureAwait(false);
+            using var transaction = await connection.BeginTransactionAsync().ConfigureAwait(false);
 
             await connection.ExecuteAsync(
                 sql: """
@@ -99,9 +99,9 @@ public sealed class RepositoryTutors(DapperDatabaseService dapperDatabaseService
                      DELETE FROM Tutors WHERE TutorId = @TutorId;
                      """,
                 param: new { TutorId = entityId },
-                transaction: transaction).NoSync();
+                transaction: transaction).ConfigureAwait(false);
 
-            await transaction.CommitAsync().NoSync();
+            await transaction.CommitAsync().ConfigureAwait(false);
             return Response.Successful;
         }
         catch (SqliteException e)

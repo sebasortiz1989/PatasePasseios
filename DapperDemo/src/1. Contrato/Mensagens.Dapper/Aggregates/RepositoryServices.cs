@@ -1,9 +1,9 @@
 using Dapper;
 using Microsoft.Data.Sqlite;
-using Verion.Treinamento.Mensagens.Dapper.Dtos;
-using Verion.Treinamento.Mensagens.Dapper.Services;
+using DapperDemo.Mensagens.Dapper.Dtos;
+using DapperDemo.Mensagens.Dapper.Services;
 
-namespace Verion.Treinamento.Mensagens.Dapper.Aggregates;
+namespace DapperDemo.Mensagens.Dapper.Aggregates;
 
 /// <summary>
 /// Walks, pet sitting and hotel stays live in three tables but the app shows them as one agenda,
@@ -53,12 +53,12 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
     public async Task<ServiceItem[]> ListForPetSitterAsync(int petSitterId)
     {
         using var connection = DapperDatabaseService.Connection;
-        await connection.OpenAsync().NoSync();
+        await connection.OpenAsync().ConfigureAwait(false);
         var param = new { PetSitterId = petSitterId };
 
-        var walks = await connection.QueryAsync<ServiceItem>(WalkSelect, param).NoSync();
-        var sittings = await connection.QueryAsync<ServiceItem>(SittingSelect, param).NoSync();
-        var hotels = await connection.QueryAsync<ServiceItem>(HotelSelect, param).NoSync();
+        var walks = await connection.QueryAsync<ServiceItem>(WalkSelect, param).ConfigureAwait(false);
+        var sittings = await connection.QueryAsync<ServiceItem>(SittingSelect, param).ConfigureAwait(false);
+        var hotels = await connection.QueryAsync<ServiceItem>(HotelSelect, param).ConfigureAwait(false);
 
         return [.. walks.Concat(sittings).Concat(hotels).OrderBy(s => s.Date)];
     }
@@ -66,13 +66,13 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
     /// <summary>The services booked for one dog, used by the dog and tutor detail screens.</summary>
     public async Task<ServiceItem[]> ListForDogAsync(int petSitterId, int dogId)
     {
-        var all = await ListForPetSitterAsync(petSitterId).NoSync();
+        var all = await ListForPetSitterAsync(petSitterId).ConfigureAwait(false);
         return [.. all.Where(s => s.DogId == dogId)];
     }
 
     public async Task<ServiceItem?> GetAsync(int petSitterId, ServiceKind kind, int serviceId)
     {
-        var all = await ListForPetSitterAsync(petSitterId).NoSync();
+        var all = await ListForPetSitterAsync(petSitterId).ConfigureAwait(false);
         return all.FirstOrDefault(s => s.Kind == kind && s.ServiceId == serviceId);
     }
 
@@ -105,10 +105,10 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
         try
         {
             using var connection = DapperDatabaseService.Connection;
-            await connection.OpenAsync().NoSync();
+            await connection.OpenAsync().ConfigureAwait(false);
             await connection.ExecuteAsync(
                 sql: $"DELETE FROM {table} WHERE {key} = @ServiceId",
-                param: new { ServiceId = serviceId }).NoSync();
+                param: new { ServiceId = serviceId }).ConfigureAwait(false);
 
             return Response.Successful;
         }
@@ -127,10 +127,10 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
         try
         {
             using var connection = DapperDatabaseService.Connection;
-            await connection.OpenAsync().NoSync();
+            await connection.OpenAsync().ConfigureAwait(false);
             await connection.ExecuteAsync(
                 sql: $"UPDATE {table} SET ServicePaid = @Paid WHERE {key} = @ServiceId",
-                param: new { Paid = paid, ServiceId = serviceId }).NoSync();
+                param: new { Paid = paid, ServiceId = serviceId }).ConfigureAwait(false);
 
             return Response.Successful;
         }
@@ -147,7 +147,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
     /// </summary>
     public async Task<MonthlyIncome> GetMonthlyIncomeAsync(int petSitterId, int year, int month)
     {
-        var services = await ListForPetSitterAsync(petSitterId).NoSync();
+        var services = await ListForPetSitterAsync(petSitterId).ConfigureAwait(false);
         var paidThisMonth = services
             .Where(s => s.ServicePaid && s.Date.Year == year && s.Date.Month == month)
             .ToArray();
@@ -173,8 +173,8 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
         try
         {
             using var connection = DapperDatabaseService.Connection;
-            await connection.OpenAsync().NoSync();
-            await connection.ExecuteAsync(sql, param).NoSync();
+            await connection.OpenAsync().ConfigureAwait(false);
+            await connection.ExecuteAsync(sql, param).ConfigureAwait(false);
             return Response.Successful;
         }
         catch (SqliteException e)

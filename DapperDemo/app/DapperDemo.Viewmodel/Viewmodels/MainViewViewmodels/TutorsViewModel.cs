@@ -1,13 +1,13 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using PropertyChanged;
-using Verion.Presentation.View;
-using Verion.Presentation.View.UseCase;
-using Verion.Threading;
-using Verion.Treinamento.Mensagens.Dapper.Aggregates;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Session;
+using AvaloniaFramework.Presentation;
+using AvaloniaFramework.Presentation.UseCase;
+using AvaloniaFramework.Threading;
+using DapperDemo.Mensagens.Dapper.Aggregates;
+using DapperDemo.Viewmodel.Viewmodels.Session;
 
-namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
+namespace DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
 
 public sealed class TutorRow(string initials, string name, string subtitle, ICommand openCommand) : IDisposable
 {
@@ -23,23 +23,23 @@ public sealed class TutorRow(string initials, string name, string subtitle, ICom
 }
 
 [AddINotifyPropertyChangedInterface]
-public class TutorsViewModel : PresentationModelBase<Void, Void>
+public class TutorsViewModel : PresentationModelBase<Unit, Unit>
 {
     private readonly NavigationController navigationController;
     private readonly RepositoryTutors repositoryTutors;
     private readonly RepositoryDogs repositoryDogs;
     private readonly AppSession session;
     private readonly EventHandler dataChangedHandler;
-    private readonly Factory<PresenterBase<TutorDetailViewModel, Void, Void>> tutorDetailFactory;
-    private readonly Factory<PresenterBase<NewTutorViewModel, Void, Void>> newTutorFactory;
+    private readonly Factory<PresenterBase<TutorDetailViewModel, Unit, Unit>> tutorDetailFactory;
+    private readonly Factory<PresenterBase<NewTutorViewModel, Unit, Unit>> newTutorFactory;
 
     public TutorsViewModel(
         NavigationController navigationController,
         RepositoryTutors repositoryTutors,
         RepositoryDogs repositoryDogs,
         AppSession session,
-        Factory<PresenterBase<TutorDetailViewModel, Void, Void>> tutorDetailFactory,
-        Factory<PresenterBase<NewTutorViewModel, Void, Void>> newTutorFactory)
+        Factory<PresenterBase<TutorDetailViewModel, Unit, Unit>> tutorDetailFactory,
+        Factory<PresenterBase<NewTutorViewModel, Unit, Unit>> newTutorFactory)
     {
         this.navigationController = navigationController;
         this.repositoryTutors = repositoryTutors;
@@ -64,7 +64,7 @@ public class TutorsViewModel : PresentationModelBase<Void, Void>
     // in the moment before the first load completes.
     public bool IsEmpty { get; private set; } = true;
 
-    protected override async Task OnRunStarting(Void input) => await ReloadAsync().WithSync();
+    protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
 
     protected override Task OnRunFinishing()
     {

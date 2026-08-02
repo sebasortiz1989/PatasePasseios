@@ -1,15 +1,15 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using PropertyChanged;
-using Verion.Presentation.View;
-using Verion.Presentation.View.UseCase;
-using Verion.Threading;
-using Verion.Treinamento.Mensagens.Dapper;
-using Verion.Treinamento.Mensagens.Dapper.Aggregates;
-using Verion.Treinamento.Mensagens.Dapper.Dtos;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Session;
+using AvaloniaFramework.Presentation;
+using AvaloniaFramework.Presentation.UseCase;
+using AvaloniaFramework.Threading;
+using DapperDemo.Mensagens.Dapper;
+using DapperDemo.Mensagens.Dapper.Aggregates;
+using DapperDemo.Mensagens.Dapper.Dtos;
+using DapperDemo.Viewmodel.Viewmodels.Session;
 
-namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels;
+namespace DapperDemo.Viewmodel.Viewmodels;
 
 public class TutorOption(int id, string label)
 {
@@ -19,7 +19,7 @@ public class TutorOption(int id, string label)
 }
 
 [AddINotifyPropertyChangedInterface]
-public class NewDogViewModel : PresentationModelBase<Void, Void>
+public class NewDogViewModel : PresentationModelBase<Unit, Unit>
 {
     private readonly RepositoryDogs repositoryDogs;
     private readonly RepositoryTutors repositoryTutors;
@@ -61,7 +61,7 @@ public class NewDogViewModel : PresentationModelBase<Void, Void>
 
     public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
 
-    protected override async Task OnRunStarting(Void input)
+    protected override async Task OnRunStarting(Unit input)
     {
         var tutors = await repositoryTutors.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
 

@@ -1,11 +1,11 @@
 using Avalonia.Interactivity;
-using Verion.Apresentacao.Avalonia.Preview;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Session;
+using AvaloniaFramework.Controls;
+using DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
+using DapperDemo.Viewmodel.Viewmodels.Session;
 
-namespace Verion.Treinamento.DapperDemo.View.Views.MainViewViews;
+namespace DapperDemo.View.Views.MainViewViews;
 
-public partial class TutorsView : UserControl<TutorsViewModel, Void, Void>
+public partial class TutorsView : PresenterUserControl<TutorsViewModel, Unit, Unit>
 {
     public TutorsView()
     {
@@ -19,6 +19,6 @@ public partial class TutorsView : UserControl<TutorsViewModel, Void, Void>
     protected override void OnLoaded(RoutedEventArgs e)
     {
         base.OnLoaded(e);
-        AppSession.FireAndForget(ModeloApresentacao.ReloadAsync());
+        AppSession.FireAndForget(PresentationModel.ReloadAsync());
     }
 }

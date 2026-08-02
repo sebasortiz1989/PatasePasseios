@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Net.NetworkInformation;
 
-namespace Verion.Treinamento.DapperDemo.Desktop.DependencyInversion;
+namespace DapperDemo.Desktop.DependencyInversion;
 
 internal sealed class ServicoNumeroSerieDispositivo
 {

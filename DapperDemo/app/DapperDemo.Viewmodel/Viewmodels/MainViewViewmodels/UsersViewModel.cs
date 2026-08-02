@@ -2,13 +2,13 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows.Input;
 using PropertyChanged;
-using Verion.Presentation.View;
-using Verion.Presentation.View.UseCase;
-using Verion.Threading;
-using Verion.Treinamento.Mensagens.Dapper.Aggregates;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Session;
+using AvaloniaFramework.Presentation;
+using AvaloniaFramework.Presentation.UseCase;
+using AvaloniaFramework.Threading;
+using DapperDemo.Mensagens.Dapper.Aggregates;
+using DapperDemo.Viewmodel.Viewmodels.Session;
 
-namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
+namespace DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
 
 public class IncomeRow(string label, string amount)
 {
@@ -18,7 +18,7 @@ public class IncomeRow(string label, string amount)
 }
 
 [AddINotifyPropertyChangedInterface]
-public class UsersViewModel : PresentationModelBase<Void, Void>
+public class UsersViewModel : PresentationModelBase<Unit, Unit>
 {
     private readonly RepositoryServices repositoryServices;
     private readonly RepositoryDogs repositoryDogs;
@@ -86,7 +86,7 @@ public class UsersViewModel : PresentationModelBase<Void, Void>
 
     public string PendingCountLabel { get; private set; } = string.Empty;
 
-    protected override async Task OnRunStarting(Void input) => await ReloadAsync().WithSync();
+    protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
 
     protected override Task OnRunFinishing()
     {

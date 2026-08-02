@@ -2,15 +2,15 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows.Input;
 using PropertyChanged;
-using Verion.Presentation.View;
-using Verion.Presentation.View.UseCase;
-using Verion.Threading;
-using Verion.Treinamento.Mensagens.Dapper;
-using Verion.Treinamento.Mensagens.Dapper.Aggregates;
-using Verion.Treinamento.Mensagens.Dapper.Dtos;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Session;
+using AvaloniaFramework.Presentation;
+using AvaloniaFramework.Presentation.UseCase;
+using AvaloniaFramework.Threading;
+using DapperDemo.Mensagens.Dapper;
+using DapperDemo.Mensagens.Dapper.Aggregates;
+using DapperDemo.Mensagens.Dapper.Dtos;
+using DapperDemo.Viewmodel.Viewmodels.Session;
 
-namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
+namespace DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
 
 public class DogOption(int id, string label)
 {
@@ -20,7 +20,7 @@ public class DogOption(int id, string label)
 }
 
 [AddINotifyPropertyChangedInterface]
-public class ServicesViewModel : PresentationModelBase<Void, Void>
+public class ServicesViewModel : PresentationModelBase<Unit, Unit>
 {
     private readonly RepositoryDogs repositoryDogs;
     private readonly RepositoryServices repositoryServices;
@@ -102,7 +102,7 @@ public class ServicesViewModel : PresentationModelBase<Void, Void>
 
     public bool SvcMsgIsError { get; set; }
 
-    protected override async Task OnRunStarting(Void input) => await ReloadDogsAsync().WithSync();
+    protected override async Task OnRunStarting(Unit input) => await ReloadDogsAsync().WithSync();
 
     protected override Task OnRunFinishing()
     {

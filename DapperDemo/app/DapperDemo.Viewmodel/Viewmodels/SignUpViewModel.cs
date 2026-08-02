@@ -1,29 +1,29 @@
 using System.Windows.Input;
 using PropertyChanged;
-using Verion.Presentation.View;
-using Verion.Presentation.View.UseCase;
-using Verion.Threading;
-using Verion.Treinamento.Mensagens.Dapper;
-using Verion.Treinamento.Mensagens.Dapper.Aggregates;
-using Verion.Treinamento.Mensagens.Dapper.Dtos;
-using Verion.Treinamento.Mensagens.Dapper.Extensions;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Session;
+using AvaloniaFramework.Presentation;
+using AvaloniaFramework.Presentation.UseCase;
+using AvaloniaFramework.Threading;
+using DapperDemo.Mensagens.Dapper;
+using DapperDemo.Mensagens.Dapper.Aggregates;
+using DapperDemo.Mensagens.Dapper.Dtos;
+using DapperDemo.Mensagens.Dapper.Extensions;
+using DapperDemo.Viewmodel.Viewmodels.Session;
 
-namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels;
+namespace DapperDemo.Viewmodel.Viewmodels;
 
 [AddINotifyPropertyChangedInterface]
-public class SignUpViewModel : PresentationModelBase<Void, Void>
+public class SignUpViewModel : PresentationModelBase<Unit, Unit>
 {
     private readonly RepositoryPetSitter repositoryPetSitter;
     private readonly AppSession session;
     private readonly NavigationController navigationController;
-    private readonly Factory<PresenterBase<MainViewModel, Void, Void>> mainViewFactory;
+    private readonly Factory<PresenterBase<MainViewModel, Unit, Unit>> mainViewFactory;
 
     public SignUpViewModel(
         NavigationController navigationController,
         RepositoryPetSitter repositoryPetSitter,
         AppSession session,
-        Factory<PresenterBase<MainViewModel, Void, Void>> mainViewFactory)
+        Factory<PresenterBase<MainViewModel, Unit, Unit>> mainViewFactory)
     {
         this.repositoryPetSitter = repositoryPetSitter;
         this.session = session;
@@ -52,14 +52,14 @@ public class SignUpViewModel : PresentationModelBase<Void, Void>
 
     public ICommand RegisterCommand { get; }
 
-    protected override Task OnRunStarting(Void input)
+    protected override Task OnRunStarting(Unit input)
     {
         return Task.CompletedTask;
     }
 
     private async Task RegisterFunction()
     {
-        if (Email.IsNullOrEmpty() || Password.IsNullOrEmpty() || Name.IsNullOrEmpty())
+        if (string.IsNullOrEmpty(Email) || string.IsNullOrEmpty(Password) || string.IsNullOrEmpty(Name))
         {
             SignupError = "Preencha todos os campos.";
             return;

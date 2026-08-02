@@ -1,16 +1,16 @@
 using System.Windows.Input;
 using PropertyChanged;
-using Verion.Presentation.View;
-using Verion.Presentation.View.UseCase;
-using Verion.Threading;
-using Verion.Treinamento.Mensagens.Dapper.Aggregates;
-using Verion.Treinamento.Mensagens.Dapper.Dtos;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Session;
+using AvaloniaFramework.Presentation;
+using AvaloniaFramework.Presentation.UseCase;
+using AvaloniaFramework.Threading;
+using DapperDemo.Mensagens.Dapper.Aggregates;
+using DapperDemo.Mensagens.Dapper.Dtos;
+using DapperDemo.Viewmodel.Viewmodels.Session;
 
-namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels;
+namespace DapperDemo.Viewmodel.Viewmodels;
 
 [AddINotifyPropertyChangedInterface]
-public class ServiceDetailViewModel : PresentationModelBase<Void, Void>
+public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
 {
     private readonly RepositoryServices repositoryServices;
     private readonly AppSession session;
@@ -68,7 +68,7 @@ public class ServiceDetailViewModel : PresentationModelBase<Void, Void>
 
     public string PaidActionLabel { get; private set; } = string.Empty;
 
-    protected override async Task OnRunStarting(Void input) => await LoadAsync().WithSync();
+    protected override async Task OnRunStarting(Unit input) => await LoadAsync().WithSync();
 
     private async Task TogglePaid()
     {

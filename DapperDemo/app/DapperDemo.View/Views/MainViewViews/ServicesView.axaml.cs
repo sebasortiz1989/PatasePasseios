@@ -1,11 +1,11 @@
 using Avalonia.Interactivity;
-using Verion.Apresentacao.Avalonia.Preview;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Session;
+using AvaloniaFramework.Controls;
+using DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
+using DapperDemo.Viewmodel.Viewmodels.Session;
 
-namespace Verion.Treinamento.DapperDemo.View.Views.MainViewViews;
+namespace DapperDemo.View.Views.MainViewViews;
 
-public partial class ServicesView : UserControl<ServicesViewModel, Void, Void>
+public partial class ServicesView : PresenterUserControl<ServicesViewModel, Unit, Unit>
 {
     public ServicesView()
     {
@@ -19,6 +19,6 @@ public partial class ServicesView : UserControl<ServicesViewModel, Void, Void>
     protected override void OnLoaded(RoutedEventArgs e)
     {
         base.OnLoaded(e);
-        AppSession.FireAndForget(ModeloApresentacao.ReloadDogsAsync());
+        AppSession.FireAndForget(PresentationModel.ReloadDogsAsync());
     }
 }

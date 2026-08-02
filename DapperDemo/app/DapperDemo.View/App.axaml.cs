@@ -1,14 +1,14 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Verion.Apresentacao.Avalonia.Preview;
-using Verion.Framework.Infraestrutura.DependencyInversion;
-using Verion.Presentation.View;
-using Verion.Presentation.View.UseCase;
-using Verion.Treinamento.DapperDemo.View.Components;
-using Verion.Treinamento.DapperDemo.View.DependencyInversion;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels;
+using AvaloniaFramework.DependencyInjection;
+using AvaloniaFramework.Hosting;
+using AvaloniaFramework.Presentation;
+using AvaloniaFramework.Presentation.UseCase;
+using AvaloniaFramework.Threading;
+using DapperDemo.View.DependencyInversion;
+using DapperDemo.Viewmodel.Viewmodels;
 
-namespace Verion.Treinamento.DapperDemo.View;
+namespace DapperDemo.View;
 
 public partial class App : ApplicationPreview
 {
@@ -31,20 +31,17 @@ public partial class App : ApplicationPreview
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // Avoid duplicate validations from both Avalonia and the CommunityToolkit.
-            // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
-            // DisableAvaloniaDataAnnotationValidation();
-            desktop.MainWindow = new WindowInicial();
+            desktop.MainWindow = new ShellWindow();
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
-            singleViewPlatform.MainView = new ViewInicial();
+            singleViewPlatform.MainView = new ShellView();
         }
 
         base.OnFrameworkInitializationCompleted();
-        PreviewMobile.Container = Container;
+
         var navigationController = Container.Resolve<NavigationController>();
-        var initialView = Container.Resolve<PresenterBase<LoginViewModel, Void, Void>>();
+        var initialView = Container.Resolve<PresenterBase<LoginViewModel, Unit, Unit>>();
         await navigationController.PushAsync(initialView).WithSync();
     }
 }

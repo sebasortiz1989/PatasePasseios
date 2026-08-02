@@ -2,14 +2,14 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows.Input;
 using PropertyChanged;
-using Verion.Presentation.View;
-using Verion.Presentation.View.UseCase;
-using Verion.Threading;
-using Verion.Treinamento.Mensagens.Dapper.Aggregates;
-using Verion.Treinamento.Mensagens.Dapper.Dtos;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Session;
+using AvaloniaFramework.Presentation;
+using AvaloniaFramework.Presentation.UseCase;
+using AvaloniaFramework.Threading;
+using DapperDemo.Mensagens.Dapper.Aggregates;
+using DapperDemo.Mensagens.Dapper.Dtos;
+using DapperDemo.Viewmodel.Viewmodels.Session;
 
-namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
+namespace DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
 
 public enum HomeRangeFilter
 {
@@ -52,7 +52,7 @@ public sealed class ServiceRow(string dayNum, string monthShort, string dogName,
 }
 
 [AddINotifyPropertyChangedInterface]
-public class HomeViewModel : PresentationModelBase<Void, Void>
+public class HomeViewModel : PresentationModelBase<Unit, Unit>
 {
     private static readonly string[] MonthsShort = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 
@@ -60,13 +60,13 @@ public class HomeViewModel : PresentationModelBase<Void, Void>
     private readonly RepositoryServices repositoryServices;
     private readonly AppSession session;
     private readonly EventHandler dataChangedHandler;
-    private readonly Factory<PresenterBase<ServiceDetailViewModel, Void, Void>> serviceDetailFactory;
+    private readonly Factory<PresenterBase<ServiceDetailViewModel, Unit, Unit>> serviceDetailFactory;
 
     public HomeViewModel(
         NavigationController navigationController,
         RepositoryServices repositoryServices,
         AppSession session,
-        Factory<PresenterBase<ServiceDetailViewModel, Void, Void>> serviceDetailFactory)
+        Factory<PresenterBase<ServiceDetailViewModel, Unit, Unit>> serviceDetailFactory)
     {
         this.navigationController = navigationController;
         this.repositoryServices = repositoryServices;
@@ -134,7 +134,7 @@ public class HomeViewModel : PresentationModelBase<Void, Void>
 
     public ObservableCollection<ServiceRow> FilteredServices { get; } = [];
 
-    protected override async Task OnRunStarting(Void input) => await ReloadAsync().WithSync();
+    protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
 
     protected override Task OnRunFinishing()
     {

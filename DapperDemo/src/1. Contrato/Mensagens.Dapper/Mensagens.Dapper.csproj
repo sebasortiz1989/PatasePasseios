@@ -4,18 +4,15 @@
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <AssemblyName>DapperDemo.Mensagens.Dapper</AssemblyName>
+        <RootNamespace>DapperDemo.Mensagens.Dapper</RootNamespace>
     </PropertyGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Verion.Framework.Aplicacao" Version="19.0.0" />
-    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
         <PackageReference Include="Dapper" Version="2.1.66" />
         <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="9.0.10" />
         <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.2" />
-        <PackageReference Include="Verion.Infraestrutura.Dependency" Version="19.0.0" />
     </ItemGroup>
 
 </Project>

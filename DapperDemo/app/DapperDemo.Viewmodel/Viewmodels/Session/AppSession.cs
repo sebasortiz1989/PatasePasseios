@@ -1,7 +1,7 @@
 using System.Globalization;
-using Verion.Treinamento.Mensagens.Dapper.Dtos;
+using DapperDemo.Mensagens.Dapper.Dtos;
 
-namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Session;
+namespace DapperDemo.Viewmodel.Viewmodels.Session;
 
 /// <summary>
 /// Who is logged in, which row a pushed detail screen should show, and a notification that the
@@ -16,7 +16,7 @@ public class AppSession
 
     public bool IsLoggedIn => CurrentPetSitterId > 0;
 
-    // Detail screens are pushed via Factory<PresenterBase<T,Void,Void>>.Create(), which takes no
+    // Detail screens are pushed via Factory<PresenterBase<T,Unit,Unit>>.Create(), which takes no
     // runtime arguments, so the tapped row is handed over here instead.
     public int? SelectedDogId { get; set; }
 

@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using Verion.Apresentacao.Avalonia.DependencyInversion;
-using Verion.Infraestrutura.Dependency;
-using Verion.Treinamento.DapperDemo.View.Views;
-using Verion.Treinamento.DapperDemo.View.Views.MainViewViews;
-using Verion.Treinamento.DapperDemo.Viewmodel.DependencyInversion;
+using AvaloniaFramework.Hosting.DependencyInjection;
+using AvaloniaFramework.DependencyInjection;
+using DapperDemo.View.Views;
+using DapperDemo.View.Views.MainViewViews;
+using DapperDemo.Viewmodel.DependencyInversion;
 
-namespace Verion.Treinamento.DapperDemo.View.DependencyInversion
+namespace DapperDemo.View.DependencyInversion
 {
     public class DapperDemoViewContainerBuilder : ImmutableContainerBuilder
     {

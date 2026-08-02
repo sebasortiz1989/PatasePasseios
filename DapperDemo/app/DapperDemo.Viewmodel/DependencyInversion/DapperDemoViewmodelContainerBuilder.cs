@@ -1,9 +1,9 @@
-﻿using Verion.Infraestrutura.Dependency;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Session;
+﻿using AvaloniaFramework.DependencyInjection;
+using DapperDemo.Viewmodel.Viewmodels;
+using DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
+using DapperDemo.Viewmodel.Viewmodels.Session;
 
-namespace Verion.Treinamento.DapperDemo.Viewmodel.DependencyInversion
+namespace DapperDemo.Viewmodel.DependencyInversion
 {
     public sealed class DapperDemoViewmodelContainerBuilder : ImmutableContainerBuilder
     {

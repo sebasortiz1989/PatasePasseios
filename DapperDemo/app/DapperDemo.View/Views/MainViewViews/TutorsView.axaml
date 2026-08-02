@@ -2,12 +2,12 @@
     d:DesignHeight="1460"
     d:DesignWidth="720"
     mc:Ignorable="d"
-    x:Class="Verion.Treinamento.DapperDemo.View.Views.MainViewViews.TutorsView"
+    x:Class="DapperDemo.View.Views.MainViewViews.TutorsView"
     x:DataType="mainViewViewmodels:TutorsViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:buttons="clr-namespace:Verion.Apresentacao.Avalonia.Buttons;assembly=Verion.Apresentacao.Avalonia"
+    xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mainViewViewmodels="clr-namespace:Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;assembly=Verion.Treinamento.DapperDemo.Viewmodel"
+    xmlns:mainViewViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 

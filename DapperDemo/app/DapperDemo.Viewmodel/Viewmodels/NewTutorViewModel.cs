@@ -1,17 +1,17 @@
 using System.Windows.Input;
 using PropertyChanged;
-using Verion.Presentation.View;
-using Verion.Presentation.View.UseCase;
-using Verion.Threading;
-using Verion.Treinamento.Mensagens.Dapper;
-using Verion.Treinamento.Mensagens.Dapper.Aggregates;
-using Verion.Treinamento.Mensagens.Dapper.Dtos;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Session;
+using AvaloniaFramework.Presentation;
+using AvaloniaFramework.Presentation.UseCase;
+using AvaloniaFramework.Threading;
+using DapperDemo.Mensagens.Dapper;
+using DapperDemo.Mensagens.Dapper.Aggregates;
+using DapperDemo.Mensagens.Dapper.Dtos;
+using DapperDemo.Viewmodel.Viewmodels.Session;
 
-namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels;
+namespace DapperDemo.Viewmodel.Viewmodels;
 
 [AddINotifyPropertyChangedInterface]
-public class NewTutorViewModel : PresentationModelBase<Void, Void>
+public class NewTutorViewModel : PresentationModelBase<Unit, Unit>
 {
     private readonly RepositoryTutors repositoryTutors;
     private readonly AppSession session;
@@ -43,7 +43,7 @@ public class NewTutorViewModel : PresentationModelBase<Void, Void>
 
     public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
 
-    protected override Task OnRunStarting(Void input) => Task.CompletedTask;
+    protected override Task OnRunStarting(Unit input) => Task.CompletedTask;
 
     private async Task Save()
     {

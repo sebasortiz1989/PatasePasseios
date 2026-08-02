@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Data.Sqlite;
 
-namespace Verion.Treinamento.Mensagens.Dapper.Services;
+namespace DapperDemo.Mensagens.Dapper.Services;
 
 public sealed class DapperDatabaseService
 {

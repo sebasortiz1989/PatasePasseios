@@ -1,4 +1,4 @@
-namespace Verion.Treinamento.Mensagens.Dapper.Dtos;
+namespace DapperDemo.Mensagens.Dapper.Dtos;
 
 /// <summary>
 /// The three service tables are stored separately but the app presents them as one agenda,

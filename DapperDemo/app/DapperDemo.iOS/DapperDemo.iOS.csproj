@@ -15,7 +15,6 @@
 
     <ItemGroup>
         <PackageReference Include="Avalonia.iOS" Version="12.1.1" />
-        <PackageReference Include="Verion.Infraestrutura.VerionNative.Iphone" Version="19.0.0" />
     </ItemGroup>
 
     <ItemGroup>

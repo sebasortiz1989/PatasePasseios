@@ -1,9 +1,9 @@
 ﻿using Avalonia;
 using System;
-using Verion.Treinamento.DapperDemo.Desktop.DependencyInversion;
-using Verion.Treinamento.DapperDemo.View;
+using DapperDemo.Desktop.DependencyInversion;
+using DapperDemo.View;
 
-namespace Verion.Treinamento.DapperDemo.Desktop;
+namespace DapperDemo.Desktop;
 
 internal sealed class Program
 {

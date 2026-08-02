@@ -1,18 +1,18 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using PropertyChanged;
-using Verion.Presentation.View;
-using Verion.Presentation.View.UseCase;
-using Verion.Threading;
-using Verion.Treinamento.Mensagens.Dapper.Aggregates;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Session;
+using AvaloniaFramework.Presentation;
+using AvaloniaFramework.Presentation.UseCase;
+using AvaloniaFramework.Threading;
+using DapperDemo.Mensagens.Dapper.Aggregates;
+using DapperDemo.Viewmodel.Viewmodels.Session;
 
-namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels;
+namespace DapperDemo.Viewmodel.Viewmodels;
 
 public record FutureServiceRow(string TypeLabel, string DateLabel);
 
 [AddINotifyPropertyChangedInterface]
-public class DogDetailViewModel : PresentationModelBase<Void, Void>
+public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
 {
     private readonly RepositoryDogs repositoryDogs;
     private readonly RepositoryTutors repositoryTutors;
@@ -64,7 +64,7 @@ public class DogDetailViewModel : PresentationModelBase<Void, Void>
 
     public ObservableCollection<FutureServiceRow> FutureServices { get; } = [];
 
-    protected override async Task OnRunStarting(Void input)
+    protected override async Task OnRunStarting(Unit input)
     {
         if (session.SelectedDogId is not int dogId)
         {

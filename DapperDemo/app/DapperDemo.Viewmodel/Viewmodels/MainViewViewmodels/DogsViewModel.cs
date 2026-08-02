@@ -1,13 +1,13 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using PropertyChanged;
-using Verion.Presentation.View;
-using Verion.Presentation.View.UseCase;
-using Verion.Threading;
-using Verion.Treinamento.Mensagens.Dapper.Aggregates;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Session;
+using AvaloniaFramework.Presentation;
+using AvaloniaFramework.Presentation.UseCase;
+using AvaloniaFramework.Threading;
+using DapperDemo.Mensagens.Dapper.Aggregates;
+using DapperDemo.Viewmodel.Viewmodels.Session;
 
-namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
+namespace DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
 
 public sealed class DogRow(string initials, string name, string subtitle, ICommand openCommand) : IDisposable
 {
@@ -23,14 +23,14 @@ public sealed class DogRow(string initials, string name, string subtitle, IComma
 }
 
 [AddINotifyPropertyChangedInterface]
-public class DogsViewModel : PresentationModelBase<Void, Void>
+public class DogsViewModel : PresentationModelBase<Unit, Unit>
 {
     private readonly RepositoryDogs repositoryDogs;
     private readonly RepositoryTutors repositoryTutors;
     private readonly AppSession session;
     private readonly EventHandler dataChangedHandler;
-    private readonly PresenterBase<DogDetailViewModel, Void, Void> dogDetailView;
-    private readonly PresenterBase<NewDogViewModel, Void, Void> newDogView;
+    private readonly PresenterBase<DogDetailViewModel, Unit, Unit> dogDetailView;
+    private readonly PresenterBase<NewDogViewModel, Unit, Unit> newDogView;
     private readonly CurrentView currentView;
 
     public DogsViewModel(
@@ -38,8 +38,8 @@ public class DogsViewModel : PresentationModelBase<Void, Void>
         RepositoryDogs repositoryDogs,
         RepositoryTutors repositoryTutors,
         AppSession session,
-        Factory<PresenterBase<DogDetailViewModel, Void, Void>> dogDetailFactory,
-        Factory<PresenterBase<NewDogViewModel, Void, Void>> newDogFactory)
+        Factory<PresenterBase<DogDetailViewModel, Unit, Unit>> dogDetailFactory,
+        Factory<PresenterBase<NewDogViewModel, Unit, Unit>> newDogFactory)
     {
         this.currentView = currentView;
         this.repositoryDogs = repositoryDogs;
@@ -64,7 +64,7 @@ public class DogsViewModel : PresentationModelBase<Void, Void>
     // in the moment before the first load completes.
     public bool IsEmpty { get; private set; } = true;
 
-    protected override async Task OnRunStarting(Void input) => await ReloadAsync().WithSync();
+    protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
 
     protected override Task OnRunFinishing()
     {

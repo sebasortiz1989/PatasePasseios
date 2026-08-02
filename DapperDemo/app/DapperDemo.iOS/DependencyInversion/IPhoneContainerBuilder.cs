@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Verion.Infraestrutura.Dependency;
-using Verion.Treinamento.DapperDemo.Infrastructure.DependencyInversion;
+using AvaloniaFramework.DependencyInjection;
+using DapperDemo.Infrastructure.DependencyInversion;
 
-namespace Verion.Treinamento.DapperDemo.iOS.DependencyInversion;
+namespace DapperDemo.iOS.DependencyInversion;
 
 internal sealed class IPhoneContainerBuilder : ImmutableContainerBuilder
 {

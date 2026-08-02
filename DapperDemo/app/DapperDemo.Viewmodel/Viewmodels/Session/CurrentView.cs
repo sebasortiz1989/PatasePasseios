@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Session;
+namespace DapperDemo.Viewmodel.Viewmodels.Session;
 
 public class CurrentView : INotifyPropertyChanged
 {
