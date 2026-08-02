@@ -1,4 +1,4 @@
-namespace DapperDemo.Mensagens.Dapper.Dtos;
+namespace DapperDemo.Repository.Dapper.Dtos;
 
 /// <summary>
 /// The three service tables are stored separately but the app presents them as one agenda,

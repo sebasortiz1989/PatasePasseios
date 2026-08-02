@@ -1,13 +1,13 @@
 using AvaloniaFramework.Presentation;
 using AvaloniaFramework.Presentation.UseCase;
 using AvaloniaFramework.Threading;
-using DapperDemo.Mensagens.Dapper;
-using DapperDemo.Mensagens.Dapper.Aggregates;
-using DapperDemo.Mensagens.Dapper.Dtos;
-using DapperDemo.Mensagens.Dapper.Extensions;
 using DapperDemo.Viewmodel.Viewmodels.Session;
 using PropertyChanged;
 using System.Windows.Input;
+using DapperDemo.Repository.Dapper;
+using DapperDemo.Repository.Dapper.Aggregates;
+using DapperDemo.Repository.Dapper.Dtos;
+using DapperDemo.Repository.Dapper.Extensions;
 
 namespace DapperDemo.Viewmodel.Viewmodels;
 

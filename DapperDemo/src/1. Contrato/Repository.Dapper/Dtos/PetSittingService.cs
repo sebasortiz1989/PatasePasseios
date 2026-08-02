@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DapperDemo.Mensagens.Dapper.Dtos;
+namespace DapperDemo.Repository.Dapper.Dtos;
 
-[Table("WalkingService")]
-public class WalkingService
+[Table("PetSittingService")]
+public class PetSittingService
 {
-    public int WalkingServiceId { get; init; }
+    public int PetSittingServiceId { get; init; }
 
     public int DogId { get; init; }
 
@@ -18,8 +18,8 @@ public class WalkingService
     public bool ServicePaid { get; init; }
 }
 
-// CREATE TABLE IF NOT EXISTS WalkingService (
-//     WalkingServiceId INTEGER PRIMARY KEY AUTOINCREMENT,
+// CREATE TABLE IF NOT EXISTS PetSittingService (
+//     PetSittingServiceId INTEGER PRIMARY KEY AUTOINCREMENT,
 //     DogId INTEGER NOT NULL,
 //     PetSitterId INTEGER NOT NULL,
 //     Date DATETIME NOT NULL,

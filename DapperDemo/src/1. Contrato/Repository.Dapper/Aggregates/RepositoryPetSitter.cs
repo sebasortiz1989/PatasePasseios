@@ -1,9 +1,9 @@
 ﻿using Dapper;
-using DapperDemo.Mensagens.Dapper.Dtos;
-using DapperDemo.Mensagens.Dapper.Services;
+using DapperDemo.Repository.Dapper.Dtos;
+using DapperDemo.Repository.Dapper.Services;
 using Microsoft.Data.Sqlite;
 
-namespace DapperDemo.Mensagens.Dapper.Aggregates;
+namespace DapperDemo.Repository.Dapper.Aggregates;
 
 public sealed class RepositoryPetSitter : RepositoryBase<PetSitter>
 {

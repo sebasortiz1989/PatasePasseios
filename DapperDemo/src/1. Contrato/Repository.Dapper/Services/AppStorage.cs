@@ -1,4 +1,4 @@
-namespace DapperDemo.Mensagens.Dapper.Services;
+namespace DapperDemo.Repository.Dapper.Services;
 
 /// <summary>
 /// The one folder this app may write to, resolved the same way on every platform it runs on.

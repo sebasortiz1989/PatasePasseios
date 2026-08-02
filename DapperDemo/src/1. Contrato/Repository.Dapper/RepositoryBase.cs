@@ -1,6 +1,6 @@
-﻿using DapperDemo.Mensagens.Dapper.Services;
+﻿using DapperDemo.Repository.Dapper.Services;
 
-namespace DapperDemo.Mensagens.Dapper;
+namespace DapperDemo.Repository.Dapper;
 
 public abstract class RepositoryBase<TEntity>(DapperDatabaseService dapperDatabaseService)
     where TEntity : class

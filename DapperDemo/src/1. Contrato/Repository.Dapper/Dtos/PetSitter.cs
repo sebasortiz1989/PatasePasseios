@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DapperDemo.Mensagens.Dapper.Dtos;
+namespace DapperDemo.Repository.Dapper.Dtos;
 
 [Table("PetSitter")]
 public class PetSitter

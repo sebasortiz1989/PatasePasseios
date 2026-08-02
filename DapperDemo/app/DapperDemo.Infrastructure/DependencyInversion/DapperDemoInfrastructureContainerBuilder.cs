@@ -1,6 +1,6 @@
 ﻿using AvaloniaFramework.DependencyInjection;
-using DapperDemo.Mensagens.Dapper.Aggregates;
-using DapperDemo.Mensagens.Dapper.Services;
+using DapperDemo.Repository.Dapper.Aggregates;
+using DapperDemo.Repository.Dapper.Services;
 using DapperDemo.View.DependencyInversion;
 
 namespace DapperDemo.Infrastructure.DependencyInversion;
