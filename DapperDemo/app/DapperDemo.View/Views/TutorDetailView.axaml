@@ -1,5 +1,5 @@
 <UserControl
-    d:DesignHeight="1560"
+    d:DesignHeight="1460"
     d:DesignWidth="720"
     mc:Ignorable="d"
     x:Class="Verion.Treinamento.DapperDemo.View.Views.TutorDetailView"
@@ -12,7 +12,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Viewbox>
-        <Grid Background="{StaticResource ColorBg}" Height="1560" Width="720">
+        <Grid
+            Background="{StaticResource ColorBg}"
+            Height="1460"
+            Width="720">
             <ScrollViewer>
                 <StackPanel Spacing="0">
                     <buttons:VButton
@@ -23,7 +26,10 @@
                         VText="← Voltar"
                         Width="180" />
 
-                    <StackPanel HorizontalAlignment="Center" Margin="32,32,32,24" Spacing="12">
+                    <StackPanel
+                        HorizontalAlignment="Center"
+                        Margin="32,32,32,24"
+                        Spacing="12">
                         <Border
                             BorderBrush="{StaticResource ColorDivider}"
                             BorderThickness="2"
@@ -51,21 +57,38 @@
                     </StackPanel>
 
                     <StackPanel Margin="32,0,32,56" Spacing="28">
-                        <Border BorderThickness="0,2,0,0" BorderBrush="{StaticResource ColorDivider}" Padding="0,20,0,0">
+                        <Border
+                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderThickness="0,2,0,0"
+                            Padding="0,20,0,0">
                             <StackPanel Spacing="6">
                                 <TextBlock Classes="Kicker" Text="Telefone" />
-                                <TextBlock FontFamily="{StaticResource FontBody}" FontSize="31" Foreground="{StaticResource ColorText}" Text="{Binding Phone}" />
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="31"
+                                    Foreground="{StaticResource ColorText}"
+                                    Text="{Binding Phone}" />
                             </StackPanel>
                         </Border>
 
-                        <Border BorderThickness="0,2,0,0" BorderBrush="{StaticResource ColorDivider}" Padding="0,20,0,0">
+                        <Border
+                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderThickness="0,2,0,0"
+                            Padding="0,20,0,0">
                             <StackPanel Spacing="6">
                                 <TextBlock Classes="Kicker" Text="Cachorros" />
-                                <TextBlock FontFamily="{StaticResource FontBody}" FontSize="31" Foreground="{StaticResource ColorText}" Text="{Binding DogNames}" />
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="31"
+                                    Foreground="{StaticResource ColorText}"
+                                    Text="{Binding DogNames}" />
                             </StackPanel>
                         </Border>
 
-                        <Border BorderThickness="0,2,0,0" BorderBrush="{StaticResource ColorDivider}" Padding="0,20,0,0">
+                        <Border
+                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderThickness="0,2,0,0"
+                            Padding="0,20,0,0">
                             <StackPanel Spacing="12">
                                 <TextBlock Classes="Kicker" Text="Próximos serviços" />
                                 <TextBlock
@@ -78,18 +101,25 @@
                                 <ItemsControl ItemsSource="{Binding FutureServices}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate DataType="viewmodels:TutorFutureServiceRow">
-                                            <Border BorderThickness="0,0,0,2" BorderBrush="{StaticResource ColorDivider}" Margin="0,0,0,12" Padding="0,0,0,12">
+                                            <Border
+                                                BorderBrush="{StaticResource ColorDivider}"
+                                                BorderThickness="0,0,0,2"
+                                                Margin="0,0,0,12"
+                                                Padding="0,0,0,12">
                                                 <Grid ColumnDefinitions="*,Auto">
-                                                    <TextBlock FontFamily="{StaticResource FontBody}" FontSize="29" Foreground="{StaticResource ColorText}">
+                                                    <TextBlock
+                                                        FontFamily="{StaticResource FontBody}"
+                                                        FontSize="29"
+                                                        Foreground="{StaticResource ColorText}">
                                                         <Run Text="{Binding DogName}" />
                                                         <Run Text=" · " />
                                                         <Run Text="{Binding TypeLabel}" />
                                                     </TextBlock>
                                                     <TextBlock
-                                                        Grid.Column="1"
                                                         FontFamily="{StaticResource FontBody}"
                                                         FontSize="26"
                                                         Foreground="{StaticResource ColorTextMuted55}"
+                                                        Grid.Column="1"
                                                         Text="{Binding DateLabel}" />
                                                 </Grid>
                                             </Border>
@@ -119,8 +149,17 @@
                                     TextAlignment="Center"
                                     TextWrapping="Wrap" />
                                 <Grid ColumnDefinitions="*,16,*">
-                                    <buttons:VButton Classes="BtnSecondary" Command="{Binding CancelDeleteCommand}" Height="80" VText="Cancelar" />
-                                    <buttons:VButton Classes="BtnPrimary" Command="{Binding ConfirmDeleteCommand}" Grid.Column="2" Height="80" VText="Excluir" />
+                                    <buttons:VButton
+                                        Classes="BtnSecondary"
+                                        Command="{Binding CancelDeleteCommand}"
+                                        Height="80"
+                                        VText="Cancelar" />
+                                    <buttons:VButton
+                                        Classes="BtnPrimary"
+                                        Command="{Binding ConfirmDeleteCommand}"
+                                        Grid.Column="2"
+                                        Height="80"
+                                        VText="Excluir" />
                                 </Grid>
                             </StackPanel>
                         </StackPanel>

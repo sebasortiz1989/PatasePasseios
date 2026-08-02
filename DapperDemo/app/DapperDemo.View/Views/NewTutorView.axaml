@@ -1,5 +1,5 @@
 <UserControl
-    d:DesignHeight="1560"
+    d:DesignHeight="1460"
     d:DesignWidth="720"
     mc:Ignorable="d"
     x:Class="Verion.Treinamento.DapperDemo.View.Views.NewTutorView"
@@ -12,7 +12,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Viewbox>
-        <Grid Background="{StaticResource ColorBg}" Height="1560" Width="720">
+        <Grid
+            Background="{StaticResource ColorBg}"
+            Height="1460"
+            Width="720">
             <ScrollViewer>
                 <StackPanel Spacing="0">
                     <buttons:VButton
@@ -24,13 +27,20 @@
                         Width="200" />
 
                     <StackPanel Margin="32,24,32,16" Spacing="2">
-                        <TextBlock Classes="Heading1" FontSize="62" Text="Novo tutor" />
+                        <TextBlock
+                            Classes="Heading1"
+                            FontSize="62"
+                            Text="Novo tutor" />
                         <TextBlock Classes="Kicker" Text="Cadastrar" />
                     </StackPanel>
 
                     <StackPanel Margin="32,16,32,48" Spacing="28">
                         <StackPanel Spacing="10">
-                            <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted70}" Text="Nome completo" />
+                            <TextBlock
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="25"
+                                Foreground="{StaticResource ColorTextMuted70}"
+                                Text="Nome completo" />
                             <TextBox
                                 Background="Transparent"
                                 BorderBrush="{StaticResource ColorDivider}"
@@ -48,7 +58,11 @@
                         </StackPanel>
 
                         <StackPanel Spacing="10">
-                            <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted70}" Text="Telefone" />
+                            <TextBlock
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="25"
+                                Foreground="{StaticResource ColorTextMuted70}"
+                                Text="Telefone" />
                             <TextBox
                                 Background="Transparent"
                                 BorderBrush="{StaticResource ColorDivider}"
@@ -66,7 +80,11 @@
                         </StackPanel>
 
                         <StackPanel Spacing="10">
-                            <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted70}" Text="Bairro" />
+                            <TextBlock
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="25"
+                                Foreground="{StaticResource ColorTextMuted70}"
+                                Text="Bairro" />
                             <TextBox
                                 Background="Transparent"
                                 BorderBrush="{StaticResource ColorDivider}"
@@ -93,7 +111,12 @@
                             Text="{Binding ErrorMessage}"
                             TextAlignment="Center" />
 
-                        <buttons:VButton Classes="BtnPrimary" Command="{Binding SaveCommand}" Height="88" HorizontalAlignment="Stretch" VText="Salvar tutor" />
+                        <buttons:VButton
+                            Classes="BtnPrimary"
+                            Command="{Binding SaveCommand}"
+                            Height="88"
+                            HorizontalAlignment="Stretch"
+                            VText="Salvar tutor" />
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>

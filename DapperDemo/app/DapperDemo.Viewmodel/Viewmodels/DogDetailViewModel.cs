@@ -18,9 +18,9 @@ public class DogDetailViewModel : PresentationModelBase<Void, Void>
     private readonly RepositoryTutors repositoryTutors;
     private readonly RepositoryServices repositoryServices;
     private readonly AppSession session;
-    private readonly NavigationController navigationController;
 
     public DogDetailViewModel(
+        CurrentView currentView,
         NavigationController navigationController,
         RepositoryDogs repositoryDogs,
         RepositoryTutors repositoryTutors,
@@ -31,8 +31,7 @@ public class DogDetailViewModel : PresentationModelBase<Void, Void>
         this.repositoryTutors = repositoryTutors;
         this.repositoryServices = repositoryServices;
         this.session = session;
-        this.navigationController = navigationController;
-        BackCommand = new SynchronizedCommand(() => navigationController.PopAsync(this), SynchronizationBehavior.Discard, true);
+        BackCommand = new SynchronizedCommand(currentView.GoBack, SynchronizationBehavior.Discard, true);
         AskDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = true, SynchronizationBehavior.Discard, true);
         CancelDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = false, SynchronizationBehavior.Discard, true);
         ConfirmDeleteCommand = new SynchronizedCommand(Delete, SynchronizationBehavior.Discard, true);
@@ -113,6 +112,6 @@ public class DogDetailViewModel : PresentationModelBase<Void, Void>
         await repositoryDogs.Delete(dogId).WithSync();
         session.SelectedDogId = null;
         session.NotifyDataChanged();
-        await navigationController.PopAsync(this).WithSync();
+        BackCommand.Execute(null);
     }
 }

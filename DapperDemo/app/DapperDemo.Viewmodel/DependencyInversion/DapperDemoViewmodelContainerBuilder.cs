@@ -15,6 +15,7 @@ namespace Verion.Treinamento.DapperDemo.Viewmodel.DependencyInversion
         private static IEnumerable<ContainerRegistration> GetRegistrations()
         {
             yield return CreateSingleton<AppSession>();
+            yield return CreateSingleton<CurrentView>();
             yield return CreateTransient<LoginViewModel>().WithAbstractions();
             yield return CreateTransient<SignUpViewModel>().WithAbstractions();
             yield return CreateTransient<MainViewModel>().WithAbstractions();

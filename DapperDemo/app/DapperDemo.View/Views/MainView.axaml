@@ -17,7 +17,7 @@
             RowDefinitions="1460, 100"
             Width="720">
 
-            <TransitioningContentControl Content="{Binding CurrentView}" Grid.Row="0">
+            <TransitioningContentControl Content="{Binding CurrentView.ViewShown}" Grid.Row="0">
                 <TransitioningContentControl.PageTransition>
                     <CrossFade Duration="0:0:0.25" />
                 </TransitioningContentControl.PageTransition>

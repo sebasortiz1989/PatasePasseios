@@ -24,10 +24,9 @@ public class NewDogViewModel : PresentationModelBase<Void, Void>
     private readonly RepositoryDogs repositoryDogs;
     private readonly RepositoryTutors repositoryTutors;
     private readonly AppSession session;
-    private readonly NavigationController navigationController;
 
     public NewDogViewModel(
-        NavigationController navigationController,
+        CurrentView currentView,
         RepositoryDogs repositoryDogs,
         RepositoryTutors repositoryTutors,
         AppSession session)
@@ -35,8 +34,7 @@ public class NewDogViewModel : PresentationModelBase<Void, Void>
         this.repositoryDogs = repositoryDogs;
         this.repositoryTutors = repositoryTutors;
         this.session = session;
-        this.navigationController = navigationController;
-        BackCommand = new SynchronizedCommand(() => navigationController.PopAsync(this), SynchronizationBehavior.Discard, true);
+        BackCommand = new SynchronizedCommand(currentView.GoBack, SynchronizationBehavior.Discard, true);
         SaveCommand = new SynchronizedCommand(Save, SynchronizationBehavior.Discard, true);
     }
 
@@ -106,6 +104,6 @@ public class NewDogViewModel : PresentationModelBase<Void, Void>
 
         ErrorMessage = string.Empty;
         session.NotifyDataChanged();
-        await navigationController.PopAsync(this).WithSync();
+        BackCommand.Execute(null);
     }
 }

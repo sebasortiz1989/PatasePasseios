@@ -1,5 +1,5 @@
 <UserControl
-    d:DesignHeight="1560"
+    d:DesignHeight="1460"
     d:DesignWidth="720"
     mc:Ignorable="d"
     x:Class="Verion.Treinamento.DapperDemo.View.Views.ServiceDetailView"
@@ -12,7 +12,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Viewbox>
-        <Grid Background="{StaticResource ColorBg}" Height="1560" Width="720">
+        <Grid
+            Background="{StaticResource ColorBg}"
+            Height="1460"
+            Width="720">
             <ScrollViewer>
                 <StackPanel Spacing="0">
                     <buttons:VButton
@@ -25,45 +28,122 @@
 
                     <StackPanel Margin="32,24,32,56" Spacing="0">
                         <TextBlock Classes="Kicker" Text="{Binding TypeLabel}" />
-                        <TextBlock Classes="Heading1" FontSize="72" Margin="0,4,0,0" Text="{Binding DogName}" />
-                        <TextBlock FontFamily="{StaticResource FontBody}" FontSize="28" FontStyle="Italic" Foreground="{StaticResource ColorTextMuted55}" Margin="0,4,0,0">
+                        <TextBlock
+                            Classes="Heading1"
+                            FontSize="72"
+                            Margin="0,4,0,0"
+                            Text="{Binding DogName}" />
+                        <TextBlock
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="28"
+                            FontStyle="Italic"
+                            Foreground="{StaticResource ColorTextMuted55}"
+                            Margin="0,4,0,0">
                             <Run Text="tutor: " />
                             <Run Text="{Binding TutorName}" />
                         </TextBlock>
-                        <Border Background="{StaticResource ColorAccent}" Height="2" HorizontalAlignment="Left" Margin="0,32,0,0" Width="77" />
+                        <Border
+                            Background="{StaticResource ColorAccent}"
+                            Height="2"
+                            HorizontalAlignment="Left"
+                            Margin="0,32,0,0"
+                            Width="77" />
 
-                        <Border BorderBrush="{StaticResource ColorDivider}" BorderThickness="0,2,0,0" Margin="0,32,0,0" Padding="0,20,0,20">
+                        <Border
+                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderThickness="0,2,0,0"
+                            Margin="0,32,0,0"
+                            Padding="0,20,0,20">
                             <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted55}" LetterSpacing="1" Text="DATA" />
-                                <TextBlock Grid.Column="1" FontFamily="{StaticResource FontBody}" FontSize="31" Foreground="{StaticResource ColorText}" Text="{Binding DateLabel}" />
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="25"
+                                    Foreground="{StaticResource ColorTextMuted55}"
+                                    LetterSpacing="1"
+                                    Text="DATA" />
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="31"
+                                    Foreground="{StaticResource ColorText}"
+                                    Grid.Column="1"
+                                    Text="{Binding DateLabel}" />
                             </Grid>
                         </Border>
 
                         <StackPanel IsVisible="{Binding IsHotel}">
-                            <Border BorderBrush="{StaticResource ColorDivider}" BorderThickness="0,2,0,0" Padding="0,20,0,20">
+                            <Border
+                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderThickness="0,2,0,0"
+                                Padding="0,20,0,20">
                                 <Grid ColumnDefinitions="*,Auto">
-                                    <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted55}" LetterSpacing="1" Text="SAÍDA" />
-                                    <TextBlock Grid.Column="1" FontFamily="{StaticResource FontBody}" FontSize="31" Foreground="{StaticResource ColorText}" Text="{Binding EndLabel}" />
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="25"
+                                        Foreground="{StaticResource ColorTextMuted55}"
+                                        LetterSpacing="1"
+                                        Text="SAÍDA" />
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="31"
+                                        Foreground="{StaticResource ColorText}"
+                                        Grid.Column="1"
+                                        Text="{Binding EndLabel}" />
                                 </Grid>
                             </Border>
-                            <Border BorderBrush="{StaticResource ColorDivider}" BorderThickness="0,2,0,0" Padding="0,20,0,20">
+                            <Border
+                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderThickness="0,2,0,0"
+                                Padding="0,20,0,20">
                                 <Grid ColumnDefinitions="*,Auto">
-                                    <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted55}" LetterSpacing="1" Text="PASSEIOS" />
-                                    <TextBlock Grid.Column="1" FontFamily="{StaticResource FontBody}" FontSize="31" Foreground="{StaticResource ColorText}" Text="{Binding WalkingLabel}" />
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="25"
+                                        Foreground="{StaticResource ColorTextMuted55}"
+                                        LetterSpacing="1"
+                                        Text="PASSEIOS" />
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="31"
+                                        Foreground="{StaticResource ColorText}"
+                                        Grid.Column="1"
+                                        Text="{Binding WalkingLabel}" />
                                 </Grid>
                             </Border>
                         </StackPanel>
 
-                        <Border BorderBrush="{StaticResource ColorDivider}" BorderThickness="0,2,0,0" Padding="0,20,0,20">
+                        <Border
+                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderThickness="0,2,0,0"
+                            Padding="0,20,0,20">
                             <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted55}" LetterSpacing="1" Text="{Binding PriceFieldLabel}" />
-                                <TextBlock Grid.Column="1" FontFamily="{StaticResource FontHeading}" FontSize="41" Foreground="{StaticResource ColorText}" Text="{Binding PriceLabel}" />
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="25"
+                                    Foreground="{StaticResource ColorTextMuted55}"
+                                    LetterSpacing="1"
+                                    Text="{Binding PriceFieldLabel}" />
+                                <TextBlock
+                                    FontFamily="{StaticResource FontHeading}"
+                                    FontSize="41"
+                                    Foreground="{StaticResource ColorText}"
+                                    Grid.Column="1"
+                                    Text="{Binding PriceLabel}" />
                             </Grid>
                         </Border>
 
-                        <Border BorderBrush="{StaticResource ColorDivider}" BorderThickness="0,2,0,2" Padding="0,20,0,20" VerticalAlignment="Center">
+                        <Border
+                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderThickness="0,2,0,2"
+                            Padding="0,20,0,20"
+                            VerticalAlignment="Center">
                             <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted55}" LetterSpacing="1" Text="PAGAMENTO" VerticalAlignment="Center" />
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="25"
+                                    Foreground="{StaticResource ColorTextMuted55}"
+                                    LetterSpacing="1"
+                                    Text="PAGAMENTO"
+                                    VerticalAlignment="Center" />
                                 <Button
                                     Classes="Chip"
                                     Classes.Active="{Binding Paid}"
@@ -93,8 +173,17 @@
                                     TextAlignment="Center"
                                     TextWrapping="Wrap" />
                                 <Grid ColumnDefinitions="*,16,*">
-                                    <buttons:VButton Classes="BtnSecondary" Command="{Binding CancelDeleteCommand}" Height="80" VText="Cancelar" />
-                                    <buttons:VButton Classes="BtnPrimary" Command="{Binding ConfirmDeleteCommand}" Grid.Column="2" Height="80" VText="Excluir" />
+                                    <buttons:VButton
+                                        Classes="BtnSecondary"
+                                        Command="{Binding CancelDeleteCommand}"
+                                        Height="80"
+                                        VText="Cancelar" />
+                                    <buttons:VButton
+                                        Classes="BtnPrimary"
+                                        Command="{Binding ConfirmDeleteCommand}"
+                                        Grid.Column="2"
+                                        Height="80"
+                                        VText="Excluir" />
                                 </Grid>
                             </StackPanel>
                         </StackPanel>

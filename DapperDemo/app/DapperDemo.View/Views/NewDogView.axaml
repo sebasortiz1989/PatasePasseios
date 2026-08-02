@@ -1,5 +1,5 @@
 <UserControl
-    d:DesignHeight="1560"
+    d:DesignHeight="1460"
     d:DesignWidth="720"
     mc:Ignorable="d"
     x:Class="Verion.Treinamento.DapperDemo.View.Views.NewDogView"
@@ -12,7 +12,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Viewbox>
-        <Grid Background="{StaticResource ColorBg}" Height="1560" Width="720">
+        <Grid
+            Background="{StaticResource ColorBg}"
+            Height="1460"
+            Width="720">
             <ScrollViewer>
                 <StackPanel Spacing="0">
                     <buttons:VButton
@@ -24,12 +27,20 @@
                         Width="200" />
 
                     <StackPanel Margin="32,24,32,16" Spacing="2">
-                        <TextBlock Classes="Heading1" FontSize="62" Text="Novo cachorro" />
+                        <TextBlock
+                            Classes="Heading1"
+                            FontSize="62"
+                            Text="Novo cachorro" />
                         <TextBlock Classes="Kicker" Text="Cadastrar" />
                     </StackPanel>
 
                     <!--  A dog needs an owner, so with no tutors yet the form sends the user there first  -->
-                    <Border BorderBrush="{StaticResource ColorDivider}" BorderThickness="0,2,0,0" IsVisible="{Binding HasNoTutors}" Margin="32,16,32,0" Padding="32,64">
+                    <Border
+                        BorderBrush="{StaticResource ColorDivider}"
+                        BorderThickness="0,2,0,0"
+                        IsVisible="{Binding HasNoTutors}"
+                        Margin="32,16,32,0"
+                        Padding="32,64">
                         <TextBlock
                             FontFamily="{StaticResource FontBody}"
                             FontSize="29"
@@ -41,9 +52,16 @@
                             TextWrapping="Wrap" />
                     </Border>
 
-                    <StackPanel IsVisible="{Binding HasTutors}" Margin="32,16,32,48" Spacing="28">
+                    <StackPanel
+                        IsVisible="{Binding HasTutors}"
+                        Margin="32,16,32,48"
+                        Spacing="28">
                         <StackPanel Spacing="10">
-                            <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted70}" Text="Nome" />
+                            <TextBlock
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="25"
+                                Foreground="{StaticResource ColorTextMuted70}"
+                                Text="Nome" />
                             <TextBox
                                 Background="Transparent"
                                 BorderBrush="{StaticResource ColorDivider}"
@@ -61,7 +79,11 @@
                         </StackPanel>
 
                         <StackPanel Spacing="10">
-                            <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted70}" Text="Raça" />
+                            <TextBlock
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="25"
+                                Foreground="{StaticResource ColorTextMuted70}"
+                                Text="Raça" />
                             <TextBox
                                 Background="Transparent"
                                 BorderBrush="{StaticResource ColorDivider}"
@@ -79,7 +101,11 @@
                         </StackPanel>
 
                         <StackPanel Spacing="10">
-                            <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted70}" Text="Tutor" />
+                            <TextBlock
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="25"
+                                Foreground="{StaticResource ColorTextMuted70}"
+                                Text="Tutor" />
                             <ComboBox
                                 Background="Transparent"
                                 BorderBrush="{StaticResource ColorDivider}"
@@ -103,7 +129,11 @@
                         </StackPanel>
 
                         <StackPanel Spacing="10">
-                            <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted70}" Text="Descrição" />
+                            <TextBlock
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="25"
+                                Foreground="{StaticResource ColorTextMuted70}"
+                                Text="Descrição" />
                             <TextBox
                                 AcceptsReturn="True"
                                 Background="Transparent"
@@ -131,7 +161,12 @@
                             Text="{Binding ErrorMessage}"
                             TextAlignment="Center" />
 
-                        <buttons:VButton Classes="BtnPrimary" Command="{Binding SaveCommand}" Height="88" HorizontalAlignment="Stretch" VText="Salvar cachorro" />
+                        <buttons:VButton
+                            Classes="BtnPrimary"
+                            Command="{Binding SaveCommand}"
+                            Height="88"
+                            HorizontalAlignment="Stretch"
+                            VText="Salvar cachorro" />
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>

@@ -25,33 +25,33 @@ public sealed class DogRow(string initials, string name, string subtitle, IComma
 [AddINotifyPropertyChangedInterface]
 public class DogsViewModel : PresentationModelBase<Void, Void>
 {
-    private readonly NavigationController navigationController;
     private readonly RepositoryDogs repositoryDogs;
     private readonly RepositoryTutors repositoryTutors;
     private readonly AppSession session;
     private readonly EventHandler dataChangedHandler;
-    private readonly Factory<PresenterBase<DogDetailViewModel, Void, Void>> dogDetailFactory;
-    private readonly Factory<PresenterBase<NewDogViewModel, Void, Void>> newDogFactory;
+    private readonly PresenterBase<DogDetailViewModel, Void, Void> dogDetailView;
+    private readonly PresenterBase<NewDogViewModel, Void, Void> newDogView;
+    private readonly CurrentView currentView;
 
     public DogsViewModel(
-        NavigationController navigationController,
+        CurrentView currentView,
         RepositoryDogs repositoryDogs,
         RepositoryTutors repositoryTutors,
         AppSession session,
         Factory<PresenterBase<DogDetailViewModel, Void, Void>> dogDetailFactory,
         Factory<PresenterBase<NewDogViewModel, Void, Void>> newDogFactory)
     {
-        this.navigationController = navigationController;
+        this.currentView = currentView;
         this.repositoryDogs = repositoryDogs;
         this.repositoryTutors = repositoryTutors;
         this.session = session;
-        this.dogDetailFactory = dogDetailFactory;
-        this.newDogFactory = newDogFactory;
 
         dataChangedHandler = (_, _) => AppSession.FireAndForget(ReloadAsync());
         session.DataChanged += dataChangedHandler;
 
-        AddDogCommand = new SynchronizedCommand(OpenNewDog, SynchronizationBehavior.Discard, true);
+        dogDetailView = dogDetailFactory.Create();
+        newDogView = newDogFactory.Create();
+        AddDogCommand = new SynchronizedCommand(() => currentView.ViewShown = newDogView, SynchronizationBehavior.Discard, true);
     }
 
     public ICommand AddDogCommand { get; }
@@ -107,11 +107,10 @@ public class DogsViewModel : PresentationModelBase<Void, Void>
         DogsCollection.Clear();
     }
 
-    private async Task Open(int dogId)
+    private Task Open(int dogId)
     {
         session.SelectedDogId = dogId;
-        await navigationController.PushAsync(dogDetailFactory.Create()).WithSync();
+        currentView.ViewShown = dogDetailView;
+        return Task.CompletedTask;
     }
-
-    private async Task OpenNewDog() => await navigationController.PushAsync(newDogFactory.Create()).WithSync();
 }

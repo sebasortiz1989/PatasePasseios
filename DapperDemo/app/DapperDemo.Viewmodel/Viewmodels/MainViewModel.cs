@@ -21,12 +21,14 @@ public class MainViewModel : PresentationModelBase<Void, Void>
     public MainViewModel(
         NavigationController navigationController,
         AppSession session,
+        CurrentView currentView,
         Factory<PresenterBase<DogsViewModel, Void, Void>> dogsViewFactory,
         Factory<PresenterBase<TutorsViewModel, Void, Void>> tutorsViewFactory,
         Factory<PresenterBase<HomeViewModel, Void, Void>> homeViewFactory,
         Factory<PresenterBase<ServicesViewModel, Void, Void>> servicesViewFactory,
         Factory<PresenterBase<UsersViewModel, Void, Void>> usersViewFactory)
     {
+        CurrentView = currentView;
         BackCommand = new SynchronizedCommand(() => navigationController.PopAsync(this), SynchronizationBehavior.Discard, true);
 
         // The Perfil tab has no handle on this screen's navigation entry, so it raises a logout
@@ -44,11 +46,11 @@ public class MainViewModel : PresentationModelBase<Void, Void>
         homeView = homeViewFactory.Create();
         servicesView = servicesViewFactory.Create();
         usersView = usersViewFactory.Create();
-        DogsViewCommand = new SynchronizedCommand(() => CurrentView = dogsView, SynchronizationBehavior.Discard, true);
-        TutorsViewCommand = new SynchronizedCommand(() => CurrentView = tutorsView, SynchronizationBehavior.Discard, true);
-        HomeViewCommand = new SynchronizedCommand(() => CurrentView = homeView, SynchronizationBehavior.Discard, true);
-        ServicesViewCommand = new SynchronizedCommand(() => CurrentView = servicesView, SynchronizationBehavior.Discard, true);
-        UsersViewCommand = new SynchronizedCommand(() => CurrentView = usersView, SynchronizationBehavior.Discard, true);
+        DogsViewCommand = new SynchronizedCommand(() => CurrentView.ViewShown = dogsView, SynchronizationBehavior.Discard, true);
+        TutorsViewCommand = new SynchronizedCommand(() => CurrentView.ViewShown = tutorsView, SynchronizationBehavior.Discard, true);
+        HomeViewCommand = new SynchronizedCommand(() => CurrentView.ViewShown = homeView, SynchronizationBehavior.Discard, true);
+        ServicesViewCommand = new SynchronizedCommand(() => CurrentView.ViewShown = servicesView, SynchronizationBehavior.Discard, true);
+        UsersViewCommand = new SynchronizedCommand(() => CurrentView.ViewShown = usersView, SynchronizationBehavior.Discard, true);
     }
 
     public ICommand BackCommand { get; }
@@ -63,7 +65,7 @@ public class MainViewModel : PresentationModelBase<Void, Void>
 
     public ICommand UsersViewCommand { get; }
 
-    public object CurrentView { get; set; }
+    public CurrentView CurrentView { get; set; }
 
     protected override Task OnRunStarting(Void input)
     {
