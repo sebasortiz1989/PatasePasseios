@@ -1,26 +1,13 @@
-using System.Collections.ObjectModel;
-using System.Windows.Input;
-using PropertyChanged;
 using AvaloniaFramework.Presentation;
 using AvaloniaFramework.Presentation.UseCase;
 using AvaloniaFramework.Threading;
 using DapperDemo.Mensagens.Dapper.Aggregates;
 using DapperDemo.Viewmodel.Viewmodels.Session;
+using PropertyChanged;
+using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 namespace DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
-
-public sealed class DogRow(string initials, string name, string subtitle, ICommand openCommand) : IDisposable
-{
-    public string Initials { get; } = initials;
-
-    public string Name { get; } = name;
-
-    public string Subtitle { get; } = subtitle;
-
-    public ICommand OpenCommand { get; } = openCommand;
-
-    public void Dispose() => (OpenCommand as IDisposable)?.Dispose();
-}
 
 [AddINotifyPropertyChangedInterface]
 public class DogsViewModel : PresentationModelBase<Unit, Unit>
@@ -64,15 +51,6 @@ public class DogsViewModel : PresentationModelBase<Unit, Unit>
     // in the moment before the first load completes.
     public bool IsEmpty { get; private set; } = true;
 
-    protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
-
-    protected override Task OnRunFinishing()
-    {
-        session.DataChanged -= dataChangedHandler;
-        ClearRows();
-        return Task.CompletedTask;
-    }
-
     /// <summary>Public because the View calls it from OnLoaded — see the class remarks.</summary>
     public async Task ReloadAsync()
     {
@@ -95,6 +73,15 @@ public class DogsViewModel : PresentationModelBase<Unit, Unit>
 
         DogCountLabel = dogs.Length == 1 ? "1 cadastrado" : $"{dogs.Length} cadastrados";
         IsEmpty = dogs.Length == 0;
+    }
+
+    protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
+
+    protected override Task OnRunFinishing()
+    {
+        session.DataChanged -= dataChangedHandler;
+        ClearRows();
+        return Task.CompletedTask;
     }
 
     private void ClearRows()

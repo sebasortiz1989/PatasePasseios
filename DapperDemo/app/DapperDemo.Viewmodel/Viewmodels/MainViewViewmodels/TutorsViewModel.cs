@@ -1,26 +1,13 @@
-using System.Collections.ObjectModel;
-using System.Windows.Input;
-using PropertyChanged;
 using AvaloniaFramework.Presentation;
 using AvaloniaFramework.Presentation.UseCase;
 using AvaloniaFramework.Threading;
 using DapperDemo.Mensagens.Dapper.Aggregates;
 using DapperDemo.Viewmodel.Viewmodels.Session;
+using PropertyChanged;
+using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 namespace DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
-
-public sealed class TutorRow(string initials, string name, string subtitle, ICommand openCommand) : IDisposable
-{
-    public string Initials { get; } = initials;
-
-    public string Name { get; } = name;
-
-    public string Subtitle { get; } = subtitle;
-
-    public ICommand OpenCommand { get; } = openCommand;
-
-    public void Dispose() => (OpenCommand as IDisposable)?.Dispose();
-}
 
 [AddINotifyPropertyChangedInterface]
 public class TutorsViewModel : PresentationModelBase<Unit, Unit>
@@ -45,6 +32,7 @@ public class TutorsViewModel : PresentationModelBase<Unit, Unit>
         this.repositoryTutors = repositoryTutors;
         this.repositoryDogs = repositoryDogs;
         this.session = session;
+
         // CurrentView.ViewShown is typed `object` and is bound straight to a ContentControl, so it
         // needs the created presenter — assigning the factory itself compiles but renders blank.
         tutorDetailView = tutorDetailFactory.Create();
@@ -65,15 +53,6 @@ public class TutorsViewModel : PresentationModelBase<Unit, Unit>
     // Defaults to true so the screen shows its empty-state message rather than nothing at all
     // in the moment before the first load completes.
     public bool IsEmpty { get; private set; } = true;
-
-    protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
-
-    protected override Task OnRunFinishing()
-    {
-        session.DataChanged -= dataChangedHandler;
-        ClearRows();
-        return Task.CompletedTask;
-    }
 
     /// <summary>Public because the View calls it from OnLoaded — see the class remarks.</summary>
     public async Task ReloadAsync()
@@ -97,6 +76,15 @@ public class TutorsViewModel : PresentationModelBase<Unit, Unit>
 
         TutorCountLabel = tutors.Length == 1 ? "1 cadastrado" : $"{tutors.Length} cadastrados";
         IsEmpty = tutors.Length == 0;
+    }
+
+    protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
+
+    protected override Task OnRunFinishing()
+    {
+        session.DataChanged -= dataChangedHandler;
+        ClearRows();
+        return Task.CompletedTask;
     }
 
     private void ClearRows()

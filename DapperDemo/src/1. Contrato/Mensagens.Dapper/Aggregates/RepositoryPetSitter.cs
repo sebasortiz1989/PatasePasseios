@@ -1,7 +1,7 @@
 ﻿using Dapper;
-using Microsoft.Data.Sqlite;
 using DapperDemo.Mensagens.Dapper.Dtos;
 using DapperDemo.Mensagens.Dapper.Services;
+using Microsoft.Data.Sqlite;
 
 namespace DapperDemo.Mensagens.Dapper.Aggregates;
 
@@ -12,25 +12,23 @@ public sealed class RepositoryPetSitter : RepositoryBase<PetSitter>
     {
     }
 
-    public override Task<Response> Add(PetSitter petSitter)
+    public override async Task<Response> Add(PetSitter petSitter)
     {
         try
         {
-            using (var connection = DapperDatabaseService.Connection)
-            {
-                connection.Open();
-                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(petSitter.Password);
-                connection.Execute(
-                    sql: "INSERT INTO PetSitter (Email, PasswordHash, Name, BirthDate) VALUES (@Email, @PasswordHash, @Name, @BirthDate)",
-                    param: new { petSitter.Email, PasswordHash = hashedPassword, petSitter.Name, petSitter.BirthDate });
+            using var connection = DapperDatabaseService.Connection;
+            await connection.OpenAsync().ConfigureAwait(false);
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(petSitter.Password);
+            await connection.ExecuteAsync(
+                sql: "INSERT INTO PetSitter (Email, PasswordHash, Name, BirthDate) VALUES (@Email, @PasswordHash, @Name, @BirthDate)",
+                param: new { petSitter.Email, PasswordHash = hashedPassword, petSitter.Name, petSitter.BirthDate }).ConfigureAwait(false);
 
-                return Task.FromResult(Response.Successful);
-            }
+            return Response.Successful;
         }
         catch (SqliteException e)
         {
             Console.WriteLine(e);
-            return Task.FromResult(e.Message == "SQLite Error 19: 'UNIQUE constraint failed: PetSitter.Email'." ? Response.EmailExists : Response.Failed);
+            return e.Message == "SQLite Error 19: 'UNIQUE constraint failed: PetSitter.Email'." ? Response.EmailExists : Response.Failed;
         }
     }
 
@@ -69,10 +67,14 @@ public sealed class RepositoryPetSitter : RepositoryBase<PetSitter>
                     onComplete(result);
                 }
             }
+#pragma warning disable CA1031 // The onError callback is this method's only error channel: it runs
+            // on a background task with no caller to rethrow to, so narrowing the catch would lose
+            // failures silently rather than reporting them.
             catch (Exception ex)
             {
                 onError?.Invoke(ex);
             }
+#pragma warning restore CA1031
         });
     }
 
@@ -81,7 +83,7 @@ public sealed class RepositoryPetSitter : RepositoryBase<PetSitter>
         throw new NotImplementedException();
     }
 
-    public override Task<Response> Delete(int petSitterId)
+    public override Task<Response> Delete(int entityId)
     {
         throw new NotImplementedException();
     }

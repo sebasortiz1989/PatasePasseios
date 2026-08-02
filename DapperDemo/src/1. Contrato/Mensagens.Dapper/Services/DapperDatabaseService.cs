@@ -23,30 +23,6 @@ public sealed class DapperDatabaseService
 
     public SqliteConnection Connection => new(connectionString);
 
-    private void InitializeDatabase()
-    {
-        var appDataFolder = GetAppDataFolder();
-        if (!Directory.Exists(appDataFolder))
-        {
-            Directory.CreateDirectory(appDataFolder);
-        }
-
-        string databaseFileName = "DapperDemo.db";
-        var databasePath = Path.Combine(appDataFolder, databaseFileName);
-        connectionString = new SqliteConnectionStringBuilder
-        {
-            DataSource = databasePath,
-        }.ToString();
-
-        using (var connection = Connection)
-        {
-            connection.Open();
-            RecreateTablesIfSchemaIsStale(connection);
-            CreatePetSitterTableIfNotExists(connection);
-            CreateMockData(connection);
-        }
-    }
-
     /// <summary>
     /// Drops every table when the file on disk was built by an older schema, so the CREATE TABLE
     /// IF NOT EXISTS statements below can lay it out again correctly. Runs at most once per
@@ -72,6 +48,30 @@ public sealed class DapperDatabaseService
                  """);
 
         connection.Execute($"PRAGMA user_version = {SchemaVersion};");
+    }
+
+    private void InitializeDatabase()
+    {
+        var appDataFolder = GetAppDataFolder();
+        if (!Directory.Exists(appDataFolder))
+        {
+            Directory.CreateDirectory(appDataFolder);
+        }
+
+        string databaseFileName = "DapperDemo.db";
+        var databasePath = Path.Combine(appDataFolder, databaseFileName);
+        connectionString = new SqliteConnectionStringBuilder
+        {
+            DataSource = databasePath,
+        }.ToString();
+
+        using (var connection = Connection)
+        {
+            connection.Open();
+            RecreateTablesIfSchemaIsStale(connection);
+            CreatePetSitterTableIfNotExists(connection);
+            CreateMockData(connection);
+        }
     }
 
     /// <summary>

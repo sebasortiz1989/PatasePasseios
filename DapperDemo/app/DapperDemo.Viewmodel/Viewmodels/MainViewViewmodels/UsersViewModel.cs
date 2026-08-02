@@ -1,25 +1,42 @@
-using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Windows.Input;
-using PropertyChanged;
 using AvaloniaFramework.Presentation;
 using AvaloniaFramework.Presentation.UseCase;
 using AvaloniaFramework.Threading;
 using DapperDemo.Mensagens.Dapper.Aggregates;
 using DapperDemo.Viewmodel.Viewmodels.Session;
+using PropertyChanged;
+using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Windows.Input;
 
 namespace DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
-
-public class IncomeRow(string label, string amount)
-{
-    public string Label { get; } = label;
-
-    public string Amount { get; } = amount;
-}
 
 [AddINotifyPropertyChangedInterface]
 public class UsersViewModel : PresentationModelBase<Unit, Unit>
 {
+    /// <summary>Public because the View calls it from OnLoaded — see the class remarks.</summary>
+    public async Task ReloadAsync()
+    {
+        CurrentUserName = session.CurrentUserName;
+
+        var now = DateTime.Now;
+        var income = await repositoryServices.GetMonthlyIncomeAsync(session.CurrentPetSitterId, now.Year, now.Month).WithSync();
+        var services = await repositoryServices.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
+        var dogs = await repositoryDogs.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
+        var tutors = await repositoryTutors.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
+
+        MonthTotalLabel = AppSession.Money(income.Total);
+
+        IncomeBreakdown.Clear();
+        IncomeBreakdown.Add(new IncomeRow("Passeio", AppSession.Money(income.Walk)));
+        IncomeBreakdown.Add(new IncomeRow("Pet sitting", AppSession.Money(income.Sitting)));
+        IncomeBreakdown.Add(new IncomeRow("Hotel", AppSession.Money(income.Hotel)));
+
+        DogCountLabel = dogs.Length.ToString(CultureInfo.InvariantCulture);
+        TutorCountLabel = tutors.Length.ToString(CultureInfo.InvariantCulture);
+        ServiceCountLabel = services.Length.ToString(CultureInfo.InvariantCulture);
+        PendingCountLabel = services.Count(s => !s.ServicePaid).ToString(CultureInfo.InvariantCulture);
+    }
+
     private readonly RepositoryServices repositoryServices;
     private readonly RepositoryDogs repositoryDogs;
     private readonly RepositoryTutors repositoryTutors;
@@ -118,29 +135,5 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
 
         // Changing the stored password hash isn't wired up yet — the repository has no Update.
         PwMsg = "Alteração de senha ainda não disponível.";
-    }
-
-    /// <summary>Public because the View calls it from OnLoaded — see the class remarks.</summary>
-    public async Task ReloadAsync()
-    {
-        CurrentUserName = session.CurrentUserName;
-
-        var now = DateTime.Now;
-        var income = await repositoryServices.GetMonthlyIncomeAsync(session.CurrentPetSitterId, now.Year, now.Month).WithSync();
-        var services = await repositoryServices.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
-        var dogs = await repositoryDogs.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
-        var tutors = await repositoryTutors.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
-
-        MonthTotalLabel = AppSession.Money(income.Total);
-
-        IncomeBreakdown.Clear();
-        IncomeBreakdown.Add(new IncomeRow("Passeio", AppSession.Money(income.Walk)));
-        IncomeBreakdown.Add(new IncomeRow("Pet sitting", AppSession.Money(income.Sitting)));
-        IncomeBreakdown.Add(new IncomeRow("Hotel", AppSession.Money(income.Hotel)));
-
-        DogCountLabel = dogs.Length.ToString(CultureInfo.InvariantCulture);
-        TutorCountLabel = tutors.Length.ToString(CultureInfo.InvariantCulture);
-        ServiceCountLabel = services.Length.ToString(CultureInfo.InvariantCulture);
-        PendingCountLabel = services.Count(s => !s.ServicePaid).ToString(CultureInfo.InvariantCulture);
     }
 }

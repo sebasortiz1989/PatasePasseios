@@ -1,11 +1,11 @@
-using System.Windows.Input;
-using PropertyChanged;
 using AvaloniaFramework.Presentation;
 using AvaloniaFramework.Presentation.UseCase;
 using AvaloniaFramework.Threading;
 using DapperDemo.Mensagens.Dapper.Aggregates;
 using DapperDemo.Mensagens.Dapper.Dtos;
 using DapperDemo.Viewmodel.Viewmodels.Session;
+using PropertyChanged;
+using System.Windows.Input;
 
 namespace DapperDemo.Viewmodel.Viewmodels;
 
@@ -39,7 +39,7 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
 
     public ICommand ConfirmDeleteCommand { get; }
 
-    /// <summary>Deleting takes two taps: the button swaps for a confirm/cancel pair.</summary>
+    /// <summary>Gets a value indicating whether deleting takes two taps: the button swaps for a confirm/cancel pair.</summary>
     public bool ConfirmingDelete { get; private set; }
 
     public bool NotConfirmingDelete => !ConfirmingDelete;
@@ -66,13 +66,13 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
 
     public string PaidActionLabel { get; private set; } = string.Empty;
 
-    protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
-
     /// <summary>
     /// Public because the View calls it from OnLoaded — see <see cref="DogDetailViewModel"/> for
     /// why OnRunStarting is not enough for a screen shown through CurrentView.
     /// </summary>
     public Task ReloadAsync() => LoadAsync();
+
+    protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
 
     private async Task TogglePaid()
     {

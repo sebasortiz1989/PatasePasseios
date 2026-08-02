@@ -1,7 +1,7 @@
 using Dapper;
-using Microsoft.Data.Sqlite;
 using DapperDemo.Mensagens.Dapper.Dtos;
 using DapperDemo.Mensagens.Dapper.Services;
+using Microsoft.Data.Sqlite;
 
 namespace DapperDemo.Mensagens.Dapper.Aggregates;
 

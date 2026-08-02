@@ -1,9 +1,9 @@
-using System.Windows.Input;
-using PropertyChanged;
 using AvaloniaFramework.Presentation;
 using AvaloniaFramework.Presentation.UseCase;
 using DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
 using DapperDemo.Viewmodel.Viewmodels.Session;
+using PropertyChanged;
+using System.Windows.Input;
 
 namespace DapperDemo.Viewmodel.Viewmodels;
 

@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using AvaloniaFramework.DependencyInjection;
 using AvaloniaFramework.Hosting.DependencyInjection;
-using AvaloniaFramework.DependencyInjection;
 using DapperDemo.View.Views;
 using DapperDemo.View.Views.MainViewViews;
 using DapperDemo.Viewmodel.DependencyInversion;
+using System.Collections.Generic;
 
 namespace DapperDemo.View.DependencyInversion
 {

@@ -1,8 +1,8 @@
-﻿using System;
-using AppKit;
+﻿using AppKit;
 using Avalonia;
 using DapperDemo.MacOS.DependencyInversion;
 using DapperDemo.View;
+using System;
 
 namespace DapperDemo.MacOS
 {

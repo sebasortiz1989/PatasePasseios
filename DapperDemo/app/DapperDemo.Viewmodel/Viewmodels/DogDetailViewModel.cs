@@ -1,15 +1,13 @@
-using System.Collections.ObjectModel;
-using System.Windows.Input;
-using PropertyChanged;
 using AvaloniaFramework.Presentation;
 using AvaloniaFramework.Presentation.UseCase;
 using AvaloniaFramework.Threading;
 using DapperDemo.Mensagens.Dapper.Aggregates;
 using DapperDemo.Viewmodel.Viewmodels.Session;
+using PropertyChanged;
+using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 namespace DapperDemo.Viewmodel.Viewmodels;
-
-public record FutureServiceRow(string TypeLabel, string DateLabel);
 
 [AddINotifyPropertyChangedInterface]
 public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
@@ -45,7 +43,7 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
 
     public ICommand ConfirmDeleteCommand { get; }
 
-    /// <summary>Deleting takes two taps: the button swaps for a confirm/cancel pair.</summary>
+    /// <summary>Gets a value indicating whether deleting takes two taps: the button swaps for a confirm/cancel pair.</summary>
     public bool ConfirmingDelete { get; private set; }
 
     public bool NotConfirmingDelete => !ConfirmingDelete;
@@ -63,8 +61,6 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
     public bool NoFuture { get; private set; }
 
     public ObservableCollection<FutureServiceRow> FutureServices { get; } = [];
-
-    protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
 
     /// <summary>
     /// Public because the View calls it from OnLoaded: this screen is shown by assigning
@@ -109,6 +105,8 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
 
         NoFuture = future.Length == 0;
     }
+
+    protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
 
     private async Task Delete()
     {

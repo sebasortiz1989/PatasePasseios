@@ -1,7 +1,7 @@
 ﻿using Avalonia;
-using System;
 using DapperDemo.Desktop.DependencyInversion;
 using DapperDemo.View;
+using System;
 
 namespace DapperDemo.Desktop;
 

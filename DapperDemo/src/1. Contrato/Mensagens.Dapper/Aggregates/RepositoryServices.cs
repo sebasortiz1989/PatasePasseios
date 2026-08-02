@@ -1,7 +1,7 @@
 using Dapper;
-using Microsoft.Data.Sqlite;
 using DapperDemo.Mensagens.Dapper.Dtos;
 using DapperDemo.Mensagens.Dapper.Services;
+using Microsoft.Data.Sqlite;
 
 namespace DapperDemo.Mensagens.Dapper.Aggregates;
 
@@ -156,7 +156,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
         {
             Walk = paidThisMonth.Where(s => s.Kind == ServiceKind.Walk).Sum(s => s.Price),
             Sitting = paidThisMonth.Where(s => s.Kind == ServiceKind.Sitting).Sum(s => s.Price),
-            Hotel = paidThisMonth.Where(s => s.Kind == ServiceKind.Hotel).Sum(s => s.Price)
+            Hotel = paidThisMonth.Where(s => s.Kind == ServiceKind.Hotel).Sum(s => s.Price),
         };
     }
 
@@ -165,7 +165,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
         ServiceKind.Walk => ("WalkingService", "WalkingServiceId"),
         ServiceKind.Sitting => ("PetSittingService", "PetSittingServiceId"),
         ServiceKind.Hotel => ("PetHotelService", "PetHotelServiceId"),
-        _ => throw new ArgumentOutOfRangeException(nameof(kind))
+        _ => throw new ArgumentOutOfRangeException(nameof(kind)),
     };
 
     private async Task<Response> InsertAsync(string sql, object param)

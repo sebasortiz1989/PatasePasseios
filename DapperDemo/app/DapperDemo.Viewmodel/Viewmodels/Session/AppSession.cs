@@ -1,5 +1,5 @@
-using System.Globalization;
 using DapperDemo.Mensagens.Dapper.Dtos;
+using System.Globalization;
 
 namespace DapperDemo.Viewmodel.Viewmodels.Session;
 
@@ -35,6 +35,17 @@ public class AppSession
 
     public event EventHandler? LogoutRequested;
 
+    /// <summary>
+    /// Starts a reload without awaiting it, but reports failures. A bare <c>_ = SomeAsync()</c>
+    /// swallows the exception, which turns a broken query into a screen that is silently blank
+    /// with no clue why.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1030:Use events where appropriate", Justification = "Not a notification — this observes a task that is intentionally not awaited.")]
+    public static void FireAndForget(Task task) =>
+        task.ContinueWith(
+            t => Console.WriteLine($"[DapperDemo] background reload failed: {t.Exception?.GetBaseException()}"),
+            TaskContinuationOptions.OnlyOnFaulted);
+
     public void SignIn(PetSitter petSitter)
     {
         CurrentPetSitterId = petSitter.PetSitterId;
@@ -55,17 +66,6 @@ public class AppSession
 
     public void RequestLogout() => LogoutRequested?.Invoke(this, EventArgs.Empty);
 
-    /// <summary>
-    /// Starts a reload without awaiting it, but reports failures. A bare <c>_ = SomeAsync()</c>
-    /// swallows the exception, which turns a broken query into a screen that is silently blank
-    /// with no clue why.
-    /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1030:Use events where appropriate", Justification = "Not a notification — this observes a task that is intentionally not awaited.")]
-    public static void FireAndForget(Task task) =>
-        task.ContinueWith(
-            t => Console.WriteLine($"[DapperDemo] background reload failed: {t.Exception?.GetBaseException()}"),
-            TaskContinuationOptions.OnlyOnFaulted);
-
     public static string Initials(string name) =>
         string.Concat(name.Split(' ', StringSplitOptions.RemoveEmptyEntries)
             .Take(2)
@@ -76,7 +76,7 @@ public class AppSession
         ServiceKind.Walk => "Passeio",
         ServiceKind.Sitting => "Pet sitting",
         ServiceKind.Hotel => "Hotel",
-        _ => string.Empty
+        _ => string.Empty,
     };
 
     /// <summary>Brazilian currency shape (R$ 0,00), independent of the host machine's locale.</summary>

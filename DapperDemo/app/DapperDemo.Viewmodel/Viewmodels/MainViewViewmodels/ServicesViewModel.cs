@@ -1,7 +1,3 @@
-using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Windows.Input;
-using PropertyChanged;
 using AvaloniaFramework.Presentation;
 using AvaloniaFramework.Presentation.UseCase;
 using AvaloniaFramework.Threading;
@@ -9,19 +5,32 @@ using DapperDemo.Mensagens.Dapper;
 using DapperDemo.Mensagens.Dapper.Aggregates;
 using DapperDemo.Mensagens.Dapper.Dtos;
 using DapperDemo.Viewmodel.Viewmodels.Session;
+using PropertyChanged;
+using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Windows.Input;
 
 namespace DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
-
-public class DogOption(int id, string label)
-{
-    public int Id { get; } = id;
-
-    public string Label { get; } = label;
-}
 
 [AddINotifyPropertyChangedInterface]
 public class ServicesViewModel : PresentationModelBase<Unit, Unit>
 {
+    /// <summary>Public because the View calls it from OnLoaded — see the class remarks.</summary>
+    public async Task ReloadDogsAsync()
+    {
+        var dogs = await repositoryDogs.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
+        var previouslySelectedId = SelectedDog?.Id;
+
+        DogOptions.Clear();
+        foreach (var dog in dogs)
+        {
+            DogOptions.Add(new DogOption(dog.DogId, dog.Name));
+        }
+
+        SelectedDog = previouslySelectedId is int id ? DogOptions.FirstOrDefault(o => o.Id == id) : null;
+        HasNoDogs = DogOptions.Count == 0;
+    }
+
     private readonly RepositoryDogs repositoryDogs;
     private readonly RepositoryServices repositoryServices;
     private readonly AppSession session;
@@ -58,7 +67,7 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
 
     public ObservableCollection<DogOption> DogOptions { get; } = [];
 
-    /// <summary>No dogs yet means the form can't do anything useful, so it explains what to do first.</summary>
+    /// <summary>Gets a value indicating whether no dogs yet means the form can't do anything useful, so it explains what to do first.</summary>
     public bool HasNoDogs { get; private set; } = true;
 
     public bool HasDogs => !HasNoDogs;
@@ -113,22 +122,6 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
     private static bool TryParsePrice(string text, out decimal price) =>
         decimal.TryParse(text?.Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out price);
 
-    /// <summary>Public because the View calls it from OnLoaded — see the class remarks.</summary>
-    public async Task ReloadDogsAsync()
-    {
-        var dogs = await repositoryDogs.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
-        var previouslySelectedId = SelectedDog?.Id;
-
-        DogOptions.Clear();
-        foreach (var dog in dogs)
-        {
-            DogOptions.Add(new DogOption(dog.DogId, dog.Name));
-        }
-
-        SelectedDog = previouslySelectedId is int id ? DogOptions.FirstOrDefault(o => o.Id == id) : null;
-        HasNoDogs = DogOptions.Count == 0;
-    }
-
     private void SetType(ServiceKind kind)
     {
         SvcType = kind;
@@ -167,7 +160,7 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
                 EndDate = SvcEndDate,
                 PricePerDay = pricePerDay,
                 RequiresWalking = SvcRequiresWalking,
-                ServicePaid = false
+                ServicePaid = false,
             }).WithSync();
         }
         else if (SvcType == ServiceKind.Sitting)
@@ -184,7 +177,7 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
                 PetSitterId = session.CurrentPetSitterId,
                 Date = SvcDate,
                 Price = price,
-                ServicePaid = false
+                ServicePaid = false,
             }).WithSync();
         }
         else
@@ -201,7 +194,7 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
                 PetSitterId = session.CurrentPetSitterId,
                 Date = SvcDate,
                 Price = price,
-                ServicePaid = false
+                ServicePaid = false,
             }).WithSync();
         }
 

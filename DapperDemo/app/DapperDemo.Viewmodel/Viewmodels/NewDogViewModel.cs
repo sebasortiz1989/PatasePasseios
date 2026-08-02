@@ -1,6 +1,3 @@
-using System.Collections.ObjectModel;
-using System.Windows.Input;
-using PropertyChanged;
 using AvaloniaFramework.Presentation;
 using AvaloniaFramework.Presentation.UseCase;
 using AvaloniaFramework.Threading;
@@ -8,15 +5,11 @@ using DapperDemo.Mensagens.Dapper;
 using DapperDemo.Mensagens.Dapper.Aggregates;
 using DapperDemo.Mensagens.Dapper.Dtos;
 using DapperDemo.Viewmodel.Viewmodels.Session;
+using PropertyChanged;
+using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 namespace DapperDemo.Viewmodel.Viewmodels;
-
-public class TutorOption(int id, string label)
-{
-    public int Id { get; } = id;
-
-    public string Label { get; } = label;
-}
 
 [AddINotifyPropertyChangedInterface]
 public class NewDogViewModel : PresentationModelBase<Unit, Unit>
@@ -44,7 +37,7 @@ public class NewDogViewModel : PresentationModelBase<Unit, Unit>
 
     public ObservableCollection<TutorOption> TutorOptions { get; } = [];
 
-    /// <summary>A dog needs an owner, so with no tutors yet the form points the user there first.</summary>
+    /// <summary>Gets a value indicating whether a dog needs an owner, so with no tutors yet the form points the user there first.</summary>
     public bool HasNoTutors { get; private set; }
 
     public bool HasTutors => !HasNoTutors;
@@ -93,7 +86,7 @@ public class NewDogViewModel : PresentationModelBase<Unit, Unit>
             TutorId = SelectedTutor.Id,
             Name = Name.Trim(),
             Breed = Breed.Trim(),
-            Description = Description.Trim()
+            Description = Description.Trim(),
         }).WithSync();
 
         if (result != Response.Successful)
