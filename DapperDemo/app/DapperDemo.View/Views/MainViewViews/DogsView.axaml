@@ -63,22 +63,35 @@
                                     Padding="0,24"
                                     VerticalAlignment="Center">
                                     <Grid ColumnDefinitions="Auto,*,Auto">
-                                        <Border
-                                            BorderBrush="{StaticResource ColorAccent}"
-                                            BorderThickness="2"
-                                            CornerRadius="40"
+                                        <!--  The dog's photo when it has one, its initials otherwise.  -->
+                                        <Panel
                                             Grid.Column="0"
                                             Height="80"
                                             Margin="25,0,0,0"
                                             Width="80">
-                                            <TextBlock
-                                                FontFamily="{StaticResource FontHeading}"
-                                                FontSize="34"
-                                                Foreground="{StaticResource ColorAccentDark700}"
-                                                HorizontalAlignment="Center"
-                                                Text="{Binding Initials}"
-                                                VerticalAlignment="Center" />
-                                        </Border>
+                                            <Image
+                                                IsVisible="{Binding HasImage}"
+                                                Source="{Binding ImagePath, Converter={StaticResource ImagePathConverter}}"
+                                                Stretch="UniformToFill">
+                                                <Image.Clip>
+                                                    <EllipseGeometry Rect="0,0,80,80" />
+                                                </Image.Clip>
+                                            </Image>
+                                            <!--  The ring sits over the photo, so one border serves both states.  -->
+                                            <Border
+                                                BorderBrush="{StaticResource ColorAccent}"
+                                                BorderThickness="2"
+                                                CornerRadius="40">
+                                                <TextBlock
+                                                    FontFamily="{StaticResource FontHeading}"
+                                                    FontSize="34"
+                                                    Foreground="{StaticResource ColorAccentDark700}"
+                                                    HorizontalAlignment="Center"
+                                                    IsVisible="{Binding NoImage}"
+                                                    Text="{Binding Initials}"
+                                                    VerticalAlignment="Center" />
+                                            </Border>
+                                        </Panel>
                                         <StackPanel
                                             Grid.Column="1"
                                             Margin="24,0,0,0"

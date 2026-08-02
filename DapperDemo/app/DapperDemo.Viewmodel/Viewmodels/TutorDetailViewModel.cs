@@ -1,7 +1,9 @@
 using AvaloniaFramework.Presentation;
 using AvaloniaFramework.Presentation.UseCase;
 using AvaloniaFramework.Threading;
+using DapperDemo.Mensagens.Dapper;
 using DapperDemo.Mensagens.Dapper.Aggregates;
+using DapperDemo.Mensagens.Dapper.Dtos;
 using DapperDemo.Viewmodel.Viewmodels.Session;
 using PropertyChanged;
 using System.Collections.ObjectModel;
@@ -34,6 +36,9 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         AskDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = true, SynchronizationBehavior.Discard, true);
         CancelDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = false, SynchronizationBehavior.Discard, true);
         ConfirmDeleteCommand = new SynchronizedCommand(Delete, SynchronizationBehavior.Discard, true);
+        EditCommand = new SynchronizedCommand(StartEdit, SynchronizationBehavior.Discard, true);
+        CancelEditCommand = new SynchronizedCommand(CancelEdit, SynchronizationBehavior.Discard, true);
+        SaveEditCommand = new SynchronizedCommand(SaveEdit, SynchronizationBehavior.Discard, true);
     }
 
     public ICommand BackCommand { get; }
@@ -44,10 +49,25 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
 
     public ICommand ConfirmDeleteCommand { get; }
 
+    public ICommand EditCommand { get; }
+
+    public ICommand CancelEditCommand { get; }
+
+    public ICommand SaveEditCommand { get; }
+
     /// <summary>Gets a value indicating whether deleting takes two taps: the button swaps for a confirm/cancel pair.</summary>
     public bool ConfirmingDelete { get; private set; }
 
     public bool NotConfirmingDelete => !ConfirmingDelete;
+
+    /// <summary>
+    /// Gets a value indicating whether the screen is in edit mode — see
+    /// <see cref="DogDetailViewModel.IsEditing"/> for why the editor replaces the fields in place
+    /// rather than opening a separate form.
+    /// </summary>
+    public bool IsEditing { get; private set; }
+
+    public bool IsViewing => !IsEditing;
 
     public string Initials { get; private set; } = string.Empty;
 
@@ -56,6 +76,16 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     public string Neighborhood { get; private set; } = string.Empty;
 
     public string Phone { get; private set; } = string.Empty;
+
+    public string EditName { get; set; } = string.Empty;
+
+    public string EditPhone { get; set; } = string.Empty;
+
+    public string EditAddress { get; set; } = string.Empty;
+
+    public string EditError { get; private set; } = string.Empty;
+
+    public bool HasEditError => !string.IsNullOrEmpty(EditError);
 
     public string DogNames { get; private set; } = string.Empty;
 
@@ -79,6 +109,11 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         {
             return;
         }
+
+        // A reload means a different tutor or a fresh read, so a half-finished edit is dropped.
+        IsEditing = false;
+        EditError = string.Empty;
+        ConfirmingDelete = false;
 
         Initials = AppSession.Initials(tutor.Name);
         Name = tutor.Name;
@@ -107,6 +142,63 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     }
 
     protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
+
+    private Task StartEdit()
+    {
+        // Seeded from the loaded record, so cancelling and reopening the editor starts from the
+        // saved values again rather than from whatever was typed and abandoned.
+        EditName = Name;
+        EditPhone = Phone;
+        EditAddress = Neighborhood;
+        EditError = string.Empty;
+        IsEditing = true;
+        return Task.CompletedTask;
+    }
+
+    private Task CancelEdit()
+    {
+        EditError = string.Empty;
+        IsEditing = false;
+        return Task.CompletedTask;
+    }
+
+    private async Task SaveEdit()
+    {
+        if (session.SelectedTutorId is not int tutorId)
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(EditName))
+        {
+            EditError = "Informe o nome do tutor.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(EditPhone))
+        {
+            EditError = "Informe o telefone.";
+            return;
+        }
+
+        var result = await repositoryTutors.Update(new Tutors
+        {
+            TutorId = tutorId,
+            Name = EditName.Trim(),
+            Telephone = EditPhone.Trim(),
+            Address = EditAddress.Trim(),
+        }).WithSync();
+
+        if (result != Response.Successful)
+        {
+            EditError = "Não foi possível salvar as alterações.";
+            return;
+        }
+
+        IsEditing = false;
+        session.NotifyDataChanged();
+        await ReloadAsync().WithSync();
+    }
 
     private async Task Delete()
     {

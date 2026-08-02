@@ -25,21 +25,56 @@
                         VText="← Voltar" />
 
                     <StackPanel Margin="32,24,32,56" Spacing="0">
-                        <TextBlock Classes="Kicker" Text="{Binding TypeLabel}" />
-                        <TextBlock
-                            Classes="Heading1"
-                            FontSize="72"
-                            Margin="0,4,0,0"
-                            Text="{Binding DogName}" />
-                        <TextBlock
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="28"
-                            FontStyle="Italic"
-                            Foreground="{StaticResource ColorTextMuted55}"
-                            Margin="0,4,0,0">
-                            <Run Text="tutor: " />
-                            <Run Text="{Binding TutorName}" />
-                        </TextBlock>
+                        <!--  The dog's photo, so a booking is recognisable at a glance.  -->
+                        <Grid ColumnDefinitions="Auto,*">
+                            <Panel
+                                Height="132"
+                                Margin="0,0,24,0"
+                                VerticalAlignment="Top"
+                                Width="132">
+                                <Image
+                                    IsVisible="{Binding HasDogImage}"
+                                    Source="{Binding DogImagePath, Converter={StaticResource ImagePathConverter}}"
+                                    Stretch="UniformToFill">
+                                    <Image.Clip>
+                                        <EllipseGeometry Rect="0,0,132,132" />
+                                    </Image.Clip>
+                                </Image>
+                                <Border
+                                    BorderBrush="{StaticResource ColorAccent}"
+                                    BorderThickness="2"
+                                    CornerRadius="66">
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontHeading}"
+                                        FontSize="56"
+                                        Foreground="{StaticResource ColorAccentDark700}"
+                                        HorizontalAlignment="Center"
+                                        IsVisible="{Binding NoDogImage}"
+                                        Text="{Binding DogInitials}"
+                                        VerticalAlignment="Center" />
+                                </Border>
+                            </Panel>
+
+                            <StackPanel Grid.Column="1" Spacing="0" VerticalAlignment="Center">
+                                <TextBlock Classes="Kicker" Text="{Binding TypeLabel}" />
+                                <TextBlock
+                                    Classes="Heading1"
+                                    FontSize="62"
+                                    Margin="0,4,0,0"
+                                    Text="{Binding DogName}"
+                                    TextWrapping="Wrap" />
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="28"
+                                    FontStyle="Italic"
+                                    Foreground="{StaticResource ColorTextMuted55}"
+                                    Margin="0,4,0,0">
+                                    <Run Text="tutor: " />
+                                    <Run Text="{Binding TutorName}" />
+                                </TextBlock>
+                            </StackPanel>
+                        </Grid>
+
                         <Border
                             Background="{StaticResource ColorAccent}"
                             Height="2"
@@ -47,28 +82,70 @@
                             Margin="0,32,0,0"
                             Width="77" />
 
-                        <Border
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="0,2,0,0"
-                            Margin="0,32,0,0"
-                            Padding="0,20,0,20">
-                            <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="25"
-                                    Foreground="{StaticResource ColorTextMuted55}"
-                                    LetterSpacing="1"
-                                    Text="DATA" />
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="31"
-                                    Foreground="{StaticResource ColorText}"
-                                    Grid.Column="1"
-                                    Text="{Binding DateLabel}" />
-                            </Grid>
-                        </Border>
+                        <!--  Read view  -->
+                        <StackPanel IsVisible="{Binding IsViewing}">
+                            <Border
+                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderThickness="0,2,0,0"
+                                Margin="0,32,0,0"
+                                Padding="0,20,0,20">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="25"
+                                        Foreground="{StaticResource ColorTextMuted55}"
+                                        LetterSpacing="1"
+                                        Text="DATA" />
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="31"
+                                        Foreground="{StaticResource ColorText}"
+                                        Grid.Column="1"
+                                        Text="{Binding DateLabel}" />
+                                </Grid>
+                            </Border>
 
-                        <StackPanel IsVisible="{Binding IsHotel}">
+                            <StackPanel IsVisible="{Binding IsHotel}">
+                                <Border
+                                    BorderBrush="{StaticResource ColorDivider}"
+                                    BorderThickness="0,2,0,0"
+                                    Padding="0,20,0,20">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock
+                                            FontFamily="{StaticResource FontBody}"
+                                            FontSize="25"
+                                            Foreground="{StaticResource ColorTextMuted55}"
+                                            LetterSpacing="1"
+                                            Text="SAÍDA" />
+                                        <TextBlock
+                                            FontFamily="{StaticResource FontBody}"
+                                            FontSize="31"
+                                            Foreground="{StaticResource ColorText}"
+                                            Grid.Column="1"
+                                            Text="{Binding EndLabel}" />
+                                    </Grid>
+                                </Border>
+                                <Border
+                                    BorderBrush="{StaticResource ColorDivider}"
+                                    BorderThickness="0,2,0,0"
+                                    Padding="0,20,0,20">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock
+                                            FontFamily="{StaticResource FontBody}"
+                                            FontSize="25"
+                                            Foreground="{StaticResource ColorTextMuted55}"
+                                            LetterSpacing="1"
+                                            Text="PASSEIOS" />
+                                        <TextBlock
+                                            FontFamily="{StaticResource FontBody}"
+                                            FontSize="31"
+                                            Foreground="{StaticResource ColorText}"
+                                            Grid.Column="1"
+                                            Text="{Binding WalkingLabel}" />
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+
                             <Border
                                 BorderBrush="{StaticResource ColorDivider}"
                                 BorderThickness="0,2,0,0"
@@ -79,111 +156,208 @@
                                         FontSize="25"
                                         Foreground="{StaticResource ColorTextMuted55}"
                                         LetterSpacing="1"
-                                        Text="SAÍDA" />
+                                        Text="{Binding PriceFieldLabel}" />
                                     <TextBlock
-                                        FontFamily="{StaticResource FontBody}"
-                                        FontSize="31"
+                                        FontFamily="{StaticResource FontHeading}"
+                                        FontSize="41"
                                         Foreground="{StaticResource ColorText}"
                                         Grid.Column="1"
-                                        Text="{Binding EndLabel}" />
+                                        Text="{Binding PriceLabel}" />
                                 </Grid>
                             </Border>
+
+                            <!--  A stay is priced per day, so the amount actually owed is the daily rate times the nights.  -->
+                            <StackPanel IsVisible="{Binding IsHotel}">
+                                <Border
+                                    BorderBrush="{StaticResource ColorDivider}"
+                                    BorderThickness="0,2,0,0"
+                                    Padding="0,20,0,20">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock
+                                            FontFamily="{StaticResource FontBody}"
+                                            FontSize="25"
+                                            Foreground="{StaticResource ColorTextMuted55}"
+                                            LetterSpacing="1"
+                                            Text="DIÁRIAS" />
+                                        <TextBlock
+                                            FontFamily="{StaticResource FontBody}"
+                                            FontSize="31"
+                                            Foreground="{StaticResource ColorText}"
+                                            Grid.Column="1"
+                                            Text="{Binding DaysLabel}" />
+                                    </Grid>
+                                </Border>
+                                <Border
+                                    BorderBrush="{StaticResource ColorDivider}"
+                                    BorderThickness="0,2,0,0"
+                                    Padding="0,20,0,20">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock
+                                            FontFamily="{StaticResource FontBody}"
+                                            FontSize="25"
+                                            Foreground="{StaticResource ColorAccentDark700}"
+                                            LetterSpacing="1"
+                                            Text="TOTAL"
+                                            VerticalAlignment="Center" />
+                                        <TextBlock
+                                            FontFamily="{StaticResource FontHeading}"
+                                            FontSize="48"
+                                            Foreground="{StaticResource ColorAccentDark700}"
+                                            Grid.Column="1"
+                                            Text="{Binding TotalLabel}" />
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+
                             <Border
                                 BorderBrush="{StaticResource ColorDivider}"
-                                BorderThickness="0,2,0,0"
-                                Padding="0,20,0,20">
+                                BorderThickness="0,2,0,2"
+                                Padding="0,20,0,20"
+                                VerticalAlignment="Center">
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock
                                         FontFamily="{StaticResource FontBody}"
                                         FontSize="25"
                                         Foreground="{StaticResource ColorTextMuted55}"
                                         LetterSpacing="1"
-                                        Text="PASSEIOS" />
-                                    <TextBlock
-                                        FontFamily="{StaticResource FontBody}"
-                                        FontSize="31"
-                                        Foreground="{StaticResource ColorText}"
-                                        Grid.Column="1"
-                                        Text="{Binding WalkingLabel}" />
+                                        Text="PAGAMENTO"
+                                        VerticalAlignment="Center" />
+                                    <Button
+                                        Classes="Chip"
+                                        Classes.Active="{Binding Paid}"
+                                        Command="{Binding TogglePaidCommand}"
+                                        Content="{Binding PaidActionLabel}"
+                                        Grid.Column="1" />
                                 </Grid>
                             </Border>
-                        </StackPanel>
 
-                        <Border
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="0,2,0,0"
-                            Padding="0,20,0,20">
-                            <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="25"
-                                    Foreground="{StaticResource ColorTextMuted55}"
-                                    LetterSpacing="1"
-                                    Text="{Binding PriceFieldLabel}" />
-                                <TextBlock
-                                    FontFamily="{StaticResource FontHeading}"
-                                    FontSize="41"
-                                    Foreground="{StaticResource ColorText}"
-                                    Grid.Column="1"
-                                    Text="{Binding PriceLabel}" />
-                            </Grid>
-                        </Border>
-
-                        <Border
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="0,2,0,2"
-                            Padding="0,20,0,20"
-                            VerticalAlignment="Center">
-                            <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="25"
-                                    Foreground="{StaticResource ColorTextMuted55}"
-                                    LetterSpacing="1"
-                                    Text="PAGAMENTO"
-                                    VerticalAlignment="Center" />
-                                <Button
-                                    Classes="Chip"
-                                    Classes.Active="{Binding Paid}"
-                                    Command="{Binding TogglePaidCommand}"
-                                    Content="{Binding PaidActionLabel}"
-                                    Grid.Column="1" />
-                            </Grid>
-                        </Border>
-
-                        <!--  Destructive, so it takes two taps: the button swaps for confirm/cancel  -->
-                        <StackPanel Margin="0,32,0,0" Spacing="16">
                             <buttons:VButton
-                                Classes="BtnSecondary"
-                                Command="{Binding AskDeleteCommand}"
+                                Classes="BtnPrimary"
+                                Command="{Binding EditCommand}"
                                 Height="80"
                                 HorizontalAlignment="Stretch"
-                                IsVisible="{Binding NotConfirmingDelete}"
-                                VText="Excluir serviço" />
-                            <StackPanel IsVisible="{Binding ConfirmingDelete}" Spacing="12">
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="26"
-                                    FontStyle="Italic"
-                                    Foreground="{StaticResource ColorAccentDark800}"
-                                    HorizontalAlignment="Center"
-                                    Text="Isso remove este serviço permanentemente."
-                                    TextAlignment="Center"
-                                    TextWrapping="Wrap" />
-                                <Grid ColumnDefinitions="*,16,*">
-                                    <buttons:VButton
-                                        Classes="BtnSecondary"
-                                        Command="{Binding CancelDeleteCommand}"
-                                        Height="80"
-                                        VText="Cancelar" />
-                                    <buttons:VButton
-                                        Classes="BtnPrimary"
-                                        Command="{Binding ConfirmDeleteCommand}"
+                                Margin="0,32,0,0"
+                                VText="Editar serviço" />
+
+                            <!--  Destructive, so it takes two taps: the button swaps for confirm/cancel  -->
+                            <StackPanel Margin="0,16,0,0" Spacing="16">
+                                <buttons:VButton
+                                    Classes="BtnSecondary"
+                                    Command="{Binding AskDeleteCommand}"
+                                    Height="80"
+                                    HorizontalAlignment="Stretch"
+                                    IsVisible="{Binding NotConfirmingDelete}"
+                                    VText="Excluir serviço" />
+                                <StackPanel IsVisible="{Binding ConfirmingDelete}" Spacing="12">
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="26"
+                                        FontStyle="Italic"
+                                        Foreground="{StaticResource ColorAccentDark800}"
+                                        HorizontalAlignment="Center"
+                                        Text="Isso remove este serviço permanentemente."
+                                        TextAlignment="Center"
+                                        TextWrapping="Wrap" />
+                                    <Grid ColumnDefinitions="*,16,*">
+                                        <buttons:VButton
+                                            Classes="BtnSecondary"
+                                            Command="{Binding CancelDeleteCommand}"
+                                            Height="80"
+                                            VText="Cancelar" />
+                                        <buttons:VButton
+                                            Classes="BtnPrimary"
+                                            Command="{Binding ConfirmDeleteCommand}"
+                                            Grid.Column="2"
+                                            Height="80"
+                                            VText="Excluir" />
+                                    </Grid>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!--
+                            Editor. The dog and the service type are not editable: each type lives in
+                            its own table, so changing one is a move, not an edit.
+                        -->
+                        <StackPanel IsVisible="{Binding IsEditing}" Margin="0,32,0,0" Spacing="28">
+                            <StackPanel Spacing="10">
+                                <TextBlock Classes="FormLabel" Text="Data e hora" />
+                                <Grid ColumnDefinitions="*,16,Auto">
+                                    <CalendarDatePicker
+                                        Background="Transparent"
+                                        BorderBrush="{StaticResource ColorDivider}"
+                                        BorderThickness="2"
+                                        CornerRadius="7"
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="29"
+                                        Foreground="{StaticResource ColorText}"
+                                        MinHeight="74"
+                                        SelectedDate="{Binding EditDatePart}" />
+                                    <TimePicker
+                                        ClockIdentifier="24HourClock"
                                         Grid.Column="2"
-                                        Height="80"
-                                        VText="Excluir" />
+                                        MinHeight="74"
+                                        SelectedTime="{Binding EditTimePart}" />
                                 </Grid>
                             </StackPanel>
+
+                            <StackPanel IsVisible="{Binding IsHotel}" Spacing="10">
+                                <TextBlock Classes="FormLabel" Text="Saída" />
+                                <Grid ColumnDefinitions="*,16,Auto">
+                                    <CalendarDatePicker
+                                        Background="Transparent"
+                                        BorderBrush="{StaticResource ColorDivider}"
+                                        BorderThickness="2"
+                                        CornerRadius="7"
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="29"
+                                        Foreground="{StaticResource ColorText}"
+                                        MinHeight="74"
+                                        SelectedDate="{Binding EditEndDatePart}" />
+                                    <TimePicker
+                                        ClockIdentifier="24HourClock"
+                                        Grid.Column="2"
+                                        MinHeight="74"
+                                        SelectedTime="{Binding EditEndTimePart}" />
+                                </Grid>
+                            </StackPanel>
+
+                            <CheckBox
+                                Content="Inclui passeios diários"
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="29"
+                                Foreground="{StaticResource ColorTextMuted70}"
+                                IsChecked="{Binding EditRequiresWalking}"
+                                IsVisible="{Binding IsHotel}" />
+
+                            <StackPanel Spacing="10">
+                                <TextBlock Classes="FormLabel" Text="{Binding EditPriceLabel}" />
+                                <TextBox Classes="FormInput" Text="{Binding EditPrice}" />
+                            </StackPanel>
+
+                            <TextBlock
+                                Classes="FormMsg Error"
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="28"
+                                FontStyle="Italic"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding HasEditError}"
+                                Text="{Binding EditError}"
+                                TextAlignment="Center" />
+
+                            <Grid ColumnDefinitions="*,16,*">
+                                <buttons:VButton
+                                    Classes="BtnSecondary"
+                                    Command="{Binding CancelEditCommand}"
+                                    Height="88"
+                                    VText="Cancelar" />
+                                <buttons:VButton
+                                    Classes="BtnPrimary"
+                                    Command="{Binding SaveEditCommand}"
+                                    Grid.Column="2"
+                                    Height="88"
+                                    VText="Salvar" />
+                            </Grid>
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>

@@ -257,6 +257,44 @@
     </Style>
 
     <!--
+        The bare TextBox/ComboBox field shape, previously copied inline into every form. The
+        detail screens' editors reuse it, so it lives here rather than being pasted a fourth time.
+    -->
+    <Style Selector="TextBlock.FormLabel">
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="25" />
+        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted70}" />
+    </Style>
+    <Style Selector="TextBox.FormInput">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="CornerRadius" Value="7" />
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="31" />
+        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+        <Setter Property="MinHeight" Value="82" />
+        <Setter Property="Padding" Value="18,0" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <!--  A multi-line field needs top padding and cannot centre its content.  -->
+    <Style Selector="TextBox.FormInput.Multiline">
+        <Setter Property="MinHeight" Value="160" />
+        <Setter Property="Padding" Value="18,12" />
+        <Setter Property="VerticalContentAlignment" Value="Top" />
+    </Style>
+    <Style Selector="ComboBox.FormInput">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="CornerRadius" Value="7" />
+        <Setter Property="FontSize" Value="31" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="MinHeight" Value="82" />
+        <Setter Property="Padding" Value="18,0" />
+    </Style>
+
+    <!--
         Text selection. Fluent's default highlight reads as a near-black block on this light
         surface; these put it on the accent instead. SelectionBrush/SelectionForegroundBrush are
         plain TextBox properties, so this reaches the TextBox inside VTextBoxWithLabel's template
@@ -343,21 +381,29 @@
         window; on this 720-wide canvas it ends up a tiny tap target, so it is scaled to match
         the 74px-high field it sits in.
     -->
+    <!--
+        Filled rather than a ghost: it sits inside the text field's own border, so without its own
+        colour the one part of a date field that is actually clickable looks like decoration.
+    -->
     <Style Selector="CalendarDatePicker /template/ Button#PART_Button">
         <Setter Property="Width" Value="66" />
         <Setter Property="Height" Value="66" />
         <Setter Property="Margin" Value="0,0,4,0" />
         <Setter Property="Padding" Value="0" />
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{StaticResource ColorAccent}" />
+        <Setter Property="CornerRadius" Value="7" />
+        <Setter Property="Background" Value="{StaticResource ColorAccent}" />
+        <Setter Property="Foreground" Value="{StaticResource ColorBg}" />
     </Style>
     <Style Selector="CalendarDatePicker /template/ Button#PART_Button:pointerover">
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
+        <Setter Property="Background" Value="{StaticResource ColorAccentDark700}" />
+    </Style>
+    <Style Selector="CalendarDatePicker /template/ Button#PART_Button:pressed">
+        <Setter Property="Background" Value="{StaticResource ColorAccentDark800}" />
     </Style>
     <Style Selector="CalendarDatePicker /template/ Button#PART_Button PathIcon">
         <Setter Property="Width" Value="34" />
         <Setter Property="Height" Value="34" />
-        <Setter Property="Foreground" Value="{StaticResource ColorAccent}" />
+        <Setter Property="Foreground" Value="{StaticResource ColorBg}" />
     </Style>
 
     <Style Selector="Calendar">

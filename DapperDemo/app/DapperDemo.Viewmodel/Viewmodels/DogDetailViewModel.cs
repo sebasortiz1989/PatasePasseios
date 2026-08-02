@@ -29,6 +29,10 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
     /// </summary>
     private string storedPhotoFileName = string.Empty;
 
+    /// <summary>The tutor the record was loaded with, so reopening the editor after a cancelled
+    /// edit starts from the saved owner rather than the one that was picked and abandoned.</summary>
+    private int storedTutorId;
+
     public DogDetailViewModel(
         CurrentView currentView,
         NavigationController navigationController,
@@ -163,6 +167,7 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
             TutorOptions.Add(new TutorOption(option.TutorId, option.Name));
         }
 
+        storedTutorId = dog.TutorId;
         var owner = TutorOptions.FirstOrDefault(o => o.Id == dog.TutorId);
         EditTutor = owner;
         OwnerName = owner?.Label ?? string.Empty;
@@ -193,6 +198,7 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
         EditName = Name;
         EditBreed = Breed;
         EditDescription = Description == "Sem descrição." ? string.Empty : Description;
+        EditTutor = TutorOptions.FirstOrDefault(o => o.Id == storedTutorId);
         PhotoFileName = storedPhotoFileName;
         EditError = string.Empty;
         IsEditing = true;
