@@ -1,11 +1,18 @@
 ﻿using Dapper;
 using Microsoft.Data.Sqlite;
-using System.Runtime.InteropServices;
 
 namespace Verion.Treinamento.Mensagens.Dapper.Services;
 
 public sealed class DapperDatabaseService
 {
+    /// <summary>
+    /// Bump this whenever the schema below changes. On launch the stored PRAGMA user_version is
+    /// compared against it: a lower value means the file on disk predates the current schema, so
+    /// the tables are dropped and recreated once and the version is stamped. Later launches match
+    /// and nothing is dropped, so records the user enters persist normally.
+    /// </summary>
+    private const int SchemaVersion = 2;
+
     private string connectionString = string.Empty;
 
     public DapperDatabaseService()
@@ -34,33 +41,61 @@ public sealed class DapperDatabaseService
         using (var connection = Connection)
         {
             connection.Open();
+            RecreateTablesIfSchemaIsStale(connection);
             CreatePetSitterTableIfNotExists(connection);
             CreateMockData(connection);
         }
     }
 
-    private string GetAppDataFolder()
+    /// <summary>
+    /// Drops every table when the file on disk was built by an older schema, so the CREATE TABLE
+    /// IF NOT EXISTS statements below can lay it out again correctly. Runs at most once per
+    /// schema version — see <see cref="SchemaVersion"/>.
+    /// </summary>
+    private static void RecreateTablesIfSchemaIsStale(SqliteConnection connection)
     {
-        string appDataFolder;
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        var currentVersion = connection.ExecuteScalar<int>("PRAGMA user_version;");
+        if (currentVersion >= SchemaVersion)
         {
-            appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DapperDemo");
-        } 
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-        {
-            appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "Library", "Application Support", "DapperDemo");
-        }
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-        {
-            appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            appDataFolder = Path.Combine(appDataFolder, ".local", "share", "DapperDemo");
-        }
-        else
-        {
-            appDataFolder = Path.Combine(Environment.CurrentDirectory, "DapperDemo");
+            return;
         }
 
-        return appDataFolder;
+        connection.Execute(
+            sql: """
+                 DROP TABLE IF EXISTS WalkingService;
+                 DROP TABLE IF EXISTS PetSittingService;
+                 DROP TABLE IF EXISTS PetHotelService;
+                 DROP TABLE IF EXISTS Dogs;
+                 DROP TABLE IF EXISTS PetSitterTutors;
+                 DROP TABLE IF EXISTS Tutors;
+                 DROP TABLE IF EXISTS PetSitter;
+                 """);
+
+        connection.Execute($"PRAGMA user_version = {SchemaVersion};");
+    }
+
+    /// <summary>
+    /// Where the SQLite file lives, per platform. LocalApplicationData is the one folder .NET
+    /// maps sensibly everywhere the app runs — AppData\Local on Windows, ~/.local/share on Linux,
+    /// ~/Library/Application Support on macOS, and the app's own writable sandbox on iOS and
+    /// Android. That last part matters: the mobile heads have no usable current directory (the
+    /// iOS bundle is read-only), so they must not fall back to one.
+    /// </summary>
+    private static string GetAppDataFolder()
+    {
+        var baseFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+
+        if (string.IsNullOrEmpty(baseFolder))
+        {
+            baseFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+        }
+
+        if (string.IsNullOrEmpty(baseFolder))
+        {
+            baseFolder = AppContext.BaseDirectory;
+        }
+
+        return Path.Combine(baseFolder, "DapperDemo");
     }
 
     private static void CreatePetSitterTableIfNotExists(SqliteConnection connection)
@@ -87,10 +122,12 @@ public sealed class DapperDatabaseService
                      FOREIGN KEY (PetSitterId) REFERENCES PetSitter(PetSitterId),
                      FOREIGN KEY (TutorId) REFERENCES Tutors(TutorId));
                  
+                 -- Name is deliberately not UNIQUE: different tutors may each have a "Luna".
                  CREATE TABLE IF NOT EXISTS Dogs (
                      DogId INTEGER PRIMARY KEY AUTOINCREMENT,
                      TutorId INTEGER NOT NULL,
-                     Name VARCHAR(255) NOT NULL UNIQUE,
+                     Name VARCHAR(255) NOT NULL,
+                     Breed VARCHAR(255),
                      Description VARCHAR(255),
                      Image BLOB,
                      FOREIGN KEY (TutorId) REFERENCES Tutors(TutorId));
@@ -115,13 +152,16 @@ public sealed class DapperDatabaseService
                      FOREIGN KEY (DogId) REFERENCES Dogs(DogId),
                      FOREIGN KEY (PetSitterId) REFERENCES PetSitter(PetSitterId));
                  
+                 -- PricePerDay, not a total: the agenda and the billing summary both treat a
+                 -- hotel stay as a daily rate.
                  CREATE TABLE IF NOT EXISTS PetHotelService (
                      PetHotelServiceId INTEGER PRIMARY KEY AUTOINCREMENT,
                      DogId INTEGER NOT NULL,
                      PetSitterId INTEGER NOT NULL,
                      StartDate DATETIME NOT NULL,
                      EndDate DATETIME NOT NULL,
-                     Price DECIMAL(10, 2) NOT NULL,
+                     PricePerDay DECIMAL(10, 2) NOT NULL,
+                     RequiresWalking BOOLEAN NOT NULL DEFAULT 0,
                      ServicePaid BOOLEAN,
                      FOREIGN KEY (DogId) REFERENCES Dogs(DogId),
                      FOREIGN KEY (PetSitterId) REFERENCES PetSitter(PetSitterId));

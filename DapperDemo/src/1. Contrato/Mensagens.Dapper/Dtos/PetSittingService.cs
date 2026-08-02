@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Verion.Treinamento.Mensagens.Dapper.Dtos;
 
-[Table("PettingService")]
+[Table("PetSittingService")]
 public class PetSittingService
 {
     public int PetSittingServiceId { get; init; }

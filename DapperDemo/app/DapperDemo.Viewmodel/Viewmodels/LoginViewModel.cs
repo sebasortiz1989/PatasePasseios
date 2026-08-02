@@ -7,7 +7,7 @@ using Verion.Threading;
 using Verion.Treinamento.Mensagens.Dapper;
 using Verion.Treinamento.Mensagens.Dapper.Aggregates;
 using Verion.Treinamento.Mensagens.Dapper.Extensions;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Mock;
+using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Session;
 
 namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels;
 
@@ -18,7 +18,7 @@ public class LoginViewModel : PresentationModelBase<Void, Void>
     private readonly NavigationController navigationController;
     private readonly RepositoryPetSitter repositoryPetSitter;
     private readonly SynchronizationContext synchronizationContext;
-    private readonly MockAppData mockAppData;
+    private readonly AppSession session;
     private readonly Factory<PresenterBase<SignUpViewModel, Void, Void>> signUpViewFactory;
     private readonly Factory<PresenterBase<MainViewModel, Void, Void>> mainViewFactory;
 
@@ -27,7 +27,7 @@ public class LoginViewModel : PresentationModelBase<Void, Void>
         NavigationController navigationController,
         RepositoryPetSitter repositoryPetSitter,
         SynchronizationContext synchronizationContext,
-        MockAppData mockAppData,
+        AppSession session,
         Factory<PresenterBase<SignUpViewModel, Void, Void>> signUpViewFactory,
         Factory<PresenterBase<MainViewModel, Void, Void>> mainViewFactory)
     {
@@ -35,7 +35,7 @@ public class LoginViewModel : PresentationModelBase<Void, Void>
         this.navigationController = navigationController;
         this.repositoryPetSitter = repositoryPetSitter;
         this.synchronizationContext = synchronizationContext;
-        this.mockAppData = mockAppData;
+        this.session = session;
         this.signUpViewFactory = signUpViewFactory;
         this.mainViewFactory = mainViewFactory;
         LoginCommand = new SynchronizedCommand(LoginFunction, SynchronizationBehavior.Discard, true);
@@ -79,24 +79,25 @@ public class LoginViewModel : PresentationModelBase<Void, Void>
         }
 
         var response = repositoryPetSitter.VerifyLogin(Email, Password);
-        if (response == Response.Successful)
-        {
-            LoginError = string.Empty;
-            repositoryPetSitter.GetAll(petSitters =>
-            {
-                synchronizationContext.SwitchTo();
-                var match = petSitters.FirstOrDefault(p => p.Email == Email);
-                if (match != null)
-                {
-                    mockAppData.SetCurrentUserName(match.Name);
-                }
-            });
-            await navigationController.PushAsync(mainViewFactory.Create()).WithSync();
-        }
-        else
+        if (response != Response.Successful)
         {
             LoginError = response.GetDescription();
+            return;
         }
+
+        // Everything after login is scoped to this account, so the row has to be loaded before
+        // navigating — VerifyLogin only reports success, it doesn't say who signed in.
+        var petSitter = await repositoryPetSitter.GetByEmailAsync(Email).WithSync();
+        if (petSitter == null)
+        {
+            LoginError = Response.EmailDoesNotExists.GetDescription();
+            return;
+        }
+
+        LoginError = string.Empty;
+        Password = string.Empty;
+        session.SignIn(petSitter);
+        await navigationController.PushAsync(mainViewFactory.Create()).WithSync();
     }
 
     private async Task SignUpCommandFunction() => await navigationController.PushAsync(signUpViewFactory.Create()).WithSync();

@@ -1,7 +1,7 @@
 ﻿using Verion.Infraestrutura.Dependency;
 using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels;
 using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Mock;
+using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Session;
 
 namespace Verion.Treinamento.DapperDemo.Viewmodel.DependencyInversion
 {
@@ -14,10 +14,12 @@ namespace Verion.Treinamento.DapperDemo.Viewmodel.DependencyInversion
 
         private static IEnumerable<ContainerRegistration> GetRegistrations()
         {
-            yield return CreateSingleton<MockAppData>();
+            yield return CreateSingleton<AppSession>();
             yield return CreateTransient<LoginViewModel>().WithAbstractions();
             yield return CreateTransient<SignUpViewModel>().WithAbstractions();
             yield return CreateTransient<MainViewModel>().WithAbstractions();
+            yield return CreateTransient<NewTutorViewModel>().WithAbstractions();
+            yield return CreateTransient<NewDogViewModel>().WithAbstractions();
             yield return CreateTransient<DogDetailViewModel>().WithAbstractions();
             yield return CreateTransient<TutorDetailViewModel>().WithAbstractions();
             yield return CreateTransient<ServiceDetailViewModel>().WithAbstractions();

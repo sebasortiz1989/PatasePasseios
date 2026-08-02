@@ -19,7 +19,20 @@
                     <TextBlock Classes="Kicker" Text="Agendar" />
                 </StackPanel>
 
-                <StackPanel Margin="32,16,32,48" Spacing="24">
+                <!--  Nothing can be scheduled without a dog, so say so instead of showing an empty picker  -->
+                <Border BorderBrush="{StaticResource ColorDivider}" BorderThickness="0,2,0,0" IsVisible="{Binding HasNoDogs}" Margin="32,16,32,0" Padding="32,64">
+                    <TextBlock
+                        FontFamily="{StaticResource FontBody}"
+                        FontSize="29"
+                        FontStyle="Italic"
+                        Foreground="{StaticResource ColorTextMuted45}"
+                        HorizontalAlignment="Center"
+                        Text="Cadastre um tutor e um cachorro antes de agendar."
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                </Border>
+
+                <StackPanel IsVisible="{Binding HasDogs}" Margin="32,16,32,48" Spacing="24">
                     <!--  Service type — segmented control  -->
                     <StackPanel Spacing="10">
                         <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted70}" Text="Tipo de serviço" />
@@ -42,7 +55,6 @@
                             BorderBrush="{StaticResource ColorDivider}"
                             BorderThickness="2"
                             CornerRadius="7"
-                            DisplayMemberBinding="{Binding Label}"
                             FontFamily="{StaticResource FontBody}"
                             FontSize="31"
                             Foreground="{StaticResource ColorText}"
@@ -51,7 +63,13 @@
                             MinHeight="74"
                             Padding="18,0"
                             PlaceholderText="Selecione…"
-                            SelectedItem="{Binding SelectedDog}" />
+                            SelectedItem="{Binding SelectedDog}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate DataType="mainViewViewmodels:DogOption">
+                                    <TextBlock Text="{Binding Label}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
                     </StackPanel>
 
                     <!--  Hotel: check-in / check-out / walks / price per day  -->

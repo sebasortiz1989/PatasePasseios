@@ -2,30 +2,31 @@ using System.Windows.Input;
 using PropertyChanged;
 using Verion.Presentation.View;
 using Verion.Presentation.View.UseCase;
+using Verion.Threading;
 using Verion.Treinamento.Mensagens.Dapper;
 using Verion.Treinamento.Mensagens.Dapper.Aggregates;
 using Verion.Treinamento.Mensagens.Dapper.Dtos;
 using Verion.Treinamento.Mensagens.Dapper.Extensions;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Mock;
+using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Session;
 
 namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels;
 
 [AddINotifyPropertyChangedInterface]
 public class SignUpViewModel : PresentationModelBase<Void, Void>
 {
-    private readonly RepositoryPetSitter _repositoryPetSitter;
-    private readonly MockAppData mockAppData;
+    private readonly RepositoryPetSitter repositoryPetSitter;
+    private readonly AppSession session;
     private readonly NavigationController navigationController;
     private readonly Factory<PresenterBase<MainViewModel, Void, Void>> mainViewFactory;
 
     public SignUpViewModel(
         NavigationController navigationController,
         RepositoryPetSitter repositoryPetSitter,
-        MockAppData mockAppData,
+        AppSession session,
         Factory<PresenterBase<MainViewModel, Void, Void>> mainViewFactory)
     {
-        this._repositoryPetSitter = repositoryPetSitter;
-        this.mockAppData = mockAppData;
+        this.repositoryPetSitter = repositoryPetSitter;
+        this.session = session;
         this.navigationController = navigationController;
         this.mainViewFactory = mainViewFactory;
         BackCommand = new SynchronizedCommand(() => navigationController.PopAsync(this), SynchronizationBehavior.Discard, true);
@@ -64,7 +65,7 @@ public class SignUpViewModel : PresentationModelBase<Void, Void>
             return;
         }
 
-        var result = await _repositoryPetSitter.Add(new PetSitter
+        var result = await repositoryPetSitter.Add(new PetSitter
         {
             Name = Name,
             Email = Email,
@@ -73,15 +74,23 @@ public class SignUpViewModel : PresentationModelBase<Void, Void>
             PasswordHash = string.Empty
         }).WithSync();
 
-        if (result == Response.Successful)
-        {
-            SignupError = string.Empty;
-            mockAppData.SetCurrentUserName(Name);
-            await navigationController.PushAsync(mainViewFactory.Create()).WithSync();
-        }
-        else
+        if (result != Response.Successful)
         {
             SignupError = result.GetDescription();
+            return;
         }
+
+        // Read the row back for its generated id: everything the new account creates is scoped to it.
+        var petSitter = await repositoryPetSitter.GetByEmailAsync(Email).WithSync();
+        if (petSitter == null)
+        {
+            SignupError = Response.Failed.GetDescription();
+            return;
+        }
+
+        SignupError = string.Empty;
+        Password = string.Empty;
+        session.SignIn(petSitter);
+        await navigationController.PushAsync(mainViewFactory.Create()).WithSync();
     }
 }

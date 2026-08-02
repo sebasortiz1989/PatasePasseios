@@ -91,6 +91,19 @@ public sealed class RepositoryPetSitter : RepositoryBase<PetSitter>
         throw new NotImplementedException();
     }
 
+    /// <summary>
+    /// The logged-in row, so the app can scope data to this account and greet the user by name.
+    /// <see cref="VerifyLogin"/> only reports success, which isn't enough on its own.
+    /// </summary>
+    public async Task<PetSitter?> GetByEmailAsync(string email)
+    {
+        using var connection = DapperDatabaseService.Connection;
+        await connection.OpenAsync().NoSync();
+        return await connection.QueryFirstOrDefaultAsync<PetSitter>(
+            sql: "SELECT PetSitterId, Email, PasswordHash, Name, BirthDate FROM PetSitter WHERE Email = @Email",
+            param: new { Email = email }).NoSync();
+    }
+
     public Response VerifyLogin(string email, string password)
     {
         using (var connection = DapperDatabaseService.Connection)

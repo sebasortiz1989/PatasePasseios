@@ -92,6 +92,26 @@
                         </StackPanel>
                     </Border>
 
+                    <!--  Portfolio counters  -->
+                    <Grid ColumnDefinitions="*,*,*,*">
+                        <StackPanel Spacing="2">
+                            <TextBlock FontFamily="{StaticResource FontHeading}" FontSize="46" Foreground="{StaticResource ColorText}" Text="{Binding TutorCountLabel}" />
+                            <TextBlock Classes="Kicker" Text="Tutores" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Spacing="2">
+                            <TextBlock FontFamily="{StaticResource FontHeading}" FontSize="46" Foreground="{StaticResource ColorText}" Text="{Binding DogCountLabel}" />
+                            <TextBlock Classes="Kicker" Text="Cães" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Spacing="2">
+                            <TextBlock FontFamily="{StaticResource FontHeading}" FontSize="46" Foreground="{StaticResource ColorText}" Text="{Binding ServiceCountLabel}" />
+                            <TextBlock Classes="Kicker" Text="Serviços" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="3" Spacing="2">
+                            <TextBlock FontFamily="{StaticResource FontHeading}" FontSize="46" Foreground="{StaticResource ColorAccentDark700}" Text="{Binding PendingCountLabel}" />
+                            <TextBlock Classes="Kicker" Text="Pendentes" />
+                        </StackPanel>
+                    </Grid>
+
                     <!--  Monthly billing  -->
                     <StackPanel Spacing="4">
                         <TextBlock

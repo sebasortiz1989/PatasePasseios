@@ -5,6 +5,7 @@
     x:Class="Verion.Treinamento.DapperDemo.View.Views.MainViewViews.DogsView"
     x:DataType="mainViewViewmodels:DogsViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:buttons="clr-namespace:Verion.Apresentacao.Avalonia.Buttons;assembly=Verion.Apresentacao.Avalonia"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mainViewViewmodels="clr-namespace:Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;assembly=Verion.Treinamento.DapperDemo.Viewmodel"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -13,10 +14,32 @@
     <Grid Background="{StaticResource ColorBg}" Height="1460" Width="720">
         <ScrollViewer>
             <StackPanel Spacing="0">
-                <StackPanel Margin="32,32,32,16" Spacing="2">
-                    <TextBlock Classes="Heading1" FontSize="62" Text="Cachorros" />
-                    <TextBlock Classes="Kicker" Text="{Binding DogCountLabel}" />
-                </StackPanel>
+                <Grid ColumnDefinitions="*,Auto" Margin="32,32,32,16">
+                    <StackPanel Spacing="2">
+                        <TextBlock Classes="Heading1" FontSize="62" Text="Cachorros" />
+                        <TextBlock Classes="Kicker" Text="{Binding DogCountLabel}" />
+                    </StackPanel>
+                    <buttons:VButton
+                        Classes="BtnPrimary"
+                        Command="{Binding AddDogCommand}"
+                        Grid.Column="1"
+                        Height="72"
+                        VText="+ Novo"
+                        VerticalAlignment="Center"
+                        Width="180" />
+                </Grid>
+
+                <Border BorderBrush="{StaticResource ColorDivider}" BorderThickness="0,2,0,0" IsVisible="{Binding IsEmpty}" Margin="32,0,32,0" Padding="32,64">
+                    <TextBlock
+                        FontFamily="{StaticResource FontBody}"
+                        FontSize="29"
+                        FontStyle="Italic"
+                        Foreground="{StaticResource ColorTextMuted45}"
+                        HorizontalAlignment="Center"
+                        Text="Nenhum cachorro cadastrado ainda."
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                </Border>
 
                 <ItemsControl ItemsSource="{Binding DogsCollection}" Margin="32,0,32,32">
                     <ItemsControl.ItemTemplate>

@@ -98,6 +98,32 @@
                                 </ItemsControl>
                             </StackPanel>
                         </Border>
+
+                        <!--  Destructive, so it takes two taps: the button swaps for confirm/cancel  -->
+                        <StackPanel Margin="0,32,0,0" Spacing="16">
+                            <buttons:VButton
+                                Classes="BtnSecondary"
+                                Command="{Binding AskDeleteCommand}"
+                                Height="80"
+                                HorizontalAlignment="Stretch"
+                                IsVisible="{Binding NotConfirmingDelete}"
+                                VText="Excluir tutor" />
+                            <StackPanel IsVisible="{Binding ConfirmingDelete}" Spacing="12">
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="26"
+                                    FontStyle="Italic"
+                                    Foreground="{StaticResource ColorAccentDark800}"
+                                    HorizontalAlignment="Center"
+                                    Text="Isso remove o tutor, seus cachorros e os serviços deles."
+                                    TextAlignment="Center"
+                                    TextWrapping="Wrap" />
+                                <Grid ColumnDefinitions="*,16,*">
+                                    <buttons:VButton Classes="BtnSecondary" Command="{Binding CancelDeleteCommand}" Height="80" VText="Cancelar" />
+                                    <buttons:VButton Classes="BtnPrimary" Command="{Binding ConfirmDeleteCommand}" Grid.Column="2" Height="80" VText="Excluir" />
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>

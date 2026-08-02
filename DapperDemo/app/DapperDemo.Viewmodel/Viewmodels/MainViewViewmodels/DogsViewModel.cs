@@ -4,11 +4,12 @@ using PropertyChanged;
 using Verion.Presentation.View;
 using Verion.Presentation.View.UseCase;
 using Verion.Threading;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Mock;
+using Verion.Treinamento.Mensagens.Dapper.Aggregates;
+using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Session;
 
 namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
 
-public class DogRow(string initials, string name, string subtitle, ICommand openCommand)
+public sealed class DogRow(string initials, string name, string subtitle, ICommand openCommand) : IDisposable
 {
     public string Initials { get; } = initials;
 
@@ -17,55 +18,100 @@ public class DogRow(string initials, string name, string subtitle, ICommand open
     public string Subtitle { get; } = subtitle;
 
     public ICommand OpenCommand { get; } = openCommand;
+
+    public void Dispose() => (OpenCommand as IDisposable)?.Dispose();
 }
 
 [AddINotifyPropertyChangedInterface]
 public class DogsViewModel : PresentationModelBase<Void, Void>
 {
     private readonly NavigationController navigationController;
-    private readonly MockAppData mockAppData;
+    private readonly RepositoryDogs repositoryDogs;
+    private readonly RepositoryTutors repositoryTutors;
+    private readonly AppSession session;
+    private readonly EventHandler dataChangedHandler;
     private readonly Factory<PresenterBase<DogDetailViewModel, Void, Void>> dogDetailFactory;
+    private readonly Factory<PresenterBase<NewDogViewModel, Void, Void>> newDogFactory;
 
     public DogsViewModel(
         NavigationController navigationController,
-        MockAppData mockAppData,
-        Factory<PresenterBase<DogDetailViewModel, Void, Void>> dogDetailFactory)
+        RepositoryDogs repositoryDogs,
+        RepositoryTutors repositoryTutors,
+        AppSession session,
+        Factory<PresenterBase<DogDetailViewModel, Void, Void>> dogDetailFactory,
+        Factory<PresenterBase<NewDogViewModel, Void, Void>> newDogFactory)
     {
         this.navigationController = navigationController;
-        this.mockAppData = mockAppData;
+        this.repositoryDogs = repositoryDogs;
+        this.repositoryTutors = repositoryTutors;
+        this.session = session;
         this.dogDetailFactory = dogDetailFactory;
-        Refresh();
+        this.newDogFactory = newDogFactory;
+
+        dataChangedHandler = (_, _) => AppSession.FireAndForget(ReloadAsync());
+        session.DataChanged += dataChangedHandler;
+
+        AddDogCommand = new SynchronizedCommand(OpenNewDog, SynchronizationBehavior.Discard, true);
     }
+
+    public ICommand AddDogCommand { get; }
 
     public ObservableCollection<DogRow> DogsCollection { get; } = [];
 
-    public string DogCountLabel { get; set; } = string.Empty;
+    public string DogCountLabel { get; private set; } = string.Empty;
 
-    protected override Task OnRunStarting(Void input)
+    // Defaults to true so the screen shows its empty-state message rather than nothing at all
+    // in the moment before the first load completes.
+    public bool IsEmpty { get; private set; } = true;
+
+    protected override async Task OnRunStarting(Void input) => await ReloadAsync().WithSync();
+
+    protected override Task OnRunFinishing()
     {
+        session.DataChanged -= dataChangedHandler;
+        ClearRows();
         return Task.CompletedTask;
     }
 
-    private void Refresh()
+    /// <summary>Public because the View calls it from OnLoaded — see the class remarks.</summary>
+    public async Task ReloadAsync()
     {
-        DogsCollection.Clear();
-        foreach (var dog in mockAppData.Dogs)
+        var dogs = await repositoryDogs.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
+        var tutors = await repositoryTutors.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
+        var tutorNames = tutors.ToDictionary(t => t.TutorId, t => t.Name);
+
+        ClearRows();
+        foreach (var dog in dogs)
         {
-            var owner = mockAppData.TutorById(dog.OwnerId);
-            // CA2000: the row owns this command for the lifetime of this view-model; the list is
-            // built once from static mock data and never rebuilt, so there is nothing to release early.
+            var ownerName = tutorNames.TryGetValue(dog.TutorId, out var name) ? name : string.Empty;
+            var subtitle = string.IsNullOrWhiteSpace(dog.Breed) ? ownerName : $"{dog.Breed} · {ownerName}";
+
+            // CA2000: ownership passes to the DogRow, which disposes the command when the list rebuilds.
 #pragma warning disable CA2000
-            var openCommand = new SynchronizedCommand(() => Open(dog.Id), SynchronizationBehavior.Discard, true);
+            var openCommand = new SynchronizedCommand(() => Open(dog.DogId), SynchronizationBehavior.Discard, true);
 #pragma warning restore CA2000
-            DogsCollection.Add(new DogRow(MockAppData.Initials(dog.Name), dog.Name, $"{dog.Breed} · {owner?.Name}", openCommand));
+            DogsCollection.Add(new DogRow(AppSession.Initials(dog.Name), dog.Name, subtitle, openCommand));
         }
 
-        DogCountLabel = $"{mockAppData.Dogs.Count} cadastrados";
+        DogCountLabel = dogs.Length == 1 ? "1 cadastrado" : $"{dogs.Length} cadastrados";
+        IsEmpty = dogs.Length == 0;
+    }
+
+    private void ClearRows()
+    {
+        foreach (var row in DogsCollection)
+        {
+            row.Dispose();
+        }
+
+        DogsCollection.Clear();
     }
 
     private async Task Open(int dogId)
     {
-        mockAppData.SelectedDogId = dogId;
+        session.SelectedDogId = dogId;
         await navigationController.PushAsync(dogDetailFactory.Create()).WithSync();
     }
+
+    private async Task OpenNewDog() => await navigationController.PushAsync(newDogFactory.Create()).WithSync();
 }

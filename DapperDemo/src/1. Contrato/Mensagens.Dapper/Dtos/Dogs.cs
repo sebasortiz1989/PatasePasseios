@@ -11,6 +11,8 @@ public class Dogs
 
     public required string Name { get; init; }
 
+    public string? Breed { get; init; }
+
     public string? Description { get; init; }
 
     public string? Image { get; init; }
@@ -19,7 +21,8 @@ public class Dogs
 // CREATE TABLE IF NOT EXISTS Dogs (
 //     DogId INTEGER PRIMARY KEY AUTOINCREMENT,
 //     TutorId INTEGER NOT NULL,
-//     Name VARCHAR(255) NOT NULL UNIQUE,
+//     Name VARCHAR(255) NOT NULL,
+//     Breed VARCHAR(255),
 //     Description VARCHAR(255),
 //     Image BLOB,
 // FOREIGN KEY (TutorId) REFERENCES Tutors(TutorId));

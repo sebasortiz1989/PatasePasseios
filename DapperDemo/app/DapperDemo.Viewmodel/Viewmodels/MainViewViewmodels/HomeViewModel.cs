@@ -5,7 +5,9 @@ using PropertyChanged;
 using Verion.Presentation.View;
 using Verion.Presentation.View.UseCase;
 using Verion.Threading;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Mock;
+using Verion.Treinamento.Mensagens.Dapper.Aggregates;
+using Verion.Treinamento.Mensagens.Dapper.Dtos;
+using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Session;
 
 namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
 
@@ -55,34 +57,37 @@ public class HomeViewModel : PresentationModelBase<Void, Void>
     private static readonly string[] MonthsShort = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 
     private readonly NavigationController navigationController;
-    private readonly MockAppData mockAppData;
+    private readonly RepositoryServices repositoryServices;
+    private readonly AppSession session;
     private readonly EventHandler dataChangedHandler;
     private readonly Factory<PresenterBase<ServiceDetailViewModel, Void, Void>> serviceDetailFactory;
 
     public HomeViewModel(
         NavigationController navigationController,
-        MockAppData mockAppData,
+        RepositoryServices repositoryServices,
+        AppSession session,
         Factory<PresenterBase<ServiceDetailViewModel, Void, Void>> serviceDetailFactory)
     {
         this.navigationController = navigationController;
-        this.mockAppData = mockAppData;
+        this.repositoryServices = repositoryServices;
+        this.session = session;
         this.serviceDetailFactory = serviceDetailFactory;
+
         // Marking a service paid from the detail screen must show up here on return, and this
         // view-model outlives a single OnRunStarting (MainViewModel builds all five tabs once).
-        dataChangedHandler = (_, _) => Refresh();
-        mockAppData.DataChanged += dataChangedHandler;
+        dataChangedHandler = (_, _) => AppSession.FireAndForget(ReloadAsync());
+        session.DataChanged += dataChangedHandler;
 
-        SetRangeHoje = new SynchronizedCommand(() => { HomeRange = HomeRangeFilter.Hoje; Refresh(); }, SynchronizationBehavior.Discard, true);
-        SetRangeSemana = new SynchronizedCommand(() => { HomeRange = HomeRangeFilter.Semana; Refresh(); }, SynchronizationBehavior.Discard, true);
-        SetRangeTodos = new SynchronizedCommand(() => { HomeRange = HomeRangeFilter.Todos; Refresh(); }, SynchronizationBehavior.Discard, true);
-        SetTypeTodos = new SynchronizedCommand(() => { HomeType = null; Refresh(); }, SynchronizationBehavior.Discard, true);
-        SetTypeWalk = new SynchronizedCommand(() => { HomeType = ServiceKind.Walk; Refresh(); }, SynchronizationBehavior.Discard, true);
-        SetTypeSitting = new SynchronizedCommand(() => { HomeType = ServiceKind.Sitting; Refresh(); }, SynchronizationBehavior.Discard, true);
-        SetTypeHotel = new SynchronizedCommand(() => { HomeType = ServiceKind.Hotel; Refresh(); }, SynchronizationBehavior.Discard, true);
+        SetRangeHoje = new SynchronizedCommand(() => SetRange(HomeRangeFilter.Hoje), SynchronizationBehavior.Discard, true);
+        SetRangeSemana = new SynchronizedCommand(() => SetRange(HomeRangeFilter.Semana), SynchronizationBehavior.Discard, true);
+        SetRangeTodos = new SynchronizedCommand(() => SetRange(HomeRangeFilter.Todos), SynchronizationBehavior.Discard, true);
+        SetTypeTodos = new SynchronizedCommand(() => SetType(null), SynchronizationBehavior.Discard, true);
+        SetTypeWalk = new SynchronizedCommand(() => SetType(ServiceKind.Walk), SynchronizationBehavior.Discard, true);
+        SetTypeSitting = new SynchronizedCommand(() => SetType(ServiceKind.Sitting), SynchronizationBehavior.Discard, true);
+        SetTypeHotel = new SynchronizedCommand(() => SetType(ServiceKind.Hotel), SynchronizationBehavior.Discard, true);
 
         TodayLabel = FormatToday();
         HomeRange = HomeRangeFilter.Semana;
-        Refresh();
     }
 
     public ICommand SetRangeHoje { get; }
@@ -122,29 +127,24 @@ public class HomeViewModel : PresentationModelBase<Void, Void>
 
     public bool IsTypeHotel => HomeType == ServiceKind.Hotel;
 
-    public bool HasNoServices { get; private set; }
+    public bool HasNoServices { get; private set; } = true;
+
+    /// <summary>True only when the account has no services at all, versus none matching the filters.</summary>
+    public bool HasNothingBooked { get; private set; }
 
     public ObservableCollection<ServiceRow> FilteredServices { get; } = [];
 
-    protected override Task OnRunStarting(Void input)
-    {
-        return Task.CompletedTask;
-    }
+    protected override async Task OnRunStarting(Void input) => await ReloadAsync().WithSync();
 
     protected override Task OnRunFinishing()
     {
-        mockAppData.DataChanged -= dataChangedHandler;
-        foreach (var row in FilteredServices)
-        {
-            row.Dispose();
-        }
-
-        FilteredServices.Clear();
+        session.DataChanged -= dataChangedHandler;
+        ClearRows();
         return Task.CompletedTask;
     }
 
     /// <summary>PropertyChanged.Fody convention hook — invoked whenever HomeShowPaid changes.</summary>
-    protected void OnHomeShowPaidChanged() => Refresh();
+    protected void OnHomeShowPaidChanged() => AppSession.FireAndForget(ReloadAsync());
 
     private static string FormatToday()
     {
@@ -152,13 +152,28 @@ public class HomeViewModel : PresentationModelBase<Void, Void>
         return DateTime.Now.ToString("dddd, dd 'de' MMMM", culture);
     }
 
-    private void Refresh()
+    private void SetRange(HomeRangeFilter range)
     {
+        HomeRange = range;
+        AppSession.FireAndForget(ReloadAsync());
+    }
+
+    private void SetType(ServiceKind? kind)
+    {
+        HomeType = kind;
+        AppSession.FireAndForget(ReloadAsync());
+    }
+
+    /// <summary>Public because the View calls it from OnLoaded — see the class remarks.</summary>
+    public async Task ReloadAsync()
+    {
+        var all = await repositoryServices.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
+
         var now = DateTime.Now;
         var startToday = now.Date;
         var weekEnd = startToday.AddDays(7);
 
-        var filtered = mockAppData.Services.Where(sv =>
+        var filtered = all.Where(sv =>
         {
             if (HomeRange == HomeRangeFilter.Hoje && sv.Date.Date != now.Date)
             {
@@ -175,52 +190,65 @@ public class HomeViewModel : PresentationModelBase<Void, Void>
                 return false;
             }
 
-            if (!HomeShowPaid && sv.Paid)
+            if (!HomeShowPaid && sv.ServicePaid)
             {
                 return false;
             }
 
             return true;
-        }).OrderBy(sv => sv.Date).ToList();
+        }).OrderBy(sv => sv.Date).ToArray();
 
-        foreach (var stale in FilteredServices)
-        {
-            stale.Dispose();
-        }
-
-        FilteredServices.Clear();
+        ClearRows();
         foreach (var sv in filtered)
         {
-            var dog = mockAppData.DogById(sv.DogId);
             var priceLabel = sv.Kind == ServiceKind.Hotel
-                ? MockAppData.Money(sv.PricePerDay ?? 0) + " / dia"
-                : MockAppData.Money(sv.Price ?? 0);
+                ? AppSession.Money(sv.Price) + " / dia"
+                : AppSession.Money(sv.Price);
+
             // CA2000: ownership passes to the ServiceRow below, which disposes both commands
-            // when this list is rebuilt (see the Dispose loop above).
+            // when this list is rebuilt (see ClearRows).
 #pragma warning disable CA2000
-            var openCommand = new SynchronizedCommand(() => Open(sv.Id), SynchronizationBehavior.Discard, true);
-            var toggleCommand = new SynchronizedCommand(() => mockAppData.TogglePaid(sv.Id), SynchronizationBehavior.Discard, true);
+            var openCommand = new SynchronizedCommand(() => Open(sv.Kind, sv.ServiceId), SynchronizationBehavior.Discard, true);
+            var toggleCommand = new SynchronizedCommand(() => TogglePaid(sv.Kind, sv.ServiceId, !sv.ServicePaid), SynchronizationBehavior.Discard, true);
 #pragma warning restore CA2000
 
             FilteredServices.Add(new ServiceRow(
                 sv.Date.Day.ToString("00", CultureInfo.InvariantCulture),
                 MonthsShort[sv.Date.Month - 1],
-                dog?.Name ?? string.Empty,
-                MockAppData.TypeLabel(sv.Kind),
+                sv.DogName,
+                AppSession.TypeLabel(sv.Kind),
                 sv.Date.ToString("HH:mm", CultureInfo.InvariantCulture),
                 priceLabel,
-                sv.Paid,
-                sv.Paid ? "Pago" : "Pendente",
+                sv.ServicePaid,
+                sv.ServicePaid ? "Pago" : "Pendente",
                 openCommand,
                 toggleCommand));
         }
 
-        HasNoServices = filtered.Count == 0;
+        HasNoServices = filtered.Length == 0;
+        HasNothingBooked = all.Length == 0;
     }
 
-    private async Task Open(int serviceId)
+    private void ClearRows()
     {
-        mockAppData.SelectedServiceId = serviceId;
+        foreach (var row in FilteredServices)
+        {
+            row.Dispose();
+        }
+
+        FilteredServices.Clear();
+    }
+
+    private async Task TogglePaid(ServiceKind kind, int serviceId, bool paid)
+    {
+        await repositoryServices.SetPaidAsync(kind, serviceId, paid).WithSync();
+        session.NotifyDataChanged();
+    }
+
+    private async Task Open(ServiceKind kind, int serviceId)
+    {
+        session.SelectedServiceKind = kind;
+        session.SelectedServiceId = serviceId;
         await navigationController.PushAsync(serviceDetailFactory.Create()).WithSync();
     }
 }

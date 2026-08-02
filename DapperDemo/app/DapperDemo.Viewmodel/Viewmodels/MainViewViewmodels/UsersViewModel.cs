@@ -4,7 +4,9 @@ using System.Windows.Input;
 using PropertyChanged;
 using Verion.Presentation.View;
 using Verion.Presentation.View.UseCase;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Mock;
+using Verion.Threading;
+using Verion.Treinamento.Mensagens.Dapper.Aggregates;
+using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Session;
 
 namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
 
@@ -18,24 +20,33 @@ public class IncomeRow(string label, string amount)
 [AddINotifyPropertyChangedInterface]
 public class UsersViewModel : PresentationModelBase<Void, Void>
 {
-    private readonly MockAppData mockAppData;
+    private readonly RepositoryServices repositoryServices;
+    private readonly RepositoryDogs repositoryDogs;
+    private readonly RepositoryTutors repositoryTutors;
+    private readonly AppSession session;
     private readonly EventHandler dataChangedHandler;
 
-    public UsersViewModel(MockAppData mockAppData)
+    public UsersViewModel(
+        RepositoryServices repositoryServices,
+        RepositoryDogs repositoryDogs,
+        RepositoryTutors repositoryTutors,
+        AppSession session)
     {
-        this.mockAppData = mockAppData;
+        this.repositoryServices = repositoryServices;
+        this.repositoryDogs = repositoryDogs;
+        this.repositoryTutors = repositoryTutors;
+        this.session = session;
 
         // Billing totals depend on services marked paid elsewhere (Agenda, service detail).
-        dataChangedHandler = (_, _) => Refresh();
-        mockAppData.DataChanged += dataChangedHandler;
+        dataChangedHandler = (_, _) => AppSession.FireAndForget(ReloadAsync());
+        session.DataChanged += dataChangedHandler;
 
         OpenPasswordFormCommand = new SynchronizedCommand(OpenPasswordForm, SynchronizationBehavior.Discard, true);
         CancelPasswordFormCommand = new SynchronizedCommand(() => ShowPasswordForm = false, SynchronizationBehavior.Discard, true);
         SavePasswordCommand = new SynchronizedCommand(SavePassword, SynchronizationBehavior.Discard, true);
-        LogoutCommand = new SynchronizedCommand(mockAppData.RequestLogout, SynchronizationBehavior.Discard, true);
+        LogoutCommand = new SynchronizedCommand(session.RequestLogout, SynchronizationBehavior.Discard, true);
 
         CurrentMonthLabel = DateTime.Now.ToString("MMMM 'de' yyyy", new CultureInfo("pt-BR"));
-        Refresh();
     }
 
     public ICommand OpenPasswordFormCommand { get; }
@@ -46,7 +57,7 @@ public class UsersViewModel : PresentationModelBase<Void, Void>
 
     public ICommand LogoutCommand { get; }
 
-    public string CurrentUserName { get; set; } = string.Empty;
+    public string CurrentUserName { get; private set; } = string.Empty;
 
     public bool ShowPasswordForm { get; set; }
 
@@ -62,19 +73,24 @@ public class UsersViewModel : PresentationModelBase<Void, Void>
 
     public string CurrentMonthLabel { get; }
 
-    public string MonthTotalLabel { get; set; } = string.Empty;
+    public string MonthTotalLabel { get; private set; } = string.Empty;
 
     public ObservableCollection<IncomeRow> IncomeBreakdown { get; } = [];
 
-    protected override Task OnRunStarting(Void input)
-    {
-        Refresh();
-        return Task.CompletedTask;
-    }
+    // Portfolio counters, so Perfil summarises the whole account and not just its billing.
+    public string DogCountLabel { get; private set; } = string.Empty;
+
+    public string TutorCountLabel { get; private set; } = string.Empty;
+
+    public string ServiceCountLabel { get; private set; } = string.Empty;
+
+    public string PendingCountLabel { get; private set; } = string.Empty;
+
+    protected override async Task OnRunStarting(Void input) => await ReloadAsync().WithSync();
 
     protected override Task OnRunFinishing()
     {
-        mockAppData.DataChanged -= dataChangedHandler;
+        session.DataChanged -= dataChangedHandler;
         return Task.CompletedTask;
     }
 
@@ -100,44 +116,31 @@ public class UsersViewModel : PresentationModelBase<Void, Void>
             return;
         }
 
-        mockAppData.ChangePassword(NewPw);
-        PwMsg = string.Empty;
-        ShowPasswordForm = false;
+        // Changing the stored password hash isn't wired up yet — the repository has no Update.
+        PwMsg = "Alteração de senha ainda não disponível.";
     }
 
-    private void Refresh()
+    /// <summary>Public because the View calls it from OnLoaded — see the class remarks.</summary>
+    public async Task ReloadAsync()
     {
-        CurrentUserName = mockAppData.CurrentUserName;
+        CurrentUserName = session.CurrentUserName;
 
         var now = DateTime.Now;
-        decimal walk = 0, sitting = 0, hotel = 0;
+        var income = await repositoryServices.GetMonthlyIncomeAsync(session.CurrentPetSitterId, now.Year, now.Month).WithSync();
+        var services = await repositoryServices.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
+        var dogs = await repositoryDogs.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
+        var tutors = await repositoryTutors.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
 
-        foreach (var service in mockAppData.Services)
-        {
-            if (!service.Paid || service.Date.Month != now.Month || service.Date.Year != now.Year)
-            {
-                continue;
-            }
-
-            switch (service.Kind)
-            {
-                case ServiceKind.Walk:
-                    walk += service.Price ?? 0;
-                    break;
-                case ServiceKind.Sitting:
-                    sitting += service.Price ?? 0;
-                    break;
-                case ServiceKind.Hotel:
-                    hotel += service.PricePerDay ?? 0;
-                    break;
-            }
-        }
-
-        MonthTotalLabel = MockAppData.Money(walk + sitting + hotel);
+        MonthTotalLabel = AppSession.Money(income.Total);
 
         IncomeBreakdown.Clear();
-        IncomeBreakdown.Add(new IncomeRow("Passeio", MockAppData.Money(walk)));
-        IncomeBreakdown.Add(new IncomeRow("Pet sitting", MockAppData.Money(sitting)));
-        IncomeBreakdown.Add(new IncomeRow("Hotel", MockAppData.Money(hotel)));
+        IncomeBreakdown.Add(new IncomeRow("Passeio", AppSession.Money(income.Walk)));
+        IncomeBreakdown.Add(new IncomeRow("Pet sitting", AppSession.Money(income.Sitting)));
+        IncomeBreakdown.Add(new IncomeRow("Hotel", AppSession.Money(income.Hotel)));
+
+        DogCountLabel = dogs.Length.ToString(CultureInfo.InvariantCulture);
+        TutorCountLabel = tutors.Length.ToString(CultureInfo.InvariantCulture);
+        ServiceCountLabel = services.Length.ToString(CultureInfo.InvariantCulture);
+        PendingCountLabel = services.Count(s => !s.ServicePaid).ToString(CultureInfo.InvariantCulture);
     }
 }

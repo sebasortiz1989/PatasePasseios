@@ -1,9 +1,14 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Windows.Input;
 using PropertyChanged;
 using Verion.Presentation.View;
 using Verion.Presentation.View.UseCase;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Mock;
+using Verion.Threading;
+using Verion.Treinamento.Mensagens.Dapper;
+using Verion.Treinamento.Mensagens.Dapper.Aggregates;
+using Verion.Treinamento.Mensagens.Dapper.Dtos;
+using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Session;
 
 namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
 
@@ -17,21 +22,25 @@ public class DogOption(int id, string label)
 [AddINotifyPropertyChangedInterface]
 public class ServicesViewModel : PresentationModelBase<Void, Void>
 {
-    private readonly MockAppData mockAppData;
+    private readonly RepositoryDogs repositoryDogs;
+    private readonly RepositoryServices repositoryServices;
+    private readonly AppSession session;
+    private readonly EventHandler dataChangedHandler;
 
-    public ServicesViewModel(MockAppData mockAppData)
+    public ServicesViewModel(RepositoryDogs repositoryDogs, RepositoryServices repositoryServices, AppSession session)
     {
-        this.mockAppData = mockAppData;
+        this.repositoryDogs = repositoryDogs;
+        this.repositoryServices = repositoryServices;
+        this.session = session;
+
+        // A dog added on the Cachorros tab has to show up in this picker without a relaunch.
+        dataChangedHandler = (_, _) => AppSession.FireAndForget(ReloadDogsAsync());
+        session.DataChanged += dataChangedHandler;
 
         SetTypeWalk = new SynchronizedCommand(() => SetType(ServiceKind.Walk), SynchronizationBehavior.Discard, true);
         SetTypeSitting = new SynchronizedCommand(() => SetType(ServiceKind.Sitting), SynchronizationBehavior.Discard, true);
         SetTypeHotel = new SynchronizedCommand(() => SetType(ServiceKind.Hotel), SynchronizationBehavior.Discard, true);
         CreateServiceCommand = new SynchronizedCommand(CreateService, SynchronizationBehavior.Discard, true);
-
-        foreach (var dog in mockAppData.Dogs)
-        {
-            DogOptions.Add(new DogOption(dog.Id, dog.Name));
-        }
 
         SvcDatePart = DateTime.Now.Date.AddDays(1);
         SvcTimePart = TimeSpan.FromHours(9);
@@ -48,6 +57,11 @@ public class ServicesViewModel : PresentationModelBase<Void, Void>
     public ICommand CreateServiceCommand { get; }
 
     public ObservableCollection<DogOption> DogOptions { get; } = [];
+
+    /// <summary>No dogs yet means the form can't do anything useful, so it explains what to do first.</summary>
+    public bool HasNoDogs { get; private set; } = true;
+
+    public bool HasDogs => !HasNoDogs;
 
     public ServiceKind SvcType { get; set; } = ServiceKind.Walk;
 
@@ -88,9 +102,31 @@ public class ServicesViewModel : PresentationModelBase<Void, Void>
 
     public bool SvcMsgIsError { get; set; }
 
-    protected override Task OnRunStarting(Void input)
+    protected override async Task OnRunStarting(Void input) => await ReloadDogsAsync().WithSync();
+
+    protected override Task OnRunFinishing()
     {
+        session.DataChanged -= dataChangedHandler;
         return Task.CompletedTask;
+    }
+
+    private static bool TryParsePrice(string text, out decimal price) =>
+        decimal.TryParse(text?.Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out price);
+
+    /// <summary>Public because the View calls it from OnLoaded — see the class remarks.</summary>
+    public async Task ReloadDogsAsync()
+    {
+        var dogs = await repositoryDogs.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
+        var previouslySelectedId = SelectedDog?.Id;
+
+        DogOptions.Clear();
+        foreach (var dog in dogs)
+        {
+            DogOptions.Add(new DogOption(dog.DogId, dog.Name));
+        }
+
+        SelectedDog = previouslySelectedId is int id ? DogOptions.FirstOrDefault(o => o.Id == id) : null;
+        HasNoDogs = DogOptions.Count == 0;
     }
 
     private void SetType(ServiceKind kind)
@@ -99,7 +135,7 @@ public class ServicesViewModel : PresentationModelBase<Void, Void>
         SvcMsg = string.Empty;
     }
 
-    private void CreateService()
+    private async Task CreateService()
     {
         if (SelectedDog == null)
         {
@@ -107,11 +143,13 @@ public class ServicesViewModel : PresentationModelBase<Void, Void>
             return;
         }
 
+        Response result;
+
         if (SvcType == ServiceKind.Hotel)
         {
-            if (!decimal.TryParse(SvcPricePerDay, out var pricePerDay) || pricePerDay <= 0)
+            if (!TryParsePrice(SvcPricePerDay, out var pricePerDay) || pricePerDay <= 0)
             {
-                Fail("Preencha as datas e o preço por dia.");
+                Fail("Informe um preço por dia válido.");
                 return;
             }
 
@@ -121,43 +159,66 @@ public class ServicesViewModel : PresentationModelBase<Void, Void>
                 return;
             }
 
-            mockAppData.AddService(new MockService
+            result = await repositoryServices.AddHotelAsync(new PetHotelService
             {
-                Kind = ServiceKind.Hotel,
                 DogId = SelectedDog.Id,
-                Date = SvcDate,
+                PetSitterId = session.CurrentPetSitterId,
+                StartDate = SvcDate,
                 EndDate = SvcEndDate,
                 PricePerDay = pricePerDay,
                 RequiresWalking = SvcRequiresWalking,
-                Paid = false
-            });
-
-            SvcPricePerDay = string.Empty;
-            SvcRequiresWalking = false;
+                ServicePaid = false
+            }).WithSync();
         }
-        else
+        else if (SvcType == ServiceKind.Sitting)
         {
-            if (!decimal.TryParse(SvcPrice, out var price) || price <= 0)
+            if (!TryParsePrice(SvcPrice, out var price) || price <= 0)
             {
-                Fail("Preencha a data e o preço.");
+                Fail("Informe um preço válido.");
                 return;
             }
 
-            mockAppData.AddService(new MockService
+            result = await repositoryServices.AddSittingAsync(new PetSittingService
             {
-                Kind = SvcType,
                 DogId = SelectedDog.Id,
+                PetSitterId = session.CurrentPetSitterId,
                 Date = SvcDate,
                 Price = price,
-                Paid = false
-            });
+                ServicePaid = false
+            }).WithSync();
+        }
+        else
+        {
+            if (!TryParsePrice(SvcPrice, out var price) || price <= 0)
+            {
+                Fail("Informe um preço válido.");
+                return;
+            }
 
-            SvcPrice = string.Empty;
+            result = await repositoryServices.AddWalkAsync(new WalkingService
+            {
+                DogId = SelectedDog.Id,
+                PetSitterId = session.CurrentPetSitterId,
+                Date = SvcDate,
+                Price = price,
+                ServicePaid = false
+            }).WithSync();
         }
 
+        if (result != Response.Successful)
+        {
+            Fail("Não foi possível agendar o serviço.");
+            return;
+        }
+
+        SvcPrice = string.Empty;
+        SvcPricePerDay = string.Empty;
+        SvcRequiresWalking = false;
         SelectedDog = null;
         SvcMsgIsError = false;
         SvcMsg = "Serviço agendado.";
+
+        session.NotifyDataChanged();
     }
 
     private void Fail(string message)

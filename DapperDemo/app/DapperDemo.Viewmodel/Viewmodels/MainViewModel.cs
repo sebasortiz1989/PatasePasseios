@@ -3,14 +3,14 @@ using PropertyChanged;
 using Verion.Presentation.View;
 using Verion.Presentation.View.UseCase;
 using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Mock;
+using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Session;
 
 namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels;
 
 [AddINotifyPropertyChangedInterface]
 public class MainViewModel : PresentationModelBase<Void, Void>
 {
-    private readonly MockAppData mockAppData;
+    private readonly AppSession session;
     private readonly EventHandler logoutHandler;
     private readonly PresenterBase<DogsViewModel, Void, Void> dogsView;
     private readonly PresenterBase<TutorsViewModel, Void, Void> tutorsView;
@@ -20,7 +20,7 @@ public class MainViewModel : PresentationModelBase<Void, Void>
 
     public MainViewModel(
         NavigationController navigationController,
-        MockAppData mockAppData,
+        AppSession session,
         Factory<PresenterBase<DogsViewModel, Void, Void>> dogsViewFactory,
         Factory<PresenterBase<TutorsViewModel, Void, Void>> tutorsViewFactory,
         Factory<PresenterBase<HomeViewModel, Void, Void>> homeViewFactory,
@@ -30,11 +30,15 @@ public class MainViewModel : PresentationModelBase<Void, Void>
         BackCommand = new SynchronizedCommand(() => navigationController.PopAsync(this), SynchronizationBehavior.Discard, true);
 
         // The Perfil tab has no handle on this screen's navigation entry, so it raises a logout
-        // request on the shared data instead. Unsubscribed in OnRunFinishing so repeated
+        // request on the session instead. Unsubscribed in OnRunFinishing so repeated
         // login/logout cycles don't leave earlier MainViewModels listening on the singleton.
-        this.mockAppData = mockAppData;
-        logoutHandler = (_, _) => BackCommand.Execute(null);
-        mockAppData.LogoutRequested += logoutHandler;
+        this.session = session;
+        logoutHandler = (_, _) =>
+        {
+            session.SignOut();
+            BackCommand.Execute(null);
+        };
+        session.LogoutRequested += logoutHandler;
         dogsView = dogsViewFactory.Create();
         tutorsView = tutorsViewFactory.Create();
         homeView = homeViewFactory.Create();
@@ -69,7 +73,7 @@ public class MainViewModel : PresentationModelBase<Void, Void>
 
     protected override Task OnRunFinishing()
     {
-        mockAppData.LogoutRequested -= logoutHandler;
+        session.LogoutRequested -= logoutHandler;
         return Task.CompletedTask;
     }
 }

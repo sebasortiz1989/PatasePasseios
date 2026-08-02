@@ -3,7 +3,9 @@ using System.Windows.Input;
 using PropertyChanged;
 using Verion.Presentation.View;
 using Verion.Presentation.View.UseCase;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Mock;
+using Verion.Threading;
+using Verion.Treinamento.Mensagens.Dapper.Aggregates;
+using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.Session;
 
 namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels;
 
@@ -12,50 +14,86 @@ public record TutorFutureServiceRow(string DogName, string TypeLabel, string Dat
 [AddINotifyPropertyChangedInterface]
 public class TutorDetailViewModel : PresentationModelBase<Void, Void>
 {
-    private readonly MockAppData mockAppData;
+    private readonly RepositoryTutors repositoryTutors;
+    private readonly RepositoryDogs repositoryDogs;
+    private readonly RepositoryServices repositoryServices;
+    private readonly AppSession session;
+    private readonly NavigationController navigationController;
 
-    public TutorDetailViewModel(NavigationController navigationController, MockAppData mockAppData)
+    public TutorDetailViewModel(
+        NavigationController navigationController,
+        RepositoryTutors repositoryTutors,
+        RepositoryDogs repositoryDogs,
+        RepositoryServices repositoryServices,
+        AppSession session)
     {
-        this.mockAppData = mockAppData;
+        this.repositoryTutors = repositoryTutors;
+        this.repositoryDogs = repositoryDogs;
+        this.repositoryServices = repositoryServices;
+        this.session = session;
+        this.navigationController = navigationController;
         BackCommand = new SynchronizedCommand(() => navigationController.PopAsync(this), SynchronizationBehavior.Discard, true);
+        AskDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = true, SynchronizationBehavior.Discard, true);
+        CancelDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = false, SynchronizationBehavior.Discard, true);
+        ConfirmDeleteCommand = new SynchronizedCommand(Delete, SynchronizationBehavior.Discard, true);
     }
 
     public ICommand BackCommand { get; }
 
-    public string Initials { get; set; } = string.Empty;
+    public ICommand AskDeleteCommand { get; }
 
-    public string Name { get; set; } = string.Empty;
+    public ICommand CancelDeleteCommand { get; }
 
-    public string Neighborhood { get; set; } = string.Empty;
+    public ICommand ConfirmDeleteCommand { get; }
 
-    public string Phone { get; set; } = string.Empty;
+    /// <summary>Deleting takes two taps: the button swaps for a confirm/cancel pair.</summary>
+    public bool ConfirmingDelete { get; private set; }
 
-    public string DogNames { get; set; } = string.Empty;
+    public bool NotConfirmingDelete => !ConfirmingDelete;
 
-    public bool NoFuture { get; set; }
+    public string Initials { get; private set; } = string.Empty;
+
+    public string Name { get; private set; } = string.Empty;
+
+    public string Neighborhood { get; private set; } = string.Empty;
+
+    public string Phone { get; private set; } = string.Empty;
+
+    public string DogNames { get; private set; } = string.Empty;
+
+    public bool NoFuture { get; private set; }
 
     public ObservableCollection<TutorFutureServiceRow> FutureServices { get; } = [];
 
-    protected override Task OnRunStarting(Void input)
+    protected override async Task OnRunStarting(Void input)
     {
-        var tutor = mockAppData.TutorById(mockAppData.SelectedTutorId ?? -1);
-        if (tutor == null)
+        if (session.SelectedTutorId is not int tutorId)
         {
-            return Task.CompletedTask;
+            return;
         }
 
-        Initials = MockAppData.Initials(tutor.Name);
-        Name = tutor.Name;
-        Neighborhood = tutor.Neighborhood;
-        Phone = tutor.Phone;
-        DogNames = string.Join(", ", tutor.DogIds.Select(id => mockAppData.DogById(id)?.Name).Where(n => n != null));
+        var tutor = await repositoryTutors.GetAsync(tutorId).WithSync();
+        if (tutor == null)
+        {
+            return;
+        }
 
+        Initials = AppSession.Initials(tutor.Name);
+        Name = tutor.Name;
+        Neighborhood = tutor.Address ?? string.Empty;
+        Phone = tutor.Telephone;
+
+        var dogs = await repositoryDogs.ListForTutorAsync(tutorId).WithSync();
+        DogNames = dogs.Length == 0 ? "Nenhum cachorro cadastrado." : string.Join(", ", dogs.Select(d => d.Name));
+
+        var services = await repositoryServices.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
+        var dogIds = dogs.Select(d => d.DogId).ToHashSet();
         var now = DateTime.Now;
-        var future = mockAppData.Services
-            .Where(s => tutor.DogIds.Contains(s.DogId) && s.Date >= now)
+        var future = services
+            .Where(s => dogIds.Contains(s.DogId) && s.Date >= now)
             .OrderBy(s => s.Date)
-            .Select(s => new TutorFutureServiceRow(mockAppData.DogById(s.DogId)?.Name ?? string.Empty, MockAppData.TypeLabel(s.Kind), MockAppData.DateTimeLabel(s.Date)))
-            .ToList();
+            .Select(s => new TutorFutureServiceRow(s.DogName, AppSession.TypeLabel(s.Kind), AppSession.DateTimeLabel(s.Date)))
+            .ToArray();
 
         FutureServices.Clear();
         foreach (var row in future)
@@ -63,8 +101,20 @@ public class TutorDetailViewModel : PresentationModelBase<Void, Void>
             FutureServices.Add(row);
         }
 
-        NoFuture = future.Count == 0;
+        NoFuture = future.Length == 0;
+    }
 
-        return Task.CompletedTask;
+    private async Task Delete()
+    {
+        if (session.SelectedTutorId is not int tutorId)
+        {
+            return;
+        }
+
+        // Cascades to this tutor's dogs and their services — see RepositoryTutors.Delete.
+        await repositoryTutors.Delete(tutorId).WithSync();
+        session.SelectedTutorId = null;
+        session.NotifyDataChanged();
+        await navigationController.PopAsync(this).WithSync();
     }
 }
