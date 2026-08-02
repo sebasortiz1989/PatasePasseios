@@ -1,11 +1,11 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Verion.Treinamento.DapperDemo.View.Components;
-using Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels;
+using AvaloniaFramework.Controls;
+using DapperDemo.Viewmodel.Viewmodels;
 
-namespace Verion.Treinamento.DapperDemo.View.Views;
+namespace DapperDemo.View.Views;
 
-public partial class LoginView : UserControlMobile<LoginViewModel, Void, Void>
+public partial class LoginView : PresenterUserControl<LoginViewModel, Unit, Unit>
 {
     public LoginView()
     {

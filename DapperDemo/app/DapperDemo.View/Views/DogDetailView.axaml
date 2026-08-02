@@ -1,0 +1,170 @@
+<UserControl
+    d:DesignHeight="1460"
+    d:DesignWidth="720"
+    mc:Ignorable="d"
+    x:Class="DapperDemo.View.Views.DogDetailView"
+    x:DataType="viewmodels:DogDetailViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels;assembly=DapperDemo.Viewmodel"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Viewbox>
+        <Grid
+            Background="{StaticResource ColorBg}"
+            Height="1460"
+            Width="720">
+            <ScrollViewer>
+                <StackPanel Spacing="0">
+                    <buttons:VButton
+                        Classes="BtnGhost"
+                        Command="{Binding BackCommand}"
+                        HorizontalAlignment="Left"
+                        Margin="32,32,0,0"
+                        VText="← Voltar"
+                        Width="180" />
+
+                    <StackPanel
+                        HorizontalAlignment="Center"
+                        Margin="32,32,32,24"
+                        Spacing="12">
+                        <Border
+                            BorderBrush="{StaticResource ColorAccent}"
+                            BorderThickness="2"
+                            CornerRadius="84"
+                            Height="168"
+                            HorizontalAlignment="Center"
+                            Width="168">
+                            <TextBlock
+                                FontFamily="{StaticResource FontHeading}"
+                                FontSize="71"
+                                Foreground="{StaticResource ColorAccentDark700}"
+                                HorizontalAlignment="Center"
+                                Text="{Binding Initials}"
+                                VerticalAlignment="Center" />
+                        </Border>
+                        <TextBlock
+                            Classes="Heading1"
+                            FontSize="67"
+                            HorizontalAlignment="Center"
+                            Text="{Binding Name}" />
+                        <TextBlock
+                            Classes="Kicker"
+                            HorizontalAlignment="Center"
+                            Text="{Binding Breed}" />
+                    </StackPanel>
+
+                    <StackPanel Margin="32,0,32,56" Spacing="28">
+                        <Border
+                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderThickness="0,2,0,0"
+                            Padding="0,20,0,0">
+                            <StackPanel Spacing="6">
+                                <TextBlock Classes="Kicker" Text="Tutor" />
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="31"
+                                    Foreground="{StaticResource ColorText}"
+                                    Text="{Binding OwnerName}" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border
+                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderThickness="0,2,0,0"
+                            Padding="0,20,0,0">
+                            <StackPanel Spacing="6">
+                                <TextBlock Classes="Kicker" Text="Descrição" />
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="31"
+                                    Foreground="{StaticResource ColorText}"
+                                    LineHeight="48"
+                                    Text="{Binding Description}"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border
+                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderThickness="0,2,0,0"
+                            Padding="0,20,0,0">
+                            <StackPanel Spacing="12">
+                                <TextBlock Classes="Kicker" Text="Próximos serviços" />
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="29"
+                                    FontStyle="Italic"
+                                    Foreground="{StaticResource ColorTextMuted45}"
+                                    IsVisible="{Binding NoFuture}"
+                                    Text="Nada agendado." />
+                                <ItemsControl ItemsSource="{Binding FutureServices}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="viewmodels:FutureServiceRow">
+                                            <Border
+                                                BorderBrush="{StaticResource ColorDivider}"
+                                                BorderThickness="0,0,0,2"
+                                                Margin="0,0,0,12"
+                                                Padding="0,0,0,12">
+                                                <Grid ColumnDefinitions="*,Auto">
+                                                    <TextBlock
+                                                        FontFamily="{StaticResource FontBody}"
+                                                        FontSize="29"
+                                                        Foreground="{StaticResource ColorText}"
+                                                        Text="{Binding TypeLabel}" />
+                                                    <TextBlock
+                                                        FontFamily="{StaticResource FontBody}"
+                                                        FontSize="26"
+                                                        Foreground="{StaticResource ColorTextMuted55}"
+                                                        Grid.Column="1"
+                                                        Text="{Binding DateLabel}" />
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+
+                        <!--  Destructive, so it takes two taps: the button swaps for confirm/cancel  -->
+                        <StackPanel Margin="0,32,0,0" Spacing="16">
+                            <buttons:VButton
+                                Classes="BtnSecondary"
+                                Command="{Binding AskDeleteCommand}"
+                                Height="80"
+                                HorizontalAlignment="Stretch"
+                                IsVisible="{Binding NotConfirmingDelete}"
+                                VText="Excluir cachorro" />
+                            <StackPanel IsVisible="{Binding ConfirmingDelete}" Spacing="12">
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="26"
+                                    FontStyle="Italic"
+                                    Foreground="{StaticResource ColorAccentDark800}"
+                                    HorizontalAlignment="Center"
+                                    Text="Isso remove o cachorro e todos os serviços dele."
+                                    TextAlignment="Center"
+                                    TextWrapping="Wrap" />
+                                <Grid ColumnDefinitions="*,16,*">
+                                    <buttons:VButton
+                                        Classes="BtnSecondary"
+                                        Command="{Binding CancelDeleteCommand}"
+                                        Height="80"
+                                        VText="Cancelar" />
+                                    <buttons:VButton
+                                        Classes="BtnPrimary"
+                                        Command="{Binding ConfirmDeleteCommand}"
+                                        Grid.Column="2"
+                                        Height="80"
+                                        VText="Excluir" />
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Viewbox>
+</UserControl>

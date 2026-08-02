@@ -2,11 +2,17 @@
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
         <LangVersion>latest</LangVersion>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-        <AssemblyName>Verion.Treinamento.DapperDemo.View</AssemblyName>
-        <RootNamespace>Verion.Treinamento.DapperDemo.View</RootNamespace>
+        <AssemblyName>DapperDemo.View</AssemblyName>
+        <RootNamespace>DapperDemo.View</RootNamespace>
     </PropertyGroup>
+
+    <ItemGroup>
+        <Using Include="AvaloniaFramework" />
+        <Using Include="AvaloniaFramework.DependencyInjection" />
+    </ItemGroup>
 
     <ItemGroup>
         <AvaloniaResource Include="Assets\**"/>
@@ -16,7 +22,10 @@
         <PackageReference Include="Avalonia" Version="12.1.1" />
         <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.1" />
         <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.1" />
-        <PackageReference Include="Verion.Apresentacao.Avalonia" Version="19.0.23" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\external\AvaloniaFramework\AvaloniaFramework\AvaloniaFramework.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -46,6 +55,9 @@
       <Compile Update="Views\MainView\UsersView.axaml.cs">
         <DependentUpon>UsersView.axaml</DependentUpon>
         <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\MainViewViews\AgendaView.axaml.cs">
+        <DependentUpon>HomeView.axaml</DependentUpon>
       </Compile>
     </ItemGroup>
 </Project>

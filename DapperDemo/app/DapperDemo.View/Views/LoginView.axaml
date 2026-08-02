@@ -2,53 +2,96 @@
     d:DesignHeight="1560"
     d:DesignWidth="720"
     mc:Ignorable="d"
-    x:Class="Verion.Treinamento.DapperDemo.View.Views.LoginView"
+    x:Class="DapperDemo.View.Views.LoginView"
     x:DataType="viewmodels:LoginViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:buttons="clr-namespace:Verion.Apresentacao.Avalonia.Buttons;assembly=Verion.Apresentacao.Avalonia"
+    xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:inputs="clr-namespace:Verion.Apresentacao.Avalonia.Inputs;assembly=Verion.Apresentacao.Avalonia"
+    xmlns:inputs="using:AvaloniaFramework.Controls.Inputs"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewmodels="clr-namespace:Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels;assembly=Verion.Treinamento.DapperDemo.Viewmodel"
+    xmlns:viewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Viewbox>
         <Grid
-            Background="#FDFBF7"
+            Background="{StaticResource ColorBg}"
             Height="1560"
             Width="720">
-            <StackPanel Spacing="50" VerticalAlignment="Center">
-                <TextBlock
-                    Classes="Title"
-                    HorizontalAlignment="Center"
-                    Text="Login" />
-                <inputs:VTextBoxWithLabel
-                    Classes="StandardTextBoxWithLabel"
-                    VDescriptionText="Email"
-                    VText="{Binding Email}"
-                    VTextWatermark="Seu email" />
-
-                <inputs:VTextBoxWithLabel
-                    Classes="StandardTextBoxWithLabel"
-                    VDescriptionText="Senha"
-                    VPasswordChar="*"
-                    VText="{Binding Password}"
-                    VTextWatermark="Sua senha" />
-
+            <StackPanel
+                HorizontalAlignment="Center"
+                Spacing="32"
+                VerticalAlignment="Center"
+                Width="560">
                 <StackPanel
                     HorizontalAlignment="Center"
-                    Orientation="Horizontal"
-                    Spacing="50">
-                    <buttons:VButton
-                        Classes="DapperButton"
-                        Command="{Binding LoginCommand}"
-                        VText="Entrar" />
-
-                    <buttons:VButton
-                        Classes="DapperButton"
-                        Command="{Binding SignUpCommand}"
-                        VText="Cadastrarse" />
+                    Margin="0,0,0,8"
+                    Spacing="8">
+                    <TextBlock
+                        Classes="Heading1"
+                        FontSize="79"
+                        FontWeight="Normal"
+                        Height="100"
+                        HorizontalAlignment="Center"
+                        Text="Patas &amp; Passeios" />
+                    <Border
+                        Background="{StaticResource ColorAccent}"
+                        Height="2"
+                        HorizontalAlignment="Center"
+                        Margin="0,8,0,0"
+                        Width="77" />
+                    <TextBlock
+                        Classes="Kicker"
+                        HorizontalAlignment="Center"
+                        Margin="0,8,0,0"
+                        Text="Serviços para cães" />
                 </StackPanel>
+
+                <inputs:VTextBoxWithLabel
+                    Classes="ClassicInput"
+                    VDescriptionText="Email"
+                    VHeight="77"
+                    VText="{Binding Email}"
+                    VTextWatermark="email@exemplo.com"
+                    VWidth="560" />
+
+                <inputs:VTextBoxWithLabel
+                    Classes="ClassicInput"
+                    VDescriptionText="Senha"
+                    VHeight="77"
+                    VPasswordChar="•"
+                    VText="{Binding Password}"
+                    VTextWatermark="••••••••"
+                    VWidth="560" />
+
+                <CheckBox
+                    Content="Entrar automaticamente"
+                    FontFamily="{StaticResource FontBody}"
+                    FontSize="28"
+                    Foreground="{StaticResource ColorTextMuted70}"
+                    IsChecked="{Binding RememberMe}" />
+
+                <TextBlock
+                    FontFamily="{StaticResource FontBody}"
+                    FontSize="28"
+                    FontStyle="Italic"
+                    Foreground="{StaticResource ColorAccentDark800}"
+                    HorizontalAlignment="Center"
+                    IsVisible="{Binding HasLoginError}"
+                    Text="{Binding LoginError}"
+                    TextAlignment="Center" />
+
+                <buttons:VButton
+                    Classes="BtnPrimary"
+                    Command="{Binding LoginCommand}"
+                    Height="80"
+                    VText="Entrar"
+                    Width="560" />
+                <buttons:VButton
+                    Classes="BtnGhost"
+                    Command="{Binding SignUpCommand}"
+                    Height="70"
+                    VText="Criar uma conta"
+                    Width="560" />
             </StackPanel>
         </Grid>
     </Viewbox>

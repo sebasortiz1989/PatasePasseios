@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace Verion.Treinamento.Mensagens.Dapper;
+namespace DapperDemo.Mensagens.Dapper;
 
 public enum Response : byte
 {

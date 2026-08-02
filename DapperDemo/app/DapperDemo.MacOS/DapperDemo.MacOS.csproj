@@ -5,12 +5,12 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
     <SupportedOSPlatformVersion>12.0</SupportedOSPlatformVersion>
-    <ApplicationTitle>Verion.Treinamento.DapperDemo.MacOS</ApplicationTitle>
-    <ApplicationId>com.verion.DapperDemo</ApplicationId>
+    <ApplicationTitle>DapperDemo.MacOS</ApplicationTitle>
+    <ApplicationId>com.dapperdemo.app</ApplicationId>
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
     <ApplicationVersion>1</ApplicationVersion>
-    <AssemblyName>Verion.Treinamento.DapperDemo.MacOS</AssemblyName>
-    <RootNamespace>Verion.Treinamento.DapperDemo.MacOS</RootNamespace>
+    <AssemblyName>DapperDemo.MacOS</AssemblyName>
+    <RootNamespace>DapperDemo.MacOS</RootNamespace>
 <!--    <VerifyXcodeVersion>false</VerifyXcodeVersion>-->
 </PropertyGroup>
 

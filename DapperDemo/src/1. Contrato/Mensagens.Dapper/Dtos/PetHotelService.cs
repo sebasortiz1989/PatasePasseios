@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Verion.Treinamento.Mensagens.Dapper.Dtos;
+namespace DapperDemo.Mensagens.Dapper.Dtos;
 
 [Table("PetHotelService")]
 public class PetHotelService
@@ -15,7 +15,10 @@ public class PetHotelService
 
     public DateTime EndDate { get; init; }
 
-    public decimal Price { get; init; }
+    /// <summary>Daily rate, not the total for the stay.</summary>
+    public decimal PricePerDay { get; init; }
+
+    public bool RequiresWalking { get; init; }
 
     public bool ServicePaid { get; init; }
 }
@@ -26,7 +29,8 @@ public class PetHotelService
 //     PetSitterId INTEGER NOT NULL,
 //     StartDate DATETIME NOT NULL,
 //     EndDate DATETIME NOT NULL,
-//     Price DECIMAL(10, 2) NOT NULL,
+//     PricePerDay DECIMAL(10, 2) NOT NULL,
+//     RequiresWalking BOOLEAN NOT NULL DEFAULT 0,
 //     ServicePaid BOOLEAN,
 // FOREIGN KEY (DogId) REFERENCES Dogs(DogId),
 // FOREIGN KEY (PetSitterId) REFERENCES PetSitter(PetSitterId));

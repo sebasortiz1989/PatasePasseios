@@ -1,10 +1,9 @@
-﻿using Verion.Dominio.Infraestrutura.DependencyInversion;
-using Verion.Infraestrutura.Dependency;
-using Verion.Treinamento.DapperDemo.View.DependencyInversion;
-using Verion.Treinamento.Mensagens.Dapper.Aggregates;
-using Verion.Treinamento.Mensagens.Dapper.Services;
+﻿using AvaloniaFramework.DependencyInjection;
+using DapperDemo.View.DependencyInversion;
+using DapperDemo.Mensagens.Dapper.Aggregates;
+using DapperDemo.Mensagens.Dapper.Services;
 
-namespace Verion.Treinamento.DapperDemo.Infrastructure.DependencyInversion;
+namespace DapperDemo.Infrastructure.DependencyInversion;
 
 public class DapperDemoInfrastructureContainerBuilder : ImmutableContainerBuilder
 {
@@ -15,7 +14,6 @@ public class DapperDemoInfrastructureContainerBuilder : ImmutableContainerBuilde
 
     private static IEnumerable<ContainerBuilder> GetBuilders()
     {
-        yield return new DomainContainerBuilder();
         yield return new DapperDemoViewContainerBuilder();
         yield return new ImmutableContainerBuilder(GetRegistrations());
     }
@@ -24,6 +22,8 @@ public class DapperDemoInfrastructureContainerBuilder : ImmutableContainerBuilde
     {
         yield return CreateSingleton<RepositoryPetSitter>();
         yield return CreateSingleton<RepositoryDogs>();
+        yield return CreateSingleton<RepositoryTutors>();
+        yield return CreateSingleton<RepositoryServices>();
         yield return CreateSingleton<DapperDatabaseService>();
     }
 }

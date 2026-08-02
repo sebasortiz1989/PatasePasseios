@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Globalization;
 
-namespace Verion.Treinamento.DapperDemo.Android.DependencyInversion
+namespace DapperDemo.Android.DependencyInversion
 {
     public class ServicoNumeroSerieDispositivoDroid
     {

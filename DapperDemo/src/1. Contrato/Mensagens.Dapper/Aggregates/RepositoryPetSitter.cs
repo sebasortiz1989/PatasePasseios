@@ -1,9 +1,9 @@
 ﻿using Dapper;
 using Microsoft.Data.Sqlite;
-using Verion.Treinamento.Mensagens.Dapper.Dtos;
-using Verion.Treinamento.Mensagens.Dapper.Services;
+using DapperDemo.Mensagens.Dapper.Dtos;
+using DapperDemo.Mensagens.Dapper.Services;
 
-namespace Verion.Treinamento.Mensagens.Dapper.Aggregates;
+namespace DapperDemo.Mensagens.Dapper.Aggregates;
 
 public sealed class RepositoryPetSitter : RepositoryBase<PetSitter>
 {
@@ -53,7 +53,7 @@ public sealed class RepositoryPetSitter : RepositoryBase<PetSitter>
                 using (var connection = DapperDatabaseService.Connection)
                 {
                     await connection.OpenAsync().ConfigureAwait(false);
-                    var petSitters = await connection.QueryAsync<PetSitter>("SELECT * FROM PetSitter").NoSync();
+                    var petSitters = await connection.QueryAsync<PetSitter>("SELECT * FROM PetSitter").ConfigureAwait(false);
                     var petSitterModelos = petSitters as PetSitter[] ?? petSitters.ToArray();
                     var result = petSitterModelos.Length != 0 ?
                         petSitterModelos.Select(x => new PetSitter
@@ -89,6 +89,19 @@ public sealed class RepositoryPetSitter : RepositoryBase<PetSitter>
     public override Task<Response> DeleteAll()
     {
         throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// The logged-in row, so the app can scope data to this account and greet the user by name.
+    /// <see cref="VerifyLogin"/> only reports success, which isn't enough on its own.
+    /// </summary>
+    public async Task<PetSitter?> GetByEmailAsync(string email)
+    {
+        using var connection = DapperDatabaseService.Connection;
+        await connection.OpenAsync().ConfigureAwait(false);
+        return await connection.QueryFirstOrDefaultAsync<PetSitter>(
+            sql: "SELECT PetSitterId, Email, PasswordHash, Name, BirthDate FROM PetSitter WHERE Email = @Email",
+            param: new { Email = email }).ConfigureAwait(false);
     }
 
     public Response VerifyLogin(string email, string password)

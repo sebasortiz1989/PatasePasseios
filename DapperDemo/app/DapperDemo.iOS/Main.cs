@@ -1,6 +1,6 @@
 using UIKit;
 
-namespace Verion.Treinamento.DapperDemo.iOS;
+namespace DapperDemo.iOS;
 
 internal sealed class Application
 {

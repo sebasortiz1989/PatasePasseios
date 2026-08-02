@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using Verion.Apresentacao.Avalonia.DependencyInversion;
-using Verion.Infraestrutura.Dependency;
-using Verion.Treinamento.DapperDemo.View.Views;
-using Verion.Treinamento.DapperDemo.View.Views.MainViewViews;
-using Verion.Treinamento.DapperDemo.Viewmodel.DependencyInversion;
+using AvaloniaFramework.Hosting.DependencyInjection;
+using AvaloniaFramework.DependencyInjection;
+using DapperDemo.View.Views;
+using DapperDemo.View.Views.MainViewViews;
+using DapperDemo.Viewmodel.DependencyInversion;
 
-namespace Verion.Treinamento.DapperDemo.View.DependencyInversion
+namespace DapperDemo.View.DependencyInversion
 {
     public class DapperDemoViewContainerBuilder : ImmutableContainerBuilder
     {
@@ -26,9 +26,14 @@ namespace Verion.Treinamento.DapperDemo.View.DependencyInversion
             yield return CreateTransient<LoginView>().WithAbstractions();
             yield return CreateTransient<SignUpView>().WithAbstractions();
             yield return CreateTransient<MainView>().WithAbstractions();
+            yield return CreateTransient<NewTutorView>().WithAbstractions();
+            yield return CreateTransient<NewDogView>().WithAbstractions();
+            yield return CreateTransient<DogDetailView>().WithAbstractions();
+            yield return CreateTransient<TutorDetailView>().WithAbstractions();
+            yield return CreateTransient<ServiceDetailView>().WithAbstractions();
             yield return CreateTransient<DogsView>().WithAbstractions();
             yield return CreateTransient<TutorsView>().WithAbstractions();
-            yield return CreateTransient<HomeView>().WithAbstractions();
+            yield return CreateTransient<AgendaView>().WithAbstractions();
             yield return CreateTransient<UsersView>().WithAbstractions();
             yield return CreateTransient<ServicesView>().WithAbstractions();
         }

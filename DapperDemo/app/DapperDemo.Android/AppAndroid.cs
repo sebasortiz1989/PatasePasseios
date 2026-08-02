@@ -1,7 +1,7 @@
-using Verion.Treinamento.DapperDemo.Android.DependencyInversion;
-using Verion.Treinamento.DapperDemo.View;
+using DapperDemo.Android.DependencyInversion;
+using DapperDemo.View;
 
-namespace Verion.Treinamento.DapperDemo.Android;
+namespace DapperDemo.Android;
 
 public class AppAndroid : App
 {

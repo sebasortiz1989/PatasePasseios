@@ -2,37 +2,77 @@
     d:DesignHeight="1460"
     d:DesignWidth="720"
     mc:Ignorable="d"
-    x:Class="Verion.Treinamento.DapperDemo.View.Views.MainViewViews.DogsView"
+    x:Class="DapperDemo.View.Views.MainViewViews.DogsView"
     x:DataType="mainViewViewmodels:DogsViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mainViewViewmodels="clr-namespace:Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;assembly=Verion.Treinamento.DapperDemo.Viewmodel"
+    xmlns:mainViewViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Viewbox>
-        <Grid
-            Background="#FDFBF7"
-            Height="1460"
-            Width="720">
-            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                <ItemsControl ItemsSource="{Binding DogsCollection}">
+    <Grid Background="{StaticResource ColorBg}" Height="1460" Width="720">
+        <ScrollViewer>
+            <StackPanel Spacing="0">
+                <Grid ColumnDefinitions="*,Auto" Margin="32,32,32,16">
+                    <StackPanel Spacing="2">
+                        <TextBlock Classes="Heading1" FontSize="62" Text="Cachorros" />
+                        <TextBlock Classes="Kicker" Text="{Binding DogCountLabel}" />
+                    </StackPanel>
+                    <buttons:VButton
+                        Classes="BtnPrimary"
+                        Command="{Binding AddDogCommand}"
+                        Grid.Column="1"
+                        Height="72"
+                        VText="+ Novo"
+                        VerticalAlignment="Center"
+                        Width="180" />
+                </Grid>
+
+                <Border BorderBrush="{StaticResource ColorDivider}" BorderThickness="0,2,0,0" IsVisible="{Binding IsEmpty}" Margin="32,0,32,0" Padding="32,64">
+                    <TextBlock
+                        FontFamily="{StaticResource FontBody}"
+                        FontSize="29"
+                        FontStyle="Italic"
+                        Foreground="{StaticResource ColorTextMuted45}"
+                        HorizontalAlignment="Center"
+                        Text="Nenhum cachorro cadastrado ainda."
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                </Border>
+
+                <ItemsControl ItemsSource="{Binding DogsCollection}" Margin="32,0,32,32">
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal" Spacing="10">
-                                <TextBlock
-                                    FontSize="32"
-                                    Foreground="Black"
-                                    Text="{Binding Name}" />
-                                <TextBlock
-                                    FontSize="32"
-                                    Foreground="Black"
-                                    Text="{Binding Description}" />
-                            </StackPanel>
+                        <DataTemplate DataType="mainViewViewmodels:DogRow">
+                            <Button Classes="RowButton" Command="{Binding OpenCommand}">
+                                <Border BorderBrush="{StaticResource ColorDivider}" BorderThickness="0,2,0,0" Padding="0,24" VerticalAlignment="Center">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <Border
+                                            BorderBrush="{StaticResource ColorAccent}"
+                                            BorderThickness="2"
+                                            CornerRadius="40"
+                                            Height="80"
+                                            Width="80">
+                                            <TextBlock
+                                                FontFamily="{StaticResource FontHeading}"
+                                                FontSize="34"
+                                                Foreground="{StaticResource ColorAccentDark700}"
+                                                HorizontalAlignment="Center"
+                                                Text="{Binding Initials}"
+                                                VerticalAlignment="Center" />
+                                        </Border>
+                                        <StackPanel Grid.Column="1" Margin="24,0,0,0" VerticalAlignment="Center">
+                                            <TextBlock FontFamily="{StaticResource FontHeading}" FontSize="40" FontWeight="Medium" Foreground="{StaticResource ColorText}" Text="{Binding Name}" />
+                                            <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted55}" Text="{Binding Subtitle}" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2" FontSize="34" Foreground="{StaticResource ColorAccent}" Text="→" VerticalAlignment="Center" />
+                                    </Grid>
+                                </Border>
+                            </Button>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-            </Grid>
-        </Grid>
-    </Viewbox>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
 </UserControl>

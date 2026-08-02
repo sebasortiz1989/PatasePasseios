@@ -1,7 +1,7 @@
-using Verion.Treinamento.DapperDemo.iOS.DependencyInversion;
-using Verion.Treinamento.DapperDemo.View;
+using DapperDemo.iOS.DependencyInversion;
+using DapperDemo.View;
 
-namespace Verion.Treinamento.DapperDemo.iOS;
+namespace DapperDemo.iOS;
 
 internal sealed class AppIphone: App
 {

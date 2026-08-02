@@ -8,7 +8,7 @@ using AndroidX.Core.Content;
 using AndroidX.Core.View;
 using Avalonia.Android;
 
-namespace Verion.Treinamento.DapperDemo.Android;
+namespace DapperDemo.Android;
 
 [Activity(
     Label = "DapperDemo",

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Verion.Infraestrutura.Dependency;
-using Verion.Treinamento.DapperDemo.Infrastructure.DependencyInversion;
+using AvaloniaFramework.DependencyInjection;
+using DapperDemo.Infrastructure.DependencyInversion;
 
-namespace Verion.Treinamento.DapperDemo.MacOS.DependencyInversion
+namespace DapperDemo.MacOS.DependencyInversion
 {
     internal sealed class MacContainerBuilder : ImmutableContainerBuilder
     {

@@ -1,6 +1,6 @@
-﻿using Verion.Treinamento.Mensagens.Dapper.Services;
+﻿using DapperDemo.Mensagens.Dapper.Services;
 
-namespace Verion.Treinamento.Mensagens.Dapper;
+namespace DapperDemo.Mensagens.Dapper;
 
 public abstract class RepositoryBase<TEntity>(DapperDatabaseService dapperDatabaseService)
     where TEntity : class

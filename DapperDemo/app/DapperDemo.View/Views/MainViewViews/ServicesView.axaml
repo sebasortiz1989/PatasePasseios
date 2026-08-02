@@ -1,23 +1,203 @@
 <UserControl
-    d:DesignHeight="450"
-    d:DesignWidth="800"
+    d:DesignHeight="1460"
+    d:DesignWidth="720"
     mc:Ignorable="d"
-    x:Class="Verion.Treinamento.DapperDemo.View.Views.MainViewViews.ServicesView"
+    x:Class="DapperDemo.View.Views.MainViewViews.ServicesView"
+    x:DataType="mainViewViewmodels:ServicesViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mainViewViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Viewbox>
-        <Grid
-            Background="#FDFBF7"
-            Height="1460"
-            Width="720">
-            <TextBlock
-                FontSize="32"
-                Foreground="Black"
-                HorizontalAlignment="Center"
-                Text="Services View"
-                VerticalAlignment="Center" />
-        </Grid>
-    </Viewbox>
+
+    <Grid Background="{StaticResource ColorBg}" Height="1460" Width="720">
+        <ScrollViewer>
+            <StackPanel Spacing="0">
+                <StackPanel Margin="32,32,32,16" Spacing="2">
+                    <TextBlock Classes="Heading1" FontSize="62" Text="Novo serviço" />
+                    <TextBlock Classes="Kicker" Text="Agendar" />
+                </StackPanel>
+
+                <!--  Nothing can be scheduled without a dog, so say so instead of showing an empty picker  -->
+                <Border BorderBrush="{StaticResource ColorDivider}" BorderThickness="0,2,0,0" IsVisible="{Binding HasNoDogs}" Margin="32,16,32,0" Padding="32,64">
+                    <TextBlock
+                        FontFamily="{StaticResource FontBody}"
+                        FontSize="29"
+                        FontStyle="Italic"
+                        Foreground="{StaticResource ColorTextMuted45}"
+                        HorizontalAlignment="Center"
+                        Text="Cadastre um tutor e um cachorro antes de agendar."
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                </Border>
+
+                <StackPanel IsVisible="{Binding HasDogs}" Margin="32,16,32,48" Spacing="24">
+                    <!--  Service type — segmented control  -->
+                    <StackPanel Spacing="10">
+                        <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted70}" Text="Tipo de serviço" />
+                        <Border BorderBrush="{StaticResource ColorDivider}" BorderThickness="2" CornerRadius="7">
+                            <Grid ColumnDefinitions="*,2,*,2,*">
+                                <Button Classes="SegOption" Classes.Active="{Binding IsTypeWalk}" Command="{Binding SetTypeWalk}" Content="Passeio" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+                                <Border Background="{StaticResource ColorDivider}" Grid.Column="1" />
+                                <Button Classes="SegOption" Classes.Active="{Binding IsTypeSitting}" Command="{Binding SetTypeSitting}" Content="Pet sitting" Grid.Column="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+                                <Border Background="{StaticResource ColorDivider}" Grid.Column="3" />
+                                <Button Classes="SegOption" Classes.Active="{Binding IsTypeHotel}" Command="{Binding SetTypeHotel}" Content="Hotel" Grid.Column="4" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+
+                    <!--  Dog picker  -->
+                    <StackPanel Spacing="10">
+                        <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted70}" Text="Cachorro" />
+                        <ComboBox
+                            Background="Transparent"
+                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderThickness="2"
+                            CornerRadius="7"
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="31"
+                            Foreground="{StaticResource ColorText}"
+                            HorizontalAlignment="Stretch"
+                            ItemsSource="{Binding DogOptions}"
+                            MinHeight="74"
+                            Padding="18,0"
+                            PlaceholderText="Selecione…"
+                            SelectedItem="{Binding SelectedDog}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate DataType="mainViewViewmodels:DogOption">
+                                    <TextBlock Text="{Binding Label}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!--  Hotel: check-in / check-out / walks / price per day  -->
+                    <StackPanel IsVisible="{Binding SvcIsHotel}" Spacing="24">
+                        <StackPanel Spacing="10">
+                            <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted70}" Text="Entrada" />
+                            <Grid ColumnDefinitions="*,16,Auto">
+                                <CalendarDatePicker
+                                    Background="Transparent"
+                                    BorderBrush="{StaticResource ColorDivider}"
+                                    BorderThickness="2"
+                                    CornerRadius="7"
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="29"
+                                    Foreground="{StaticResource ColorText}"
+                                    MinHeight="74"
+                                    SelectedDate="{Binding SvcDatePart}" />
+                                <TimePicker
+                                    ClockIdentifier="24HourClock"
+                                    Grid.Column="2"
+                                    MinHeight="74"
+                                    SelectedTime="{Binding SvcTimePart}" />
+                            </Grid>
+                        </StackPanel>
+
+                        <StackPanel Spacing="10">
+                            <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted70}" Text="Saída" />
+                            <Grid ColumnDefinitions="*,16,Auto">
+                                <CalendarDatePicker
+                                    Background="Transparent"
+                                    BorderBrush="{StaticResource ColorDivider}"
+                                    BorderThickness="2"
+                                    CornerRadius="7"
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="29"
+                                    Foreground="{StaticResource ColorText}"
+                                    MinHeight="74"
+                                    SelectedDate="{Binding SvcEndDatePart}" />
+                                <TimePicker
+                                    ClockIdentifier="24HourClock"
+                                    Grid.Column="2"
+                                    MinHeight="74"
+                                    SelectedTime="{Binding SvcEndTimePart}" />
+                            </Grid>
+                        </StackPanel>
+
+                        <CheckBox
+                            Content="Inclui passeios diários"
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="29"
+                            Foreground="{StaticResource ColorTextMuted70}"
+                            IsChecked="{Binding SvcRequiresWalking}" />
+
+                        <StackPanel Spacing="10">
+                            <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted70}" Text="Preço por dia (R$)" />
+                            <TextBox
+                                Background="Transparent"
+                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderThickness="2"
+                                CaretBrush="{StaticResource ColorAccent}"
+                                CornerRadius="7"
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="31"
+                                Foreground="{StaticResource ColorText}"
+                                MinHeight="74"
+                                Padding="18,0"
+                                Text="{Binding SvcPricePerDay}"
+                                VerticalContentAlignment="Center"
+                                PlaceholderText="0,00" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!--  Walk / pet sitting: single date + price  -->
+                    <StackPanel IsVisible="{Binding SvcIsSingleDate}" Spacing="24">
+                        <StackPanel Spacing="10">
+                            <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted70}" Text="Data e hora" />
+                            <Grid ColumnDefinitions="*,16,Auto">
+                                <CalendarDatePicker
+                                    Background="Transparent"
+                                    BorderBrush="{StaticResource ColorDivider}"
+                                    BorderThickness="2"
+                                    CornerRadius="7"
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="29"
+                                    Foreground="{StaticResource ColorText}"
+                                    MinHeight="74"
+                                    SelectedDate="{Binding SvcDatePart}" />
+                                <TimePicker
+                                    ClockIdentifier="24HourClock"
+                                    Grid.Column="2"
+                                    MinHeight="74"
+                                    SelectedTime="{Binding SvcTimePart}" />
+                            </Grid>
+                        </StackPanel>
+
+                        <StackPanel Spacing="10">
+                            <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted70}" Text="Preço (R$)" />
+                            <TextBox
+                                Background="Transparent"
+                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderThickness="2"
+                                CaretBrush="{StaticResource ColorAccent}"
+                                CornerRadius="7"
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="31"
+                                Foreground="{StaticResource ColorText}"
+                                MinHeight="74"
+                                Padding="18,0"
+                                Text="{Binding SvcPrice}"
+                                VerticalContentAlignment="Center"
+                                PlaceholderText="0,00" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <TextBlock
+                        Classes="FormMsg"
+                        Classes.Error="{Binding SvcMsgIsError}"
+                        FontFamily="{StaticResource FontBody}"
+                        FontSize="28"
+                        FontStyle="Italic"
+                        HorizontalAlignment="Center"
+                        IsVisible="{Binding HasSvcMsg}"
+                        Text="{Binding SvcMsg}"
+                        TextAlignment="Center" />
+
+                    <buttons:VButton Classes="BtnPrimary" Command="{Binding CreateServiceCommand}" Height="80" HorizontalAlignment="Stretch" VText="Agendar serviço" />
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
 </UserControl>

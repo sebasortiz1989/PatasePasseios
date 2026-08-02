@@ -1,42 +1,42 @@
-﻿<UserControl
+<UserControl
     d:DesignHeight="1560"
     d:DesignWidth="720"
     mc:Ignorable="d"
-    x:Class="Verion.Treinamento.DapperDemo.View.Views.SignUpView"
+    x:Class="DapperDemo.View.Views.SignUpView"
     x:DataType="viewmodels:SignUpViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:buttons="clr-namespace:Verion.Apresentacao.Avalonia.Buttons;assembly=Verion.Apresentacao.Avalonia"
+    xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:inputs="clr-namespace:Verion.Apresentacao.Avalonia.Inputs;assembly=Verion.Apresentacao.Avalonia"
+    xmlns:inputs="using:AvaloniaFramework.Controls.Inputs"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewmodels="clr-namespace:Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels;assembly=Verion.Treinamento.DapperDemo.Viewmodel"
+    xmlns:viewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <UserControl.Styles>
         <Style Selector="CalendarDatePicker /template/ Button">
-            <Setter Property="Width">60</Setter>
+            <Setter Property="Width">80</Setter>
             <Setter Property="Template">
                 <ControlTemplate>
                     <Border
                         BorderThickness="1,1,0,1"
                         ClipToBounds="False"
-                        Width="60">
+                        Width="80">
                         <PathIcon
                             Data="{StaticResource CalendarIcon}"
-                            Foreground="Black"
-                            Height="30"
-                            Width="50" />
+                            Foreground="{StaticResource ColorAccent}"
+                            Height="38"
+                            Width="34" />
                     </Border>
                 </ControlTemplate>
             </Setter>
         </Style>
 
         <Style Selector="CalendarDatePicker:pressed /template/ Border#Background">
-            <Setter Property="Background" Value="#FDFBF7" />
+            <Setter Property="Background" Value="{StaticResource ColorBg}" />
         </Style>
 
         <Style Selector="CalendarDatePicker:pointover /template/ Border#Background">
-            <Setter Property="Background" Value="#FDFBF7" />
+            <Setter Property="Background" Value="{StaticResource ColorBg}" />
         </Style>
     </UserControl.Styles>
 
@@ -47,85 +47,79 @@
     </UserControl.Resources>
 
     <Viewbox>
-        <Grid
-            Background="#FDFBF7"
-            Height="1560"
-            Width="720">
-            <StackPanel Spacing="50" VerticalAlignment="Center">
-                <TextBlock
-                    Classes="Title"
-                    HorizontalAlignment="Center"
-                    Text="Cadastro" />
-                <inputs:VTextBoxWithLabel
-                    Classes="StandardTextBoxWithLabel"
-                    VDescriptionText="Nome"
-                    VText="{Binding Name}"
-                    VTextWatermark="Seu nome" />
-
-                <inputs:VTextBoxWithLabel
-                    Classes="StandardTextBoxWithLabel"
-                    VDescriptionText="Email"
-                    VText="{Binding Email}"
-                    VTextWatermark="Seu Email" />
-
-                <inputs:VTextBoxWithLabel
-                    Classes="StandardTextBoxWithLabel"
-                    VDescriptionText="Senha"
-                    VText="{Binding Password}"
-                    VTextWatermark="Sua senha" />
-
-                <Grid HorizontalAlignment="Center" Margin="0,30,0,20">
-                    <CalendarDatePicker
-                        Background="#FDFBF7"
-                        BorderBrush="Black"
-                        BorderThickness="2"
-                        CornerRadius="15"
-                        DisplayDateStart="{Binding MinimumDate}"
-                        FontSize="36"
-                        Foreground="Black"
-                        Height="100"
-                        HorizontalAlignment="Center"
-                        Padding="20,0,0,0"
-                        SelectedDate="{Binding BirthDate}"
-                        VerticalAlignment="Center"
-                        Width="400" />
-
-                    <Border
-                        Background="#FDFBF7"
-                        HorizontalAlignment="Center"
-                        Margin="0,-25,0,0"
-                        VerticalAlignment="Top">
-                        <TextBlock
-                            Background="Transparent"
-                            FontSize="36"
-                            FontWeight="Bold"
-                            Foreground="Black"
-                            Margin="3,0,3,0"
-                            Text="Data de nacimento" />
-                    </Border>
-
-                    <Border
-                        Background="Transparent"
-                        HorizontalAlignment="Stretch"
-                        IsHitTestVisible="True"
-                        Margin="0,0,70,0" />
-                </Grid>
-
-                <StackPanel
-                    HorizontalAlignment="Center"
-                    Orientation="Horizontal"
-                    Spacing="50">
-                    <buttons:VButton
-                        Classes="DapperButton"
-                        Command="{Binding BackCommand}"
-                        VText="Voltar" />
-
-                    <buttons:VButton
-                        Classes="DapperButton"
-                        Command="{Binding RegisterCommand}"
-                        VText="Cadastrarse" />
+        <Grid Background="{StaticResource ColorBg}" Height="1560" Width="720">
+            <StackPanel HorizontalAlignment="Center" Spacing="24" VerticalAlignment="Center" Width="560">
+                <StackPanel HorizontalAlignment="Center" Margin="0,0,0,8" Spacing="8">
+                    <TextBlock Classes="Heading1" FontSize="67" HorizontalAlignment="Center" Text="Cadastro" />
+                    <Border Background="{StaticResource ColorAccent}" Height="2" HorizontalAlignment="Center" Margin="0,8,0,0" Width="63" />
                 </StackPanel>
 
+                <inputs:VTextBoxWithLabel
+                    Classes="ClassicInput"
+                    VDescriptionText="Nome completo"
+                    VHeight="77"
+                    VText="{Binding Name}"
+                    VTextWatermark="Ana Ferreira"
+                    VWidth="560" />
+
+                <inputs:VTextBoxWithLabel
+                    Classes="ClassicInput"
+                    VDescriptionText="Email"
+                    VHeight="77"
+                    VText="{Binding Email}"
+                    VTextWatermark="email@exemplo.com"
+                    VWidth="560" />
+
+                <inputs:VTextBoxWithLabel
+                    Classes="ClassicInput"
+                    VDescriptionText="Senha"
+                    VHeight="77"
+                    VPasswordChar="•"
+                    VText="{Binding Password}"
+                    VTextWatermark="••••••••"
+                    VWidth="560" />
+
+                <Grid Margin="0,8,0,0">
+                    <CalendarDatePicker
+                        Background="{StaticResource ColorBg}"
+                        BorderBrush="{StaticResource ColorDivider}"
+                        BorderThickness="2"
+                        CornerRadius="7"
+                        DisplayDateStart="{Binding MinimumDate}"
+                        FontFamily="{StaticResource FontBody}"
+                        FontSize="31"
+                        Foreground="{StaticResource ColorText}"
+                        Height="77"
+                        HorizontalAlignment="Stretch"
+                        Padding="18,0,0,0"
+                        SelectedDate="{Binding BirthDate}"
+                        VerticalAlignment="Center" />
+
+                    <Border Background="{StaticResource ColorBg}" HorizontalAlignment="Left" Margin="18,-13,0,0" VerticalAlignment="Top">
+                        <TextBlock
+                            Background="Transparent"
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="25"
+                            Foreground="{StaticResource ColorTextMuted70}"
+                            Margin="3,0,3,0"
+                            Text="Data de nascimento" />
+                    </Border>
+                </Grid>
+
+                <TextBlock
+                    FontFamily="{StaticResource FontBody}"
+                    FontSize="28"
+                    FontStyle="Italic"
+                    Foreground="{StaticResource ColorAccentDark800}"
+                    HorizontalAlignment="Center"
+                    IsVisible="{Binding HasSignupError}"
+                    Text="{Binding SignupError}"
+                    TextAlignment="Center" />
+
+                <Grid ColumnDefinitions="*,16,*" Margin="0,8,0,0">
+                    <buttons:VButton Classes="BtnSecondary" Command="{Binding BackCommand}" Height="80" VText="Voltar" />
+                    <buttons:VButton Classes="BtnPrimary" Command="{Binding RegisterCommand}" Grid.Column="2" Height="80" VText="Cadastrar" />
+                </Grid>
             </StackPanel>
         </Grid>
     </Viewbox>

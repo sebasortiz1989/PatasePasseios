@@ -1,15 +1,15 @@
 <Application
     RequestedThemeVariant="Default"
-    x:Class="Verion.Treinamento.DapperDemo.View.App"
+    x:Class="DapperDemo.View.App"
     xmlns="https://github.com/avaloniaui"
-    xmlns:avalonia="clr-namespace:Verion.Apresentacao.Avalonia;assembly=Verion.Apresentacao.Avalonia"
+    xmlns:framework="using:AvaloniaFramework"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!--  "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options.  -->
 
     <Application.Styles>
         <FluentTheme />
-        <avalonia:LayoutStyles />
-        <StyleInclude Source="Components/DapperDemoStyles.axaml" />
+        <framework:LayoutStyles />
+        <StyleInclude Source="Components/ClassicalTheme.axaml" />
     </Application.Styles>
 
 </Application>

@@ -1,10 +1,10 @@
 ﻿using System;
 using AppKit;
 using Avalonia;
-using Verion.Treinamento.DapperDemo.MacOS.DependencyInversion;
-using Verion.Treinamento.DapperDemo.View;
+using DapperDemo.MacOS.DependencyInversion;
+using DapperDemo.View;
 
-namespace Verion.Treinamento.DapperDemo.MacOS
+namespace DapperDemo.MacOS
 {
     internal sealed class Program
     {

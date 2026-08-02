@@ -1,0 +1,259 @@
+<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
+    xmlns:inputs="using:AvaloniaFramework.Controls.Inputs"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        Classical design system tokens, ported from the Claude Design project's styles.css.
+        Every screen's colors/fonts should come from these resources, never a raw hex/font name.
+        Cormorant Garamond / Lora aren't bundled offline, so headings/body both fall back to
+        system serif stacks; swap FontHeading/FontBody here if real font files are added later.
+        Pixel values below are the source design's px scaled by ~1.7476 (this app's existing
+        720-wide canvas versus the design's 412-wide canvas).
+    -->
+    <Styles.Resources>
+        <SolidColorBrush Color="#F3F2F2" x:Key="ColorBg" />
+        <SolidColorBrush Color="#EAE9E9" x:Key="ColorSurface" />
+        <SolidColorBrush Color="#201F1D" x:Key="ColorText" />
+        <SolidColorBrush Color="#73201F1D" x:Key="ColorTextMuted45" />
+        <SolidColorBrush Color="#80201F1D" x:Key="ColorTextMuted50" />
+        <SolidColorBrush Color="#8C201F1D" x:Key="ColorTextMuted55" />
+        <SolidColorBrush Color="#A6201F1D" x:Key="ColorTextMuted65" />
+        <SolidColorBrush Color="#B3201F1D" x:Key="ColorTextMuted70" />
+        <SolidColorBrush Color="#BF201F1D" x:Key="ColorTextMuted75" />
+        <SolidColorBrush Color="#29201F1D" x:Key="ColorDivider" />
+        <SolidColorBrush Color="#B68235" x:Key="ColorAccent" />
+        <SolidColorBrush Color="#7D5411" x:Key="ColorAccentDark700" />
+        <SolidColorBrush Color="#5A3B0A" x:Key="ColorAccentDark800" />
+        <SolidColorBrush Color="#1FB68235" x:Key="ColorAccentTint12" />
+
+        <FontFamily x:Key="FontHeading">Times New Roman,Georgia,serif</FontFamily>
+        <FontFamily x:Key="FontBody">Georgia,Times New Roman,serif</FontFamily>
+
+        <!--
+            Bottom-navigation icons, transcribed from the design system's 24×24 stroke icons.
+            They are stroked (never filled) so a single geometry serves both the muted and the
+            accent state — the stroke follows the tab's Foreground.
+        -->
+        <StreamGeometry x:Key="IconDogs">M11.25 16.25h1.5L12 17z M16 14v.5 M8 14v.5 M11.5 21.5a5 5 0 0 1-5-5c0-2 .5-3 1.5-4.5.6-.9 1.2-1.6 1.2-2.5a2.7 2.7 0 0 0-.7-1.8 M12.5 21.5a5 5 0 0 0 5-5c0-2-.5-3-1.5-4.5-.6-.9-1.2-1.6-1.2-2.5a2.7 2.7 0 0 1 .7-1.8 M6.5 7.5C5 6.5 4 5 4 3.5c1.5 0 3 .5 4 2 M17.5 7.5C19 6.5 20 5 20 3.5c-1.5 0-3 .5-4 2</StreamGeometry>
+        <StreamGeometry x:Key="IconTutors">M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0z M22 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75</StreamGeometry>
+        <StreamGeometry x:Key="IconAgenda">M8 2v4 M16 2v4 M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z M3 10h18</StreamGeometry>
+        <StreamGeometry x:Key="IconNew">M12 5v14 M5 12h14</StreamGeometry>
+        <StreamGeometry x:Key="IconProfile">M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2 M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0z</StreamGeometry>
+
+        <!--
+            A bottom-navigation tab: stroked icon over a small caption, accent when selected and
+            muted otherwise. Content is the icon; Tag is the caption.
+        -->
+        <ControlTheme TargetType="RadioButton" x:Key="NavTab">
+            <Setter Property="Foreground" Value="{StaticResource ColorTextMuted50}" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Background="Transparent" Padding="0,16,0,8">
+                        <StackPanel
+                            HorizontalAlignment="Center"
+                            Spacing="5"
+                            VerticalAlignment="Center">
+                            <ContentPresenter
+                                Content="{TemplateBinding Content}"
+                                HorizontalAlignment="Center" />
+                            <TextBlock
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="17"
+                                Foreground="{TemplateBinding Foreground}"
+                                HorizontalAlignment="Center"
+                                LetterSpacing="0.7"
+                                Text="{TemplateBinding Tag}" />
+                        </StackPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+
+            <Style Selector="^:checked">
+                <Setter Property="Foreground" Value="{StaticResource ColorAccent}" />
+            </Style>
+        </ControlTheme>
+    </Styles.Resources>
+
+    <Design.PreviewWith>
+        <Border Background="{StaticResource ColorBg}" Padding="20">
+            <!--  Add Controls for Previewer Here  -->
+        </Border>
+    </Design.PreviewWith>
+
+    <!--  Headings / labels  -->
+    <Style Selector="TextBlock.Heading1">
+        <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="FontSize" Value="62" />
+        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+        <Setter Property="LineHeight" Value="68" />
+    </Style>
+
+    <Style Selector="TextBlock.CardTitle">
+        <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="FontSize" Value="40" />
+        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+    </Style>
+
+    <Style Selector="TextBlock.Kicker">
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="23" />
+        <Setter Property="LetterSpacing" Value="2" />
+        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted50}" />
+    </Style>
+
+    <!--  Buttons — outlined, never filled, per the source system's "Do not fill" rule  -->
+    <Style Selector="buttons|VButton.BtnPrimary">
+        <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
+        <Setter Property="VFontWeight" Value="600" />
+        <Setter Property="VFontSize" Value="29" />
+        <Setter Property="VBorderThickness" Value="2" />
+        <Setter Property="VCornerRadius" Value="7" />
+        <Setter Property="VNormalBackground" Value="Transparent" />
+        <Setter Property="VNormalBorderBrush" Value="{StaticResource ColorAccent}" />
+        <Setter Property="VNormalForeground" Value="{StaticResource ColorAccent}" />
+        <Setter Property="VPressedBackground" Value="{StaticResource ColorAccentTint12}" />
+        <Setter Property="VPressedBorderBrush" Value="{StaticResource ColorAccent}" />
+        <Setter Property="VPressedForeground" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="VTextHorizontalAlignment" Value="Center" />
+        <Setter Property="VTextVerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="buttons|VButton.BtnSecondary">
+        <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
+        <Setter Property="VFontWeight" Value="600" />
+        <Setter Property="VFontSize" Value="29" />
+        <Setter Property="VBorderThickness" Value="2" />
+        <Setter Property="VCornerRadius" Value="7" />
+        <Setter Property="VNormalBackground" Value="Transparent" />
+        <Setter Property="VNormalBorderBrush" Value="{StaticResource ColorDivider}" />
+        <Setter Property="VNormalForeground" Value="{StaticResource ColorText}" />
+        <Setter Property="VPressedBackground" Value="{StaticResource ColorSurface}" />
+        <Setter Property="VPressedBorderBrush" Value="{StaticResource ColorDivider}" />
+        <Setter Property="VPressedForeground" Value="{StaticResource ColorText}" />
+        <Setter Property="VTextHorizontalAlignment" Value="Center" />
+        <Setter Property="VTextVerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="buttons|VButton.BtnGhost">
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="VFontWeight" Value="Normal" />
+        <Setter Property="VFontSize" Value="26" />
+        <Setter Property="VBorderThickness" Value="0" />
+        <Setter Property="VCornerRadius" Value="7" />
+        <Setter Property="VNormalBackground" Value="Transparent" />
+        <Setter Property="VNormalBorderBrush" Value="Transparent" />
+        <Setter Property="VNormalForeground" Value="{StaticResource ColorAccent}" />
+        <Setter Property="VPressedBackground" Value="{StaticResource ColorAccentTint12}" />
+        <Setter Property="VPressedBorderBrush" Value="Transparent" />
+        <Setter Property="VPressedForeground" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="VTextHorizontalAlignment" Value="Center" />
+        <Setter Property="VTextVerticalAlignment" Value="Center" />
+    </Style>
+
+    <!--  Cards  -->
+    <Style Selector="Border.Card">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="CornerRadius" Value="7" />
+        <Setter Property="Padding" Value="24" />
+    </Style>
+
+    <!--
+        Tag / Chip / SegOption are Buttons (not static Borders) since every place they're used
+        is tappable (paid toggle, filter chips, segmented type picker). Border/Foreground/Background
+        are bound per-instance from computed ViewModel brush properties (active vs inactive),
+        mirroring the source design's own per-instance computed style approach.
+    -->
+    <Style Selector="Button.Tag">
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="23" />
+        <Setter Property="Padding" Value="17,5" />
+        <Setter Property="CornerRadius" Value="3" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style Selector="Button.Tag.Pending">
+        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
+        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted55}" />
+    </Style>
+    <Style Selector="Button.Tag.Paid">
+        <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
+        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+    </Style>
+
+    <Style Selector="Button.Chip">
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="25" />
+        <Setter Property="Padding" Value="21,9" />
+        <Setter Property="CornerRadius" Value="7" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
+        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted65}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style Selector="Button.Chip.Active">
+        <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
+        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
+    </Style>
+
+    <Style Selector="Button.SegOption">
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="28" />
+        <Setter Property="Padding" Value="21,12" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted65}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style Selector="Button.SegOption.Active">
+        <Setter Property="Foreground" Value="{StaticResource ColorAccent}" />
+    </Style>
+
+    <!--  Flat, chrome-less row container so an entire list row is one tap target  -->
+    <Style Selector="Button.RowButton">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style Selector="Button.RowButton:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource ColorSurface}" />
+    </Style>
+
+    <!--  Inline form feedback — success in the accent, errors in the deepest accent step  -->
+    <Style Selector="TextBlock.FormMsg">
+        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark700}" />
+    </Style>
+    <Style Selector="TextBlock.FormMsg.Error">
+        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+    </Style>
+
+    <!--  Form fields  -->
+    <Style Selector="inputs|VTextBoxWithLabel.ClassicInput">
+        <Setter Property="VBorderBrush" Value="{StaticResource ColorDivider}" />
+        <Setter Property="VBorderBrushFocus" Value="{StaticResource ColorAccent}" />
+        <Setter Property="VContentFontSize" Value="31" />
+        <Setter Property="VCornerRadius" Value="7" />
+        <Setter Property="VDescriptionFontSize" Value="25" />
+        <Setter Property="VDescriptionForeground" Value="{StaticResource ColorTextMuted70}" />
+        <Setter Property="VDescriptionBackground" Value="{StaticResource ColorBg}" />
+        <Setter Property="VTextForeground" Value="{StaticResource ColorText}" />
+        <Setter Property="VTextForegroundFocus" Value="{StaticResource ColorText}" />
+        <Setter Property="VTextFontSize" Value="31" />
+        <Setter Property="VCaretBrush" Value="{StaticResource ColorAccent}" />
+        <Setter Property="VCaretBrushFocus" Value="{StaticResource ColorAccent}" />
+    </Style>
+
+</Styles>

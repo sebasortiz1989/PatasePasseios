@@ -1,26 +1,34 @@
 using System.Windows.Input;
 using PropertyChanged;
-using Verion.Framework.Aplicacao.Messaging;
-using Verion.Presentation.View;
-using Verion.Presentation.View.UseCase;
-using Verion.Treinamento.Mensagens.Dapper.Aggregates;
-using Verion.Treinamento.Mensagens.Dapper.Dtos;
+using AvaloniaFramework.Presentation;
+using AvaloniaFramework.Presentation.UseCase;
+using AvaloniaFramework.Threading;
+using DapperDemo.Mensagens.Dapper;
+using DapperDemo.Mensagens.Dapper.Aggregates;
+using DapperDemo.Mensagens.Dapper.Dtos;
+using DapperDemo.Mensagens.Dapper.Extensions;
+using DapperDemo.Viewmodel.Viewmodels.Session;
 
-namespace Verion.Treinamento.DapperDemo.Viewmodel.Viewmodels;
+namespace DapperDemo.Viewmodel.Viewmodels;
 
 [AddINotifyPropertyChangedInterface]
-public class SignUpViewModel : PresentationModelBase<Void, Void>
+public class SignUpViewModel : PresentationModelBase<Unit, Unit>
 {
-    private readonly MessageDialog messageDialog;
-    private readonly RepositoryPetSitter _repositoryPetSitter;
+    private readonly RepositoryPetSitter repositoryPetSitter;
+    private readonly AppSession session;
+    private readonly NavigationController navigationController;
+    private readonly Factory<PresenterBase<MainViewModel, Unit, Unit>> mainViewFactory;
 
     public SignUpViewModel(
-        MessageDialog messageDialog,
         NavigationController navigationController,
-        RepositoryPetSitter repositoryPetSitter)
+        RepositoryPetSitter repositoryPetSitter,
+        AppSession session,
+        Factory<PresenterBase<MainViewModel, Unit, Unit>> mainViewFactory)
     {
-        this.messageDialog = messageDialog;
-        this._repositoryPetSitter = repositoryPetSitter;
+        this.repositoryPetSitter = repositoryPetSitter;
+        this.session = session;
+        this.navigationController = navigationController;
+        this.mainViewFactory = mainViewFactory;
         BackCommand = new SynchronizedCommand(() => navigationController.PopAsync(this), SynchronizationBehavior.Discard, true);
         BirthDate = DateTime.UtcNow - TimeSpan.FromDays(7000);
         RegisterCommand = new SynchronizedCommand(RegisterFunction, SynchronizationBehavior.Discard, true);
@@ -36,21 +44,28 @@ public class SignUpViewModel : PresentationModelBase<Void, Void>
 
     public DateTime MinimumDate { get; } = new(1950, 1, 1);
 
+    public string SignupError { get; set; } = string.Empty;
+
+    public bool HasSignupError => !string.IsNullOrEmpty(SignupError);
+
     public ICommand BackCommand { get; }
 
     public ICommand RegisterCommand { get; }
 
-    protected override Task OnRunStarting(Void input)
+    protected override Task OnRunStarting(Unit input)
     {
         return Task.CompletedTask;
     }
 
     private async Task RegisterFunction()
     {
-        if (Email.IsNullOrEmpty() || Password.IsNullOrEmpty() || Name.IsNullOrEmpty())
+        if (string.IsNullOrEmpty(Email) || string.IsNullOrEmpty(Password) || string.IsNullOrEmpty(Name))
+        {
+            SignupError = "Preencha todos os campos.";
             return;
+        }
 
-        var result = await _repositoryPetSitter.Add(new PetSitter
+        var result = await repositoryPetSitter.Add(new PetSitter
         {
             Name = Name,
             Email = Email,
@@ -58,6 +73,24 @@ public class SignUpViewModel : PresentationModelBase<Void, Void>
             BirthDate = BirthDate,
             PasswordHash = string.Empty
         }).WithSync();
-        await messageDialog.ShowAsync(result.ToString()).WithSync();
+
+        if (result != Response.Successful)
+        {
+            SignupError = result.GetDescription();
+            return;
+        }
+
+        // Read the row back for its generated id: everything the new account creates is scoped to it.
+        var petSitter = await repositoryPetSitter.GetByEmailAsync(Email).WithSync();
+        if (petSitter == null)
+        {
+            SignupError = Response.Failed.GetDescription();
+            return;
+        }
+
+        SignupError = string.Empty;
+        Password = string.Empty;
+        session.SignIn(petSitter);
+        await navigationController.PushAsync(mainViewFactory.Create()).WithSync();
     }
 }

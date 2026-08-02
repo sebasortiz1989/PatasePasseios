@@ -6,8 +6,8 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-        <AssemblyName>Verion.Treinamento.DapperDemo.Desktop</AssemblyName>
-        <RootNamespace>Verion.Treinamento.DapperDemo.Desktop</RootNamespace>
+        <AssemblyName>DapperDemo.Desktop</AssemblyName>
+        <RootNamespace>DapperDemo.Desktop</RootNamespace>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -16,7 +16,6 @@
 
     <ItemGroup>
         <PackageReference Include="Avalonia.Desktop" Version="12.1.1" />
-        <PackageReference Include="Verion.Infraestrutura.VerionNative.Core" Version="19.0.0" />
     </ItemGroup>
 
     <ItemGroup>
