@@ -39,19 +39,32 @@
                     TextWrapping="Wrap" />
 
                 <!--  Não sits left as the safe default; Sim carries the destructive action.  -->
-                <Grid ColumnDefinitions="*,16,*">
+                <Grid ColumnDefinitions="*,16,*" IsVisible="{Binding #Root.ShowCancel}">
                     <buttons:VButton
                         Classes="BtnSecondary"
                         Command="{Binding #Root.CancelCommand}"
                         Height="80"
-                        VText="Não" />
+                        VText="{Binding #Root.CancelText}" />
                     <buttons:VButton
                         Classes="BtnPrimary"
                         Command="{Binding #Root.ConfirmCommand}"
                         Grid.Column="2"
                         Height="80"
-                        VText="Sim" />
+                        VText="{Binding #Root.ConfirmText}" />
                 </Grid>
+
+                <!--
+                    Alert form: one full-width button. A separate element rather than a spanning
+                    column, because hiding a Grid child leaves its column occupying space and the
+                    lone button would sit off-centre.
+                -->
+                <buttons:VButton
+                    Classes="BtnPrimary"
+                    Command="{Binding #Root.ConfirmCommand}"
+                    Height="80"
+                    HorizontalAlignment="Stretch"
+                    IsVisible="{Binding !#Root.ShowCancel}"
+                    VText="{Binding #Root.ConfirmText}" />
             </StackPanel>
         </Border>
     </Border>

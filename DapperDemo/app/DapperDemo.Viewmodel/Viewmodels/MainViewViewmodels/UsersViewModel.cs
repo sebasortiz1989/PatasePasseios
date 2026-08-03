@@ -4,6 +4,8 @@ using AvaloniaFramework.Threading;
 using DapperDemo.Repository.Dapper;
 using DapperDemo.Repository.Dapper.Aggregates;
 using DapperDemo.Repository.Dapper.Dtos;
+using DapperDemo.Repository.Dapper.Services;
+using DapperDemo.Viewmodel.Services;
 using DapperDemo.Viewmodel.Viewmodels.Session;
 using PropertyChanged;
 using System.Collections.ObjectModel;
@@ -26,6 +28,8 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     private readonly RepositoryTutors repositoryTutors;
     private readonly RepositoryPetSitter repositoryPetSitter;
     private readonly AppSession session;
+    private readonly BackupArchive backupArchive;
+    private readonly BackupFileDialog backupFileDialog;
     private readonly EventHandler dataChangedHandler;
 
     /// <summary>
@@ -48,13 +52,17 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         RepositoryDogs repositoryDogs,
         RepositoryTutors repositoryTutors,
         RepositoryPetSitter repositoryPetSitter,
-        AppSession session)
+        AppSession session,
+        BackupArchive backupArchive,
+        BackupFileDialog backupFileDialog)
     {
         this.repositoryServices = repositoryServices;
         this.repositoryDogs = repositoryDogs;
         this.repositoryTutors = repositoryTutors;
         this.repositoryPetSitter = repositoryPetSitter;
         this.session = session;
+        this.backupArchive = backupArchive;
+        this.backupFileDialog = backupFileDialog;
 
         // Billing totals depend on services marked paid elsewhere (Agenda, service detail).
         dataChangedHandler = (_, _) => AppSession.FireAndForget(ReloadAsync());
@@ -68,6 +76,9 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         CancelProfileCommand = new SynchronizedCommand(CancelEditProfile, SynchronizationBehavior.Discard, true);
         SaveProfileCommand = new SynchronizedCommand(SaveProfile, SynchronizationBehavior.Discard, true);
         ToggleMoneyVisibleCommand = new SynchronizedCommand(ToggleMoneyVisible, SynchronizationBehavior.Discard, true);
+        ExportBackupCommand = new SynchronizedCommand(ExportBackup, SynchronizationBehavior.Discard, true);
+        ImportBackupCommand = new SynchronizedCommand(ImportBackup, SynchronizationBehavior.Discard, true);
+        DismissInvalidBackupCommand = new SynchronizedCommand(() => ShowInvalidBackupAlert = false, SynchronizationBehavior.Discard, true);
 
         for (var month = 1; month <= 12; month++)
         {
@@ -99,6 +110,26 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     public ICommand SaveProfileCommand { get; }
 
     public ICommand ToggleMoneyVisibleCommand { get; }
+
+    public ICommand ExportBackupCommand { get; }
+
+    public ICommand ImportBackupCommand { get; }
+
+    public ICommand DismissInvalidBackupCommand { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the "not a valid backup" alert is up. A popup rather than
+    /// the inline message for this one case: it is the only outcome where the user picked a file
+    /// and nothing happened, so it has to be impossible to miss.
+    /// </summary>
+    public bool ShowInvalidBackupAlert { get; private set; }
+
+    /// <summary>Gets the outcome of the last export or import, shown under the two buttons.</summary>
+    public string BackupMsg { get; private set; } = string.Empty;
+
+    public bool HasBackupMsg => !string.IsNullOrEmpty(BackupMsg);
+
+    public bool BackupMsgIsError { get; private set; }
 
     public string CurrentUserName { get; private set; } = string.Empty;
 
@@ -386,6 +417,64 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         // ComboBox has nothing selected. Re-announcing the unchanged value is what makes it
         // resolve the entry now that the list has one.
         OnPropertyChanged(nameof(SelectedYear));
+    }
+
+    private async Task ExportBackup()
+    {
+        BackupMsgIsError = false;
+        BackupMsg = string.Empty;
+
+        var destination = await backupFileDialog.CreateAsync(BackupArchive.SuggestedFileName()).WithSync();
+        if (destination == null)
+        {
+            return;
+        }
+
+        Response result;
+        await using (destination.ConfigureAwait(true))
+        {
+            result = await backupArchive.WriteToAsync(destination).WithSync();
+        }
+
+        BackupMsgIsError = result != Response.Successful;
+        BackupMsg = result == Response.Successful
+            ? "Backup exportado."
+            : "Não foi possível exportar o backup.";
+    }
+
+    /// <summary>
+    /// Replaces everything on this device with the chosen backup, then signs out. The session is
+    /// holding the id of an account from the old database, which the restored one may not have —
+    /// logging in again is what re-establishes who the user is.
+    /// </summary>
+    private async Task ImportBackup()
+    {
+        BackupMsgIsError = false;
+        BackupMsg = string.Empty;
+
+        var source = await backupFileDialog.OpenAsync().WithSync();
+        if (source == null)
+        {
+            return;
+        }
+
+        Response result;
+        await using (source.ConfigureAwait(true))
+        {
+            result = await backupArchive.RestoreFromAsync(source).WithSync();
+        }
+
+        if (result != Response.Successful)
+        {
+            // The inline message is left blank: the popup is the whole story, and a second copy of
+            // it sitting under the buttons afterwards reads like a lingering failure.
+            ShowInvalidBackupAlert = true;
+            return;
+        }
+
+        BackupMsg = "Backup importado. Entre novamente.";
+        session.NotifyDataChanged();
+        session.RequestLogout();
     }
 
     private async Task ToggleMoneyVisible()

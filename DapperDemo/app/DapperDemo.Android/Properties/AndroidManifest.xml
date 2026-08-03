@@ -1,5 +1,22 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto">
 	<uses-permission android:name="android.permission.INTERNET" />
+
+	<!--
+		Android 11 (API 30) hid other installed apps from package queries by default. Launching the
+		Google Calendar link resolves an ACTION_VIEW intent, so the browser and the Calendar app
+		have to be declared visible here or the launch silently finds no handler on API 30+.
+
+		This is visibility, not a permission: the pre-filled link opens Calendar's own compose
+		screen and the user saves the event there, so the app never reads or writes their calendar
+		and needs no READ_CALENDAR/WRITE_CALENDAR grant.
+	-->
+	<queries>
+		<intent>
+			<action android:name="android.intent.action.VIEW" />
+			<data android:scheme="https" />
+		</intent>
+	</queries>
+
 	<application android:label="DapperDemo.View" android:icon="@drawable/Icon" />
 </manifest>

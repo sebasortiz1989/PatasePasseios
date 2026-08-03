@@ -28,6 +28,11 @@ namespace DapperDemo.View.DependencyInversion
             // take the ImagePicker abstraction from DapperDemo.Viewmodel.
             yield return CreateSingleton<StorageProviderImagePicker>().WithAbstractions();
 
+            // Same reasoning: launching a URI needs a TopLevel, so the view models take the
+            // UriLauncher abstraction and this layer supplies the Avalonia one.
+            yield return CreateSingleton<AvaloniaUriLauncher>().WithAbstractions();
+            yield return CreateSingleton<StorageProviderBackupFileDialog>().WithAbstractions();
+
             yield return CreateTransient<LoginView>().WithAbstractions();
             yield return CreateTransient<SignUpView>().WithAbstractions();
             yield return CreateTransient<MainView>().WithAbstractions();

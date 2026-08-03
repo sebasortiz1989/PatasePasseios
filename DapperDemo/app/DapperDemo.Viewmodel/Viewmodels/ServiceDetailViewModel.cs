@@ -5,9 +5,11 @@ using DapperDemo.Repository.Dapper;
 using DapperDemo.Repository.Dapper.Aggregates;
 using DapperDemo.Repository.Dapper.Dtos;
 using DapperDemo.Repository.Dapper.Services;
+using DapperDemo.Viewmodel.Services;
 using DapperDemo.Viewmodel.Viewmodels.Session;
 using PropertyChanged;
 using System.Globalization;
+using System.Text;
 using System.Windows.Input;
 
 namespace DapperDemo.Viewmodel.Viewmodels;
@@ -17,6 +19,7 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
 {
     private readonly RepositoryServices repositoryServices;
     private readonly AppSession session;
+    private readonly UriLauncher uriLauncher;
 
     /// <summary>The record as last read, so an edit can be saved without re-reading it.</summary>
     private ServiceItem? current;
@@ -24,11 +27,14 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
     public ServiceDetailViewModel(
         CurrentView currentView,
         RepositoryServices repositoryServices,
-        AppSession session)
+        AppSession session,
+        UriLauncher uriLauncher)
     {
         this.repositoryServices = repositoryServices;
         this.session = session;
+        this.uriLauncher = uriLauncher;
         BackCommand = new SynchronizedCommand(currentView.GoBack, SynchronizationBehavior.Discard, true);
+        AddToCalendarCommand = new SynchronizedCommand(AddToCalendar, SynchronizationBehavior.Discard, true);
         TogglePaidCommand = new SynchronizedCommand(TogglePaid, SynchronizationBehavior.Discard, true);
         AskDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = true, SynchronizationBehavior.Discard, true);
         CancelDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = false, SynchronizationBehavior.Discard, true);
@@ -39,6 +45,8 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
     }
 
     public ICommand BackCommand { get; }
+
+    public ICommand AddToCalendarCommand { get; }
 
     public ICommand TogglePaidCommand { get; }
 
@@ -145,8 +153,80 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
     private static int NightsBetween(DateTime start, DateTime? end) =>
         end is DateTime finish ? Math.Max((finish.Date - start.Date).Days, 1) : 1;
 
+    /// <summary>
+    /// Google Calendar's pre-filled event link. It opens the compose screen with everything
+    /// entered — the user still presses Save, so the app never needs calendar access of its own.
+    /// </summary>
+    /// <remarks>
+    /// Times are sent without a zone designator on purpose. Google reads a naive value in the
+    /// calendar's own timezone, which is what the sitter booked in; sending UTC would mean
+    /// converting from this device's clock and being an hour out whenever the two disagree.
+    /// </remarks>
+    private static Uri BuildCalendarUri(ServiceItem service)
+    {
+        // All-day events are a half-open range, so a one-day booking ends the following day.
+        var dates = service.Kind == ServiceKind.DayCare
+            ? $"{service.Date:yyyyMMdd}/{service.Date.AddDays(1):yyyyMMdd}"
+            : $"{service.Date:yyyyMMddTHHmmss}/{EndOf(service):yyyyMMddTHHmmss}";
+
+        var details = new StringBuilder();
+        details.Append("Tutor: ").Append(service.TutorName);
+        details.Append("\nCachorro: ").Append(service.DogName);
+        details.Append("\nServiço: ").Append(AppSession.TypeLabel(service.Kind));
+
+        if (service.Kind == ServiceKind.Hotel)
+        {
+            var nights = NightsBetween(service.Date, service.EndDate);
+            details.Append("\nDiárias: ").Append(nights.ToString(CultureInfo.InvariantCulture));
+            details.Append("\nValor: ").Append(AppSession.Money(service.Price * nights));
+        }
+        else
+        {
+            details.Append("\nValor: ").Append(AppSession.Money(service.Price));
+        }
+
+        if (service.Kind is ServiceKind.Hotel or ServiceKind.DayCare)
+        {
+            details.Append("\nPasseios: ").Append(service.RequiresWalking ? "Incluídos" : "Não incluídos");
+        }
+
+        details.Append("\nPagamento: ").Append(service.ServicePaid ? "Pago" : "Pendente");
+
+        var url = new StringBuilder("https://calendar.google.com/calendar/render?action=TEMPLATE");
+        url.Append("&text=").Append(Uri.EscapeDataString($"{AppSession.TypeLabel(service.Kind)} — {service.DogName}"));
+        url.Append("&dates=").Append(dates);
+        url.Append("&details=").Append(Uri.EscapeDataString(details.ToString()));
+
+        // Omitted rather than sent empty when the tutor has no address on file: Google shows the
+        // location row whenever the parameter is present, so a blank one just looks broken.
+        if (!string.IsNullOrWhiteSpace(service.TutorAddress))
+        {
+            url.Append("&location=").Append(Uri.EscapeDataString(service.TutorAddress.Trim()));
+        }
+
+        return new Uri(url.ToString());
+    }
+
+    /// <summary>
+    /// When a booking finishes. A stay runs to its check-out; a walk or sitting has no stored
+    /// duration, so it gets an hour — enough for the event to occupy a readable slot.
+    /// </summary>
+    private static DateTime EndOf(ServiceItem service) => service.Kind == ServiceKind.Hotel
+        ? service.EndDate ?? service.Date.AddDays(1)
+        : service.Date.AddHours(1);
+
     private static bool TryParsePrice(string text, out decimal price) =>
         decimal.TryParse(text?.Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out price);
+
+    private async Task AddToCalendar()
+    {
+        if (current is not ServiceItem service)
+        {
+            return;
+        }
+
+        await uriLauncher.LaunchAsync(BuildCalendarUri(service)).WithSync();
+    }
 
     private async Task TogglePaid()
     {

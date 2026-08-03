@@ -19,11 +19,33 @@
             Width="720">
             <ScrollViewer>
                 <StackPanel Spacing="0">
-                    <buttons:VButton
-                        Classes="BtnBack"
-                        Command="{Binding BackCommand}"
-                        Margin="32,32,0,0"
-                        VText="← Voltar" />
+                    <Grid ColumnDefinitions="*,Auto" Margin="32,32,32,0">
+                        <buttons:VButton
+                            Classes="BtnBack"
+                            Command="{Binding BackCommand}"
+                            VText="← Voltar" />
+
+                        <!--
+                            Opens Google Calendar's compose screen with the booking already filled
+                            in. The user saves it there, which is why the app needs no calendar
+                            access of its own — see AvaloniaUriLauncher.
+                        -->
+                        <Button
+                            Classes="IconToggle"
+                            Command="{Binding AddToCalendarCommand}"
+                            Grid.Column="1"
+                            ToolTip.Tip="Adicionar à Google Agenda"
+                            VerticalAlignment="Center">
+                            <Viewbox Height="36" Width="36">
+                                <Path
+                                    Data="{StaticResource IconCalendarAdd}"
+                                    Stroke="{StaticResource ColorAccent}"
+                                    StrokeJoin="Round"
+                                    StrokeLineCap="Round"
+                                    StrokeThickness="1.8" />
+                            </Viewbox>
+                        </Button>
+                    </Grid>
 
                     <StackPanel Margin="32,24,32,56" Spacing="0">
                         <!--  The dog's photo, so a booking is recognisable at a glance.  -->

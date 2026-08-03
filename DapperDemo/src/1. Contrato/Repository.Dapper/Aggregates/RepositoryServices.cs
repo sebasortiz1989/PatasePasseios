@@ -22,7 +22,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
     /// </summary>
     private const string WalkSelect = """
         SELECT w.WalkingServiceId AS ServiceId, 0 AS Kind, w.DogId, d.Name AS DogName, d.Image AS DogImage,
-               t.Name AS TutorName, w.Date, w.Price, w.ServicePaid
+               t.Name AS TutorName, t.Address AS TutorAddress, w.Date, w.Price, w.ServicePaid
         FROM WalkingService w
         INNER JOIN Dogs d ON d.DogId = w.DogId
         INNER JOIN Tutors t ON t.TutorId = d.TutorId
@@ -31,7 +31,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
 
     private const string SittingSelect = """
         SELECT s.PetSittingServiceId AS ServiceId, 1 AS Kind, s.DogId, d.Name AS DogName, d.Image AS DogImage,
-               t.Name AS TutorName, s.Date, s.Price, s.ServicePaid
+               t.Name AS TutorName, t.Address AS TutorAddress, s.Date, s.Price, s.ServicePaid
         FROM PetSittingService s
         INNER JOIN Dogs d ON d.DogId = s.DogId
         INNER JOIN Tutors t ON t.TutorId = d.TutorId
@@ -40,7 +40,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
 
     private const string HotelSelect = """
         SELECT h.PetHotelServiceId AS ServiceId, 2 AS Kind, h.DogId, d.Name AS DogName, d.Image AS DogImage,
-               t.Name AS TutorName, h.StartDate AS Date, h.EndDate, h.PricePerDay AS Price, h.RequiresWalking, h.ServicePaid
+               t.Name AS TutorName, t.Address AS TutorAddress, h.StartDate AS Date, h.EndDate, h.PricePerDay AS Price, h.RequiresWalking, h.ServicePaid
         FROM PetHotelService h
         INNER JOIN Dogs d ON d.DogId = h.DogId
         INNER JOIN Tutors t ON t.TutorId = d.TutorId
@@ -49,7 +49,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
 
     private const string DayCareSelect = """
         SELECT c.DayCareServiceId AS ServiceId, 3 AS Kind, c.DogId, d.Name AS DogName, d.Image AS DogImage,
-               t.Name AS TutorName, c.Date, c.Price, c.RequiresWalking, c.ServicePaid
+               t.Name AS TutorName, t.Address AS TutorAddress, c.Date, c.Price, c.RequiresWalking, c.ServicePaid
         FROM DayCareService c
         INNER JOIN Dogs d ON d.DogId = c.DogId
         INNER JOIN Tutors t ON t.TutorId = d.TutorId

@@ -6,6 +6,7 @@
     x:DataType="mainViewViewmodels:UsersViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
+    xmlns:components="using:DapperDemo.View.Components"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mainViewViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -537,6 +538,62 @@
                         </StackPanel>
                     </Grid>
 
+                    <!--
+                        Backup. One .zip carries the database and the dog photos — the photos are
+                        files beside the database, not rows in it, so a bare .db would restore
+                        every record and lose every picture.
+                    -->
+                    <StackPanel Spacing="4">
+                        <TextBlock
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="23"
+                            Foreground="{StaticResource ColorAccent}"
+                            LetterSpacing="2"
+                            Text="BACKUP" />
+
+                        <TextBlock
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="25"
+                            Foreground="{StaticResource ColorTextMuted70}"
+                            Margin="0,8,0,16"
+                            Text="Exporte um arquivo .zip com todos os seus dados e fotos. Guarde-o no Drive ou envie para outro aparelho."
+                            TextWrapping="Wrap" />
+
+                        <Grid ColumnDefinitions="*,16,*">
+                            <buttons:VButton
+                                Classes="BtnPrimary"
+                                Command="{Binding ExportBackupCommand}"
+                                Height="80"
+                                VText="Exportar" />
+                            <buttons:VButton
+                                Classes="BtnSecondary"
+                                Command="{Binding ImportBackupCommand}"
+                                Grid.Column="2"
+                                Height="80"
+                                VText="Importar" />
+                        </Grid>
+
+                        <TextBlock
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="23"
+                            FontStyle="Italic"
+                            Foreground="{StaticResource ColorTextMuted45}"
+                            Margin="0,12,0,0"
+                            Text="Importar substitui tudo o que está neste aparelho e pede um novo login."
+                            TextWrapping="Wrap" />
+
+                        <TextBlock
+                            Classes="FormMsg"
+                            Classes.Error="{Binding BackupMsgIsError}"
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="27"
+                            FontStyle="Italic"
+                            IsVisible="{Binding HasBackupMsg}"
+                            Margin="0,12,0,0"
+                            Text="{Binding BackupMsg}"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+
                     <buttons:VButton
                         Classes="BtnGhost"
                         Command="{Binding LogoutCommand}"
@@ -546,5 +603,17 @@
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>
+
+        <!--
+            Alert form of the dialog: one button, nothing to decide. Shown when the chosen file is
+            not one of this app's backups — the import stopped before touching anything.
+        -->
+        <components:ConfirmDialog
+            ConfirmCommand="{Binding DismissInvalidBackupCommand}"
+            ConfirmText="Entendi"
+            IsOpen="{Binding ShowInvalidBackupAlert}"
+            Message="Este arquivo não é um backup do Patas &amp; Passeios. Escolha um .zip exportado por este aplicativo. Nada foi alterado neste aparelho."
+            ShowCancel="False"
+            Title="Backup inválido" />
     </Grid>
 </UserControl>

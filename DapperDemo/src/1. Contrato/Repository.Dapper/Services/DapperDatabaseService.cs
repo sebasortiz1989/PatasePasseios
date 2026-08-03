@@ -21,7 +21,13 @@ public sealed class DapperDatabaseService
         InitializeDatabase();
     }
 
+    /// <summary>Gets the schema this build expects, stamped into a backup so a restore can check it.</summary>
+    public static int CurrentSchemaVersion => SchemaVersion;
+
     public SqliteConnection Connection => new(connectionString);
+
+    /// <summary>Gets the database file on disk. Public so backup and restore can copy over it.</summary>
+    public string DatabasePath { get; private set; } = string.Empty;
 
     /// <summary>
     /// Drops every table when the file on disk was built by an older schema, so the CREATE TABLE
@@ -169,6 +175,7 @@ public sealed class DapperDatabaseService
     {
         string databaseFileName = "DapperDemo.db";
         var databasePath = Path.Combine(AppStorage.Folder, databaseFileName);
+        DatabasePath = databasePath;
         connectionString = new SqliteConnectionStringBuilder
         {
             DataSource = databasePath,

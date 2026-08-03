@@ -26,6 +26,15 @@ public partial class ConfirmDialog : UserControl
     public static readonly StyledProperty<ICommand?> CancelCommandProperty =
         AvaloniaProperty.Register<ConfirmDialog, ICommand?>(nameof(CancelCommand));
 
+    public static readonly StyledProperty<string> ConfirmTextProperty =
+        AvaloniaProperty.Register<ConfirmDialog, string>(nameof(ConfirmText), "Sim");
+
+    public static readonly StyledProperty<string> CancelTextProperty =
+        AvaloniaProperty.Register<ConfirmDialog, string>(nameof(CancelText), "Não");
+
+    public static readonly StyledProperty<bool> ShowCancelProperty =
+        AvaloniaProperty.Register<ConfirmDialog, bool>(nameof(ShowCancel), true);
+
     public ConfirmDialog()
     {
         InitializeComponent();
@@ -64,5 +73,30 @@ public partial class ConfirmDialog : UserControl
     {
         get => GetValue(CancelCommandProperty);
         set => SetValue(CancelCommandProperty, value);
+    }
+
+    /// <summary>Gets or sets the label on the accepting button.</summary>
+    public string ConfirmText
+    {
+        get => GetValue(ConfirmTextProperty);
+        set => SetValue(ConfirmTextProperty, value);
+    }
+
+    /// <summary>Gets or sets the label on the dismissing button.</summary>
+    public string CancelText
+    {
+        get => GetValue(CancelTextProperty);
+        set => SetValue(CancelTextProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether both buttons are shown. Set it false to make the
+    /// dialog an alert — one full-width button that only dismisses, for telling the user something
+    /// rather than asking them.
+    /// </summary>
+    public bool ShowCancel
+    {
+        get => GetValue(ShowCancelProperty);
+        set => SetValue(ShowCancelProperty, value);
     }
 }

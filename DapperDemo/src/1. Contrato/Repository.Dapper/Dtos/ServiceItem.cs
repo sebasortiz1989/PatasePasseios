@@ -37,6 +37,13 @@ public sealed class ServiceItem
 
     public required string TutorName { get; init; }
 
+    /// <summary>
+    /// Gets where the tutor lives, or null when they have none recorded. Carried on the agenda row
+    /// because every service query already joins Tutors — a screen needing it should not have to
+    /// go back to the database for one column.
+    /// </summary>
+    public string? TutorAddress { get; init; }
+
     public DateTime Date { get; init; }
 
     /// <summary>Gets check-out date; only hotel stays have one.</summary>

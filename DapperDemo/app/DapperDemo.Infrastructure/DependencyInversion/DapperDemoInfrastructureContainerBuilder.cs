@@ -25,5 +25,6 @@ public class DapperDemoInfrastructureContainerBuilder : ImmutableContainerBuilde
         yield return CreateSingleton<RepositoryTutors>();
         yield return CreateSingleton<RepositoryServices>();
         yield return CreateSingleton<DapperDatabaseService>();
+        yield return CreateSingleton<BackupArchive>();
     }
 }
