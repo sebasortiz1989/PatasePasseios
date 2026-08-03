@@ -1,0 +1,58 @@
+<UserControl
+    IsVisible="{Binding #Root.IsOpen}"
+    x:Class="DapperDemo.View.Components.ConfirmDialog"
+    x:Name="Root"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        Bindings here target the control's own properties through #Root rather than the ambient
+        DataContext: a UserControl inherits its parent's DataContext, so a plain {Binding Message}
+        would look for Message on the screen's view model instead of on this control.
+    -->
+    <Border Background="{StaticResource ColorScrim}">
+        <Border
+            Background="{StaticResource ColorBg}"
+            BorderBrush="{StaticResource ColorDivider}"
+            BorderThickness="2"
+            CornerRadius="7"
+            HorizontalAlignment="Center"
+            Margin="48"
+            MaxWidth="600"
+            Padding="40"
+            VerticalAlignment="Center">
+            <StackPanel Spacing="24">
+                <TextBlock
+                    Classes="CardTitle"
+                    HorizontalAlignment="Center"
+                    Text="{Binding #Root.Title}"
+                    TextAlignment="Center"
+                    TextWrapping="Wrap" />
+
+                <TextBlock
+                    FontFamily="{StaticResource FontBody}"
+                    FontSize="27"
+                    Foreground="{StaticResource ColorTextMuted70}"
+                    Text="{Binding #Root.Message}"
+                    TextAlignment="Center"
+                    TextWrapping="Wrap" />
+
+                <!--  Não sits left as the safe default; Sim carries the destructive action.  -->
+                <Grid ColumnDefinitions="*,16,*">
+                    <buttons:VButton
+                        Classes="BtnSecondary"
+                        Command="{Binding #Root.CancelCommand}"
+                        Height="80"
+                        VText="Não" />
+                    <buttons:VButton
+                        Classes="BtnPrimary"
+                        Command="{Binding #Root.ConfirmCommand}"
+                        Grid.Column="2"
+                        Height="80"
+                        VText="Sim" />
+                </Grid>
+            </StackPanel>
+        </Border>
+    </Border>
+</UserControl>

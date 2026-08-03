@@ -6,6 +6,7 @@
     x:DataType="viewmodels:TutorDetailViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
+    xmlns:components="using:DapperDemo.View.Components"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels;assembly=DapperDemo.Viewmodel"
@@ -148,40 +149,13 @@
                                 Margin="0,16,0,0"
                                 VText="Editar tutor" />
 
-                            <!--  Destructive, so it takes two taps: the button swaps for confirm/cancel  -->
-                            <StackPanel Spacing="16">
-                                <buttons:VButton
-                                    Classes="BtnSecondary"
-                                    Command="{Binding AskDeleteCommand}"
-                                    Height="80"
-                                    HorizontalAlignment="Stretch"
-                                    IsVisible="{Binding NotConfirmingDelete}"
-                                    VText="Excluir tutor" />
-                                <StackPanel IsVisible="{Binding ConfirmingDelete}" Spacing="12">
-                                    <TextBlock
-                                        FontFamily="{StaticResource FontBody}"
-                                        FontSize="26"
-                                        FontStyle="Italic"
-                                        Foreground="{StaticResource ColorAccentDark800}"
-                                        HorizontalAlignment="Center"
-                                        Text="Isso remove o tutor, seus cachorros e os serviços deles."
-                                        TextAlignment="Center"
-                                        TextWrapping="Wrap" />
-                                    <Grid ColumnDefinitions="*,16,*">
-                                        <buttons:VButton
-                                            Classes="BtnSecondary"
-                                            Command="{Binding CancelDeleteCommand}"
-                                            Height="80"
-                                            VText="Cancelar" />
-                                        <buttons:VButton
-                                            Classes="BtnPrimary"
-                                            Command="{Binding ConfirmDeleteCommand}"
-                                            Grid.Column="2"
-                                            Height="80"
-                                            VText="Excluir" />
-                                    </Grid>
-                                </StackPanel>
-                            </StackPanel>
+                            <!--  Destructive, so it asks first — see the ConfirmDialog at the end of this file.  -->
+                            <buttons:VButton
+                                Classes="BtnSecondary"
+                                Command="{Binding AskDeleteCommand}"
+                                Height="80"
+                                HorizontalAlignment="Stretch"
+                                VText="Excluir tutor" />
                         </StackPanel>
 
                         <!--  Editor. The dogs list is not here: a dog is moved from its own screen.  -->
@@ -228,6 +202,14 @@
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
+
+            <!--  Last child of the Grid, so the scrim covers the screen underneath it.  -->
+            <components:ConfirmDialog
+                CancelCommand="{Binding CancelDeleteCommand}"
+                ConfirmCommand="{Binding ConfirmDeleteCommand}"
+                IsOpen="{Binding ConfirmingDelete}"
+                Message="O tutor, seus cachorros e todos os serviços deles serão excluídos para sempre. Esta ação não pode ser desfeita."
+                Title="Excluir tutor?" />
         </Grid>
     </Viewbox>
 </UserControl>

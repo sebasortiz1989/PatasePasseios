@@ -28,6 +28,9 @@
         <SolidColorBrush Color="#5A3B0A" x:Key="ColorAccentDark800" />
         <SolidColorBrush Color="#1FB68235" x:Key="ColorAccentTint12" />
 
+        <!--  Dims the screen behind a modal, so the dialog reads as the only live thing on it.  -->
+        <SolidColorBrush Color="#99201F1D" x:Key="ColorScrim" />
+
         <FontFamily x:Key="FontHeading">Times New Roman,Georgia,serif</FontFamily>
         <FontFamily x:Key="FontBody">Georgia,Times New Roman,serif</FontFamily>
 

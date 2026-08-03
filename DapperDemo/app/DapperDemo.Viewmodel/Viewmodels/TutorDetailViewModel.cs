@@ -62,8 +62,6 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     /// <summary>Gets a value indicating whether deleting takes two taps: the button swaps for a confirm/cancel pair.</summary>
     public bool ConfirmingDelete { get; private set; }
 
-    public bool NotConfirmingDelete => !ConfirmingDelete;
-
     /// <summary>
     /// Gets a value indicating whether the screen is in edit mode — see
     /// <see cref="DogDetailViewModel.IsEditing"/> for why the editor replaces the fields in place
