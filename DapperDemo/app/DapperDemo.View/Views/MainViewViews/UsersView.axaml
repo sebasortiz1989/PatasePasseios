@@ -316,6 +316,25 @@
                                 Text="Considera apenas serviços marcados como pagos. Pendentes conta todos os meses."
                                 TextWrapping="Wrap" />
                         </Border>
+
+                        <buttons:VButton
+                            Classes="BtnSecondary"
+                            Command="{Binding ExportMonthCommand}"
+                            Height="80"
+                            HorizontalAlignment="Stretch"
+                            Margin="0,20,0,0"
+                            VText="Exportar resumo do mês (PDF)" />
+                        <TextBlock
+                            Classes="FormMsg"
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="24"
+                            FontStyle="Italic"
+                            HorizontalAlignment="Center"
+                            IsVisible="{Binding HasExportMsg}"
+                            Margin="0,8,0,0"
+                            Text="{Binding ExportMsg}"
+                            TextAlignment="Center"
+                            TextWrapping="Wrap" />
                     </StackPanel>
 
                     <buttons:VButton Classes="BtnGhost" Command="{Binding LogoutCommand}" Height="70" HorizontalAlignment="Stretch" VText="Sair da conta" />

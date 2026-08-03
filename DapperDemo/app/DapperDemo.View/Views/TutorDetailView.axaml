@@ -129,12 +129,31 @@
                                 </StackPanel>
                             </Border>
 
+                            <!--  Every service this tutor's dogs have had, by month, paid and pending.  -->
+                            <StackPanel Margin="0,16,0,0" Spacing="8">
+                                <buttons:VButton
+                                    Classes="BtnSecondary"
+                                    Command="{Binding ExportCommand}"
+                                    Height="80"
+                                    HorizontalAlignment="Stretch"
+                                    VText="Exportar serviços (PDF)" />
+                                <TextBlock
+                                    Classes="FormMsg"
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="24"
+                                    FontStyle="Italic"
+                                    HorizontalAlignment="Center"
+                                    IsVisible="{Binding HasExportMsg}"
+                                    Text="{Binding ExportMsg}"
+                                    TextAlignment="Center"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+
                             <buttons:VButton
                                 Classes="BtnPrimary"
                                 Command="{Binding EditCommand}"
                                 Height="80"
                                 HorizontalAlignment="Stretch"
-                                Margin="0,16,0,0"
                                 VText="Editar tutor" />
 
                             <!--  Destructive, so it takes two taps: the button swaps for confirm/cancel  -->
