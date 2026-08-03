@@ -36,13 +36,21 @@
                     <!--  Service type — segmented control  -->
                     <StackPanel Spacing="10">
                         <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted70}" Text="Tipo de serviço" />
+                        <!--
+                            Two by two rather than one row of four: at a quarter of the canvas
+                            "Pet sitting" no longer fits inside its own segment.
+                        -->
                         <Border BorderBrush="{StaticResource ColorDivider}" BorderThickness="2" CornerRadius="7">
-                            <Grid ColumnDefinitions="*,2,*,2,*">
+                            <Grid ColumnDefinitions="*,2,*" RowDefinitions="Auto,2,Auto">
                                 <Button Classes="SegOption" Classes.Active="{Binding IsTypeWalk}" Command="{Binding SetTypeWalk}" Content="Passeio" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
                                 <Border Background="{StaticResource ColorDivider}" Grid.Column="1" />
                                 <Button Classes="SegOption" Classes.Active="{Binding IsTypeSitting}" Command="{Binding SetTypeSitting}" Content="Pet sitting" Grid.Column="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
-                                <Border Background="{StaticResource ColorDivider}" Grid.Column="3" />
-                                <Button Classes="SegOption" Classes.Active="{Binding IsTypeHotel}" Command="{Binding SetTypeHotel}" Content="Hotel" Grid.Column="4" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+
+                                <Border Background="{StaticResource ColorDivider}" Grid.ColumnSpan="3" Grid.Row="1" />
+
+                                <Button Classes="SegOption" Classes.Active="{Binding IsTypeHotel}" Command="{Binding SetTypeHotel}" Content="Hotel" Grid.Row="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+                                <Border Background="{StaticResource ColorDivider}" Grid.Column="1" Grid.Row="2" />
+                                <Button Classes="SegOption" Classes.Active="{Binding IsTypeDayCare}" Command="{Binding SetTypeDayCare}" Content="Day-Care" Grid.Column="2" Grid.Row="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
                             </Grid>
                         </Border>
                     </StackPanel>
@@ -243,8 +251,11 @@
                             </StackPanel>
                         </StackPanel>
 
-                        <!--  Extra times of day — a sitting often runs morning and night.  -->
-                        <StackPanel Spacing="10">
+                        <!--
+                            Extra times of day — a sitting often runs morning and night. Hidden for
+                            day-care, which is booked for the day rather than for a time.
+                        -->
+                        <StackPanel IsVisible="{Binding SvcUsesTimes}" Spacing="10">
                             <Grid ColumnDefinitions="*,Auto">
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
@@ -283,6 +294,15 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </StackPanel>
+
+                        <!--  Day-care bundles walks the same way a hotel stay does.  -->
+                        <CheckBox
+                            Content="Inclui passeios"
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="29"
+                            Foreground="{StaticResource ColorTextMuted70}"
+                            IsChecked="{Binding SvcRequiresWalking}"
+                            IsVisible="{Binding SvcIsDayCare}" />
 
                         <TextBlock
                             Classes="Kicker"

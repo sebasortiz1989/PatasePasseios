@@ -1,14 +1,21 @@
 namespace DapperDemo.Repository.Dapper.Dtos;
 
 /// <summary>
-/// The three service tables are stored separately but the app presents them as one agenda,
-/// so reads come back as this shared shape rather than as three unrelated row types.
+/// The four service tables are stored separately but the app presents them as one agenda,
+/// so reads come back as this shared shape rather than as four unrelated row types.
 /// </summary>
+/// <remarks>
+/// The numbers are baked into the agenda queries as literals (<c>0 AS Kind</c> and so on), not
+/// stored in any table, so new kinds must be appended rather than inserted.
+/// </remarks>
 public enum ServiceKind
 {
     Walk,
     Sitting,
     Hotel,
+
+    /// <summary>A single day at the sitter's, with no check-out and no time of day.</summary>
+    DayCare,
 }
 
 /// <summary>
@@ -35,7 +42,10 @@ public sealed class ServiceItem
     /// <summary>Gets check-out date; only hotel stays have one.</summary>
     public DateTime? EndDate { get; init; }
 
-    /// <summary>Gets a one-off fee for walks and pet sitting; a daily rate for hotel stays.</summary>
+    /// <summary>
+    /// Gets a one-off fee for walks, pet sitting and day-care; a daily rate for hotel stays.
+    /// Day-care covers a single day, so its fee needs no multiplying.
+    /// </summary>
     public decimal Price { get; init; }
 
     public bool RequiresWalking { get; init; }

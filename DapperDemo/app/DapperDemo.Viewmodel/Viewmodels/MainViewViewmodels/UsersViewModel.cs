@@ -303,6 +303,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         IncomeBreakdown.Add(new IncomeRow("Passeio", Money(income.Walk)));
         IncomeBreakdown.Add(new IncomeRow("Pet sitting", Money(income.Sitting)));
         IncomeBreakdown.Add(new IncomeRow("Hotel", Money(income.Hotel)));
+        IncomeBreakdown.Add(new IncomeRow("Day-Care", Money(income.DayCare)));
 
         RefreshMonthDetail();
     }

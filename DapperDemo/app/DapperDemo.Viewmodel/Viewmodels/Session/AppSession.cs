@@ -56,6 +56,7 @@ public class AppSession
         ServiceKind.Walk => "Passeio",
         ServiceKind.Sitting => "Pet sitting",
         ServiceKind.Hotel => "Hotel",
+        ServiceKind.DayCare => "Day-Care",
         _ => string.Empty,
     };
 
@@ -64,6 +65,22 @@ public class AppSession
 
     /// <summary>Date shape used across the app's detail screens (dd/MM/yyyy, HH:mm).</summary>
     public static string DateTimeLabel(DateTime value) => value.ToString("dd/MM/yyyy, HH:mm", CultureInfo.InvariantCulture);
+
+    /// <summary>
+    /// The same label, but without the clock for kinds that have no time of day. Day-care is
+    /// stored at midnight, so the plain overload would render every booking as ", 00:00".
+    /// </summary>
+    public static string DateTimeLabel(DateTime value, ServiceKind kind) => kind == ServiceKind.DayCare
+        ? value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+        : DateTimeLabel(value);
+
+    /// <summary>
+    /// What the agenda prints in its time column. Day-care occupies the whole day rather than a
+    /// slot, so it says so instead of showing midnight.
+    /// </summary>
+    public static string TimeLabel(DateTime value, ServiceKind kind) => kind == ServiceKind.DayCare
+        ? "Dia todo"
+        : value.ToString("HH:mm", CultureInfo.InvariantCulture);
 
     public void SignIn(PetSitter petSitter)
     {

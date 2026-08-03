@@ -41,6 +41,7 @@ public sealed class DapperDatabaseService
                  DROP TABLE IF EXISTS WalkingService;
                  DROP TABLE IF EXISTS PetSittingService;
                  DROP TABLE IF EXISTS PetHotelService;
+                 DROP TABLE IF EXISTS DayCareService;
                  DROP TABLE IF EXISTS Dogs;
                  DROP TABLE IF EXISTS PetSitterTutors;
                  DROP TABLE IF EXISTS Tutors;
@@ -144,6 +145,19 @@ public sealed class DapperDatabaseService
                      StartDate DATETIME NOT NULL,
                      EndDate DATETIME NOT NULL,
                      PricePerDay DECIMAL(10, 2) NOT NULL,
+                     RequiresWalking BOOLEAN NOT NULL DEFAULT 0,
+                     ServicePaid BOOLEAN,
+                     FOREIGN KEY (DogId) REFERENCES Dogs(DogId),
+                     FOREIGN KEY (PetSitterId) REFERENCES PetSitter(PetSitterId));
+
+                 -- Day-care is a hotel stay without the span: one Date at midnight, no EndDate,
+                 -- and Price is the whole fee for the day rather than a rate to multiply.
+                 CREATE TABLE IF NOT EXISTS DayCareService (
+                     DayCareServiceId INTEGER PRIMARY KEY AUTOINCREMENT,
+                     DogId INTEGER NOT NULL,
+                     PetSitterId INTEGER NOT NULL,
+                     Date DATETIME NOT NULL,
+                     Price DECIMAL(10, 2) NOT NULL,
                      RequiresWalking BOOLEAN NOT NULL DEFAULT 0,
                      ServicePaid BOOLEAN,
                      FOREIGN KEY (DogId) REFERENCES Dogs(DogId),

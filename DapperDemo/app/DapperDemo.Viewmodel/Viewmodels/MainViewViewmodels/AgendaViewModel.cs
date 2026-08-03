@@ -65,6 +65,7 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
         SetTypeWalk = new SynchronizedCommand(() => SetType(ServiceKind.Walk), SynchronizationBehavior.Discard, true);
         SetTypeSitting = new SynchronizedCommand(() => SetType(ServiceKind.Sitting), SynchronizationBehavior.Discard, true);
         SetTypeHotel = new SynchronizedCommand(() => SetType(ServiceKind.Hotel), SynchronizationBehavior.Discard, true);
+        SetTypeDayCare = new SynchronizedCommand(() => SetType(ServiceKind.DayCare), SynchronizationBehavior.Discard, true);
 
         TodayLabel = FormatToday();
         HomeRange = HomeRangeFilter.Semana;
@@ -95,6 +96,8 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
     public ICommand SetTypeSitting { get; }
 
     public ICommand SetTypeHotel { get; }
+
+    public ICommand SetTypeDayCare { get; }
 
     public string TodayLabel { get; private set; }
 
@@ -133,6 +136,8 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
     public bool IsTypeSitting => HomeType == ServiceKind.Sitting;
 
     public bool IsTypeHotel => HomeType == ServiceKind.Hotel;
+
+    public bool IsTypeDayCare => HomeType == ServiceKind.DayCare;
 
     public bool HasNoServices { get; private set; } = true;
 
@@ -297,7 +302,7 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
                 MonthsShort[sv.Date.Month - 1],
                 sv.DogName,
                 AppSession.TypeLabel(sv.Kind),
-                sv.Date.ToString("HH:mm", CultureInfo.InvariantCulture),
+                AppSession.TimeLabel(sv.Date, sv.Kind),
                 priceLabel,
                 sv.ServicePaid,
                 sv.ServicePaid ? "Pago" : "Pendente",

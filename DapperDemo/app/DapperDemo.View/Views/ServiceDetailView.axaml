@@ -105,46 +105,49 @@
                                 </Grid>
                             </Border>
 
-                            <StackPanel IsVisible="{Binding IsHotel}">
-                                <Border
-                                    BorderBrush="{StaticResource ColorDivider}"
-                                    BorderThickness="0,2,0,0"
-                                    Padding="0,20,0,20">
-                                    <Grid ColumnDefinitions="*,Auto">
-                                        <TextBlock
-                                            FontFamily="{StaticResource FontBody}"
-                                            FontSize="25"
-                                            Foreground="{StaticResource ColorTextMuted55}"
-                                            LetterSpacing="1"
-                                            Text="SAÍDA" />
-                                        <TextBlock
-                                            FontFamily="{StaticResource FontBody}"
-                                            FontSize="31"
-                                            Foreground="{StaticResource ColorText}"
-                                            Grid.Column="1"
-                                            Text="{Binding EndLabel}" />
-                                    </Grid>
-                                </Border>
-                                <Border
-                                    BorderBrush="{StaticResource ColorDivider}"
-                                    BorderThickness="0,2,0,0"
-                                    Padding="0,20,0,20">
-                                    <Grid ColumnDefinitions="*,Auto">
-                                        <TextBlock
-                                            FontFamily="{StaticResource FontBody}"
-                                            FontSize="25"
-                                            Foreground="{StaticResource ColorTextMuted55}"
-                                            LetterSpacing="1"
-                                            Text="PASSEIOS" />
-                                        <TextBlock
-                                            FontFamily="{StaticResource FontBody}"
-                                            FontSize="31"
-                                            Foreground="{StaticResource ColorText}"
-                                            Grid.Column="1"
-                                            Text="{Binding WalkingLabel}" />
-                                    </Grid>
-                                </Border>
-                            </StackPanel>
+                            <!--  Only a stay has a check-out; day-care ends when the day does.  -->
+                            <Border
+                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderThickness="0,2,0,0"
+                                IsVisible="{Binding IsHotel}"
+                                Padding="0,20,0,20">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="25"
+                                        Foreground="{StaticResource ColorTextMuted55}"
+                                        LetterSpacing="1"
+                                        Text="SAÍDA" />
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="31"
+                                        Foreground="{StaticResource ColorText}"
+                                        Grid.Column="1"
+                                        Text="{Binding EndLabel}" />
+                                </Grid>
+                            </Border>
+
+                            <!--  Walks are bundled into both hotel stays and day-care.  -->
+                            <Border
+                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderThickness="0,2,0,0"
+                                IsVisible="{Binding ShowsWalking}"
+                                Padding="0,20,0,20">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="25"
+                                        Foreground="{StaticResource ColorTextMuted55}"
+                                        LetterSpacing="1"
+                                        Text="PASSEIOS" />
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="31"
+                                        Foreground="{StaticResource ColorText}"
+                                        Grid.Column="1"
+                                        Text="{Binding WalkingLabel}" />
+                                </Grid>
+                            </Border>
 
                             <Border
                                 BorderBrush="{StaticResource ColorDivider}"
@@ -293,9 +296,11 @@
                                         Foreground="{StaticResource ColorText}"
                                         MinHeight="74"
                                         SelectedDate="{Binding EditDatePart}" />
+                                    <!--  Day-care has no time of day, so it edits the date alone.  -->
                                     <TimePicker
                                         ClockIdentifier="24HourClock"
                                         Grid.Column="2"
+                                        IsVisible="{Binding !IsDayCare}"
                                         MinHeight="74"
                                         SelectedTime="{Binding EditTimePart}" />
                                 </Grid>
@@ -323,12 +328,12 @@
                             </StackPanel>
 
                             <CheckBox
-                                Content="Inclui passeios diários"
+                                Content="Inclui passeios"
                                 FontFamily="{StaticResource FontBody}"
                                 FontSize="29"
                                 Foreground="{StaticResource ColorTextMuted70}"
                                 IsChecked="{Binding EditRequiresWalking}"
-                                IsVisible="{Binding IsHotel}" />
+                                IsVisible="{Binding ShowsWalking}" />
 
                             <StackPanel Spacing="10">
                                 <TextBlock Classes="FormLabel" Text="{Binding EditPriceLabel}" />

@@ -74,32 +74,43 @@
                         SelectedItem="{Binding SelectedYear}" />
                 </Grid>
 
-                <!--  Service type filters  -->
-                <StackPanel
-                    Margin="32,16,32,0"
-                    Orientation="Horizontal"
-                    Spacing="16">
+                <!--
+                    Service type filters. A WrapPanel rather than a horizontal StackPanel: five
+                    chips no longer fit across the 720 canvas, so the row is allowed to break.
+                    Spacing comes from each chip's margin, which WrapPanel honours.
+                -->
+                <WrapPanel Margin="32,16,32,0">
                     <Button
                         Classes="Chip"
                         Classes.Active="{Binding IsTypeTodos}"
                         Command="{Binding SetTypeTodos}"
-                        Content="Tudo" />
+                        Content="Tudo"
+                        Margin="0,0,16,12" />
                     <Button
                         Classes="Chip"
                         Classes.Active="{Binding IsTypeWalk}"
                         Command="{Binding SetTypeWalk}"
-                        Content="Passeio" />
+                        Content="Passeio"
+                        Margin="0,0,16,12" />
                     <Button
                         Classes="Chip"
                         Classes.Active="{Binding IsTypeSitting}"
                         Command="{Binding SetTypeSitting}"
-                        Content="Pet sitting" />
+                        Content="Pet sitting"
+                        Margin="0,0,16,12" />
                     <Button
                         Classes="Chip"
                         Classes.Active="{Binding IsTypeHotel}"
                         Command="{Binding SetTypeHotel}"
-                        Content="Hotel" />
-                </StackPanel>
+                        Content="Hotel"
+                        Margin="0,0,16,12" />
+                    <Button
+                        Classes="Chip"
+                        Classes.Active="{Binding IsTypeDayCare}"
+                        Command="{Binding SetTypeDayCare}"
+                        Content="Day-Care"
+                        Margin="0,0,16,12" />
+                </WrapPanel>
 
                 <CheckBox
                     Content="Mostrar serviços já pagos"

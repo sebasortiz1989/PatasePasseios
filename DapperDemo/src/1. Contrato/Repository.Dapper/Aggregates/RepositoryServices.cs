@@ -1,4 +1,4 @@
-using Dapper;
+﻿using Dapper;
 using DapperDemo.Repository.Dapper.Dtos;
 using DapperDemo.Repository.Dapper.Services;
 using Microsoft.Data.Sqlite;
@@ -6,15 +6,15 @@ using Microsoft.Data.Sqlite;
 namespace DapperDemo.Repository.Dapper.Aggregates;
 
 /// <summary>
-/// Walks, pet sitting and hotel stays live in three tables but the app shows them as one agenda,
-/// so this spans all three rather than extending <see cref="RepositoryBase{TEntity}"/> (which is
+/// Walks, pet sitting, hotel stays and day-care live in four tables but the app shows them as one
+/// agenda, so this spans all four rather than extending <see cref="RepositoryBase{TEntity}"/> (which is
 /// one-type-per-table). Reads come back as <see cref="ServiceItem"/>, already joined to the dog
 /// and tutor names the screens display.
 /// </summary>
 public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseService)
 {
     /// <summary>
-    /// The three tables are read with three separate queries rather than one UNION ALL, and then
+    /// The four tables are read with four separate queries rather than one UNION ALL, and then
     /// merged here. Microsoft.Data.Sqlite decides a column's CLR type from its *declared* type,
     /// which only a plain column reference carries — in a compound select the branches share the
     /// first branch's columns, so the hotel EndDate came back as a raw string that Dapper could
@@ -47,6 +47,15 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
         WHERE h.PetSitterId = @PetSitterId
         """;
 
+    private const string DayCareSelect = """
+        SELECT c.DayCareServiceId AS ServiceId, 3 AS Kind, c.DogId, d.Name AS DogName, d.Image AS DogImage,
+               t.Name AS TutorName, c.Date, c.Price, c.RequiresWalking, c.ServicePaid
+        FROM DayCareService c
+        INNER JOIN Dogs d ON d.DogId = c.DogId
+        INNER JOIN Tutors t ON t.TutorId = d.TutorId
+        WHERE c.PetSitterId = @PetSitterId
+        """;
+
     private DapperDatabaseService DapperDatabaseService { get; } = dapperDatabaseService;
 
     /// <summary>Every service booked by this pet sitter, soonest first.</summary>
@@ -59,8 +68,9 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
         var walks = await connection.QueryAsync<ServiceItem>(WalkSelect, param).ConfigureAwait(false);
         var sittings = await connection.QueryAsync<ServiceItem>(SittingSelect, param).ConfigureAwait(false);
         var hotels = await connection.QueryAsync<ServiceItem>(HotelSelect, param).ConfigureAwait(false);
+        var dayCares = await connection.QueryAsync<ServiceItem>(DayCareSelect, param).ConfigureAwait(false);
 
-        return [.. walks.Concat(sittings).Concat(hotels).OrderBy(s => s.Date)];
+        return [.. walks.Concat(sittings).Concat(hotels).Concat(dayCares).OrderBy(s => s.Date)];
     }
 
     /// <summary>The services booked for one dog, used by the dog and tutor detail screens.</summary>
@@ -97,6 +107,13 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
         """,
         new { service.DogId, service.PetSitterId, service.StartDate, service.EndDate, service.PricePerDay, service.RequiresWalking, service.ServicePaid });
 
+    public Task<Response> AddDayCareAsync(DayCareService service) => InsertAsync(
+        """
+        INSERT INTO DayCareService (DogId, PetSitterId, Date, Price, RequiresWalking, ServicePaid)
+        VALUES (@DogId, @PetSitterId, @Date, @Price, @RequiresWalking, @ServicePaid)
+        """,
+        new { service.DogId, service.PetSitterId, service.Date, service.Price, service.RequiresWalking, service.ServicePaid });
+
     /// <summary>
     /// Saves an edit to an existing booking: its date, its price, and for a hotel stay the
     /// check-out date and whether walks are included.
@@ -127,6 +144,16 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
                 WHERE PetHotelServiceId = @ServiceId
                 """,
                 new { service.Date, service.EndDate, service.Price, service.RequiresWalking, service.ServiceId }),
+
+            // Date is normalised to midnight: day-care has no time of day, so an edit must not
+            // let one back in through the date picker.
+            ServiceKind.DayCare => (
+                """
+                UPDATE DayCareService
+                SET Date = @Date, Price = @Price, RequiresWalking = @RequiresWalking
+                WHERE DayCareServiceId = @ServiceId
+                """,
+                new { Date = service.Date.Date, service.Price, service.RequiresWalking, service.ServiceId }),
             _ => throw new ArgumentOutOfRangeException(nameof(service)),
         };
 
@@ -144,7 +171,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
         }
     }
 
-    /// <summary>Removes a single booking, whichever of the three tables it lives in.</summary>
+    /// <summary>Removes a single booking, whichever of the four tables it lives in.</summary>
     public async Task<Response> DeleteAsync(ServiceKind kind, int serviceId)
     {
         var (table, key) = TableFor(kind);
@@ -204,6 +231,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
             Walk = paidThisMonth.Where(s => s.Kind == ServiceKind.Walk).Sum(s => s.Price),
             Sitting = paidThisMonth.Where(s => s.Kind == ServiceKind.Sitting).Sum(s => s.Price),
             Hotel = paidThisMonth.Where(s => s.Kind == ServiceKind.Hotel).Sum(s => s.Price),
+            DayCare = paidThisMonth.Where(s => s.Kind == ServiceKind.DayCare).Sum(s => s.Price),
         };
     }
 
@@ -212,6 +240,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
         ServiceKind.Walk => ("WalkingService", "WalkingServiceId"),
         ServiceKind.Sitting => ("PetSittingService", "PetSittingServiceId"),
         ServiceKind.Hotel => ("PetHotelService", "PetHotelServiceId"),
+        ServiceKind.DayCare => ("DayCareService", "DayCareServiceId"),
         _ => throw new ArgumentOutOfRangeException(nameof(kind)),
     };
 

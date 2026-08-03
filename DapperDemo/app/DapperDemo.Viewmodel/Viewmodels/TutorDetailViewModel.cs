@@ -1,4 +1,4 @@
-using AvaloniaFramework.Presentation;
+﻿using AvaloniaFramework.Presentation;
 using AvaloniaFramework.Presentation.UseCase;
 using AvaloniaFramework.Threading;
 using DapperDemo.Repository.Dapper;
@@ -151,7 +151,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
             FutureServices.Add(new TutorFutureServiceRow(
                 service.DogName,
                 AppSession.TypeLabel(service.Kind),
-                AppSession.DateTimeLabel(service.Date),
+                AppSession.DateTimeLabel(service.Date, service.Kind),
                 service.ServicePaid,
                 service.ServicePaid ? "Pago" : "Pendente",
                 openCommand));

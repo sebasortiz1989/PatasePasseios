@@ -90,6 +90,7 @@ public class RepositoryDogs(DapperDatabaseService dapperDatabaseService) : Repos
                      DELETE FROM WalkingService WHERE DogId = @DogId;
                      DELETE FROM PetSittingService WHERE DogId = @DogId;
                      DELETE FROM PetHotelService WHERE DogId = @DogId;
+                     DELETE FROM DayCareService WHERE DogId = @DogId;
                      DELETE FROM Dogs WHERE DogId = @DogId;
                      """,
                 param: new { DogId = entityId },

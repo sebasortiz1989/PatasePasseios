@@ -39,6 +39,7 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
         SetTypeWalk = new SynchronizedCommand(() => SetType(ServiceKind.Walk), SynchronizationBehavior.Discard, true);
         SetTypeSitting = new SynchronizedCommand(() => SetType(ServiceKind.Sitting), SynchronizationBehavior.Discard, true);
         SetTypeHotel = new SynchronizedCommand(() => SetType(ServiceKind.Hotel), SynchronizationBehavior.Discard, true);
+        SetTypeDayCare = new SynchronizedCommand(() => SetType(ServiceKind.DayCare), SynchronizationBehavior.Discard, true);
         CreateServiceCommand = new SynchronizedCommand(CreateService, SynchronizationBehavior.Discard, true);
 
         AddTimeCommand = new SynchronizedCommand(AddTime, SynchronizationBehavior.Discard, true);
@@ -59,6 +60,8 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
     public ICommand SetTypeSitting { get; }
 
     public ICommand SetTypeHotel { get; }
+
+    public ICommand SetTypeDayCare { get; }
 
     public ICommand CreateServiceCommand { get; }
 
@@ -81,9 +84,20 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
 
     public bool IsTypeHotel => SvcType == ServiceKind.Hotel;
 
+    public bool IsTypeDayCare => SvcType == ServiceKind.DayCare;
+
     public bool SvcIsHotel => SvcType == ServiceKind.Hotel;
 
+    /// <summary>Gets a value indicating whether the day-picking section is shown — everything except a hotel stay.</summary>
     public bool SvcIsSingleDate => SvcType != ServiceKind.Hotel;
+
+    /// <summary>
+    /// Gets a value indicating whether the times-of-day section applies. Day-care is booked for a
+    /// day, not a time, so it picks days like a walk but has no clock.
+    /// </summary>
+    public bool SvcUsesTimes => SvcType is ServiceKind.Walk or ServiceKind.Sitting;
+
+    public bool SvcIsDayCare => SvcType == ServiceKind.DayCare;
 
     public DogOption? SelectedDog { get; set; }
 
@@ -140,7 +154,9 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
     public bool SvcSupportsRecurrence => SvcType != ServiceKind.Hotel;
 
     /// <summary>How many services the current settings would create.</summary>
-    public int SvcOccurrenceCount => SvcSupportsRecurrence ? DayCount * Math.Max(SvcTimes.Count, 1) : 1;
+    public int SvcOccurrenceCount => SvcSupportsRecurrence
+        ? DayCount * (SvcUsesTimes ? Math.Max(SvcTimes.Count, 1) : 1)
+        : 1;
 
     /// <summary>Plain-language confirmation of what pressing the button will do.</summary>
     public string SvcOccurrenceSummary => SvcOccurrenceCount <= 1
@@ -272,23 +288,37 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
             var created = 0;
             foreach (var occurrence in occurrences)
             {
-                var occurrenceResult = SvcType == ServiceKind.Sitting
-                    ? await repositoryServices.AddSittingAsync(new PetSittingService
+                var occurrenceResult = SvcType switch
+                {
+                    ServiceKind.Sitting => await repositoryServices.AddSittingAsync(new PetSittingService
                     {
                         DogId = SelectedDog.Id,
                         PetSitterId = session.CurrentPetSitterId,
                         Date = occurrence,
                         Price = price,
                         ServicePaid = false,
-                    }).WithSync()
-                    : await repositoryServices.AddWalkAsync(new WalkingService
+                    }).WithSync(),
+
+                    // Date only — BuildOccurrences already pinned day-care to midnight.
+                    ServiceKind.DayCare => await repositoryServices.AddDayCareAsync(new DayCareService
+                    {
+                        DogId = SelectedDog.Id,
+                        PetSitterId = session.CurrentPetSitterId,
+                        Date = occurrence.Date,
+                        Price = price,
+                        RequiresWalking = SvcRequiresWalking,
+                        ServicePaid = false,
+                    }).WithSync(),
+
+                    _ => await repositoryServices.AddWalkAsync(new WalkingService
                     {
                         DogId = SelectedDog.Id,
                         PetSitterId = session.CurrentPetSitterId,
                         Date = occurrence,
                         Price = price,
                         ServicePaid = false,
-                    }).WithSync();
+                    }).WithSync(),
+                };
 
                 if (occurrenceResult == Response.Successful)
                 {
@@ -331,9 +361,13 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
     /// </summary>
     private List<DateTime> BuildOccurrences()
     {
-        var times = SvcTimes.Count > 0
-            ? SvcTimes.Select(t => t.Time).ToList()
-            : [SvcTimePart];
+        // Day-care has no time of day, so each chosen day yields exactly one booking at midnight
+        // rather than one per time slot.
+        var times = !SvcUsesTimes
+            ? [TimeSpan.Zero]
+            : SvcTimes.Count > 0
+                ? SvcTimes.Select(t => t.Time).ToList()
+                : [SvcTimePart];
 
         var days = SvcUseDateRange
             ? Enumerable.Range(0, DayCount).Select(offset => SvcRangeFromPart.Date.AddDays(offset))

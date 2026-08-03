@@ -9,5 +9,7 @@ public sealed class MonthlyIncome
 
     public decimal Hotel { get; init; }
 
-    public decimal Total => Walk + Sitting + Hotel;
+    public decimal DayCare { get; init; }
+
+    public decimal Total => Walk + Sitting + Hotel + DayCare;
 }

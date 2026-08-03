@@ -1,4 +1,4 @@
-using AvaloniaFramework.Presentation;
+﻿using AvaloniaFramework.Presentation;
 using AvaloniaFramework.Presentation.UseCase;
 using AvaloniaFramework.Threading;
 using DapperDemo.Repository.Dapper;
@@ -86,6 +86,12 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
     public string DateLabel { get; private set; } = string.Empty;
 
     public bool IsHotel { get; private set; }
+
+    /// <summary>Gets a value indicating whether this is a day-care booking: one day, no check-out, no time.</summary>
+    public bool IsDayCare { get; private set; }
+
+    /// <summary>Gets a value indicating whether the walks row applies — hotel stays and day-care carry one.</summary>
+    public bool ShowsWalking => IsHotel || IsDayCare;
 
     public string EndLabel { get; private set; } = string.Empty;
 
@@ -194,7 +200,11 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
             return;
         }
 
-        var date = EditDatePart.Date + EditTimePart;
+        // Day-care is booked for a day, not a moment, so the time picker is not shown for it and
+        // its date is stored bare.
+        var date = service.Kind == ServiceKind.DayCare
+            ? EditDatePart.Date
+            : EditDatePart.Date + EditTimePart;
         var endDate = EditEndDatePart.Date + EditEndTimePart;
 
         if (service.Kind == ServiceKind.Hotel && endDate <= date)
@@ -268,8 +278,9 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
         DogInitials = AppSession.Initials(service.DogName);
         DogImagePath = DogImageStore.ResolvePath(service.DogImage);
         TutorName = service.TutorName;
-        DateLabel = AppSession.DateTimeLabel(service.Date);
+        DateLabel = AppSession.DateTimeLabel(service.Date, service.Kind);
         IsHotel = service.Kind == ServiceKind.Hotel;
+        IsDayCare = service.Kind == ServiceKind.DayCare;
         EndLabel = service.EndDate is DateTime end ? AppSession.DateTimeLabel(end) : string.Empty;
         WalkingLabel = service.RequiresWalking ? "Incluídos" : "Não incluídos";
         PriceFieldLabel = service.Kind == ServiceKind.Hotel ? "Preço por dia" : "Preço";

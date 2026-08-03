@@ -94,6 +94,7 @@ public sealed class RepositoryTutors(DapperDatabaseService dapperDatabaseService
                      DELETE FROM WalkingService WHERE DogId IN (SELECT DogId FROM Dogs WHERE TutorId = @TutorId);
                      DELETE FROM PetSittingService WHERE DogId IN (SELECT DogId FROM Dogs WHERE TutorId = @TutorId);
                      DELETE FROM PetHotelService WHERE DogId IN (SELECT DogId FROM Dogs WHERE TutorId = @TutorId);
+                     DELETE FROM DayCareService WHERE DogId IN (SELECT DogId FROM Dogs WHERE TutorId = @TutorId);
                      DELETE FROM Dogs WHERE TutorId = @TutorId;
                      DELETE FROM PetSitterTutors WHERE TutorId = @TutorId;
                      DELETE FROM Tutors WHERE TutorId = @TutorId;
