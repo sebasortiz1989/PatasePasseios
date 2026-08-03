@@ -122,7 +122,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
 
     public bool ShowPasswordSummary => !ShowPasswordForm;
 
-    /// <summary>The password being replaced. Required — see RepositoryPetSitter.ChangePasswordAsync.</summary>
+    /// <summary>Gets or sets the password being replaced. Required — see RepositoryPetSitter.ChangePasswordAsync.</summary>
     public string CurrentPw { get; set; } = string.Empty;
 
     public string NewPw { get; set; } = string.Empty;

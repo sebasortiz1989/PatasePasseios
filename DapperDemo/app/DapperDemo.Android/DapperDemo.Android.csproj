@@ -17,6 +17,19 @@
             with DynamicallyAccessedMembers annotations rather than papered over from this project.
         -->
         <EnsureCodeQualityWarningsAsErrors>false</EnsureCodeQualityWarningsAsErrors>
+
+        <!--
+            The Android SDK caps the JDK at 21.0.99 (Xamarin.Android.Common.props) and fails with
+            XA0030 on anything newer. This machine has only JDK 23, so the ceiling is raised to
+            let it through. The property is declared with a condition in the SDK precisely so it
+            can be overridden here.
+
+            This is a version *check*, not a compatibility shim: nothing about JDK 23 is being
+            adapted, the guard is only being told to allow it. If javac, d8 or r8 later break on
+            a JDK the SDK was never tested against, the fix is to install JDK 21 and point
+            JavaSdkDirectory at it rather than to push this number higher.
+        -->
+        <LatestSupportedJavaVersion>23.0.99</LatestSupportedJavaVersion>
         <AssemblyName>DapperDemo.Android</AssemblyName>
         <RootNamespace>DapperDemo.Android</RootNamespace>
     </PropertyGroup>
