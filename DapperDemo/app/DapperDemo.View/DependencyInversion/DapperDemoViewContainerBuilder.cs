@@ -1,6 +1,5 @@
 ﻿using AvaloniaFramework.DependencyInjection;
 using AvaloniaFramework.Hosting.DependencyInjection;
-using DapperDemo.View.Reports;
 using DapperDemo.View.Services;
 using DapperDemo.View.Views;
 using DapperDemo.View.Views.MainViewViews;
@@ -28,10 +27,6 @@ namespace DapperDemo.View.DependencyInversion
             // Picking a file needs a TopLevel, which only this layer can reach — the view models
             // take the ImagePicker abstraction from DapperDemo.Viewmodel.
             yield return CreateSingleton<StorageProviderImagePicker>().WithAbstractions();
-
-            // Rendering and the save dialog both need this layer; the view models take the
-            // ReportExporter abstraction from DapperDemo.Viewmodel.
-            yield return CreateSingleton<QuestPdfReportExporter>().WithAbstractions();
 
             yield return CreateTransient<LoginView>().WithAbstractions();
             yield return CreateTransient<SignUpView>().WithAbstractions();

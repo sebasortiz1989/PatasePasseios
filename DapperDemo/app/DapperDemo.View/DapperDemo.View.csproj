@@ -22,12 +22,6 @@
         <PackageReference Include="Avalonia" Version="12.1.1" />
         <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.1" />
         <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.1" />
-        <!--
-            PDF export. Confined to Reports\QuestPdfReportExporter.cs — the view models build a
-            ReportDocument and never see this package. Community licence, which covers individuals
-            and small companies; see README.
-        -->
-        <PackageReference Include="QuestPDF" Version="2025.7.0" />
     </ItemGroup>
 
     <ItemGroup>

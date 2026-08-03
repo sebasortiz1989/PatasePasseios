@@ -4,7 +4,6 @@ using AvaloniaFramework.Threading;
 using DapperDemo.Repository.Dapper;
 using DapperDemo.Repository.Dapper.Aggregates;
 using DapperDemo.Repository.Dapper.Dtos;
-using DapperDemo.Viewmodel.Reports;
 using DapperDemo.Viewmodel.Viewmodels.Session;
 using PropertyChanged;
 using System.Collections.ObjectModel;
@@ -20,16 +19,12 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     /// <summary>What a hidden amount reads as. Wide enough not to hint at the figure's length.</summary>
     private const string HiddenMoney = "••••••";
 
-    /// <summary>Shown in place of a Pix key that has not been set. Also how the editor spots one.</summary>
-    private const string NoPix = "Não informada";
-
     private static readonly CultureInfo Brazil = new("pt-BR");
 
     private readonly RepositoryServices repositoryServices;
     private readonly RepositoryDogs repositoryDogs;
     private readonly RepositoryTutors repositoryTutors;
     private readonly RepositoryPetSitter repositoryPetSitter;
-    private readonly ReportExporter reportExporter;
     private readonly AppSession session;
     private readonly EventHandler dataChangedHandler;
 
@@ -39,9 +34,6 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     /// </summary>
     private MonthlyIncome income = new();
 
-    /// <summary>The selected month's services, kept so the PDF does not have to re-read them.</summary>
-    private ServiceItem[] monthServices = [];
-
     /// <summary>Guards against the filter reload retriggering itself while it assigns properties.</summary>
     private bool reloading;
 
@@ -50,14 +42,12 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         RepositoryDogs repositoryDogs,
         RepositoryTutors repositoryTutors,
         RepositoryPetSitter repositoryPetSitter,
-        ReportExporter reportExporter,
         AppSession session)
     {
         this.repositoryServices = repositoryServices;
         this.repositoryDogs = repositoryDogs;
         this.repositoryTutors = repositoryTutors;
         this.repositoryPetSitter = repositoryPetSitter;
-        this.reportExporter = reportExporter;
         this.session = session;
 
         // Billing totals depend on services marked paid elsewhere (Agenda, service detail).
@@ -72,7 +62,6 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         CancelProfileCommand = new SynchronizedCommand(CancelEditProfile, SynchronizationBehavior.Discard, true);
         SaveProfileCommand = new SynchronizedCommand(SaveProfile, SynchronizationBehavior.Discard, true);
         ToggleMoneyVisibleCommand = new SynchronizedCommand(ToggleMoneyVisible, SynchronizationBehavior.Discard, true);
-        ExportMonthCommand = new SynchronizedCommand(ExportMonth, SynchronizationBehavior.Discard, true);
 
         for (var month = 1; month <= 12; month++)
         {
@@ -104,8 +93,6 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     public ICommand SaveProfileCommand { get; }
 
     public ICommand ToggleMoneyVisibleCommand { get; }
-
-    public ICommand ExportMonthCommand { get; }
 
     public string CurrentUserName { get; private set; } = string.Empty;
 
@@ -174,11 +161,6 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
 
     public ObservableCollection<IncomeRow> IncomeBreakdown { get; } = [];
 
-    /// <summary>Gets the confirmation shown after a report is written, or empty.</summary>
-    public string ExportMsg { get; private set; } = string.Empty;
-
-    public bool HasExportMsg => !string.IsNullOrEmpty(ExportMsg);
-
     // Portfolio counters, so Perfil summarises the whole account and not just its billing.
     public string DogCountLabel { get; private set; } = string.Empty;
 
@@ -207,7 +189,6 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     {
         IsEditingProfile = false;
         ProfileMsg = string.Empty;
-        ExportMsg = string.Empty;
 
         ShowPasswordForm = false;
         CurrentPw = string.Empty;
@@ -229,7 +210,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
             var petSitter = await repositoryPetSitter.GetAsync(session.CurrentPetSitterId).WithSync();
             CurrentUserName = petSitter?.Name ?? session.CurrentUserName;
             Email = petSitter?.Email ?? string.Empty;
-            PixLabel = string.IsNullOrWhiteSpace(petSitter?.Pix) ? NoPix : petSitter.Pix;
+            PixLabel = string.IsNullOrWhiteSpace(petSitter?.Pix) ? "Não informada" : petSitter.Pix;
             BirthDateLabel = petSitter is null ? string.Empty : petSitter.BirthDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
 
             // Read before the labels are built below, so a hidden account never renders its
@@ -246,13 +227,11 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
             income = await repositoryServices.GetMonthlyIncomeAsync(session.CurrentPetSitterId, SelectedYear, month).WithSync();
             RefreshMoneyLabels();
 
-            monthServices = [.. services
-                .Where(s => s.Date.Year == SelectedYear && s.Date.Month == month)
-                .OrderBy(s => s.Date)];
-
             DogCountLabel = dogs.Length.ToString(CultureInfo.InvariantCulture);
             TutorCountLabel = tutors.Length.ToString(CultureInfo.InvariantCulture);
-            ServiceCountLabel = monthServices.Length.ToString(CultureInfo.InvariantCulture);
+            ServiceCountLabel = services
+                .Count(s => s.Date.Year == SelectedYear && s.Date.Month == month)
+                .ToString(CultureInfo.InvariantCulture);
             PendingCountLabel = services.Count(s => !s.ServicePaid).ToString(CultureInfo.InvariantCulture);
         }
         finally
@@ -342,79 +321,6 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         OnPropertyChanged(nameof(SelectedYear));
     }
 
-    /// <summary>
-    /// Builds the selected month's summary and writes it wherever the user chooses.
-    /// </summary>
-    /// <remarks>
-    /// The eye is not consulted: hiding amounts on screen is about who is standing next to you,
-    /// and a report of bulleted-out figures would be useless.
-    /// </remarks>
-    private async Task ExportMonth()
-    {
-        var monthName = SelectedMonth?.Label ?? string.Empty;
-        var period = $"{monthName} de {SelectedYear.ToString(CultureInfo.InvariantCulture)}";
-
-        var report = new ReportDocument
-        {
-            Title = "Faturamento",
-            Subtitle = period,
-            Footer = $"Gerado em {DateTime.Now.ToString("dd/MM/yyyy 'às' HH:mm", CultureInfo.InvariantCulture)} · DapperDemo",
-        };
-
-        report.Summary.Add(new ReportField("Pet sitter", CurrentUserName));
-        report.Summary.Add(new ReportField("E-mail", Email));
-        if (PixLabel != NoPix)
-        {
-            report.Summary.Add(new ReportField("Chave Pix", PixLabel));
-        }
-
-        var received = new ReportSection { Heading = "Recebido no mês" };
-        received.Columns.Add("Tipo");
-        received.Columns.Add("Valor");
-        received.RightAligned.Add(false);
-        received.RightAligned.Add(true);
-        received.Rows.Add(new ReportRow("Passeio", AppSession.Money(income.Walk)));
-        received.Rows.Add(new ReportRow("Pet sitting", AppSession.Money(income.Sitting)));
-        received.Rows.Add(new ReportRow("Hotel", AppSession.Money(income.Hotel)));
-        received.Totals.Add(new ReportField("Total recebido", AppSession.Money(income.Total), true));
-        report.Sections.Add(received);
-
-        var services = new ReportSection
-        {
-            Heading = "Serviços do mês",
-            EmptyMessage = "Nenhum serviço neste mês.",
-        };
-        services.Columns.Add("Cachorro");
-        services.Columns.Add("Tipo");
-        services.Columns.Add("Data");
-        services.Columns.Add("Valor");
-        services.Columns.Add("Situação");
-        services.RightAligned.Add(false);
-        services.RightAligned.Add(false);
-        services.RightAligned.Add(false);
-        services.RightAligned.Add(true);
-        services.RightAligned.Add(true);
-
-        foreach (var service in monthServices)
-        {
-            services.Rows.Add(new ReportRow(
-                service.DogName,
-                AppSession.TypeLabel(service.Kind),
-                AppSession.DateTimeLabel(service.Date),
-                AppSession.Money(AppSession.ServiceTotal(service)),
-                service.ServicePaid ? "Pago" : "Pendente"));
-        }
-
-        var pending = monthServices.Where(s => !s.ServicePaid).Sum(AppSession.ServiceTotal);
-        services.Totals.Add(new ReportField("Serviços no mês", monthServices.Length.ToString(CultureInfo.InvariantCulture)));
-        services.Totals.Add(new ReportField("A receber no mês", AppSession.Money(pending), true));
-        report.Sections.Add(services);
-
-        var monthNumber = (SelectedMonth?.Number ?? 1).ToString("00", CultureInfo.InvariantCulture);
-        var fileName = await reportExporter.ExportAsync(report, $"faturamento-{SelectedYear}-{monthNumber}").WithSync();
-        ExportMsg = fileName == null ? string.Empty : $"Relatório salvo: {fileName}";
-    }
-
     private async Task ToggleMoneyVisible()
     {
         MoneyVisible = !MoneyVisible;
@@ -426,7 +332,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     {
         // Seeded from the loaded record, so cancelling and reopening starts from the saved values.
         EditName = CurrentUserName;
-        EditPix = PixLabel == NoPix ? string.Empty : PixLabel;
+        EditPix = PixLabel == "Não informada" ? string.Empty : PixLabel;
         EditBirthDate = DateTime.TryParseExact(BirthDateLabel, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var birthDate)
             ? birthDate
             : DateTime.Now.Date;

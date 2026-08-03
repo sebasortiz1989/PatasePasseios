@@ -134,6 +134,13 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
 
     protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
 
+    /// <summary>
+    /// Nights billed for a stay. Check-in and check-out on the same day still bills one, which is
+    /// how a day rate is normally charged and keeps the total from coming out as zero.
+    /// </summary>
+    private static int NightsBetween(DateTime start, DateTime? end) =>
+        end is DateTime finish ? Math.Max((finish.Date - start.Date).Days, 1) : 1;
+
     private static bool TryParsePrice(string text, out decimal price) =>
         decimal.TryParse(text?.Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out price);
 
@@ -272,9 +279,9 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
 
         // A stay is entered as a daily rate, so what it actually costs is only visible if the
         // screen does the multiplication.
-        var nights = AppSession.Nights(service);
+        var nights = NightsBetween(service.Date, service.EndDate);
         DaysLabel = nights == 1 ? "1 diária" : $"{nights} diárias";
-        TotalLabel = AppSession.Money(AppSession.ServiceTotal(service));
+        TotalLabel = AppSession.Money(service.Price * nights);
 
         Paid = service.ServicePaid;
         PaidActionLabel = service.ServicePaid ? "Pago — marcar pendente" : "Marcar como pago";

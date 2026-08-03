@@ -59,31 +59,6 @@ public class AppSession
         _ => string.Empty,
     };
 
-    /// <summary>
-    /// Nights billed for a service. Only hotel stays span more than one; check-in and check-out
-    /// on the same day still bills one, which is how a day rate is normally charged and keeps a
-    /// total from coming out as zero.
-    /// </summary>
-    /// <param name="service">The booking.</param>
-    /// <returns>The number of nights, never less than one.</returns>
-    public static int Nights(ServiceItem service)
-    {
-        ArgumentNullException.ThrowIfNull(service);
-        return service.EndDate is DateTime finish ? Math.Max((finish.Date - service.Date.Date).Days, 1) : 1;
-    }
-
-    /// <summary>
-    /// What a service actually costs. A hotel stay's Price is a daily rate, so the amount owed is
-    /// that rate times the nights; everything else is a one-off fee.
-    /// </summary>
-    /// <param name="service">The booking.</param>
-    /// <returns>The full amount for the booking.</returns>
-    public static decimal ServiceTotal(ServiceItem service)
-    {
-        ArgumentNullException.ThrowIfNull(service);
-        return service.Kind == ServiceKind.Hotel ? service.Price * Nights(service) : service.Price;
-    }
-
     /// <summary>Brazilian currency shape (R$ 0,00), independent of the host machine's locale.</summary>
     public static string Money(decimal value) => "R$ " + value.ToString("F2", CultureInfo.InvariantCulture).Replace('.', ',');
 
