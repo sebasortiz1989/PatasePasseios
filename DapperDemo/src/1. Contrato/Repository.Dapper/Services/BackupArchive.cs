@@ -50,8 +50,13 @@ public sealed class BackupArchive(DapperDatabaseService database)
                 await connection.ExecuteAsync("VACUUM INTO @Path", new { Path = snapshot }).ConfigureAwait(false);
             }
 
-            using (var zip = new ZipArchive(destination, ZipArchiveMode.Create, leaveOpen: true))
+            // The compression APIs are synchronous with no async counterpart, so the work goes to
+            // the thread pool rather than blocking the caller — on a phone this is a database plus
+            // every dog photo, and the caller is the UI thread.
+            await Task.Run(() =>
             {
+                using var zip = new ZipArchive(destination, ZipArchiveMode.Create, leaveOpen: true);
+
                 zip.CreateEntryFromFile(snapshot, DatabaseEntry, CompressionLevel.Optimal);
 
                 var imagesFolder = DogImageStore.Folder;
@@ -64,8 +69,8 @@ public sealed class BackupArchive(DapperDatabaseService database)
                     }
                 }
 
-                await WriteManifestAsync(zip).ConfigureAwait(false);
-            }
+                WriteManifest(zip);
+            }).ConfigureAwait(false);
 
             return Response.Successful;
         }
@@ -106,26 +111,35 @@ public sealed class BackupArchive(DapperDatabaseService database)
                 await source.CopyToAsync(buffer).ConfigureAwait(false);
             }
 
-            using (var zip = ZipFile.OpenRead(localCopy))
+            // Off the calling thread for the same reason as the export: synchronous compression
+            // APIs, potentially a lot of photos.
+            var extracted = await Task.Run(() =>
             {
+                using var zip = ZipFile.OpenRead(localCopy);
                 var databaseEntry = zip.GetEntry(DatabaseEntry);
                 if (databaseEntry == null)
                 {
-                    return Response.Failed;
+                    return false;
                 }
 
                 databaseEntry.ExtractToFile(candidate, overwrite: true);
+                return true;
+            }).ConfigureAwait(false);
 
-                if (!await IsUsableDatabaseAsync(candidate).ConfigureAwait(false))
-                {
-                    return Response.Failed;
-                }
-
-                // Only now is the archive known good, so this is the first thing that touches the
-                // user's own data.
-                File.Copy(candidate, Database.DatabasePath, overwrite: true);
-                RestoreImages(zip);
+            if (!extracted || !await IsUsableDatabaseAsync(candidate).ConfigureAwait(false))
+            {
+                return Response.Failed;
             }
+
+            // Only now is the archive known good, so this is the first thing that touches the
+            // user's own data.
+            await Task.Run(() =>
+            {
+                File.Copy(candidate, Database.DatabasePath, overwrite: true);
+
+                using var zip = ZipFile.OpenRead(localCopy);
+                RestoreImages(zip);
+            }).ConfigureAwait(false);
 
             return Response.Successful;
         }
@@ -201,26 +215,24 @@ public sealed class BackupArchive(DapperDatabaseService database)
         }
     }
 
-    private static async Task WriteManifestAsync(ZipArchive zip)
+    /// <summary>
+    /// Synchronous because it runs inside the thread-pool block that builds the archive, and
+    /// because a zip entry stream has no async writer worth the ceremony for three lines of JSON.
+    /// </summary>
+    private static void WriteManifest(ZipArchive zip)
     {
         var manifest = zip.CreateEntry(ManifestEntry, CompressionLevel.Optimal);
-        var stream = manifest.Open();
+        using var stream = manifest.Open();
+        using var writer = new StreamWriter(stream);
 
-#pragma warning disable SA1312
-        await using var _ = stream.ConfigureAwait(false);
-#pragma warning restore SA1312
-        var writer = new StreamWriter(stream);
-        await using (writer.ConfigureAwait(false))
-        {
-            await writer.WriteAsync(
-                $$"""
-                {
-                  "app": "DapperDemo",
-                  "schemaVersion": {{DapperDatabaseService.CurrentSchemaVersion}},
-                  "createdUtc": "{{DateTime.UtcNow.ToString("O", CultureInfo.InvariantCulture)}}"
-                }
-                """).ConfigureAwait(false);
-        }
+        writer.Write(
+            $$"""
+            {
+              "app": "DapperDemo",
+              "schemaVersion": {{DapperDatabaseService.CurrentSchemaVersion}},
+              "createdUtc": "{{DateTime.UtcNow.ToString("O", CultureInfo.InvariantCulture)}}"
+            }
+            """);
     }
 
     private static void TryDelete(string path)

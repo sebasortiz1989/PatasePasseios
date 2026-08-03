@@ -158,6 +158,8 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         NoFuture = future.Length == 0;
     }
 
+    protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
+
     protected override Task OnRunFinishing()
     {
         ClearFutureServices();
@@ -185,8 +187,6 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
 
         FutureServices.Clear();
     }
-
-    protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
 
     private Task StartEdit()
     {

@@ -46,6 +46,7 @@ public class MainViewModel : PresentationModelBase<Unit, Unit>
         homeView = homeViewFactory.Create();
         servicesView = servicesViewFactory.Create();
         usersView = usersViewFactory.Create();
+
         // ShowRoot rather than assigning ViewShown: a tab is the bottom of the back stack, so
         // switching tabs must discard any detail screens opened from the previous one.
         DogsViewCommand = new SynchronizedCommand(() => CurrentView.ShowRoot(dogsView), SynchronizationBehavior.Discard, true);

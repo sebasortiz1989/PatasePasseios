@@ -1,7 +1,4 @@
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Platform.Storage;
+﻿using Avalonia.Platform.Storage;
 using DapperDemo.Viewmodel.Services;
 using System.IO;
 using System.Threading.Tasks;
@@ -28,7 +25,7 @@ public sealed class StorageProviderBackupFileDialog : BackupFileDialog
     /// <inheritdoc/>
     public async Task<Stream?> CreateAsync(string suggestedName)
     {
-        var storageProvider = GetTopLevel()?.StorageProvider;
+        var storageProvider = ShellTopLevel.Resolve()?.StorageProvider;
         if (storageProvider is not { CanSave: true })
         {
             return null;
@@ -54,7 +51,7 @@ public sealed class StorageProviderBackupFileDialog : BackupFileDialog
     /// <inheritdoc/>
     public async Task<Stream?> OpenAsync()
     {
-        var storageProvider = GetTopLevel()?.StorageProvider;
+        var storageProvider = ShellTopLevel.Resolve()?.StorageProvider;
         if (storageProvider is not { CanOpen: true })
         {
             return null;
@@ -74,15 +71,4 @@ public sealed class StorageProviderBackupFileDialog : BackupFileDialog
 
         return await files[0].OpenReadAsync().ConfigureAwait(true);
     }
-
-    /// <summary>
-    /// The window (desktop) or root view (mobile) the dialogs hang off — the same lookup
-    /// <see cref="StorageProviderImagePicker"/> uses.
-    /// </summary>
-    private static TopLevel? GetTopLevel() => Application.Current?.ApplicationLifetime switch
-    {
-        IClassicDesktopStyleApplicationLifetime desktop => desktop.MainWindow,
-        ISingleViewApplicationLifetime singleView => TopLevel.GetTopLevel(singleView.MainView),
-        _ => null,
-    };
 }

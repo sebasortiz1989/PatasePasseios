@@ -1,7 +1,4 @@
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
-using DapperDemo.Viewmodel.Services;
+﻿using DapperDemo.Viewmodel.Services;
 using System;
 using System.Threading.Tasks;
 
@@ -16,7 +13,7 @@ public sealed class AvaloniaUriLauncher : UriLauncher
     /// <inheritdoc/>
     public async Task<bool> LaunchAsync(Uri uri)
     {
-        var launcher = GetTopLevel()?.Launcher;
+        var launcher = ShellTopLevel.Resolve()?.Launcher;
         if (launcher == null)
         {
             return false;
@@ -24,16 +21,4 @@ public sealed class AvaloniaUriLauncher : UriLauncher
 
         return await launcher.LaunchUriAsync(uri).ConfigureAwait(true);
     }
-
-    /// <summary>
-    /// The window (desktop) or root view (mobile) the launcher hangs off. Resolved from the
-    /// lifetime rather than passed in, so view models can stay free of Avalonia types — the same
-    /// approach <see cref="StorageProviderImagePicker"/> takes.
-    /// </summary>
-    private static TopLevel? GetTopLevel() => Application.Current?.ApplicationLifetime switch
-    {
-        IClassicDesktopStyleApplicationLifetime desktop => desktop.MainWindow,
-        ISingleViewApplicationLifetime singleView => TopLevel.GetTopLevel(singleView.MainView),
-        _ => null,
-    };
 }

@@ -1,7 +1,4 @@
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Platform.Storage;
+﻿using Avalonia.Platform.Storage;
 using DapperDemo.Viewmodel.Services;
 using System;
 using System.IO;
@@ -17,7 +14,7 @@ public sealed class StorageProviderImagePicker : ImagePicker
     /// <inheritdoc/>
     public async Task<PickedImage?> PickAsync()
     {
-        var storageProvider = GetTopLevel()?.StorageProvider;
+        var storageProvider = ShellTopLevel.Resolve()?.StorageProvider;
         if (storageProvider is not { CanOpen: true })
         {
             return null;
@@ -43,15 +40,4 @@ public sealed class StorageProviderImagePicker : ImagePicker
         var extension = Path.GetExtension(file.Name);
         return new PickedImage(stream, string.IsNullOrEmpty(extension) ? ".jpg" : extension);
     }
-
-    /// <summary>
-    /// The window (desktop) or root view (mobile) the picker hangs off. Resolved from the
-    /// lifetime rather than passed in, so view models can stay free of Avalonia types.
-    /// </summary>
-    private static TopLevel? GetTopLevel() => Application.Current?.ApplicationLifetime switch
-    {
-        IClassicDesktopStyleApplicationLifetime desktop => desktop.MainWindow,
-        ISingleViewApplicationLifetime singleView => TopLevel.GetTopLevel(singleView.MainView),
-        _ => null,
-    };
 }
