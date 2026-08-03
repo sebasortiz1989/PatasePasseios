@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     d:DesignHeight="1460"
     d:DesignWidth="720"
     mc:Ignorable="d"
@@ -146,7 +146,9 @@
                             FontFamily="{StaticResource FontBody}"
                             FontSize="29"
                             Foreground="{StaticResource ColorTextMuted70}"
-                            IsChecked="{Binding SvcRequiresWalking}" />
+                            IsChecked="{Binding SvcRequiresWalking}"
+                            Theme="{StaticResource ClassicCheckBox}"
+                        />
 
                         <StackPanel Spacing="10">
                             <TextBlock FontFamily="{StaticResource FontBody}" FontSize="25" Foreground="{StaticResource ColorTextMuted70}" Text="Preço por dia (R$)" />
@@ -191,7 +193,9 @@
                                 FontFamily="{StaticResource FontBody}"
                                 FontSize="27"
                                 Foreground="{StaticResource ColorTextMuted70}"
-                                IsChecked="{Binding SvcUseDateRange}" />
+                                IsChecked="{Binding SvcUseDateRange}"
+                                Theme="{StaticResource ClassicCheckBox}"
+                            />
 
                             <!--  Individual days: the 1st, 3rd and 10th rather than a run.  -->
                             <ItemsControl IsVisible="{Binding SvcUsesDateList}" ItemsSource="{Binding SvcDates}">
@@ -302,7 +306,9 @@
                             FontSize="29"
                             Foreground="{StaticResource ColorTextMuted70}"
                             IsChecked="{Binding SvcRequiresWalking}"
-                            IsVisible="{Binding SvcIsDayCare}" />
+                            IsVisible="{Binding SvcIsDayCare}"
+                            Theme="{StaticResource ClassicCheckBox}"
+                        />
 
                         <TextBlock
                             Classes="Kicker"

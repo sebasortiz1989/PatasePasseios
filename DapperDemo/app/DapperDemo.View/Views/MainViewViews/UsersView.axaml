@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     d:DesignHeight="1460"
     d:DesignWidth="720"
     mc:Ignorable="d"
@@ -357,7 +357,9 @@
                             FontSize="28"
                             Foreground="{StaticResource ColorTextMuted65}"
                             IsChecked="{Binding ShowMonthDetail}"
-                            Margin="0,16,0,0" />
+                            Margin="0,16,0,0"
+                            Theme="{StaticResource ClassicCheckBox}"
+                        />
 
                         <StackPanel IsVisible="{Binding ShowMonthDetail}" Spacing="8">
                             <TextBlock

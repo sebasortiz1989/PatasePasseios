@@ -122,6 +122,71 @@
                 <Setter Property="FontWeight" Value="Bold" />
             </Style>
         </ControlTheme>
+
+        <!--
+            A checkbox sized for a thumb on the 720-wide canvas, and drawn from the palette.
+
+            A full ControlTheme rather than styles over Fluent's: Fluent sets the 20px box's Width
+            and Height as local values inside its template, and a local value beats a style setter,
+            so the box cannot be resized from outside. Its box is also top-aligned to suit a
+            wrapping label, which reads as misaligned once the box is taller than one line of text.
+
+            Applied per instance with Theme="{StaticResource ClassicCheckBox}", the same way NavTab
+            is — an implicit ControlTheme keyed on the type is not picked up from a Styles file's
+            resources.
+        -->
+        <ControlTheme TargetType="CheckBox" x:Key="ClassicCheckBox">
+            <Setter Property="Foreground" Value="{StaticResource ColorTextMuted70}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <!--  Background on the Grid so the whole row is the tap target, not just the box.  -->
+                    <Grid Background="Transparent" ColumnDefinitions="Auto,*">
+                        <Border
+                            Background="Transparent"
+                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderThickness="3"
+                            CornerRadius="8"
+                            Height="64"
+                            Name="PART_Box"
+                            VerticalAlignment="Center"
+                            Width="64">
+                            <Path
+                                Data="M4 12 l5 5 l11 -12"
+                                IsVisible="False"
+                                Margin="12"
+                                Name="PART_Check"
+                                Stretch="Uniform"
+                                Stroke="{StaticResource ColorAccent}"
+                                StrokeJoin="Round"
+                                StrokeLineCap="Round"
+                                StrokeThickness="3" />
+                        </Border>
+
+                        <ContentPresenter
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            Grid.Column="1"
+                            Margin="18,0,0,0"
+                            Name="PART_ContentPresenter"
+                            VerticalAlignment="Center" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter>
+
+            <Style Selector="^:checked /template/ Path#PART_Check">
+                <Setter Property="IsVisible" Value="True" />
+            </Style>
+            <Style Selector="^:checked /template/ Border#PART_Box">
+                <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
+                <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
+            </Style>
+            <Style Selector="^:pointerover /template/ Border#PART_Box">
+                <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
+            </Style>
+        </ControlTheme>
     </Styles.Resources>
 
     <Design.PreviewWith>

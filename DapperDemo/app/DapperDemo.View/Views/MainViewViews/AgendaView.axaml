@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     d:DesignHeight="1460"
     d:DesignWidth="720"
     mc:Ignorable="d"
@@ -118,7 +118,9 @@
                     FontSize="28"
                     Foreground="{StaticResource ColorTextMuted65}"
                     IsChecked="{Binding HomeShowPaid}"
-                    Margin="32,24,32,16" />
+                    Margin="32,24,32,16"
+                    Theme="{StaticResource ClassicCheckBox}"
+                />
 
                 <Border
                     BorderBrush="{StaticResource ColorDivider}"

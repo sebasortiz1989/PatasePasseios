@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     d:DesignHeight="1560"
     d:DesignWidth="720"
     mc:Ignorable="d"
@@ -20,8 +20,7 @@
             <StackPanel
                 HorizontalAlignment="Center"
                 Spacing="32"
-                VerticalAlignment="Center"
-                Width="560">
+                VerticalAlignment="Center">
                 <StackPanel
                     HorizontalAlignment="Center"
                     Margin="0,0,0,8"
@@ -68,7 +67,9 @@
                     FontFamily="{StaticResource FontBody}"
                     FontSize="28"
                     Foreground="{StaticResource ColorTextMuted70}"
-                    IsChecked="{Binding RememberMe}" />
+                    IsChecked="{Binding RememberMe}"
+                    Theme="{StaticResource ClassicCheckBox}"
+                />
 
                 <TextBlock
                     FontFamily="{StaticResource FontBody}"
