@@ -42,8 +42,6 @@ public class LoginViewModel : PresentationModelBase<Unit, Unit>
 
     public string Password { get; set; } = string.Empty;
 
-    public bool RememberMe { get; set; }
-
     public string LoginError { get; set; } = string.Empty;
 
     public bool HasLoginError => !string.IsNullOrEmpty(LoginError);

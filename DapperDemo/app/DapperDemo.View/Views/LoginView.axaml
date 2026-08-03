@@ -62,15 +62,6 @@
                     VTextWatermark="••••••••"
                     VWidth="560" />
 
-                <CheckBox
-                    Content="Entrar automaticamente"
-                    FontFamily="{StaticResource FontBody}"
-                    FontSize="28"
-                    Foreground="{StaticResource ColorTextMuted70}"
-                    IsChecked="{Binding RememberMe}"
-                    Theme="{StaticResource ClassicCheckBox}"
-                />
-
                 <TextBlock
                     FontFamily="{StaticResource FontBody}"
                     FontSize="28"

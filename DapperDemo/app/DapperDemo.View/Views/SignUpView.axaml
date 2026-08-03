@@ -47,11 +47,30 @@
     </UserControl.Resources>
 
     <Viewbox>
-        <Grid Background="{StaticResource ColorBg}" Height="1560" Width="720">
-            <StackPanel HorizontalAlignment="Center" Spacing="24" VerticalAlignment="Center" Width="560">
-                <StackPanel HorizontalAlignment="Center" Margin="0,0,0,8" Spacing="8">
-                    <TextBlock Classes="Heading1" FontSize="67" HorizontalAlignment="Center" Text="Cadastro" />
-                    <Border Background="{StaticResource ColorAccent}" Height="2" HorizontalAlignment="Center" Margin="0,8,0,0" Width="63" />
+        <Grid
+            Background="{StaticResource ColorBg}"
+            Height="1560"
+            Width="720">
+            <StackPanel
+                HorizontalAlignment="Center"
+                Spacing="24"
+                VerticalAlignment="Center"
+                Width="560">
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    Margin="0,0,0,8"
+                    Spacing="8">
+                    <TextBlock
+                        Classes="Heading1"
+                        FontSize="67"
+                        HorizontalAlignment="Center"
+                        Text="Criar Conta" />
+                    <Border
+                        Background="{StaticResource ColorAccent}"
+                        Height="2"
+                        HorizontalAlignment="Center"
+                        Margin="0,8,0,0"
+                        Width="63" />
                 </StackPanel>
 
                 <inputs:VTextBoxWithLabel
@@ -95,7 +114,11 @@
                         SelectedDate="{Binding BirthDate}"
                         VerticalAlignment="Center" />
 
-                    <Border Background="{StaticResource ColorBg}" HorizontalAlignment="Left" Margin="18,-13,0,0" VerticalAlignment="Top">
+                    <Border
+                        Background="{StaticResource ColorBg}"
+                        HorizontalAlignment="Left"
+                        Margin="18,-13,0,0"
+                        VerticalAlignment="Top">
                         <TextBlock
                             Background="Transparent"
                             FontFamily="{StaticResource FontBody}"
@@ -117,8 +140,17 @@
                     TextAlignment="Center" />
 
                 <Grid ColumnDefinitions="*,16,*" Margin="0,8,0,0">
-                    <buttons:VButton Classes="BtnSecondary" Command="{Binding BackCommand}" Height="80" VText="Voltar" />
-                    <buttons:VButton Classes="BtnPrimary" Command="{Binding RegisterCommand}" Grid.Column="2" Height="80" VText="Cadastrar" />
+                    <buttons:VButton
+                        Classes="BtnSecondary"
+                        Command="{Binding BackCommand}"
+                        Height="80"
+                        VText="Voltar" />
+                    <buttons:VButton
+                        Classes="BtnPrimary"
+                        Command="{Binding RegisterCommand}"
+                        Grid.Column="2"
+                        Height="80"
+                        VText="Criar" />
                 </Grid>
             </StackPanel>
         </Grid>
