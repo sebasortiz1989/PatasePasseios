@@ -38,7 +38,12 @@
         -->
         <StreamGeometry x:Key="IconDogs">M11.25 16.25h1.5L12 17z M16 14v.5 M8 14v.5 M11.5 21.5a5 5 0 0 1-5-5c0-2 .5-3 1.5-4.5.6-.9 1.2-1.6 1.2-2.5a2.7 2.7 0 0 0-.7-1.8 M12.5 21.5a5 5 0 0 0 5-5c0-2-.5-3-1.5-4.5-.6-.9-1.2-1.6-1.2-2.5a2.7 2.7 0 0 1 .7-1.8 M6.5 7.5C5 6.5 4 5 4 3.5c1.5 0 3 .5 4 2 M17.5 7.5C19 6.5 20 5 20 3.5c-1.5 0-3 .5-4 2</StreamGeometry>
         <StreamGeometry x:Key="IconTutors">M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0z M22 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75</StreamGeometry>
-        <StreamGeometry x:Key="IconAgenda">M8 2v4 M16 2v4 M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z M3 10h18</StreamGeometry>
+        <!--
+            Home: a house with a paw inside it. The paw is drawn as five stroked ellipses (four
+            toes and a pad) rather than filled shapes, so it matches the other tabs' outline
+            weight instead of reading as a solid blob at 37px.
+        -->
+        <StreamGeometry x:Key="IconHome">M3.2 11.3 12 4.4l8.8 6.9 M5.8 10.2V19.7h12.4V10.2 M9 13.9a.8 .8 0 1 0 1.6 0 .8 .8 0 1 0-1.6 0z M10.7 12.7a.8 .8 0 1 0 1.6 0 .8 .8 0 1 0-1.6 0z M12.6 12.7a.8 .8 0 1 0 1.6 0 .8 .8 0 1 0-1.6 0z M14.3 13.9a.8 .8 0 1 0 1.6 0 .8 .8 0 1 0-1.6 0z M10.2 16.7a2.2 1.7 0 1 0 4.4 0 2.2 1.7 0 1 0-4.4 0z</StreamGeometry>
         <StreamGeometry x:Key="IconNew">M12 5v14 M5 12h14</StreamGeometry>
         <StreamGeometry x:Key="IconProfile">M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2 M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0z</StreamGeometry>
 
@@ -55,28 +60,60 @@
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Template">
                 <ControlTemplate>
-                    <Border Background="Transparent" Padding="0,16,0,8">
-                        <StackPanel
-                            HorizontalAlignment="Center"
-                            Spacing="5"
-                            VerticalAlignment="Center">
-                            <ContentPresenter
-                                Content="{TemplateBinding Content}"
-                                HorizontalAlignment="Center" />
-                            <TextBlock
-                                FontFamily="{StaticResource FontBody}"
-                                FontSize="17"
-                                Foreground="{TemplateBinding Foreground}"
-                                HorizontalAlignment="Center"
-                                LetterSpacing="0.7"
-                                Text="{TemplateBinding Tag}" />
-                        </StackPanel>
+                    <Border Background="Transparent">
+                        <Grid RowDefinitions="6,*">
+                            <!--
+                                Selection is carried by three cues, not just the icon's colour: a
+                                bar along the tab's top edge, a tinted rounded surface behind it,
+                                and a heavier caption. One colour change alone was too easy to miss
+                                on a five-tab bar.
+                            -->
+                            <Border
+                                Background="Transparent"
+                                CornerRadius="0,0,4,4"
+                                Grid.Row="0"
+                                Margin="18,0"
+                                Name="PART_Indicator" />
+                            <Border
+                                Background="Transparent"
+                                CornerRadius="8"
+                                Grid.Row="1"
+                                Margin="6,4,6,3"
+                                Name="PART_Surface"
+                                Padding="0,7,0,5">
+                                <StackPanel
+                                    HorizontalAlignment="Center"
+                                    Spacing="5"
+                                    VerticalAlignment="Center">
+                                    <ContentPresenter
+                                        Content="{TemplateBinding Content}"
+                                        HorizontalAlignment="Center" />
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="17"
+                                        Foreground="{TemplateBinding Foreground}"
+                                        HorizontalAlignment="Center"
+                                        LetterSpacing="0.7"
+                                        Name="PART_Caption"
+                                        Text="{TemplateBinding Tag}" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
                     </Border>
                 </ControlTemplate>
             </Setter>
 
             <Style Selector="^:checked">
                 <Setter Property="Foreground" Value="{StaticResource ColorAccent}" />
+            </Style>
+            <Style Selector="^:checked /template/ Border#PART_Indicator">
+                <Setter Property="Background" Value="{StaticResource ColorAccent}" />
+            </Style>
+            <Style Selector="^:checked /template/ Border#PART_Surface">
+                <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
+            </Style>
+            <Style Selector="^:checked /template/ TextBlock#PART_Caption">
+                <Setter Property="FontWeight" Value="Bold" />
             </Style>
         </ControlTheme>
     </Styles.Resources>
@@ -189,6 +226,35 @@
     </Style>
     <Style Selector="Button.Tag.Paid">
         <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
+        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+    </Style>
+
+    <!--
+        The read-only twin of Button.Tag, for lists where paid/pending is a label rather than a
+        control. A Button here would sit inside the row's own tap target and look pressable while
+        doing nothing. Border carries no text properties, so the type styling lives on its child.
+    -->
+    <Style Selector="Border.TagSign">
+        <Setter Property="Padding" Value="17,5" />
+        <Setter Property="CornerRadius" Value="3" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Border.TagSign.Pending">
+        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
+    </Style>
+    <Style Selector="Border.TagSign.Paid">
+        <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
+    </Style>
+    <Style Selector="Border.TagSign > TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="23" />
+    </Style>
+    <Style Selector="Border.TagSign.Pending > TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted55}" />
+    </Style>
+    <Style Selector="Border.TagSign.Paid > TextBlock">
         <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
     </Style>
 
@@ -413,7 +479,7 @@
         <Setter Property="Padding" Value="0" />
         <Setter Property="CornerRadius" Value="7" />
         <Setter Property="Background" Value="{StaticResource ColorAccent}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorBg}" />
+        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
     </Style>
     <Style Selector="CalendarDatePicker /template/ Button#PART_Button:pointerover">
         <Setter Property="Background" Value="{StaticResource ColorAccentDark700}" />
@@ -421,10 +487,19 @@
     <Style Selector="CalendarDatePicker /template/ Button#PART_Button:pressed">
         <Setter Property="Background" Value="{StaticResource ColorAccentDark800}" />
     </Style>
+    <!--
+        The glyph is black rather than the background colour: on the accent fill the pale version
+        was washed out to the point of being hard to find. The name-independent rule below it is
+        deliberate belt-and-braces — the glyph only inherits Foreground if the template does not
+        set its own, and the button's part name is not guaranteed across Avalonia versions.
+    -->
     <Style Selector="CalendarDatePicker /template/ Button#PART_Button PathIcon">
         <Setter Property="Width" Value="34" />
         <Setter Property="Height" Value="34" />
-        <Setter Property="Foreground" Value="{StaticResource ColorBg}" />
+        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+    </Style>
+    <Style Selector="CalendarDatePicker /template/ PathIcon">
+        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
     </Style>
 
     <Style Selector="Calendar">
@@ -476,8 +551,26 @@
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="CornerRadius" Value="7" />
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="FontSize" Value="29" />
+        <Setter Property="FontSize" Value="34" />
         <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+    </Style>
+
+    <!--
+        Fluent's flyout button sizes itself to its content and sits at the top of the 74px-high
+        field, which left the time reading high rather than centred. Selectors here are matched by
+        type instead of PART name so they survive template renames; the only Button and TextBlocks
+        inside a TimePicker's template are the field itself.
+    -->
+    <Style Selector="TimePicker /template/ Button">
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="TimePicker /template/ Grid">
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="TimePicker /template/ TextBlock">
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="34" />
     </Style>
 
     <Style Selector="TimePickerPresenter">

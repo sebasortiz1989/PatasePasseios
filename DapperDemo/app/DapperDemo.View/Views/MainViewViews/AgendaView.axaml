@@ -41,10 +41,38 @@
                         Content="Semana" />
                     <Button
                         Classes="Chip"
-                        Classes.Active="{Binding IsRangeTodos}"
-                        Command="{Binding SetRangeTodos}"
-                        Content="Todos" />
+                        Classes.Active="{Binding IsRangeData}"
+                        Command="{Binding SetRangeData}"
+                        Content="Data" />
                 </StackPanel>
+
+                <!--
+                    Revealed by the Data chip: the month and year the list is scoped to. The month
+                    list carries an "Ano todo" entry, so this one control covers a single month and
+                    a whole year without needing a chip for each.
+                -->
+                <Grid
+                    ColumnDefinitions="*,16,Auto"
+                    IsVisible="{Binding ShowDatePicker}"
+                    Margin="32,16,32,0">
+                    <ComboBox
+                        Classes="FormInput"
+                        ItemsSource="{Binding MonthOptions}"
+                        SelectedItem="{Binding SelectedMonth}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate DataType="mainViewViewmodels:MonthOption">
+                                <TextBlock Text="{Binding Label}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <ComboBox
+                        Classes="FormInput"
+                        Grid.Column="2"
+                        ItemsSource="{Binding YearOptions}"
+                        MinWidth="180"
+                        SelectedItem="{Binding SelectedYear}" />
+                </Grid>
 
                 <!--  Service type filters  -->
                 <StackPanel
@@ -74,7 +102,7 @@
                 </StackPanel>
 
                 <CheckBox
-                    Content="Incluir serviços já pagos"
+                    Content="Mostrar serviços já pagos"
                     FontFamily="{StaticResource FontBody}"
                     FontSize="28"
                     Foreground="{StaticResource ColorTextMuted65}"
@@ -96,7 +124,69 @@
                         Text="Nenhum serviço neste filtro." />
                 </Border>
 
-                <ItemsControl ItemsSource="{Binding FilteredServices}" Margin="32,0,32,48">
+                <!--
+                    Per-dog summary. Replaces the chronological list while "incluir pagos" is on,
+                    where every past booking is in scope and a flat list runs to hundreds of rows.
+                -->
+                <ItemsControl
+                    IsVisible="{Binding ShowSummary}"
+                    ItemsSource="{Binding DogSummaries}"
+                    Margin="32,0,32,48">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="mainViewViewmodels:DogSummaryRow">
+                            <Border
+                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderThickness="0,2,0,0"
+                                Padding="0,24">
+                                <StackPanel Spacing="14">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock
+                                            FontFamily="{StaticResource FontHeading}"
+                                            FontSize="40"
+                                            FontWeight="Medium"
+                                            Foreground="{StaticResource ColorText}"
+                                            Text="{Binding DogName}"
+                                            VerticalAlignment="Center" />
+                                        <TextBlock
+                                            FontFamily="{StaticResource FontHeading}"
+                                            FontSize="37"
+                                            Foreground="{StaticResource ColorAccentDark800}"
+                                            Grid.Column="1"
+                                            Text="{Binding TotalLabel}"
+                                            VerticalAlignment="Center" />
+                                    </Grid>
+
+                                    <ItemsControl ItemsSource="{Binding Lines}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate DataType="mainViewViewmodels:DogSummaryLine">
+                                                <Grid ColumnDefinitions="*,Auto" Margin="24,0,0,8">
+                                                    <TextBlock
+                                                        FontFamily="{StaticResource FontBody}"
+                                                        FontSize="27"
+                                                        Foreground="{StaticResource ColorTextMuted65}"
+                                                        Text="{Binding CountLabel}"
+                                                        VerticalAlignment="Center" />
+                                                    <TextBlock
+                                                        FontFamily="{StaticResource FontBody}"
+                                                        FontSize="27"
+                                                        Foreground="{StaticResource ColorTextMuted55}"
+                                                        Grid.Column="1"
+                                                        Text="{Binding AmountLabel}"
+                                                        VerticalAlignment="Center" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <ItemsControl
+                    IsVisible="{Binding ShowServiceList}"
+                    ItemsSource="{Binding FilteredServices}"
+                    Margin="32,0,32,48">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="mainViewViewmodels:ServiceRow">
                             <Button Classes="RowButton" Command="{Binding OpenCommand}">

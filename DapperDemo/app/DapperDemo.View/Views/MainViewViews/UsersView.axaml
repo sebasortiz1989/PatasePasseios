@@ -12,11 +12,17 @@
     xmlns:sys="using:System"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Background="{StaticResource ColorBg}" Height="1460" Width="720">
+    <Grid
+        Background="{StaticResource ColorBg}"
+        Height="1460"
+        Width="720">
         <ScrollViewer>
             <StackPanel Spacing="0">
                 <StackPanel Margin="32,32,32,16" Spacing="2">
-                    <TextBlock Classes="Heading1" FontSize="62" Text="{Binding CurrentUserName}" />
+                    <TextBlock
+                        Classes="Heading1"
+                        FontSize="62"
+                        Text="{Binding CurrentUserName}" />
                     <TextBlock Classes="Kicker" Text="Conta" />
                 </StackPanel>
 
@@ -27,7 +33,11 @@
                             <!--  Reading state  -->
                             <StackPanel IsVisible="{Binding IsViewingProfile}" Spacing="16">
                                 <Grid ColumnDefinitions="*,Auto">
-                                    <TextBlock Classes="CardTitle" FontSize="37" Text="Perfil" VerticalAlignment="Center" />
+                                    <TextBlock
+                                        Classes="CardTitle"
+                                        FontSize="37"
+                                        Text="Perfil"
+                                        VerticalAlignment="Center" />
                                     <buttons:VButton
                                         Classes="BtnSecondary"
                                         Command="{Binding EditProfileCommand}"
@@ -71,7 +81,11 @@
                                 <TextBlock Classes="CardTitle" Text="Editar perfil" />
                                 <StackPanel Spacing="8">
                                     <TextBlock Classes="FormLabel" Text="Nome" />
-                                    <TextBox Classes="FormInput" FontSize="29" MinHeight="74" Text="{Binding EditName}" />
+                                    <TextBox
+                                        Classes="FormInput"
+                                        FontSize="29"
+                                        MinHeight="74"
+                                        Text="{Binding EditName}" />
                                 </StackPanel>
                                 <!--
                                     Shown but not editable: the e-mail is the login, so it is
@@ -132,8 +146,17 @@
                                     Text="{Binding ProfileMsg}"
                                     TextWrapping="Wrap" />
                                 <Grid ColumnDefinitions="*,16,*">
-                                    <buttons:VButton Classes="BtnSecondary" Command="{Binding CancelProfileCommand}" Height="70" VText="Cancelar" />
-                                    <buttons:VButton Classes="BtnPrimary" Command="{Binding SaveProfileCommand}" Grid.Column="2" Height="70" VText="Salvar" />
+                                    <buttons:VButton
+                                        Classes="BtnSecondary"
+                                        Command="{Binding CancelProfileCommand}"
+                                        Height="70"
+                                        VText="Cancelar" />
+                                    <buttons:VButton
+                                        Classes="BtnPrimary"
+                                        Command="{Binding SaveProfileCommand}"
+                                        Grid.Column="2"
+                                        Height="70"
+                                        VText="Salvar" />
                                 </Grid>
                             </StackPanel>
                         </StackPanel>
@@ -168,8 +191,17 @@
                                     PlaceholderText="Confirmar senha"
                                     Text="{Binding ConfirmPw}" />
                                 <Grid ColumnDefinitions="*,16,*">
-                                    <buttons:VButton Classes="BtnSecondary" Command="{Binding CancelPasswordFormCommand}" Height="70" VText="Cancelar" />
-                                    <buttons:VButton Classes="BtnPrimary" Command="{Binding SavePasswordCommand}" Grid.Column="2" Height="70" VText="Salvar" />
+                                    <buttons:VButton
+                                        Classes="BtnSecondary"
+                                        Command="{Binding CancelPasswordFormCommand}"
+                                        Height="70"
+                                        VText="Cancelar" />
+                                    <buttons:VButton
+                                        Classes="BtnPrimary"
+                                        Command="{Binding SavePasswordCommand}"
+                                        Grid.Column="2"
+                                        Height="70"
+                                        VText="Salvar" />
                                 </Grid>
                             </StackPanel>
 
@@ -187,7 +219,10 @@
                             <!--  Summary state  -->
                             <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding ShowPasswordSummary}">
                                 <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Classes="CardTitle" FontSize="37" Text="Senha" />
+                                    <TextBlock
+                                        Classes="CardTitle"
+                                        FontSize="37"
+                                        Text="Senha" />
                                     <TextBlock
                                         FontFamily="{StaticResource FontBody}"
                                         FontSize="25"
@@ -206,27 +241,6 @@
                             </Grid>
                         </StackPanel>
                     </Border>
-
-                    <!--  Portfolio counters  -->
-                    <Grid ColumnDefinitions="*,*,*,*">
-                        <StackPanel Spacing="2">
-                            <TextBlock FontFamily="{StaticResource FontHeading}" FontSize="46" Foreground="{StaticResource ColorText}" Text="{Binding TutorCountLabel}" />
-                            <TextBlock Classes="Kicker" Text="Tutores" />
-                        </StackPanel>
-                        <StackPanel Grid.Column="1" Spacing="2">
-                            <TextBlock FontFamily="{StaticResource FontHeading}" FontSize="46" Foreground="{StaticResource ColorText}" Text="{Binding DogCountLabel}" />
-                            <TextBlock Classes="Kicker" Text="Cães" />
-                        </StackPanel>
-                        <!--  Scoped to the month selected below, unlike the three around it.  -->
-                        <StackPanel Grid.Column="2" Spacing="2">
-                            <TextBlock FontFamily="{StaticResource FontHeading}" FontSize="46" Foreground="{StaticResource ColorText}" Text="{Binding ServiceCountLabel}" />
-                            <TextBlock Classes="Kicker" Text="No mês" />
-                        </StackPanel>
-                        <StackPanel Grid.Column="3" Spacing="2">
-                            <TextBlock FontFamily="{StaticResource FontHeading}" FontSize="46" Foreground="{StaticResource ColorAccentDark700}" Text="{Binding PendingCountLabel}" />
-                            <TextBlock Classes="Kicker" Text="Pendentes" />
-                        </StackPanel>
-                    </Grid>
 
                     <!--  Monthly billing  -->
                     <StackPanel Spacing="4">
@@ -297,17 +311,32 @@
                         <ItemsControl ItemsSource="{Binding IncomeBreakdown}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate DataType="mainViewViewmodels:IncomeRow">
-                                    <Border BorderBrush="{StaticResource ColorDivider}" BorderThickness="0,2,0,0" Padding="0,16">
+                                    <Border
+                                        BorderBrush="{StaticResource ColorDivider}"
+                                        BorderThickness="0,2,0,0"
+                                        Padding="0,16">
                                         <Grid ColumnDefinitions="*,Auto">
-                                            <TextBlock FontFamily="{StaticResource FontBody}" FontSize="29" Foreground="{StaticResource ColorTextMuted75}" Text="{Binding Label}" />
-                                            <TextBlock Grid.Column="1" FontFamily="{StaticResource FontHeading}" FontSize="36" Foreground="{StaticResource ColorText}" Text="{Binding Amount}" />
+                                            <TextBlock
+                                                FontFamily="{StaticResource FontBody}"
+                                                FontSize="29"
+                                                Foreground="{StaticResource ColorTextMuted75}"
+                                                Text="{Binding Label}" />
+                                            <TextBlock
+                                                FontFamily="{StaticResource FontHeading}"
+                                                FontSize="36"
+                                                Foreground="{StaticResource ColorText}"
+                                                Grid.Column="1"
+                                                Text="{Binding Amount}" />
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
 
-                        <Border BorderBrush="{StaticResource ColorDivider}" BorderThickness="0,2,0,0" Padding="0,16,0,0">
+                        <Border
+                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderThickness="0,2,0,0"
+                            Padding="0,16,0,0">
                             <TextBlock
                                 FontFamily="{StaticResource FontBody}"
                                 FontSize="23"
@@ -316,9 +345,204 @@
                                 Text="Considera apenas serviços marcados como pagos. Pendentes conta todos os meses."
                                 TextWrapping="Wrap" />
                         </Border>
+
+                        <!--
+                            Opt-in detail: the figures above answer how the month went, this answers
+                            who still owes for it. Same per-dog shape as the home screen's summary.
+                        -->
+                        <CheckBox
+                            Content="Detalhar por cachorro"
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="28"
+                            Foreground="{StaticResource ColorTextMuted65}"
+                            IsChecked="{Binding ShowMonthDetail}"
+                            Margin="0,16,0,0" />
+
+                        <StackPanel IsVisible="{Binding ShowMonthDetail}" Spacing="8">
+                            <TextBlock
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="23"
+                                Foreground="{StaticResource ColorAccent}"
+                                LetterSpacing="2"
+                                Margin="0,16,0,0"
+                                Text="RECEBIDO NO MÊS" />
+
+                            <TextBlock
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="27"
+                                FontStyle="Italic"
+                                Foreground="{StaticResource ColorTextMuted45}"
+                                IsVisible="{Binding HasNothingPaidInMonth}"
+                                Text="Nada recebido neste mês." />
+
+                            <ItemsControl ItemsSource="{Binding PaidSummaries}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="mainViewViewmodels:DogSummaryRow">
+                                        <Border
+                                            BorderBrush="{StaticResource ColorDivider}"
+                                            BorderThickness="0,2,0,0"
+                                            Padding="0,18">
+                                            <StackPanel Spacing="10">
+                                                <Grid ColumnDefinitions="*,Auto">
+                                                    <TextBlock
+                                                        FontFamily="{StaticResource FontHeading}"
+                                                        FontSize="36"
+                                                        FontWeight="Medium"
+                                                        Foreground="{StaticResource ColorText}"
+                                                        Text="{Binding DogName}"
+                                                        VerticalAlignment="Center" />
+                                                    <TextBlock
+                                                        FontFamily="{StaticResource FontHeading}"
+                                                        FontSize="34"
+                                                        Foreground="{StaticResource ColorAccentDark800}"
+                                                        Grid.Column="1"
+                                                        Text="{Binding TotalLabel}"
+                                                        VerticalAlignment="Center" />
+                                                </Grid>
+                                                <ItemsControl ItemsSource="{Binding Lines}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate DataType="mainViewViewmodels:DogSummaryLine">
+                                                            <Grid ColumnDefinitions="*,Auto" Margin="24,0,0,6">
+                                                                <TextBlock
+                                                                    FontFamily="{StaticResource FontBody}"
+                                                                    FontSize="26"
+                                                                    Foreground="{StaticResource ColorTextMuted65}"
+                                                                    Text="{Binding CountLabel}" />
+                                                                <TextBlock
+                                                                    FontFamily="{StaticResource FontBody}"
+                                                                    FontSize="26"
+                                                                    Foreground="{StaticResource ColorTextMuted55}"
+                                                                    Grid.Column="1"
+                                                                    Text="{Binding AmountLabel}" />
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <Grid ColumnDefinitions="*,Auto" Margin="0,24,0,0">
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="23"
+                                    Foreground="{StaticResource ColorAccent}"
+                                    LetterSpacing="2"
+                                    Text="A RECEBER NO MÊS"
+                                    VerticalAlignment="Center" />
+                                <TextBlock
+                                    FontFamily="{StaticResource FontHeading}"
+                                    FontSize="36"
+                                    Foreground="{StaticResource ColorText}"
+                                    Grid.Column="1"
+                                    Text="{Binding PendingTotalLabel}"
+                                    VerticalAlignment="Center" />
+                            </Grid>
+
+                            <TextBlock
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="27"
+                                FontStyle="Italic"
+                                Foreground="{StaticResource ColorTextMuted45}"
+                                IsVisible="{Binding HasNothingPendingInMonth}"
+                                Text="Nada pendente neste mês." />
+
+                            <ItemsControl ItemsSource="{Binding PendingSummaries}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="mainViewViewmodels:DogSummaryRow">
+                                        <Border
+                                            BorderBrush="{StaticResource ColorDivider}"
+                                            BorderThickness="0,2,0,0"
+                                            Padding="0,18">
+                                            <StackPanel Spacing="10">
+                                                <Grid ColumnDefinitions="*,Auto">
+                                                    <TextBlock
+                                                        FontFamily="{StaticResource FontHeading}"
+                                                        FontSize="36"
+                                                        FontWeight="Medium"
+                                                        Foreground="{StaticResource ColorText}"
+                                                        Text="{Binding DogName}"
+                                                        VerticalAlignment="Center" />
+                                                    <TextBlock
+                                                        FontFamily="{StaticResource FontHeading}"
+                                                        FontSize="34"
+                                                        Foreground="{StaticResource ColorAccentDark800}"
+                                                        Grid.Column="1"
+                                                        Text="{Binding TotalLabel}"
+                                                        VerticalAlignment="Center" />
+                                                </Grid>
+                                                <ItemsControl ItemsSource="{Binding Lines}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate DataType="mainViewViewmodels:DogSummaryLine">
+                                                            <Grid ColumnDefinitions="*,Auto" Margin="24,0,0,6">
+                                                                <TextBlock
+                                                                    FontFamily="{StaticResource FontBody}"
+                                                                    FontSize="26"
+                                                                    Foreground="{StaticResource ColorTextMuted65}"
+                                                                    Text="{Binding CountLabel}" />
+                                                                <TextBlock
+                                                                    FontFamily="{StaticResource FontBody}"
+                                                                    FontSize="26"
+                                                                    Foreground="{StaticResource ColorTextMuted55}"
+                                                                    Grid.Column="1"
+                                                                    Text="{Binding AmountLabel}" />
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
                     </StackPanel>
 
-                    <buttons:VButton Classes="BtnGhost" Command="{Binding LogoutCommand}" Height="70" HorizontalAlignment="Stretch" VText="Sair da conta" />
+                    <!--  Portfolio counters  -->
+                    <Grid ColumnDefinitions="*,*,*,*">
+                        <StackPanel Spacing="2">
+                            <TextBlock
+                                FontFamily="{StaticResource FontHeading}"
+                                FontSize="46"
+                                Foreground="{StaticResource ColorText}"
+                                Text="{Binding TutorCountLabel}" />
+                            <TextBlock Classes="Kicker" Text="Tutores" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Spacing="2">
+                            <TextBlock
+                                FontFamily="{StaticResource FontHeading}"
+                                FontSize="46"
+                                Foreground="{StaticResource ColorText}"
+                                Text="{Binding DogCountLabel}" />
+                            <TextBlock Classes="Kicker" Text="Cães" />
+                        </StackPanel>
+                        <!--  Scoped to the month selected below, unlike the three around it.  -->
+                        <StackPanel Grid.Column="2" Spacing="2">
+                            <TextBlock
+                                FontFamily="{StaticResource FontHeading}"
+                                FontSize="46"
+                                Foreground="{StaticResource ColorText}"
+                                Text="{Binding ServiceCountLabel}" />
+                            <TextBlock Classes="Kicker" Text="No mês" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="3" Spacing="2">
+                            <TextBlock
+                                FontFamily="{StaticResource FontHeading}"
+                                FontSize="46"
+                                Foreground="{StaticResource ColorAccentDark700}"
+                                Text="{Binding PendingCountLabel}" />
+                            <TextBlock Classes="Kicker" Text="Pendentes" />
+                        </StackPanel>
+                    </Grid>
+
+                    <buttons:VButton
+                        Classes="BtnGhost"
+                        Command="{Binding LogoutCommand}"
+                        Height="70"
+                        HorizontalAlignment="Stretch"
+                        VText="Sair da conta" />
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

@@ -21,6 +21,8 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
     private readonly RepositoryServices repositoryServices;
     private readonly ImagePicker imagePicker;
     private readonly AppSession session;
+    private readonly CurrentView currentView;
+    private readonly PresenterBase<ServiceDetailViewModel, Unit, Unit> serviceDetailView;
 
     /// <summary>
     /// The photo file name currently in the database, as opposed to <see cref="PhotoFileName"/>
@@ -40,13 +42,16 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
         RepositoryTutors repositoryTutors,
         RepositoryServices repositoryServices,
         ImagePicker imagePicker,
-        AppSession session)
+        AppSession session,
+        Factory<PresenterBase<ServiceDetailViewModel, Unit, Unit>> serviceDetailFactory)
     {
         this.repositoryDogs = repositoryDogs;
         this.repositoryTutors = repositoryTutors;
         this.repositoryServices = repositoryServices;
         this.imagePicker = imagePicker;
         this.session = session;
+        this.currentView = currentView;
+        serviceDetailView = serviceDetailFactory.Create();
         BackCommand = new SynchronizedCommand(currentView.GoBack, SynchronizationBehavior.Discard, true);
         AskDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = true, SynchronizationBehavior.Discard, true);
         CancelDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = false, SynchronizationBehavior.Discard, true);
@@ -180,19 +185,60 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
         var future = services
             .Where(s => s.Date >= now)
             .OrderBy(s => s.Date)
-            .Select(s => new FutureServiceRow(AppSession.TypeLabel(s.Kind), AppSession.DateTimeLabel(s.Date)))
             .ToArray();
 
-        FutureServices.Clear();
-        foreach (var row in future)
+        ClearFutureServices();
+        foreach (var service in future)
         {
-            FutureServices.Add(row);
+            // CA2000: ownership passes to the row, which disposes the command when the list is
+            // rebuilt — see ClearFutureServices.
+#pragma warning disable CA2000
+            var openCommand = new SynchronizedCommand(
+                () => Open(service.Kind, service.ServiceId),
+                SynchronizationBehavior.Discard,
+                true);
+#pragma warning restore CA2000
+
+            FutureServices.Add(new FutureServiceRow(
+                AppSession.TypeLabel(service.Kind),
+                AppSession.DateTimeLabel(service.Date),
+                service.ServicePaid,
+                service.ServicePaid ? "Pago" : "Pendente",
+                openCommand));
         }
 
         NoFuture = future.Length == 0;
     }
 
     protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
+
+    protected override Task OnRunFinishing()
+    {
+        ClearFutureServices();
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Opens the tapped service. CurrentView keeps a back stack, so the service screen's own Back
+    /// returns here rather than to the dogs list.
+    /// </summary>
+    private Task Open(ServiceKind kind, int serviceId)
+    {
+        session.SelectedServiceKind = kind;
+        session.SelectedServiceId = serviceId;
+        currentView.ViewShown = serviceDetailView;
+        return Task.CompletedTask;
+    }
+
+    private void ClearFutureServices()
+    {
+        foreach (var row in FutureServices)
+        {
+            row.Dispose();
+        }
+
+        FutureServices.Clear();
+    }
 
     private Task StartEdit()
     {

@@ -46,11 +46,13 @@ public class MainViewModel : PresentationModelBase<Unit, Unit>
         homeView = homeViewFactory.Create();
         servicesView = servicesViewFactory.Create();
         usersView = usersViewFactory.Create();
-        DogsViewCommand = new SynchronizedCommand(() => CurrentView.ViewShown = dogsView, SynchronizationBehavior.Discard, true);
-        TutorsViewCommand = new SynchronizedCommand(() => CurrentView.ViewShown = tutorsView, SynchronizationBehavior.Discard, true);
-        HomeViewCommand = new SynchronizedCommand(() => CurrentView.ViewShown = homeView, SynchronizationBehavior.Discard, true);
-        ServicesViewCommand = new SynchronizedCommand(() => CurrentView.ViewShown = servicesView, SynchronizationBehavior.Discard, true);
-        UsersViewCommand = new SynchronizedCommand(() => CurrentView.ViewShown = usersView, SynchronizationBehavior.Discard, true);
+        // ShowRoot rather than assigning ViewShown: a tab is the bottom of the back stack, so
+        // switching tabs must discard any detail screens opened from the previous one.
+        DogsViewCommand = new SynchronizedCommand(() => CurrentView.ShowRoot(dogsView), SynchronizationBehavior.Discard, true);
+        TutorsViewCommand = new SynchronizedCommand(() => CurrentView.ShowRoot(tutorsView), SynchronizationBehavior.Discard, true);
+        HomeViewCommand = new SynchronizedCommand(() => CurrentView.ShowRoot(homeView), SynchronizationBehavior.Discard, true);
+        ServicesViewCommand = new SynchronizedCommand(() => CurrentView.ShowRoot(servicesView), SynchronizationBehavior.Discard, true);
+        UsersViewCommand = new SynchronizedCommand(() => CurrentView.ShowRoot(usersView), SynchronizationBehavior.Discard, true);
     }
 
     public ICommand BackCommand { get; }

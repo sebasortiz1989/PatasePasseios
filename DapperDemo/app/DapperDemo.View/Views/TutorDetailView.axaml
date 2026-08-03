@@ -101,28 +101,39 @@
                                     <ItemsControl ItemsSource="{Binding FutureServices}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate DataType="viewmodels:TutorFutureServiceRow">
-                                                <Border
-                                                    BorderBrush="{StaticResource ColorDivider}"
-                                                    BorderThickness="0,0,0,2"
-                                                    Margin="0,0,0,12"
-                                                    Padding="0,0,0,12">
-                                                    <Grid ColumnDefinitions="*,Auto">
-                                                        <TextBlock
-                                                            FontFamily="{StaticResource FontBody}"
-                                                            FontSize="29"
-                                                            Foreground="{StaticResource ColorText}">
-                                                            <Run Text="{Binding DogName}" />
-                                                            <Run Text=" · " />
-                                                            <Run Text="{Binding TypeLabel}" />
-                                                        </TextBlock>
-                                                        <TextBlock
-                                                            FontFamily="{StaticResource FontBody}"
-                                                            FontSize="26"
-                                                            Foreground="{StaticResource ColorTextMuted55}"
-                                                            Grid.Column="1"
-                                                            Text="{Binding DateLabel}" />
-                                                    </Grid>
-                                                </Border>
+                                                <Button Classes="RowButton" Command="{Binding OpenCommand}">
+                                                    <Border
+                                                        BorderBrush="{StaticResource ColorDivider}"
+                                                        BorderThickness="0,0,0,2"
+                                                        Margin="0,0,0,12"
+                                                        Padding="0,0,0,12">
+                                                        <Grid ColumnDefinitions="*,Auto,14,Auto">
+                                                            <TextBlock
+                                                                FontFamily="{StaticResource FontBody}"
+                                                                FontSize="29"
+                                                                Foreground="{StaticResource ColorText}"
+                                                                VerticalAlignment="Center">
+                                                                <Run Text="{Binding DogName}" />
+                                                                <Run Text=" · " />
+                                                                <Run Text="{Binding TypeLabel}" />
+                                                            </TextBlock>
+                                                            <TextBlock
+                                                                FontFamily="{StaticResource FontBody}"
+                                                                FontSize="26"
+                                                                Foreground="{StaticResource ColorTextMuted55}"
+                                                                Grid.Column="1"
+                                                                Text="{Binding DateLabel}"
+                                                                VerticalAlignment="Center" />
+                                                            <Border
+                                                                Classes="TagSign"
+                                                                Classes.Paid="{Binding Paid}"
+                                                                Classes.Pending="{Binding !Paid}"
+                                                                Grid.Column="3">
+                                                                <TextBlock Text="{Binding PaidLabel}" />
+                                                            </Border>
+                                                        </Grid>
+                                                    </Border>
+                                                </Button>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>

@@ -284,6 +284,6 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
         TotalLabel = AppSession.Money(service.Price * nights);
 
         Paid = service.ServicePaid;
-        PaidActionLabel = service.ServicePaid ? "Pago — marcar pendente" : "Marcar como pago";
+        PaidActionLabel = service.ServicePaid ? "Pago" : "Marcar como pago";
     }
 }

@@ -29,91 +29,91 @@
                 BorderThickness="0,2,0,0"
                 Grid.Row="1">
                 <Grid ColumnDefinitions="*,*,*,*,*">
-                <RadioButton
-                    Command="{Binding DogsViewCommand}"
-                    Grid.Column="0"
-                    GroupName="MainTabs"
-                    Tag="Cães"
-                    Theme="{StaticResource NavTab}">
-                    <Path
-                        Data="{StaticResource IconDogs}"
-                        Height="37"
-                        Stretch="Uniform"
-                        Stroke="{Binding $parent[RadioButton].Foreground}"
-                        StrokeJoin="Round"
-                        StrokeLineCap="Round"
-                        StrokeThickness="1.4"
-                        Width="37" />
-                </RadioButton>
+                    <RadioButton
+                        Command="{Binding DogsViewCommand}"
+                        Grid.Column="0"
+                        GroupName="MainTabs"
+                        Tag="Cães"
+                        Theme="{StaticResource NavTab}">
+                        <Path
+                            Data="{StaticResource IconDogs}"
+                            Height="37"
+                            Stretch="Uniform"
+                            Stroke="{Binding $parent[RadioButton].Foreground}"
+                            StrokeJoin="Round"
+                            StrokeLineCap="Round"
+                            StrokeThickness="1.4"
+                            Width="37" />
+                    </RadioButton>
 
-                <RadioButton
-                    Command="{Binding TutorsViewCommand}"
-                    Grid.Column="1"
-                    GroupName="MainTabs"
-                    Tag="Tutores"
-                    Theme="{StaticResource NavTab}">
-                    <Path
-                        Data="{StaticResource IconTutors}"
-                        Height="37"
-                        Stretch="Uniform"
-                        Stroke="{Binding $parent[RadioButton].Foreground}"
-                        StrokeJoin="Round"
-                        StrokeLineCap="Round"
-                        StrokeThickness="1.4"
-                        Width="37" />
-                </RadioButton>
+                    <RadioButton
+                        Command="{Binding TutorsViewCommand}"
+                        Grid.Column="1"
+                        GroupName="MainTabs"
+                        Tag="Tutores"
+                        Theme="{StaticResource NavTab}">
+                        <Path
+                            Data="{StaticResource IconTutors}"
+                            Height="37"
+                            Stretch="Uniform"
+                            Stroke="{Binding $parent[RadioButton].Foreground}"
+                            StrokeJoin="Round"
+                            StrokeLineCap="Round"
+                            StrokeThickness="1.4"
+                            Width="37" />
+                    </RadioButton>
 
-                <RadioButton
-                    Command="{Binding HomeViewCommand}"
-                    Grid.Column="2"
-                    GroupName="MainTabs"
-                    IsChecked="True"
-                    Tag="Agenda"
-                    Theme="{StaticResource NavTab}">
-                    <Path
-                        Data="{StaticResource IconAgenda}"
-                        Height="37"
-                        Stretch="Uniform"
-                        Stroke="{Binding $parent[RadioButton].Foreground}"
-                        StrokeJoin="Round"
-                        StrokeLineCap="Round"
-                        StrokeThickness="1.4"
-                        Width="37" />
-                </RadioButton>
+                    <RadioButton
+                        Command="{Binding HomeViewCommand}"
+                        Grid.Column="2"
+                        GroupName="MainTabs"
+                        IsChecked="True"
+                        Tag="Agenda"
+                        Theme="{StaticResource NavTab}">
+                        <Path
+                            Data="{StaticResource IconHome}"
+                            Height="37"
+                            Stretch="Uniform"
+                            Stroke="{Binding $parent[RadioButton].Foreground}"
+                            StrokeJoin="Round"
+                            StrokeLineCap="Round"
+                            StrokeThickness="1.4"
+                            Width="37" />
+                    </RadioButton>
 
-                <RadioButton
-                    Command="{Binding ServicesViewCommand}"
-                    Grid.Column="3"
-                    GroupName="MainTabs"
-                    Tag="Novo"
-                    Theme="{StaticResource NavTab}">
-                    <Path
-                        Data="{StaticResource IconNew}"
-                        Height="37"
-                        Stretch="Uniform"
-                        Stroke="{Binding $parent[RadioButton].Foreground}"
-                        StrokeJoin="Round"
-                        StrokeLineCap="Round"
-                        StrokeThickness="1.4"
-                        Width="37" />
-                </RadioButton>
+                    <RadioButton
+                        Command="{Binding ServicesViewCommand}"
+                        Grid.Column="3"
+                        GroupName="MainTabs"
+                        Tag="Novo"
+                        Theme="{StaticResource NavTab}">
+                        <Path
+                            Data="{StaticResource IconNew}"
+                            Height="37"
+                            Stretch="Uniform"
+                            Stroke="{Binding $parent[RadioButton].Foreground}"
+                            StrokeJoin="Round"
+                            StrokeLineCap="Round"
+                            StrokeThickness="1.4"
+                            Width="37" />
+                    </RadioButton>
 
-                <RadioButton
-                    Command="{Binding UsersViewCommand}"
-                    Grid.Column="4"
-                    GroupName="MainTabs"
-                    Tag="Perfil"
-                    Theme="{StaticResource NavTab}">
-                    <Path
-                        Data="{StaticResource IconProfile}"
-                        Height="37"
-                        Stretch="Uniform"
-                        Stroke="{Binding $parent[RadioButton].Foreground}"
-                        StrokeJoin="Round"
-                        StrokeLineCap="Round"
-                        StrokeThickness="1.4"
-                        Width="37" />
-                </RadioButton>
+                    <RadioButton
+                        Command="{Binding UsersViewCommand}"
+                        Grid.Column="4"
+                        GroupName="MainTabs"
+                        Tag="Perfil"
+                        Theme="{StaticResource NavTab}">
+                        <Path
+                            Data="{StaticResource IconProfile}"
+                            Height="37"
+                            Stretch="Uniform"
+                            Stroke="{Binding $parent[RadioButton].Foreground}"
+                            StrokeJoin="Round"
+                            StrokeLineCap="Round"
+                            StrokeThickness="1.4"
+                            Width="37" />
+                    </RadioButton>
                 </Grid>
             </Border>
 

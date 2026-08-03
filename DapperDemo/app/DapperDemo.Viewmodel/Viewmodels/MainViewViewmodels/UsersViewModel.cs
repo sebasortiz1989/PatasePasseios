@@ -34,6 +34,12 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     /// </summary>
     private MonthlyIncome income = new();
 
+    /// <summary>
+    /// The selected month's services, kept so toggling the eye can re-render the per-dog breakdown
+    /// without another round trip — the same reason <see cref="income"/> is held.
+    /// </summary>
+    private ServiceItem[] monthServices = [];
+
     /// <summary>Guards against the filter reload retriggering itself while it assigns properties.</summary>
     private bool reloading;
 
@@ -161,6 +167,30 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
 
     public ObservableCollection<IncomeRow> IncomeBreakdown { get; } = [];
 
+    /// <summary>
+    /// Gets or sets a value indicating whether the per-dog breakdown of the month is shown. Off by
+    /// default: the headline figures answer "how did the month go", and the detail is for chasing
+    /// a specific debt.
+    /// </summary>
+    public bool ShowMonthDetail { get; set; }
+
+    /// <summary>Gets the money already received in the month, per dog.</summary>
+    public ObservableCollection<DogSummaryRow> PaidSummaries { get; } = [];
+
+    /// <summary>Gets the money still owed for the month, per dog — who owes and for what.</summary>
+    public ObservableCollection<DogSummaryRow> PendingSummaries { get; } = [];
+
+    /// <summary>Gets what the month's unpaid services come to.</summary>
+    public string PendingTotalLabel { get; private set; } = string.Empty;
+
+    public bool HasPaidInMonth => PaidSummaries.Count > 0;
+
+    public bool HasPendingInMonth => PendingSummaries.Count > 0;
+
+    public bool HasNothingPaidInMonth => !HasPaidInMonth;
+
+    public bool HasNothingPendingInMonth => !HasPendingInMonth;
+
     // Portfolio counters, so Perfil summarises the whole account and not just its billing.
     public string DogCountLabel { get; private set; } = string.Empty;
 
@@ -225,6 +255,9 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
 
             var month = SelectedMonth?.Number ?? DateTime.Now.Month;
             income = await repositoryServices.GetMonthlyIncomeAsync(session.CurrentPetSitterId, SelectedYear, month).WithSync();
+            monthServices = services
+                .Where(s => s.Date.Year == SelectedYear && s.Date.Month == month)
+                .ToArray();
             RefreshMoneyLabels();
 
             DogCountLabel = dogs.Length.ToString(CultureInfo.InvariantCulture);
@@ -270,6 +303,39 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         IncomeBreakdown.Add(new IncomeRow("Passeio", Money(income.Walk)));
         IncomeBreakdown.Add(new IncomeRow("Pet sitting", Money(income.Sitting)));
         IncomeBreakdown.Add(new IncomeRow("Hotel", Money(income.Hotel)));
+
+        RefreshMonthDetail();
+    }
+
+    /// <summary>
+    /// Splits the month into what was received and what is still owed, each grouped by dog so an
+    /// unpaid figure names the dog and the services behind it.
+    /// </summary>
+    private void RefreshMonthDetail()
+    {
+        var paid = monthServices.Where(s => s.ServicePaid).ToArray();
+        var pending = monthServices.Where(s => !s.ServicePaid).ToArray();
+
+        PaidSummaries.Clear();
+        foreach (var row in DogSummaryBuilder.Build(paid, Money))
+        {
+            PaidSummaries.Add(row);
+        }
+
+        PendingSummaries.Clear();
+        foreach (var row in DogSummaryBuilder.Build(pending, Money))
+        {
+            PendingSummaries.Add(row);
+        }
+
+        PendingTotalLabel = Money(pending.Sum(DogSummaryBuilder.AmountOf));
+
+        // ObservableCollection.Count is not something Fody watches, so the emptiness flags derived
+        // from these lists have to be announced by hand.
+        OnPropertyChanged(nameof(HasPaidInMonth));
+        OnPropertyChanged(nameof(HasPendingInMonth));
+        OnPropertyChanged(nameof(HasNothingPaidInMonth));
+        OnPropertyChanged(nameof(HasNothingPendingInMonth));
     }
 
     /// <summary>
