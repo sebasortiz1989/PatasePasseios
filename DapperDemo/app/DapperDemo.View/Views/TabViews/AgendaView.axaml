@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     d:DesignHeight="1460"
     d:DesignWidth="720"
     mc:Ignorable="d"
@@ -32,13 +32,13 @@
                             <StackPanel VerticalAlignment="Center">
                                 <TextBlock
                                     FontFamily="{StaticResource FontHeading}"
-                                    FontSize="46"
+                                    FontSize="51"
                                     Foreground="{StaticResource ColorText}"
                                     HorizontalAlignment="Center"
                                     Text="{Binding DayNum}" />
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="20"
+                                    FontSize="22"
                                     Foreground="{StaticResource ColorTextMuted50}"
                                     HorizontalAlignment="Center"
                                     LetterSpacing="1"
@@ -51,13 +51,13 @@
                             VerticalAlignment="Center">
                             <TextBlock
                                 FontFamily="{StaticResource FontHeading}"
-                                FontSize="37"
+                                FontSize="41"
                                 FontWeight="Medium"
                                 Foreground="{StaticResource ColorText}"
                                 Text="{Binding DogName}" />
                             <TextBlock
                                 FontFamily="{StaticResource FontBody}"
-                                FontSize="25"
+                                FontSize="28"
                                 Foreground="{StaticResource ColorTextMuted55}">
                                 <Run Text="{Binding TypeLabel}" />
                                 <Run Text=" · " />
@@ -99,7 +99,7 @@
                 <StackPanel Margin="32,32,32,16" Spacing="2">
                     <TextBlock
                         Classes="Heading1"
-                        FontSize="62"
+                        FontSize="68"
                         Text="Agenda" />
                     <TextBlock Classes="Kicker" Text="{Binding TodayLabel}" />
                 </StackPanel>
@@ -195,7 +195,7 @@
                 <CheckBox
                     Content="Mostrar serviços já pagos"
                     FontFamily="{StaticResource FontBody}"
-                    FontSize="28"
+                    FontSize="31"
                     Foreground="{StaticResource ColorTextMuted65}"
                     IsChecked="{Binding HomeShowPaid}"
                     Margin="32,24,32,16"
@@ -209,7 +209,7 @@
                     Padding="32,64">
                     <TextBlock
                         FontFamily="{StaticResource FontBody}"
-                        FontSize="29"
+                        FontSize="32"
                         FontStyle="Italic"
                         Foreground="{StaticResource ColorTextMuted45}"
                         HorizontalAlignment="Center"
@@ -265,7 +265,7 @@
 
                                             <TextBlock
                                                 FontFamily="{StaticResource FontHeading}"
-                                                FontSize="40"
+                                                FontSize="44"
                                                 FontWeight="Medium"
                                                 Foreground="{StaticResource ColorText}"
                                                 Grid.Column="1"
@@ -274,7 +274,7 @@
 
                                             <TextBlock
                                                 FontFamily="{StaticResource FontBody}"
-                                                FontSize="25"
+                                                FontSize="28"
                                                 Foreground="{StaticResource ColorTextMuted55}"
                                                 Grid.Column="2"
                                                 Text="{Binding CountLabel}"

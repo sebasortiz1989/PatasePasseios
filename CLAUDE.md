@@ -359,6 +359,14 @@ hex, font names or ad-hoc sizes in views.
 - Layouts are authored against a **720**-wide design canvas, nominally **720×1560**.
   Pixel values are the source design's px scaled by **~1.7476**. Follow that
   factor rather than eyeballing new numbers.
+- **Type carries a further ×1.1 on top of that factor**, and so do the controls
+  sized around it — `VButton` heights, input `MinHeight`, the `FormInput` combo
+  and date-picker heights. The canvas scales by device width, so on a phone a
+  720-unit canvas lands near 0.57× and the original sizes read small in the hand.
+  A new font size derived straight from the source design will look a step
+  smaller than everything beside it; multiply it too. Geometry that holds no text
+  — icons, dividers, avatar circles, the bottom bar's 100-unit row — is unscaled
+  and stays on the plain factor.
 - The canvas is scaled to the device by `Components/DesignCanvas.cs`, **not** by a
   `Viewbox`. A Viewbox fits the canvas whole and letterboxes any device that is not
   720:1560 — against `ShellView`'s black background, visibly. `DesignCanvas` takes

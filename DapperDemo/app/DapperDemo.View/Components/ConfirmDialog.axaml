@@ -32,7 +32,7 @@
 
                 <TextBlock
                     FontFamily="{StaticResource FontBody}"
-                    FontSize="27"
+                    FontSize="30"
                     Foreground="{StaticResource ColorTextMuted70}"
                     Text="{Binding #Root.Message}"
                     TextAlignment="Center"
@@ -43,13 +43,13 @@
                     <buttons:VButton
                         Classes="BtnSecondary"
                         Command="{Binding #Root.CancelCommand}"
-                        Height="80"
+                        Height="88"
                         VText="{Binding #Root.CancelText}" />
                     <buttons:VButton
                         Classes="BtnPrimary"
                         Command="{Binding #Root.ConfirmCommand}"
                         Grid.Column="2"
-                        Height="80"
+                        Height="88"
                         VText="{Binding #Root.ConfirmText}" />
                 </Grid>
 
@@ -61,7 +61,7 @@
                 <buttons:VButton
                     Classes="BtnPrimary"
                     Command="{Binding #Root.ConfirmCommand}"
-                    Height="80"
+                    Height="88"
                     HorizontalAlignment="Stretch"
                     IsVisible="{Binding !#Root.ShowCancel}"
                     VText="{Binding #Root.ConfirmText}" />

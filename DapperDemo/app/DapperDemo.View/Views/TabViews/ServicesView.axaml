@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     d:DesignHeight="1460"
     d:DesignWidth="720"
     mc:Ignorable="d"
@@ -18,7 +18,7 @@
                 <StackPanel Margin="32,32,32,16" Spacing="2">
                     <TextBlock
                         Classes="Heading1"
-                        FontSize="62"
+                        FontSize="68"
                         Text="Novo serviço" />
                     <TextBlock Classes="Kicker" Text="Agendar" />
                 </StackPanel>
@@ -32,7 +32,7 @@
                     Padding="32,64">
                     <TextBlock
                         FontFamily="{StaticResource FontBody}"
-                        FontSize="29"
+                        FontSize="32"
                         FontStyle="Italic"
                         Foreground="{StaticResource ColorTextMuted45}"
                         HorizontalAlignment="Center"
@@ -49,7 +49,7 @@
                     <StackPanel Spacing="10">
                         <TextBlock
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="25"
+                            FontSize="28"
                             Foreground="{StaticResource ColorTextMuted70}"
                             Text="Tipo de serviço" />
                         <!--
@@ -112,7 +112,7 @@
                     <StackPanel Spacing="10">
                         <TextBlock
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="25"
+                            FontSize="28"
                             Foreground="{StaticResource ColorTextMuted70}"
                             Text="Cachorro" />
                         <ComboBox
@@ -121,7 +121,7 @@
                             BorderThickness="2"
                             CornerRadius="7"
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="31"
+                            FontSize="34"
                             Foreground="{StaticResource ColorText}"
                             HorizontalAlignment="Stretch"
                             ItemsSource="{Binding DogOptions}"
@@ -147,7 +147,7 @@
                                 VerticalAlignment="Center" />
                             <TextBlock
                                 FontFamily="{StaticResource FontBody}"
-                                FontSize="27"
+                                FontSize="30"
                                 Foreground="{StaticResource ColorText}"
                                 Text="{Binding SelectedTutorName}"
                                 VerticalAlignment="Center" />
@@ -159,7 +159,7 @@
                         <StackPanel Spacing="10">
                             <TextBlock
                                 FontFamily="{StaticResource FontBody}"
-                                FontSize="25"
+                                FontSize="28"
                                 Foreground="{StaticResource ColorTextMuted70}"
                                 Text="Entrada" />
                             <Grid ColumnDefinitions="*,16,Auto">
@@ -169,7 +169,7 @@
                                     BorderThickness="2"
                                     CornerRadius="7"
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="29"
+                                    FontSize="32"
                                     Foreground="{StaticResource ColorText}"
                                     MinHeight="74"
                                     SelectedDate="{Binding SvcDatePart}" />
@@ -184,7 +184,7 @@
                         <StackPanel Spacing="10">
                             <TextBlock
                                 FontFamily="{StaticResource FontBody}"
-                                FontSize="25"
+                                FontSize="28"
                                 Foreground="{StaticResource ColorTextMuted70}"
                                 Text="Saída" />
                             <Grid ColumnDefinitions="*,16,Auto">
@@ -194,7 +194,7 @@
                                     BorderThickness="2"
                                     CornerRadius="7"
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="29"
+                                    FontSize="32"
                                     Foreground="{StaticResource ColorText}"
                                     MinHeight="74"
                                     SelectedDate="{Binding SvcEndDatePart}" />
@@ -209,7 +209,7 @@
                         <CheckBox
                             Content="Inclui passeios diários"
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="29"
+                            FontSize="32"
                             Foreground="{StaticResource ColorTextMuted70}"
                             IsChecked="{Binding SvcRequiresWalking}"
                             Theme="{StaticResource ClassicCheckBox}" />
@@ -217,7 +217,7 @@
                         <StackPanel Spacing="10">
                             <TextBlock
                                 FontFamily="{StaticResource FontBody}"
-                                FontSize="25"
+                                FontSize="28"
                                 Foreground="{StaticResource ColorTextMuted70}"
                                 Text="Preço por dia (R$)" />
                             <TextBox
@@ -227,7 +227,7 @@
                                 CaretBrush="{StaticResource ColorAccent}"
                                 CornerRadius="7"
                                 FontFamily="{StaticResource FontBody}"
-                                FontSize="31"
+                                FontSize="34"
                                 Foreground="{StaticResource ColorText}"
                                 MinHeight="74"
                                 Padding="18,0"
@@ -243,7 +243,7 @@
                             <Grid ColumnDefinitions="*,Auto">
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="25"
+                                    FontSize="28"
                                     Foreground="{StaticResource ColorTextMuted70}"
                                     Text="Datas"
                                     VerticalAlignment="Center" />
@@ -251,7 +251,7 @@
                                     Classes="BtnGhost"
                                     Command="{Binding AddDateCommand}"
                                     Grid.Column="1"
-                                    Height="56"
+                                    Height="62"
                                     IsVisible="{Binding SvcUsesDateList}"
                                     VText="+ Data" />
                             </Grid>
@@ -259,7 +259,7 @@
                             <CheckBox
                                 Content="Usar intervalo de datas"
                                 FontFamily="{StaticResource FontBody}"
-                                FontSize="27"
+                                FontSize="30"
                                 Foreground="{StaticResource ColorTextMuted70}"
                                 IsChecked="{Binding SvcUseDateRange}"
                                 Theme="{StaticResource ClassicCheckBox}" />
@@ -275,7 +275,7 @@
                                                 BorderThickness="2"
                                                 CornerRadius="7"
                                                 FontFamily="{StaticResource FontBody}"
-                                                FontSize="29"
+                                                FontSize="32"
                                                 Foreground="{StaticResource ColorText}"
                                                 HorizontalAlignment="Stretch"
                                                 MinHeight="74"
@@ -284,7 +284,7 @@
                                                 Classes="BtnGhost"
                                                 Command="{Binding RemoveCommand}"
                                                 Grid.Column="2"
-                                                Height="74"
+                                                Height="81"
                                                 IsVisible="{Binding CanRemove}"
                                                 VText="Remover"
                                                 Width="150" />
@@ -297,7 +297,7 @@
                             <StackPanel IsVisible="{Binding SvcUseDateRange}" Spacing="10">
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="25"
+                                    FontSize="28"
                                     Foreground="{StaticResource ColorTextMuted70}"
                                     Text="De" />
                                 <CalendarDatePicker
@@ -306,14 +306,14 @@
                                     BorderThickness="2"
                                     CornerRadius="7"
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="29"
+                                    FontSize="32"
                                     Foreground="{StaticResource ColorText}"
                                     HorizontalAlignment="Stretch"
                                     MinHeight="74"
                                     SelectedDate="{Binding SvcRangeFromPart}" />
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="25"
+                                    FontSize="28"
                                     Foreground="{StaticResource ColorTextMuted70}"
                                     Text="Até" />
                                 <CalendarDatePicker
@@ -322,7 +322,7 @@
                                     BorderThickness="2"
                                     CornerRadius="7"
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="29"
+                                    FontSize="32"
                                     Foreground="{StaticResource ColorText}"
                                     HorizontalAlignment="Stretch"
                                     MinHeight="74"
@@ -338,7 +338,7 @@
                             <Grid ColumnDefinitions="*,Auto">
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="25"
+                                    FontSize="28"
                                     Foreground="{StaticResource ColorTextMuted70}"
                                     Text="Horários por dia"
                                     VerticalAlignment="Center" />
@@ -346,7 +346,7 @@
                                     Classes="BtnGhost"
                                     Command="{Binding AddTimeCommand}"
                                     Grid.Column="1"
-                                    Height="56"
+                                    Height="62"
                                     VText="+ Horário" />
                             </Grid>
 
@@ -364,7 +364,7 @@
                                                 Classes="BtnGhost"
                                                 Command="{Binding RemoveCommand}"
                                                 Grid.Column="2"
-                                                Height="74"
+                                                Height="81"
                                                 IsVisible="{Binding CanRemove}"
                                                 VText="Remover"
                                                 Width="150" />
@@ -378,7 +378,7 @@
                         <CheckBox
                             Content="Inclui passeios"
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="29"
+                            FontSize="32"
                             Foreground="{StaticResource ColorTextMuted70}"
                             IsChecked="{Binding SvcRequiresWalking}"
                             IsVisible="{Binding SvcIsDayCare}"
@@ -392,7 +392,7 @@
                         <StackPanel Spacing="10">
                             <TextBlock
                                 FontFamily="{StaticResource FontBody}"
-                                FontSize="25"
+                                FontSize="28"
                                 Foreground="{StaticResource ColorTextMuted70}"
                                 Text="Preço (R$)" />
                             <TextBox
@@ -402,7 +402,7 @@
                                 CaretBrush="{StaticResource ColorAccent}"
                                 CornerRadius="7"
                                 FontFamily="{StaticResource FontBody}"
-                                FontSize="31"
+                                FontSize="34"
                                 Foreground="{StaticResource ColorText}"
                                 MinHeight="74"
                                 Padding="18,0"
@@ -416,7 +416,7 @@
                         Classes="FormMsg"
                         Classes.Error="{Binding SvcMsgIsError}"
                         FontFamily="{StaticResource FontBody}"
-                        FontSize="28"
+                        FontSize="31"
                         FontStyle="Italic"
                         HorizontalAlignment="Center"
                         IsVisible="{Binding HasSvcMsg}"
@@ -427,7 +427,7 @@
                     <buttons:VButton
                         Classes="BtnPrimary"
                         Command="{Binding CreateServiceCommand}"
-                        Height="80"
+                        Height="88"
                         HorizontalAlignment="Stretch"
                         VText="Agendar serviço" />
                 </StackPanel>
