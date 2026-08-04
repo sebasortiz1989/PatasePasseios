@@ -28,7 +28,7 @@ dotnet build DapperDemo.sln
 ```
 
 ```bash
-dotnet test tests/Tests.CasosDeUso.Dapper/Tests.CasosDeUso.Dapper.csproj
+dotnet test tests/Tests.Dapper/Tests.Dapper.csproj
 ```
 
 Run a head — pick the platform:
@@ -59,7 +59,7 @@ a code error. Build the individual project you changed, or stop the app.
     Default.Analyzers.ruleset
     src/1. Contrato/Repository.Dapper/   ← the whole data layer
     app/                          ← Viewmodel, View, Infrastructure, platform heads
-    tests/Tests.CasosDeUso.Dapper/
+    tests/Tests.Dapper/
 ```
 
 `src/` contains only `1. Contrato`. The numbered sibling folders from the
@@ -389,10 +389,11 @@ Say what is real — several things here are not:
   `NotImplementedException` from several. Check before calling; implement the
   stub you need rather than routing around it. `RepositoryServices` does not
   derive from it at all — it spans four tables.
-- **`tests/Tests.CasosDeUso.Dapper` tests Dapper, not this app.** It is a
-  scratchpad against an in-memory `Products` table. There is no coverage of the
-  repositories or view models. New behaviour needs a real test, and that means
-  writing the first one.
+- **Tests cover the data layer only.** `tests/Tests.Dapper` has real coverage of
+  the repositories, the migrations and the money rules (`ServiceItem`,
+  `PaymentAllocation`) — run it before touching any of them. The view models have
+  none, so anything in `DapperDemo.Viewmodel` is still verified only by running
+  the app.
 - **Walk and pet-sitting bookings have no stored duration.** The Google Calendar
   export assumes one hour.
 - The dog screen lists **upcoming unpaid services only** (`s.Date >= now &&

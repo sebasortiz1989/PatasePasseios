@@ -14,7 +14,9 @@ public class ServiceItemTests
         decimal price,
         DateTime? end = null,
         bool paid = false,
-        bool done = false) => new()
+        bool done = false,
+        decimal settled = 0m,
+        decimal credit = 0m) => new()
         {
             ServiceId = 1,
             Kind = kind,
@@ -26,6 +28,8 @@ public class ServiceItemTests
             Price = price,
             ServicePaid = paid,
             ServiceDone = done,
+            AmountSettled = settled,
+            CreditApplied = credit,
         };
 
     [Theory]
@@ -108,6 +112,64 @@ public class ServiceItemTests
     {
         var service = Service(kind, 100m, end: new DateTime(2026, 8, 5, 9, 0, 0), paid: true, done: true);
 
+        Assert.Equal(0m, service.AmountDue);
+        Assert.Equal(0m, service.AmountUpcoming);
+    }
+
+    /// <summary>
+    /// A part-settled service keeps its price. What it cost and what is left on it are two separate
+    /// figures now, which is the whole point of the settled column.
+    /// </summary>
+    [Fact]
+    public void SettlingPartOfAServiceLeavesTheRestOutstanding()
+    {
+        var service = Service(ServiceKind.Walk, 500m, settled: 450m);
+
+        Assert.Equal(500m, service.Total);
+        Assert.Equal(50m, service.Outstanding);
+    }
+
+    /// <summary>Over-settling cannot turn into a negative balance the sitter would owe back here.</summary>
+    [Fact]
+    public void SettlingMoreThanTheTotalDoesNotGoNegative()
+    {
+        var service = Service(ServiceKind.Walk, 100m, settled: 130m);
+
+        Assert.Equal(0m, service.Outstanding);
+    }
+
+    /// <summary>Once executed, only the unsettled part may be charged — not the whole price again.</summary>
+    [Fact]
+    public void AnExecutedPartSettledServiceOwesOnlyTheRemainder()
+    {
+        var service = Service(ServiceKind.Walk, 500m, done: true, settled: 450m);
+
+        Assert.Equal(50m, service.AmountDue);
+        Assert.Equal(0m, service.AmountUpcoming);
+    }
+
+    /// <summary>
+    /// The scenario credit exists for: a booking settled from credit before it has happened. It owes
+    /// nothing today because it has not been carried out, and what it will be worth is only the part
+    /// the credit did not cover.
+    /// </summary>
+    [Fact]
+    public void ABookingSettledFromCreditIsUpcomingOnlyForItsRemainder()
+    {
+        var service = Service(ServiceKind.Walk, 500m, settled: 450m, credit: 450m);
+
+        Assert.Equal(0m, service.AmountDue);
+        Assert.Equal(50m, service.AmountUpcoming);
+        Assert.Equal(450m, service.CreditApplied);
+    }
+
+    /// <summary>A service settled in full by credit is worth nothing further, executed or not.</summary>
+    [Fact]
+    public void ABookingFullySettledFromCreditOwesNothing()
+    {
+        var service = Service(ServiceKind.Walk, 300m, paid: true, settled: 300m, credit: 300m);
+
+        Assert.Equal(0m, service.Outstanding);
         Assert.Equal(0m, service.AmountDue);
         Assert.Equal(0m, service.AmountUpcoming);
     }

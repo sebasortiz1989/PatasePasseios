@@ -49,3 +49,5 @@
         <ProjectReference Include="..\DapperDemo.Infrastructure\DapperDemo.Infrastructure.csproj" />
     </ItemGroup>
 </Project>
+
+<!-- "$LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe" install -r "app/DapperDemo.Android/bin/Release/net10.0-android/com.CompanyName.DapperDemo-Signed.apk" -->

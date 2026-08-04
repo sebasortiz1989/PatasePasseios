@@ -125,11 +125,11 @@ public class PaymentAllocationTests
     }
 
     /// <summary>
-    /// A part-paid stay carries its remainder in the nightly rate, so the figure written is the
-    /// remainder divided over the nights rather than the remainder itself.
+    /// A part-paid stay records what was settled and keeps its nightly rate. The amount reported is
+    /// the money itself, not a rate derived from it — the stay is still worth what it costs.
     /// </summary>
     [Fact]
-    public void APartPaidStayCarriesItsRemainderInTheNightlyRate()
+    public void APartPaidStayRecordsTheAmountNotAReducedRate()
     {
         var stay = Service(1, ServiceKind.Hotel, August1, 100m, done: true, end: August1.AddDays(3));
 
@@ -142,6 +142,76 @@ public class PaymentAllocationTests
         Assert.Equal(150m, applied);
     }
 
+    /// <summary>
+    /// Only what is still outstanding is allocated, so settling the same service twice cannot
+    /// collect more than it costs.
+    /// </summary>
+    [Fact]
+    public void AnAlreadyPartSettledServiceOnlyTakesItsRemainder()
+    {
+        var service = Service(1, ServiceKind.Walk, August1, 100m, done: true, settled: 75m);
+
+        var (payments, applied) = PaymentAllocation.Allocate([service], 100m);
+
+        Assert.Single(payments);
+        Assert.Equal(25m, payments[0].Amount);
+        Assert.True(payments[0].FullyPaid);
+        Assert.Equal(25m, applied);
+    }
+
+    /// <summary>
+    /// The rule that separates credit from a payment. Credit is money already handed over, so it
+    /// settles a booking that has not happened yet — which <see cref="PaymentAllocation.Allocate"/>
+    /// refuses to do.
+    /// </summary>
+    [Fact]
+    public void CreditSettlesWorkThatHasNotBeenCarriedOut()
+    {
+        var booked = new[] { Service(1, ServiceKind.Walk, August1, 500m) };
+
+        var (payments, applied) = PaymentAllocation.AllocateCredit(booked, 450m);
+
+        Assert.Single(payments);
+        Assert.Equal(450m, payments[0].Amount);
+        Assert.Equal(450m, payments[0].FromCredit);
+        Assert.False(payments[0].FullyPaid);
+        Assert.Equal(450m, applied);
+
+        // A payment of the same size would settle nothing at all here.
+        Assert.Empty(PaymentAllocation.Allocate(booked, 450m).Payments);
+    }
+
+    /// <summary>Credit beyond what the bookings cost stays with the tutor.</summary>
+    [Fact]
+    public void CreditBeyondTheBookingsIsLeftOver()
+    {
+        var booked = new[] { Service(1, ServiceKind.Walk, August1, 300m) };
+
+        var (payments, applied) = PaymentAllocation.AllocateCredit(booked, 450m);
+
+        Assert.Single(payments);
+        Assert.True(payments[0].FullyPaid);
+        Assert.Equal(300m, applied);
+        Assert.Equal(150m, 450m - applied);
+    }
+
+    /// <summary>Credit does not settle work that has already been paid for.</summary>
+    [Fact]
+    public void CreditSkipsPaidServices()
+    {
+        var services = new[]
+        {
+            Service(1, ServiceKind.Walk, August1, 100m, paid: true),
+            Service(2, ServiceKind.Sitting, August1.AddDays(1), 100m),
+        };
+
+        var (payments, applied) = PaymentAllocation.AllocateCredit(services, 500m);
+
+        Assert.Single(payments);
+        Assert.Equal(2, payments[0].ServiceId);
+        Assert.Equal(100m, applied);
+    }
+
     private static ServiceItem Service(
         int id,
         ServiceKind kind,
@@ -149,7 +219,8 @@ public class PaymentAllocationTests
         decimal price,
         bool done = false,
         bool paid = false,
-        DateTime? end = null) => new()
+        DateTime? end = null,
+        decimal settled = 0m) => new()
         {
             ServiceId = id,
             Kind = kind,
@@ -161,5 +232,6 @@ public class PaymentAllocationTests
             Price = price,
             ServiceDone = done,
             ServicePaid = paid,
+            AmountSettled = settled,
         };
 }

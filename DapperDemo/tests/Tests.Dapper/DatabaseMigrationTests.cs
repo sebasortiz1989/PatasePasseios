@@ -164,6 +164,83 @@ public class DatabaseMigrationTests : IDisposable
     }
 
     /// <summary>
+    /// The settlement columns arrived after the service tables shipped. Both have to reach all four
+    /// tables, or a payment against an older database would write into a column that is not there.
+    /// </summary>
+    [Fact]
+    public void OpeningAnOlderDatabaseAddsTheSettlementColumnsToEveryServiceTable()
+    {
+        CreateLegacyDatabase();
+        CreateLegacyServiceTables();
+
+        _ = new DapperDatabaseService(path);
+
+        using var connection = new SqliteConnection(new SqliteConnectionStringBuilder { DataSource = path }.ToString());
+        connection.Open();
+
+        foreach (var table in new[] { "WalkingService", "PetSittingService", "PetHotelService", "DayCareService" })
+        {
+            var columns = connection.Query<string>($"SELECT name FROM pragma_table_info('{table}')").ToArray();
+            Assert.Contains("AmountSettled", columns);
+            Assert.Contains("CreditApplied", columns);
+        }
+    }
+
+    /// <summary>
+    /// A service already marked paid before the settled column existed must still read as owing
+    /// nothing. Its AmountSettled defaults to zero, so only ServicePaid keeps it off the balance.
+    /// </summary>
+    [Fact]
+    public void APaidServiceFromBeforeTheSettledColumnStillOwesNothing()
+    {
+        CreateLegacyDatabase();
+        CreateLegacyServiceTables();
+
+        using (var seed = new SqliteConnection(new SqliteConnectionStringBuilder { DataSource = path }.ToString()))
+        {
+            seed.Open();
+            seed.Execute(
+                "INSERT INTO WalkingService (DogId, PetSitterId, Date, Price, ServicePaid) VALUES (1, 1, @Date, 40, 1)",
+                new { Date = new DateTime(2020, 3, 1, 9, 0, 0) });
+        }
+
+        var database = new DapperDatabaseService(path);
+
+        using var connection = new SqliteConnection(new SqliteConnectionStringBuilder { DataSource = path }.ToString());
+        connection.Open();
+
+        Assert.Equal(0m, connection.ExecuteScalar<decimal>("SELECT AmountSettled FROM WalkingService"));
+        Assert.Equal(0m, connection.ExecuteScalar<decimal>("SELECT CreditApplied FROM WalkingService"));
+
+        // Marked paid, so nothing is owed despite the settled column reading zero.
+        Assert.True(connection.ExecuteScalar<bool>("SELECT ServicePaid FROM WalkingService"));
+    }
+
+    /// <summary>
+    /// The pet sitter's photo column arrived last. An account created before it must survive the
+    /// upgrade with the column added and its own data untouched.
+    /// </summary>
+    [Fact]
+    public void OpeningAnOlderDatabaseAddsThePetSitterImageColumn()
+    {
+        CreateLegacyDatabase();
+
+        _ = new DapperDatabaseService(path);
+
+        using var connection = new SqliteConnection(new SqliteConnectionStringBuilder { DataSource = path }.ToString());
+        connection.Open();
+
+        var columns = connection.Query<string>("SELECT name FROM pragma_table_info('PetSitter')").ToArray();
+        Assert.Contains("Image", columns);
+
+        // The pre-existing account is still there, with no photo rather than a broken one.
+        var name = connection.ExecuteScalar<string>("SELECT Name FROM PetSitter WHERE Email = 'antiga@test.com'");
+        var image = connection.ExecuteScalar<string?>("SELECT Image FROM PetSitter WHERE Email = 'antiga@test.com'");
+        Assert.Equal("Conta Antiga", name);
+        Assert.Null(image);
+    }
+
+    /// <summary>
     /// A booking that predates the column is not retroactively declared done. Its date is in the
     /// past but that is no evidence the sitter turned up, so it comes back as still to do.
     /// </summary>

@@ -361,10 +361,11 @@ public class RepositoryServicesTests
 
     /// <summary>
     /// A payment settles the services it covers in full. The part-covered one keeps its unpaid
-    /// flag and has its price cut to what is still owed, so the balance lives in the price.
+    /// flag and its price, recording what was settled against it — the balance lives in
+    /// <see cref="ServiceItem.Outstanding"/>, not in a cut-down price.
     /// </summary>
     [Fact]
-    public async Task RegisteringAPaymentSettlesSomeServicesAndRepricesOne()
+    public async Task RegisteringAPaymentSettlesSomeServicesAndPartSettlesOne()
     {
         using var db = new TestDatabase();
         var (petSitterId, _, dogId) = await db.SeedAccountAsync();
@@ -382,10 +383,11 @@ public class RepositoryServicesTests
         var first = before.Single(s => s.Kind == ServiceKind.Walk);
         var second = before.Single(s => s.Kind == ServiceKind.Sitting);
 
+        // 175 received: the first service is cleared, and 75 of the second — leaving 25 owing.
         var response = await db.Services.RegisterPaymentAsync(
         [
-            new ServicePayment(first.Kind, first.ServiceId, first.Price, true),
-            new ServicePayment(second.Kind, second.ServiceId, 25m, false),
+            new ServicePayment(first.Kind, first.ServiceId, first.Total, true),
+            new ServicePayment(second.Kind, second.ServiceId, 75m, false),
         ]);
 
         Assert.Equal(Response.Successful, response);
@@ -398,18 +400,52 @@ public class RepositoryServicesTests
         Assert.Equal(100m, settled.Price);
         Assert.Equal(0m, settled.AmountDue);
 
+        // The price survives: what the service cost is still on the record, and only the
+        // settled/outstanding split moved.
         Assert.False(partial.ServicePaid);
-        Assert.Equal(25m, partial.Price);
+        Assert.Equal(100m, partial.Price);
+        Assert.Equal(100m, partial.Total);
+        Assert.Equal(75m, partial.AmountSettled);
+        Assert.Equal(25m, partial.Outstanding);
         Assert.Equal(25m, partial.AmountDue);
     }
 
     /// <summary>
-    /// A hotel's money column is PricePerDay, not Price. Writing the remainder straight into it
-    /// would multiply back out wrongly, so the caller divides by the nights — this checks the
-    /// write lands in the right column and the stay re-totals to the remainder.
+    /// A service can be settled more than once — some credit when it was booked, cash later — so
+    /// each write has to add to what is already recorded. Assigning instead would silently discard
+    /// the earlier settlement and the tutor would be charged for it twice.
     /// </summary>
     [Fact]
-    public async Task RepricingAHotelStayWritesTheNightlyRate()
+    public async Task SettlementsAccumulateAcrossSeparatePayments()
+    {
+        using var db = new TestDatabase();
+        var (petSitterId, _, dogId) = await db.SeedAccountAsync();
+        await AddAsync(db, ServiceKind.Walk, petSitterId, dogId, August1, 500m);
+
+        var service = (await db.Services.ListForPetSitterAsync(petSitterId)).Single();
+
+        // First 450 from the tutor's credit, then 30 in cash.
+        await db.Services.RegisterPaymentAsync([new ServicePayment(service.Kind, service.ServiceId, 450m, false, 450m)]);
+        await db.Services.RegisterPaymentAsync([new ServicePayment(service.Kind, service.ServiceId, 30m, false)]);
+
+        var after = (await db.Services.GetAsync(petSitterId, ServiceKind.Walk, service.ServiceId))!;
+
+        Assert.Equal(500m, after.Total);
+        Assert.Equal(480m, after.AmountSettled);
+        Assert.Equal(20m, after.Outstanding);
+
+        // Only the credit-funded part is attributed to credit; the cash is not.
+        Assert.Equal(450m, after.CreditApplied);
+        Assert.False(after.ServicePaid);
+    }
+
+    /// <summary>
+    /// A hotel's money column is PricePerDay, so a settlement must not touch it — dividing a
+    /// remainder back into the nightly rate is exactly what the settled column replaced. The stay
+    /// keeps totalling what it costs, and the payment shows up as the part already settled.
+    /// </summary>
+    [Fact]
+    public async Task PartSettlingAStayKeepsItsNightlyRate()
     {
         using var db = new TestDatabase();
         var (petSitterId, _, dogId) = await db.SeedAccountAsync();
@@ -426,11 +462,13 @@ public class RepositoryServicesTests
         var stay = (await db.Services.ListForPetSitterAsync(petSitterId)).Single();
         Assert.Equal(300m, stay.Total);
 
-        await db.Services.RegisterPaymentAsync([new ServicePayment(stay.Kind, stay.ServiceId, 50m, false)]);
+        await db.Services.RegisterPaymentAsync([new ServicePayment(stay.Kind, stay.ServiceId, 150m, false)]);
 
         var after = (await db.Services.GetAsync(petSitterId, ServiceKind.Hotel, stay.ServiceId))!;
-        Assert.Equal(50m, after.Price);
-        Assert.Equal(150m, after.Total);
+        Assert.Equal(100m, after.Price);
+        Assert.Equal(300m, after.Total);
+        Assert.Equal(150m, after.AmountSettled);
+        Assert.Equal(150m, after.Outstanding);
         Assert.False(after.ServicePaid);
     }
 
@@ -597,11 +635,12 @@ public class RepositoryServicesTests
     }
 
     /// <summary>
-    /// Repricing a part-paid stay expresses the whole remainder through the nightly rate, so the
-    /// extra has to be cleared — otherwise it would be charged a second time on top.
+    /// The extra survives a part settlement. It used to be cleared, because the remainder was
+    /// folded into the nightly rate and would otherwise have been charged twice; now nothing is
+    /// rewritten, so wiping it would destroy part of what the stay cost.
     /// </summary>
     [Fact]
-    public async Task RepricingAStayClearsItsExtraCharge()
+    public async Task PartSettlingAStayKeepsItsExtraCharge()
     {
         using var db = new TestDatabase();
         var (petSitterId, _, dogId) = await db.SeedAccountAsync();
@@ -619,13 +658,15 @@ public class RepositoryServicesTests
         var stay = (await db.Services.ListForPetSitterAsync(petSitterId)).Single();
         Assert.Equal(240m, stay.Total);
 
-        // 140 received leaves 100 owing, carried as 50 a night over the two nights.
-        await db.Services.RegisterPaymentAsync([new ServicePayment(stay.Kind, stay.ServiceId, 50m, false, 0m)]);
+        // 140 received against a 240 stay leaves 100 owing, recorded rather than repriced.
+        await db.Services.RegisterPaymentAsync([new ServicePayment(stay.Kind, stay.ServiceId, 140m, false, 0m)]);
 
         var after = (await db.Services.GetAsync(petSitterId, ServiceKind.Hotel, stay.ServiceId))!;
-        Assert.Equal(0m, after.ExtraCharge);
-        Assert.Equal(50m, after.Price);
-        Assert.Equal(100m, after.Total);
+        Assert.Equal(40m, after.ExtraCharge);
+        Assert.Equal(100m, after.Price);
+        Assert.Equal(240m, after.Total);
+        Assert.Equal(140m, after.AmountSettled);
+        Assert.Equal(100m, after.Outstanding);
         Assert.False(after.ServicePaid);
     }
 
