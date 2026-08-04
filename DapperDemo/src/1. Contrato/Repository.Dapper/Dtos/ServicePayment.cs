@@ -16,7 +16,11 @@ namespace DapperDemo.Repository.Dapper.Dtos;
 /// rate, so a reduced figure is the remainder divided by the nights.
 /// </param>
 /// <param name="fullyPaid">Whether this payment clears the service.</param>
-public sealed class ServicePayment(ServiceKind kind, int serviceId, decimal price, bool fullyPaid)
+/// <param name="extraCharge">
+/// A hotel stay's one-off extra. Left as it stands when the stay is paid in full; zeroed when the
+/// stay is repriced, because the remainder is expressed entirely through the nightly rate.
+/// </param>
+public sealed class ServicePayment(ServiceKind kind, int serviceId, decimal price, bool fullyPaid, decimal extraCharge = 0m)
 {
     public ServiceKind Kind { get; } = kind;
 
@@ -26,4 +30,7 @@ public sealed class ServicePayment(ServiceKind kind, int serviceId, decimal pric
     public decimal Price { get; } = price;
 
     public bool FullyPaid { get; } = fullyPaid;
+
+    /// <summary>Gets the extra to store on a hotel stay. Ignored for every other kind.</summary>
+    public decimal ExtraCharge { get; } = extraCharge;
 }

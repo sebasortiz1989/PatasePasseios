@@ -387,6 +387,147 @@ public class RepositoryServicesTests
         Assert.Equal(0m, (await db.Services.GetMonthlyIncomeAsync(petSitterId, 2026, 10)).Total);
     }
 
+    /// <summary>
+    /// A stay charges its nightly rate times the nights, plus a one-off extra for something like
+    /// a late pick-up: 100 a night for 5 nights plus 40 comes to 540.
+    /// </summary>
+    [Fact]
+    public async Task AHotelStayAddsItsExtraChargeOnTopOfTheNights()
+    {
+        using var db = new TestDatabase();
+        var (petSitterId, _, dogId) = await db.SeedAccountAsync();
+
+        await db.Services.AddHotelAsync(new PetHotelService
+        {
+            DogId = dogId,
+            PetSitterId = petSitterId,
+            StartDate = August1,
+            EndDate = August1.AddDays(5),
+            PricePerDay = 100m,
+            ExtraCharge = 40m,
+        });
+
+        var stay = (await db.Services.ListForPetSitterAsync(petSitterId)).Single();
+
+        Assert.Equal(5, stay.Nights);
+        Assert.Equal(40m, stay.ExtraCharge);
+        Assert.Equal(540m, stay.Total);
+        Assert.Equal(540m, stay.AmountDue);
+    }
+
+    [Fact]
+    public async Task AStayWithNoExtraChargeTotalsJustTheNights()
+    {
+        using var db = new TestDatabase();
+        var (petSitterId, _, dogId) = await db.SeedAccountAsync();
+
+        await db.Services.AddHotelAsync(new PetHotelService
+        {
+            DogId = dogId,
+            PetSitterId = petSitterId,
+            StartDate = August1,
+            EndDate = August1.AddDays(5),
+            PricePerDay = 100m,
+        });
+
+        var stay = (await db.Services.ListForPetSitterAsync(petSitterId)).Single();
+
+        Assert.Equal(0m, stay.ExtraCharge);
+        Assert.Equal(500m, stay.Total);
+    }
+
+    [Fact]
+    public async Task EditingAStayCanAddAndClearTheExtraCharge()
+    {
+        using var db = new TestDatabase();
+        var (petSitterId, _, dogId) = await db.SeedAccountAsync();
+        await AddAsync(db, ServiceKind.Hotel, petSitterId, dogId, August1, 100m);
+        var stay = (await db.Services.ListForPetSitterAsync(petSitterId)).Single();
+
+        ServiceItem Edited(decimal extra) => new()
+        {
+            ServiceId = stay.ServiceId,
+            Kind = ServiceKind.Hotel,
+            DogId = dogId,
+            DogName = stay.DogName,
+            TutorName = stay.TutorName,
+            Date = August1,
+            EndDate = August1.AddDays(2),
+            Price = 100m,
+            ExtraCharge = extra,
+        };
+
+        await db.Services.UpdateAsync(Edited(40m));
+        var withExtra = (await db.Services.GetAsync(petSitterId, ServiceKind.Hotel, stay.ServiceId))!;
+        Assert.Equal(40m, withExtra.ExtraCharge);
+        Assert.Equal(240m, withExtra.Total);
+
+        await db.Services.UpdateAsync(Edited(0m));
+        var without = (await db.Services.GetAsync(petSitterId, ServiceKind.Hotel, stay.ServiceId))!;
+        Assert.Equal(0m, without.ExtraCharge);
+        Assert.Equal(200m, without.Total);
+    }
+
+    /// <summary>
+    /// Repricing a part-paid stay expresses the whole remainder through the nightly rate, so the
+    /// extra has to be cleared — otherwise it would be charged a second time on top.
+    /// </summary>
+    [Fact]
+    public async Task RepricingAStayClearsItsExtraCharge()
+    {
+        using var db = new TestDatabase();
+        var (petSitterId, _, dogId) = await db.SeedAccountAsync();
+
+        await db.Services.AddHotelAsync(new PetHotelService
+        {
+            DogId = dogId,
+            PetSitterId = petSitterId,
+            StartDate = August1,
+            EndDate = August1.AddDays(2),
+            PricePerDay = 100m,
+            ExtraCharge = 40m,
+        });
+
+        var stay = (await db.Services.ListForPetSitterAsync(petSitterId)).Single();
+        Assert.Equal(240m, stay.Total);
+
+        // 140 received leaves 100 owing, carried as 50 a night over the two nights.
+        await db.Services.RegisterPaymentAsync([new ServicePayment(stay.Kind, stay.ServiceId, 50m, false, 0m)]);
+
+        var after = (await db.Services.GetAsync(petSitterId, ServiceKind.Hotel, stay.ServiceId))!;
+        Assert.Equal(0m, after.ExtraCharge);
+        Assert.Equal(50m, after.Price);
+        Assert.Equal(100m, after.Total);
+        Assert.False(after.ServicePaid);
+    }
+
+    /// <summary>Settling a stay in full must leave its extra on the record.</summary>
+    [Fact]
+    public async Task SettlingAStayKeepsItsExtraCharge()
+    {
+        using var db = new TestDatabase();
+        var (petSitterId, _, dogId) = await db.SeedAccountAsync();
+
+        await db.Services.AddHotelAsync(new PetHotelService
+        {
+            DogId = dogId,
+            PetSitterId = petSitterId,
+            StartDate = August1,
+            EndDate = August1.AddDays(2),
+            PricePerDay = 100m,
+            ExtraCharge = 40m,
+        });
+
+        var stay = (await db.Services.ListForPetSitterAsync(petSitterId)).Single();
+
+        await db.Services.RegisterPaymentAsync([new ServicePayment(stay.Kind, stay.ServiceId, stay.Price, true, stay.ExtraCharge)]);
+
+        var after = (await db.Services.GetAsync(petSitterId, ServiceKind.Hotel, stay.ServiceId))!;
+        Assert.True(after.ServicePaid);
+        Assert.Equal(40m, after.ExtraCharge);
+        Assert.Equal(240m, after.Total);
+    }
+
     [Fact]
     public async Task GettingAServiceThatDoesNotExistReturnsNull()
     {

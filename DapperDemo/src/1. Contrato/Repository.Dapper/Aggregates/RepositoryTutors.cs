@@ -54,7 +54,7 @@ public sealed class RepositoryTutors(DapperDatabaseService dapperDatabaseService
         await connection.OpenAsync().ConfigureAwait(false);
         var tutors = await connection.QueryAsync<Tutors>(
             sql: """
-                 SELECT t.TutorId, t.Name, t.Telephone, t.Address
+                 SELECT t.TutorId, t.Name, t.Telephone, t.Address, t.Credit
                  FROM Tutors t
                  INNER JOIN PetSitterTutors pst ON pst.TutorId = t.TutorId
                  WHERE pst.PetSitterId = @PetSitterId
@@ -65,12 +65,42 @@ public sealed class RepositoryTutors(DapperDatabaseService dapperDatabaseService
         return [.. tutors];
     }
 
+    /// <summary>
+    /// Sets the tutor's credit — money they have handed over beyond what they owed.
+    /// </summary>
+    /// <remarks>
+    /// A column of its own rather than part of <see cref="Update"/>: credit moves when a payment
+    /// is taken or a new service spends it, never when someone edits a phone number. Update
+    /// deliberately leaves it alone for the same reason.
+    /// </remarks>
+    /// <param name="tutorId">The tutor whose balance this is.</param>
+    /// <param name="credit">The new balance. Never negative.</param>
+    /// <returns>Whether the write succeeded.</returns>
+    public async Task<Response> SetCreditAsync(int tutorId, decimal credit)
+    {
+        try
+        {
+            using var connection = DapperDatabaseService.Connection;
+            await connection.OpenAsync().ConfigureAwait(false);
+            await connection.ExecuteAsync(
+                sql: "UPDATE Tutors SET Credit = @Credit WHERE TutorId = @TutorId",
+                param: new { Credit = Math.Max(credit, 0m), TutorId = tutorId }).ConfigureAwait(false);
+
+            return Response.Successful;
+        }
+        catch (SqliteException e)
+        {
+            Console.WriteLine(e);
+            return Response.Failed;
+        }
+    }
+
     public async Task<Tutors?> GetAsync(int tutorId)
     {
         using var connection = DapperDatabaseService.Connection;
         await connection.OpenAsync().ConfigureAwait(false);
         return await connection.QueryFirstOrDefaultAsync<Tutors>(
-            sql: "SELECT TutorId, Name, Telephone, Address FROM Tutors WHERE TutorId = @TutorId",
+            sql: "SELECT TutorId, Name, Telephone, Address, Credit FROM Tutors WHERE TutorId = @TutorId",
             param: new { TutorId = tutorId }).ConfigureAwait(false);
     }
 

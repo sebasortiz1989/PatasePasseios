@@ -78,7 +78,7 @@ public class RepositoryTutorsTests
             TutorId = tutorId,
             Name = "Ana Paula",
             Telephone = "88888",
-            Address = "Bairro",
+            Address = "Endereço",
         });
 
         Assert.Equal(Response.Successful, response);
@@ -86,7 +86,7 @@ public class RepositoryTutorsTests
         var tutor = await db.Tutors.GetAsync(tutorId);
         Assert.Equal("Ana Paula", tutor!.Name);
         Assert.Equal("88888", tutor.Telephone);
-        Assert.Equal("Bairro", tutor.Address);
+        Assert.Equal("Endereço", tutor.Address);
     }
 
     /// <summary>An edit must not detach the tutor from the account that owns them.</summary>
@@ -154,6 +154,56 @@ public class RepositoryTutorsTests
         using var db = new TestDatabase();
 
         Assert.Null(await db.Tutors.GetAsync(999));
+    }
+
+    [Fact]
+    public async Task ATutorStartsWithNoCredit()
+    {
+        using var db = new TestDatabase();
+        var petSitterId = await db.SeedPetSitterAsync();
+        var tutorId = await db.SeedTutorAsync(petSitterId);
+
+        Assert.Equal(0m, (await db.Tutors.GetAsync(tutorId))!.Credit);
+    }
+
+    [Fact]
+    public async Task CreditSurvivesAReRead()
+    {
+        using var db = new TestDatabase();
+        var petSitterId = await db.SeedPetSitterAsync();
+        var tutorId = await db.SeedTutorAsync(petSitterId);
+
+        Assert.Equal(Response.Successful, await db.Tutors.SetCreditAsync(tutorId, 125.50m));
+
+        Assert.Equal(125.50m, (await db.Tutors.GetAsync(tutorId))!.Credit);
+        Assert.Equal(125.50m, (await db.Tutors.ListForPetSitterAsync(petSitterId)).Single().Credit);
+    }
+
+    /// <summary>Spending more credit than exists must not leave a negative balance behind.</summary>
+    [Fact]
+    public async Task CreditNeverGoesNegative()
+    {
+        using var db = new TestDatabase();
+        var petSitterId = await db.SeedPetSitterAsync();
+        var tutorId = await db.SeedTutorAsync(petSitterId);
+
+        await db.Tutors.SetCreditAsync(tutorId, -40m);
+
+        Assert.Equal(0m, (await db.Tutors.GetAsync(tutorId))!.Credit);
+    }
+
+    /// <summary>Editing a phone number must not spend the tutor's credit.</summary>
+    [Fact]
+    public async Task EditingATutorLeavesTheirCreditAlone()
+    {
+        using var db = new TestDatabase();
+        var petSitterId = await db.SeedPetSitterAsync();
+        var tutorId = await db.SeedTutorAsync(petSitterId);
+        await db.Tutors.SetCreditAsync(tutorId, 80m);
+
+        await db.Tutors.Update(new Tutors { TutorId = tutorId, Name = "Ana Paula", Telephone = "1", Address = "x" });
+
+        Assert.Equal(80m, (await db.Tutors.GetAsync(tutorId))!.Credit);
     }
 
     /// <summary>

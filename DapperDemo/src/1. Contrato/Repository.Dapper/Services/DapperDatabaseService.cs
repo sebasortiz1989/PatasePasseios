@@ -85,6 +85,8 @@ public sealed class DapperDatabaseService
     {
         AddColumnIfMissing(connection, "PetSitter", "Pix", "VARCHAR(255)");
         AddColumnIfMissing(connection, "PetSitter", "HideMoney", "INTEGER NOT NULL DEFAULT 0");
+        AddColumnIfMissing(connection, "Tutors", "Credit", "DECIMAL(10, 2) NOT NULL DEFAULT 0");
+        AddColumnIfMissing(connection, "PetHotelService", "ExtraCharge", "DECIMAL(10, 2) NOT NULL DEFAULT 0");
     }
 
     private static void AddColumnIfMissing(SqliteConnection connection, string table, string column, string type)
@@ -113,11 +115,14 @@ public sealed class DapperDatabaseService
                      Pix VARCHAR(255),
                      HideMoney INTEGER NOT NULL DEFAULT 0);
                  
+                 -- Credit is money the tutor has already handed over beyond what they owed; it
+                 -- is spent automatically against the next service booked for one of their dogs.
                  CREATE TABLE IF NOT EXISTS Tutors (
                      TutorId INTEGER PRIMARY KEY AUTOINCREMENT,
                      Name VARCHAR(255) NOT NULL,
                      Telephone VARCHAR(100) NOT NULL,
-                     Address VARCHAR(100) NOT NULL);
+                     Address VARCHAR(100) NOT NULL,
+                     Credit DECIMAL(10, 2) NOT NULL DEFAULT 0);
                  
                  CREATE TABLE IF NOT EXISTS PetSitterTutors (
                      PetSitterId INTEGER NOT NULL,
@@ -165,6 +170,8 @@ public sealed class DapperDatabaseService
                      StartDate DATETIME NOT NULL,
                      EndDate DATETIME NOT NULL,
                      PricePerDay DECIMAL(10, 2) NOT NULL,
+                     -- Anything charged on top of the nightly rate, such as a late pick-up.
+                     ExtraCharge DECIMAL(10, 2) NOT NULL DEFAULT 0,
                      RequiresWalking BOOLEAN NOT NULL DEFAULT 0,
                      ServicePaid BOOLEAN,
                      FOREIGN KEY (DogId) REFERENCES Dogs(DogId),

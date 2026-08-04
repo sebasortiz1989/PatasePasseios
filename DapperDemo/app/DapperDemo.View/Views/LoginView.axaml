@@ -6,16 +6,16 @@
     x:DataType="viewmodels:LoginViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
+    xmlns:components="using:DapperDemo.View.Components"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:inputs="using:AvaloniaFramework.Controls.Inputs"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Viewbox>
+    <components:DesignCanvas DesignHeight="1560" DesignWidth="720">
         <Grid
             Background="{StaticResource ColorBg}"
-            Height="1560"
             Width="720">
             <StackPanel
                 HorizontalAlignment="Center"
@@ -86,5 +86,5 @@
                     Width="560" />
             </StackPanel>
         </Grid>
-    </Viewbox>
+    </components:DesignCanvas>
 </UserControl>

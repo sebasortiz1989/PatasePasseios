@@ -5,15 +5,21 @@
     x:Class="DapperDemo.View.Views.MainView"
     x:DataType="viewmodels:MainViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:components="using:DapperDemo.View.Components"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Viewbox>
+    <!--
+        The row holding the screens is starred rather than the authored 1460: DesignCanvas scales by
+        width and hands the leftover height to this Grid, so on a taller-than-design device that row
+        grows and the 100-unit navigation bar stays put at the bottom.
+    -->
+    <components:DesignCanvas DesignHeight="1560" DesignWidth="720">
         <Grid
             Background="{StaticResource ColorBg}"
-            RowDefinitions="1460, 100"
+            RowDefinitions="*, 100"
             Width="720">
 
             <TransitioningContentControl Content="{Binding CurrentView.ViewShown}" Grid.Row="0">
@@ -118,6 +124,6 @@
             </Border>
 
         </Grid>
-    </Viewbox>
+    </components:DesignCanvas>
 
 </UserControl>

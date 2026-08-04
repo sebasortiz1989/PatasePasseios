@@ -15,7 +15,6 @@
 
     <Grid
         Background="{StaticResource ColorBg}"
-        Height="1460"
         Width="720">
         <ScrollViewer>
             <StackPanel Spacing="0">

@@ -18,6 +18,12 @@ public class PetHotelService
     /// <summary>Gets daily rate, not the total for the stay.</summary>
     public decimal PricePerDay { get; init; }
 
+    /// <summary>
+    /// Gets anything charged on top of the nightly rate — a late pick-up, for instance. Added to
+    /// the stay once, not per night.
+    /// </summary>
+    public decimal ExtraCharge { get; init; }
+
     public bool RequiresWalking { get; init; }
 
     public bool ServicePaid { get; init; }

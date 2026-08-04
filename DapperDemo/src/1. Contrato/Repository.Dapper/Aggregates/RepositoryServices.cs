@@ -40,7 +40,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
 
     private const string HotelSelect = """
         SELECT h.PetHotelServiceId AS ServiceId, 2 AS Kind, h.DogId, d.Name AS DogName, d.Image AS DogImage,
-               t.Name AS TutorName, t.Address AS TutorAddress, h.StartDate AS Date, h.EndDate, h.PricePerDay AS Price, h.RequiresWalking, h.ServicePaid
+               t.Name AS TutorName, t.Address AS TutorAddress, h.StartDate AS Date, h.EndDate, h.PricePerDay AS Price, h.ExtraCharge, h.RequiresWalking, h.ServicePaid
         FROM PetHotelService h
         INNER JOIN Dogs d ON d.DogId = h.DogId
         INNER JOIN Tutors t ON t.TutorId = d.TutorId
@@ -102,10 +102,10 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
 
     public Task<Response> AddHotelAsync(PetHotelService service) => InsertAsync(
         """
-        INSERT INTO PetHotelService (DogId, PetSitterId, StartDate, EndDate, PricePerDay, RequiresWalking, ServicePaid)
-        VALUES (@DogId, @PetSitterId, @StartDate, @EndDate, @PricePerDay, @RequiresWalking, @ServicePaid)
+        INSERT INTO PetHotelService (DogId, PetSitterId, StartDate, EndDate, PricePerDay, ExtraCharge, RequiresWalking, ServicePaid)
+        VALUES (@DogId, @PetSitterId, @StartDate, @EndDate, @PricePerDay, @ExtraCharge, @RequiresWalking, @ServicePaid)
         """,
-        new { service.DogId, service.PetSitterId, service.StartDate, service.EndDate, service.PricePerDay, service.RequiresWalking, service.ServicePaid });
+        new { service.DogId, service.PetSitterId, service.StartDate, service.EndDate, service.PricePerDay, service.ExtraCharge, service.RequiresWalking, service.ServicePaid });
 
     public Task<Response> AddDayCareAsync(DayCareService service) => InsertAsync(
         """
@@ -140,10 +140,10 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
             ServiceKind.Hotel => (
                 """
                 UPDATE PetHotelService
-                SET StartDate = @Date, EndDate = @EndDate, PricePerDay = @Price, RequiresWalking = @RequiresWalking
+                SET StartDate = @Date, EndDate = @EndDate, PricePerDay = @Price, ExtraCharge = @ExtraCharge, RequiresWalking = @RequiresWalking
                 WHERE PetHotelServiceId = @ServiceId
                 """,
-                new { service.Date, service.EndDate, service.Price, service.RequiresWalking, service.ServiceId }),
+                new { service.Date, service.EndDate, service.Price, service.ExtraCharge, service.RequiresWalking, service.ServiceId }),
 
             // Date is normalised to midnight: day-care has no time of day, so an edit must not
             // let one back in through the date picker.
@@ -245,9 +245,14 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
             foreach (var payment in payments)
             {
                 var (table, key, priceColumn) = TableFor(payment.Kind);
+
+                // Only a hotel stay has an extra to carry, and a repriced one has to have it
+                // cleared — otherwise the remainder in the nightly rate would be added to again.
+                var extra = payment.Kind == ServiceKind.Hotel ? ", ExtraCharge = @ExtraCharge" : string.Empty;
+
                 await connection.ExecuteAsync(
-                    sql: $"UPDATE {table} SET {priceColumn} = @Price, ServicePaid = @FullyPaid WHERE {key} = @ServiceId",
-                    param: new { Price = payment.Price, payment.FullyPaid, payment.ServiceId },
+                    sql: $"UPDATE {table} SET {priceColumn} = @Price{extra}, ServicePaid = @FullyPaid WHERE {key} = @ServiceId",
+                    param: new { payment.Price, payment.ExtraCharge, payment.FullyPaid, payment.ServiceId },
                     transaction: transaction).ConfigureAwait(false);
             }
 

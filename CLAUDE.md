@@ -273,9 +273,21 @@ leaks a full copy of the database per import.
 `ClassicInput`, the stroked 24×24 `Icon*` geometries…). Bind to these — no raw
 hex, font names or ad-hoc sizes in views.
 
-- Layouts are authored against a fixed **720×1560** canvas inside a `Viewbox`.
+- Layouts are authored against a **720**-wide design canvas, nominally **720×1560**.
   Pixel values are the source design's px scaled by **~1.7476**. Follow that
   factor rather than eyeballing new numbers.
+- The canvas is scaled to the device by `Components/DesignCanvas.cs`, **not** by a
+  `Viewbox`. A Viewbox fits the canvas whole and letterboxes any device that is not
+  720:1560 — against `ShellView`'s black background, visibly. `DesignCanvas` takes
+  its scale from the width and gives the leftover height to the screen as extra
+  canvas, so the width is always exact and only the height varies. It falls back to
+  Viewbox-style height-capped scaling, centred, when the display is too wide for
+  that (desktop, tablet).
+- **Consequence for new screens: never pin a root `Height`.** Set `Width="720"`,
+  leave the height to stretch, and put the content in a `ScrollViewer` so it can
+  absorb a taller device. Only the three screens pushed by `NavigationController`
+  (`LoginView`, `SignUpView`, `MainView`) carry a `DesignCanvas`; everything shown
+  through `CurrentView` sits inside `MainView`'s and must not add its own.
 - Inputs and buttons come from AvaloniaFramework (`inputs:VTextBoxWithLabel`,
   `buttons:VButton`, `buttons:GroupButton`), themed through `V*` properties on a
   style class in `ClassicalTheme.axaml`, not inline.

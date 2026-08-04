@@ -11,212 +11,209 @@
     xmlns:viewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Viewbox>
-        <Grid
-            Background="{StaticResource ColorBg}"
-            Height="1460"
-            Width="720">
-            <ScrollViewer>
-                <StackPanel Spacing="0">
-                    <buttons:VButton
-                        Classes="BtnBack"
-                        Command="{Binding BackCommand}"
-                        Margin="32,32,0,0"
-                        VText="← Voltar" />
+    <Grid
+        Background="{StaticResource ColorBg}"
+        Width="720">
+        <ScrollViewer>
+            <StackPanel Spacing="0">
+                <buttons:VButton
+                    Classes="BtnBack"
+                    Command="{Binding BackCommand}"
+                    Margin="32,32,0,0"
+                    VText="← Voltar" />
 
-                    <StackPanel Margin="32,24,32,16" Spacing="2">
-                        <TextBlock
-                            Classes="Heading1"
-                            FontSize="62"
-                            Text="Novo cachorro" />
-                        <TextBlock Classes="Kicker" Text="Cadastrar" />
-                    </StackPanel>
-
-                    <!--  A dog needs an owner, so with no tutors yet the form sends the user there first  -->
-                    <Border
-                        BorderBrush="{StaticResource ColorDivider}"
-                        BorderThickness="0,2,0,0"
-                        IsVisible="{Binding HasNoTutors}"
-                        Margin="32,16,32,0"
-                        Padding="32,64">
-                        <TextBlock
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="29"
-                            FontStyle="Italic"
-                            Foreground="{StaticResource ColorTextMuted45}"
-                            HorizontalAlignment="Center"
-                            Text="Cadastre um tutor primeiro."
-                            TextAlignment="Center"
-                            TextWrapping="Wrap" />
-                    </Border>
-
-                    <StackPanel
-                        IsVisible="{Binding HasTutors}"
-                        Margin="32,16,32,48"
-                        Spacing="28">
-                        <!--  Optional: a dog with no photo falls back to its initials everywhere.  -->
-                        <StackPanel HorizontalAlignment="Center" Spacing="16">
-                            <Panel
-                                Height="168"
-                                HorizontalAlignment="Center"
-                                Width="168">
-                                <Image
-                                    IsVisible="{Binding HasPhoto}"
-                                    Source="{Binding PhotoPath, Converter={StaticResource ImagePathConverter}}"
-                                    Stretch="UniformToFill">
-                                    <Image.Clip>
-                                        <EllipseGeometry Rect="0,0,168,168" />
-                                    </Image.Clip>
-                                </Image>
-                                <Border
-                                    BorderBrush="{StaticResource ColorDivider}"
-                                    BorderThickness="2"
-                                    CornerRadius="84">
-                                    <TextBlock
-                                        FontFamily="{StaticResource FontBody}"
-                                        FontSize="27"
-                                        FontStyle="Italic"
-                                        Foreground="{StaticResource ColorTextMuted45}"
-                                        HorizontalAlignment="Center"
-                                        IsVisible="{Binding NoPhoto}"
-                                        Text="sem foto"
-                                        VerticalAlignment="Center" />
-                                </Border>
-                            </Panel>
-                            <StackPanel
-                                HorizontalAlignment="Center"
-                                Orientation="Horizontal"
-                                Spacing="12">
-                                <buttons:VButton
-                                    Classes="BtnSecondary"
-                                    Command="{Binding ChoosePhotoCommand}"
-                                    Height="64"
-                                    VText="Escolher foto"
-                                    Width="240" />
-                                <buttons:VButton
-                                    Classes="BtnGhost"
-                                    Command="{Binding RemovePhotoCommand}"
-                                    Height="64"
-                                    IsVisible="{Binding HasPhoto}"
-                                    VText="Remover"
-                                    Width="180" />
-                            </StackPanel>
-                        </StackPanel>
-
-                        <StackPanel Spacing="10">
-                            <TextBlock
-                                FontFamily="{StaticResource FontBody}"
-                                FontSize="25"
-                                Foreground="{StaticResource ColorTextMuted70}"
-                                Text="Nome" />
-                            <TextBox
-                                Background="Transparent"
-                                BorderBrush="{StaticResource ColorDivider}"
-                                BorderThickness="2"
-                                CaretBrush="{StaticResource ColorAccent}"
-                                CornerRadius="7"
-                                FontFamily="{StaticResource FontBody}"
-                                FontSize="31"
-                                Foreground="{StaticResource ColorText}"
-                                MinHeight="82"
-                                Padding="18,0"
-                                PlaceholderText="Toby"
-                                Text="{Binding Name}"
-                                VerticalContentAlignment="Center" />
-                        </StackPanel>
-
-                        <StackPanel Spacing="10">
-                            <TextBlock
-                                FontFamily="{StaticResource FontBody}"
-                                FontSize="25"
-                                Foreground="{StaticResource ColorTextMuted70}"
-                                Text="Raça" />
-                            <TextBox
-                                Background="Transparent"
-                                BorderBrush="{StaticResource ColorDivider}"
-                                BorderThickness="2"
-                                CaretBrush="{StaticResource ColorAccent}"
-                                CornerRadius="7"
-                                FontFamily="{StaticResource FontBody}"
-                                FontSize="31"
-                                Foreground="{StaticResource ColorText}"
-                                MinHeight="82"
-                                Padding="18,0"
-                                PlaceholderText="Golden Retriever"
-                                Text="{Binding Breed}"
-                                VerticalContentAlignment="Center" />
-                        </StackPanel>
-
-                        <StackPanel Spacing="10">
-                            <TextBlock
-                                FontFamily="{StaticResource FontBody}"
-                                FontSize="25"
-                                Foreground="{StaticResource ColorTextMuted70}"
-                                Text="Tutor" />
-                            <ComboBox
-                                Background="Transparent"
-                                BorderBrush="{StaticResource ColorDivider}"
-                                BorderThickness="2"
-                                CornerRadius="7"
-                                FontFamily="{StaticResource FontBody}"
-                                FontSize="31"
-                                Foreground="{StaticResource ColorText}"
-                                HorizontalAlignment="Stretch"
-                                ItemsSource="{Binding TutorOptions}"
-                                MinHeight="82"
-                                Padding="18,0"
-                                PlaceholderText="Selecione…"
-                                SelectedItem="{Binding SelectedTutor}">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate DataType="viewmodels:TutorOption">
-                                        <TextBlock Text="{Binding Label}" />
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
-                        </StackPanel>
-
-                        <StackPanel Spacing="10">
-                            <TextBlock
-                                FontFamily="{StaticResource FontBody}"
-                                FontSize="25"
-                                Foreground="{StaticResource ColorTextMuted70}"
-                                Text="Descrição" />
-                            <TextBox
-                                AcceptsReturn="True"
-                                Background="Transparent"
-                                BorderBrush="{StaticResource ColorDivider}"
-                                BorderThickness="2"
-                                CaretBrush="{StaticResource ColorAccent}"
-                                CornerRadius="7"
-                                FontFamily="{StaticResource FontBody}"
-                                FontSize="31"
-                                Foreground="{StaticResource ColorText}"
-                                MinHeight="160"
-                                Padding="18,12"
-                                PlaceholderText="Temperamento, cuidados, rotina…"
-                                Text="{Binding Description}"
-                                TextWrapping="Wrap" />
-                        </StackPanel>
-
-                        <TextBlock
-                            Classes="FormMsg Error"
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="28"
-                            FontStyle="Italic"
-                            HorizontalAlignment="Center"
-                            IsVisible="{Binding HasError}"
-                            Text="{Binding ErrorMessage}"
-                            TextAlignment="Center" />
-
-                        <buttons:VButton
-                            Classes="BtnPrimary"
-                            Command="{Binding SaveCommand}"
-                            Height="88"
-                            HorizontalAlignment="Stretch"
-                            VText="Salvar cachorro" />
-                    </StackPanel>
+                <StackPanel Margin="32,24,32,16" Spacing="2">
+                    <TextBlock
+                        Classes="Heading1"
+                        FontSize="62"
+                        Text="Novo cachorro" />
+                    <TextBlock Classes="Kicker" Text="Cadastrar" />
                 </StackPanel>
-            </ScrollViewer>
-        </Grid>
-    </Viewbox>
+
+                <!--  A dog needs an owner, so with no tutors yet the form sends the user there first  -->
+                <Border
+                    BorderBrush="{StaticResource ColorDivider}"
+                    BorderThickness="0,2,0,0"
+                    IsVisible="{Binding HasNoTutors}"
+                    Margin="32,16,32,0"
+                    Padding="32,64">
+                    <TextBlock
+                        FontFamily="{StaticResource FontBody}"
+                        FontSize="29"
+                        FontStyle="Italic"
+                        Foreground="{StaticResource ColorTextMuted45}"
+                        HorizontalAlignment="Center"
+                        Text="Cadastre um tutor primeiro."
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                </Border>
+
+                <StackPanel
+                    IsVisible="{Binding HasTutors}"
+                    Margin="32,16,32,48"
+                    Spacing="28">
+                    <!--  Optional: a dog with no photo falls back to its initials everywhere.  -->
+                    <StackPanel HorizontalAlignment="Center" Spacing="16">
+                        <Panel
+                            Height="168"
+                            HorizontalAlignment="Center"
+                            Width="168">
+                            <Image
+                                IsVisible="{Binding HasPhoto}"
+                                Source="{Binding PhotoPath, Converter={StaticResource ImagePathConverter}}"
+                                Stretch="UniformToFill">
+                                <Image.Clip>
+                                    <EllipseGeometry Rect="0,0,168,168" />
+                                </Image.Clip>
+                            </Image>
+                            <Border
+                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderThickness="2"
+                                CornerRadius="84">
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="27"
+                                    FontStyle="Italic"
+                                    Foreground="{StaticResource ColorTextMuted45}"
+                                    HorizontalAlignment="Center"
+                                    IsVisible="{Binding NoPhoto}"
+                                    Text="sem foto"
+                                    VerticalAlignment="Center" />
+                            </Border>
+                        </Panel>
+                        <StackPanel
+                            HorizontalAlignment="Center"
+                            Orientation="Horizontal"
+                            Spacing="12">
+                            <buttons:VButton
+                                Classes="BtnSecondary"
+                                Command="{Binding ChoosePhotoCommand}"
+                                Height="64"
+                                VText="Escolher foto"
+                                Width="240" />
+                            <buttons:VButton
+                                Classes="BtnGhost"
+                                Command="{Binding RemovePhotoCommand}"
+                                Height="64"
+                                IsVisible="{Binding HasPhoto}"
+                                VText="Remover"
+                                Width="180" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Spacing="10">
+                        <TextBlock
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="25"
+                            Foreground="{StaticResource ColorTextMuted70}"
+                            Text="Nome" />
+                        <TextBox
+                            Background="Transparent"
+                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderThickness="2"
+                            CaretBrush="{StaticResource ColorAccent}"
+                            CornerRadius="7"
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="31"
+                            Foreground="{StaticResource ColorText}"
+                            MinHeight="82"
+                            Padding="18,0"
+                            PlaceholderText="Toby"
+                            Text="{Binding Name}"
+                            VerticalContentAlignment="Center" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="10">
+                        <TextBlock
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="25"
+                            Foreground="{StaticResource ColorTextMuted70}"
+                            Text="Raça" />
+                        <TextBox
+                            Background="Transparent"
+                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderThickness="2"
+                            CaretBrush="{StaticResource ColorAccent}"
+                            CornerRadius="7"
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="31"
+                            Foreground="{StaticResource ColorText}"
+                            MinHeight="82"
+                            Padding="18,0"
+                            PlaceholderText="Golden Retriever"
+                            Text="{Binding Breed}"
+                            VerticalContentAlignment="Center" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="10">
+                        <TextBlock
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="25"
+                            Foreground="{StaticResource ColorTextMuted70}"
+                            Text="Tutor" />
+                        <ComboBox
+                            Background="Transparent"
+                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderThickness="2"
+                            CornerRadius="7"
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="31"
+                            Foreground="{StaticResource ColorText}"
+                            HorizontalAlignment="Stretch"
+                            ItemsSource="{Binding TutorOptions}"
+                            MinHeight="82"
+                            Padding="18,0"
+                            PlaceholderText="Selecione…"
+                            SelectedItem="{Binding SelectedTutor}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate DataType="viewmodels:TutorOption">
+                                    <TextBlock Text="{Binding Label}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <StackPanel Spacing="10">
+                        <TextBlock
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="25"
+                            Foreground="{StaticResource ColorTextMuted70}"
+                            Text="Descrição" />
+                        <TextBox
+                            AcceptsReturn="True"
+                            Background="Transparent"
+                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderThickness="2"
+                            CaretBrush="{StaticResource ColorAccent}"
+                            CornerRadius="7"
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="31"
+                            Foreground="{StaticResource ColorText}"
+                            MinHeight="160"
+                            Padding="18,12"
+                            PlaceholderText="Temperamento, cuidados, rotina…"
+                            Text="{Binding Description}"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <TextBlock
+                        Classes="FormMsg Error"
+                        FontFamily="{StaticResource FontBody}"
+                        FontSize="28"
+                        FontStyle="Italic"
+                        HorizontalAlignment="Center"
+                        IsVisible="{Binding HasError}"
+                        Text="{Binding ErrorMessage}"
+                        TextAlignment="Center" />
+
+                    <buttons:VButton
+                        Classes="BtnPrimary"
+                        Command="{Binding SaveCommand}"
+                        Height="88"
+                        HorizontalAlignment="Stretch"
+                        VText="Salvar cachorro" />
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
 </UserControl>

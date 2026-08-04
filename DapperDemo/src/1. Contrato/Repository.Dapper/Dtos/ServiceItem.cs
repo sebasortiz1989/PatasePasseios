@@ -55,6 +55,12 @@ public sealed class ServiceItem
     /// </summary>
     public decimal Price { get; init; }
 
+    /// <summary>
+    /// Gets a one-off amount added on top of a hotel stay, such as a late pick-up. Zero for every
+    /// other kind.
+    /// </summary>
+    public decimal ExtraCharge { get; init; }
+
     public bool RequiresWalking { get; init; }
 
     public bool ServicePaid { get; init; }
@@ -70,7 +76,7 @@ public sealed class ServiceItem
     /// Gets what this service costs in full. A hotel stay's <see cref="Price"/> is a nightly rate
     /// so it multiplies out; everything else is a one-off fee.
     /// </summary>
-    public decimal Total => Kind == ServiceKind.Hotel ? Price * Nights : Price;
+    public decimal Total => Kind == ServiceKind.Hotel ? (Price * Nights) + ExtraCharge : Price;
 
     /// <summary>
     /// Gets what is still owed on this service.

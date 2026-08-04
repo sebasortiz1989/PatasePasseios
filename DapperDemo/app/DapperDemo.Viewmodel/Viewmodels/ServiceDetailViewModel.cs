@@ -110,8 +110,14 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
     /// <summary>Gets how many nights the stay covers, e.g. "3 diárias". Hotel stays only.</summary>
     public string DaysLabel { get; private set; } = string.Empty;
 
-    /// <summary>Gets the daily rate multiplied by <see cref="DaysLabel"/>'s count. Hotel stays only.</summary>
+    /// <summary>Gets the daily rate times the nights, plus any extra. Hotel stays only.</summary>
     public string TotalLabel { get; private set; } = string.Empty;
+
+    /// <summary>Gets the one-off extra on a hotel stay, formatted.</summary>
+    public string ExtraChargeLabel { get; private set; } = string.Empty;
+
+    /// <summary>Gets a value indicating whether this stay carries an extra worth showing.</summary>
+    public bool HasExtraCharge { get; private set; }
 
     public bool Paid { get; private set; }
 
@@ -128,6 +134,11 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
     public TimeSpan EditEndTimePart { get; set; }
 
     public string EditPrice { get; set; } = string.Empty;
+
+    /// <summary>
+    /// A one-off amount charged on top of a hotel stay — a late pick-up, say. Blank means none.
+    /// </summary>
+    public string EditExtraCharge { get; set; } = string.Empty;
 
     public bool EditRequiresWalking { get; set; }
 
@@ -252,6 +263,9 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
         EditEndDatePart = (service.EndDate ?? service.Date.AddDays(1)).Date;
         EditEndTimePart = (service.EndDate ?? service.Date.AddDays(1)).TimeOfDay;
         EditPrice = service.Price.ToString("0.##", CultureInfo.InvariantCulture);
+        EditExtraCharge = service.ExtraCharge > 0m
+            ? service.ExtraCharge.ToString("0.##", CultureInfo.InvariantCulture)
+            : string.Empty;
         EditRequiresWalking = service.RequiresWalking;
         EditError = string.Empty;
         IsEditing = true;
@@ -278,6 +292,14 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
             return;
         }
 
+        // Blank means none; anything else has to be a real amount rather than being ignored.
+        var extraCharge = 0m;
+        if (!string.IsNullOrWhiteSpace(EditExtraCharge) && (!TryParsePrice(EditExtraCharge, out extraCharge) || extraCharge < 0m))
+        {
+            EditError = "Informe um valor adicional válido.";
+            return;
+        }
+
         // Day-care is booked for a day, not a moment, so the time picker is not shown for it and
         // its date is stored bare.
         var date = service.Kind == ServiceKind.DayCare
@@ -301,6 +323,7 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
             Date = date,
             EndDate = service.Kind == ServiceKind.Hotel ? endDate : null,
             Price = price,
+            ExtraCharge = service.Kind == ServiceKind.Hotel ? extraCharge : 0m,
             RequiresWalking = EditRequiresWalking,
             ServicePaid = service.ServicePaid,
         }).WithSync();
@@ -368,9 +391,12 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
 
         // A stay is entered as a daily rate, so what it actually costs is only visible if the
         // screen does the multiplication.
+        ExtraChargeLabel = AppSession.Money(service.ExtraCharge);
+        HasExtraCharge = service.Kind == ServiceKind.Hotel && service.ExtraCharge > 0m;
+
         var nights = NightsBetween(service.Date, service.EndDate);
         DaysLabel = nights == 1 ? "1 diária" : $"{nights} diárias";
-        TotalLabel = AppSession.Money(service.Price * nights);
+        TotalLabel = AppSession.Money(service.Total);
 
         Paid = service.ServicePaid;
         PaidActionLabel = service.ServicePaid ? "Pago" : "Marcar como pago";

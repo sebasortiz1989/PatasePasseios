@@ -6,6 +6,7 @@
     x:DataType="viewmodels:SignUpViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
+    xmlns:components="using:DapperDemo.View.Components"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:inputs="using:AvaloniaFramework.Controls.Inputs"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -46,10 +47,9 @@
         </StreamGeometry>
     </UserControl.Resources>
 
-    <Viewbox>
+    <components:DesignCanvas DesignHeight="1560" DesignWidth="720">
         <Grid
             Background="{StaticResource ColorBg}"
-            Height="1560"
             Width="720">
             <StackPanel
                 HorizontalAlignment="Center"
@@ -154,6 +154,6 @@
                 </Grid>
             </StackPanel>
         </Grid>
-    </Viewbox>
+    </components:DesignCanvas>
 
 </UserControl>

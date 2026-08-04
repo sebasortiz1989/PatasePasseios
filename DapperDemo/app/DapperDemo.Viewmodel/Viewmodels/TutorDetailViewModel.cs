@@ -113,6 +113,14 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     /// <summary>Gets a value indicating whether there is anything to collect, so the button can hide when there is not.</summary>
     public bool HasBalance { get; private set; }
 
+    /// <summary>
+    /// Gets what is owed back to the tutor: money they handed over beyond their balance. Spent
+    /// automatically against the next service booked for one of their dogs.
+    /// </summary>
+    public string CreditLabel { get; private set; } = string.Empty;
+
+    public bool HasCredit { get; private set; }
+
     /// <summary>Gets a value indicating whether the amount-received form is open.</summary>
     public bool IsRegisteringPayment { get; private set; }
 
@@ -136,9 +144,9 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
 
     public bool HasPaymentMsg => !string.IsNullOrEmpty(PaymentMsg);
 
-    public bool NoFuture { get; private set; }
+    public bool NoPending { get; private set; }
 
-    public ObservableCollection<TutorFutureServiceRow> FutureServices { get; } = [];
+    public ObservableCollection<TutorFutureServiceRow> PendingServices { get; } = [];
 
     /// <summary>
     /// Public because the View calls it from OnLoaded — see <see cref="DogDetailViewModel"/> for
@@ -167,6 +175,8 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
 
         Initials = AppSession.Initials(tutor.Name);
         Name = tutor.Name;
+        CreditLabel = AppSession.Money(tutor.Credit);
+        HasCredit = tutor.Credit > 0m;
         Neighborhood = tutor.Address ?? string.Empty;
         Phone = tutor.Telephone;
 
@@ -181,16 +191,17 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         TotalDueLabel = AppSession.Money(due);
         HasBalance = due > 0m;
 
-        var now = DateTime.Now;
-        var future = tutorServices
-            .Where(s => s.Date >= now)
+        // Only what is still owed: this list is the tutor's bill, not their diary. A settled
+        // service drops off it the moment a payment covers it.
+        var pending = tutorServices
+            .Where(s => !s.ServicePaid)
             .ToArray();
 
-        ClearFutureServices();
-        foreach (var service in future)
+        ClearPendingServices();
+        foreach (var service in pending)
         {
             // CA2000: ownership passes to the row, which disposes the command when the list is
-            // rebuilt — see ClearFutureServices.
+            // rebuilt — see ClearPendingServices.
 #pragma warning disable CA2000
             var openCommand = new SynchronizedCommand(
                 () => Open(service.Kind, service.ServiceId),
@@ -198,7 +209,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
                 true);
 #pragma warning restore CA2000
 
-            FutureServices.Add(new TutorFutureServiceRow(
+            PendingServices.Add(new TutorFutureServiceRow(
                 service.DogName,
                 AppSession.TypeLabel(service.Kind),
                 AppSession.DateTimeLabel(service.Date, service.Kind),
@@ -207,7 +218,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
                 openCommand));
         }
 
-        NoFuture = future.Length == 0;
+        NoPending = pending.Length == 0;
     }
 
     /// <summary>
@@ -243,7 +254,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
             if (remaining >= due)
             {
                 remaining -= due;
-                payments.Add(new ServicePayment(service.Kind, service.ServiceId, service.Price, true));
+                payments.Add(new ServicePayment(service.Kind, service.ServiceId, service.Price, true, service.ExtraCharge));
                 continue;
             }
 
@@ -254,7 +265,9 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
                 ? decimal.Round(shortfall / service.Nights, 2, MidpointRounding.AwayFromZero)
                 : shortfall;
 
-            payments.Add(new ServicePayment(service.Kind, service.ServiceId, newPrice, false));
+            // The remainder is carried entirely by the rate, so any extra is folded in and the
+            // extra column cleared — otherwise it would be charged on top a second time.
+            payments.Add(new ServicePayment(service.Kind, service.ServiceId, newPrice, false, 0m));
             remaining = 0m;
             break;
         }
@@ -266,7 +279,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
 
     protected override Task OnRunFinishing()
     {
-        ClearFutureServices();
+        ClearPendingServices();
         return Task.CompletedTask;
     }
 
@@ -315,10 +328,13 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         var leftover = amount - applied;
         var message = $"Recebido {AppSession.Money(applied)} — {(settled == 1 ? "1 serviço quitado" : $"{settled} serviços quitados")}.";
 
-        if (leftover > 0m)
+        if (leftover > 0m && session.SelectedTutorId is int creditTutorId)
         {
-            // Nowhere to put a credit, so it is reported rather than silently swallowed.
-            message += $" Sobraram {AppSession.Money(leftover)} além do que era devido.";
+            // Overpaying leaves a balance in the tutor's favour rather than vanishing. It is spent
+            // automatically the next time a service is booked for one of their dogs.
+            var tutor = await repositoryTutors.GetAsync(creditTutorId).WithSync();
+            await repositoryTutors.SetCreditAsync(creditTutorId, (tutor?.Credit ?? 0m) + leftover).WithSync();
+            message += $" Sobraram {AppSession.Money(leftover)}, guardados como crédito.";
         }
 
         PaymentError = string.Empty;
@@ -358,7 +374,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         {
             var leftover = amount - applied;
             preview += leftover > 0m
-                ? $". Sobram {AppSession.Money(leftover)} além do devido."
+                ? $". Sobram {AppSession.Money(leftover)}, que viram crédito do tutor."
                 : " — nada fica em aberto.";
         }
 
@@ -377,14 +393,14 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         return Task.CompletedTask;
     }
 
-    private void ClearFutureServices()
+    private void ClearPendingServices()
     {
-        foreach (var row in FutureServices)
+        foreach (var row in PendingServices)
         {
             row.Dispose();
         }
 
-        FutureServices.Clear();
+        PendingServices.Clear();
     }
 
     private Task StartEdit()

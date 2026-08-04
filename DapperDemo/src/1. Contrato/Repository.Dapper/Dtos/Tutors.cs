@@ -12,6 +12,15 @@ public class Tutors
     public required string Telephone { get; init; }
 
     public string? Address { get; init; }
+
+    /// <summary>
+    /// Gets money the tutor has handed over beyond what they owed at the time.
+    /// </summary>
+    /// <remarks>
+    /// Overpaying leaves a balance in the tutor's favour rather than being lost. It is spent
+    /// automatically against the next service booked for one of their dogs.
+    /// </remarks>
+    public decimal Credit { get; init; }
 }
 
 // CREATE TABLE IF NOT EXISTS Tutors (
