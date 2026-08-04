@@ -11,6 +11,88 @@
     xmlns:utils="clr-namespace:DapperDemo.Viewmodel.Viewmodels.Utils;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <UserControl.Resources>
+        <!--
+            One agenda row, shared by the flat list and by the rows inside an expanded dog. Defined
+            once so a grouped row cannot drift from a flat one — same tags, same commands, same
+            tap-through to the service screen.
+        -->
+        <DataTemplate x:Key="ServiceRowTemplate" DataType="utils:ServiceRow">
+            <Button Classes="RowButton" Command="{Binding OpenCommand}">
+                <Border
+                    BorderBrush="{StaticResource ColorDivider}"
+                    BorderThickness="0,2,0,0"
+                    Padding="0,24">
+                    <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                        <Border
+                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderThickness="0,0,2,0"
+                            Padding="0,0,16,0"
+                            Width="91">
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock
+                                    FontFamily="{StaticResource FontHeading}"
+                                    FontSize="46"
+                                    Foreground="{StaticResource ColorText}"
+                                    HorizontalAlignment="Center"
+                                    Text="{Binding DayNum}" />
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="20"
+                                    Foreground="{StaticResource ColorTextMuted50}"
+                                    HorizontalAlignment="Center"
+                                    LetterSpacing="1"
+                                    Text="{Binding MonthShort}" />
+                            </StackPanel>
+                        </Border>
+                        <StackPanel
+                            Grid.Column="1"
+                            Margin="24,0,16,0"
+                            VerticalAlignment="Center">
+                            <TextBlock
+                                FontFamily="{StaticResource FontHeading}"
+                                FontSize="37"
+                                FontWeight="Medium"
+                                Foreground="{StaticResource ColorText}"
+                                Text="{Binding DogName}" />
+                            <TextBlock
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="25"
+                                Foreground="{StaticResource ColorTextMuted55}">
+                                <Run Text="{Binding TypeLabel}" />
+                                <Run Text=" · " />
+                                <Run Text="{Binding TimeLabel}" />
+                                <Run Text=" · " />
+                                <Run Text="{Binding PriceLabel}" />
+                            </TextBlock>
+                        </StackPanel>
+                        <!--  Two independent states, stacked so a narrow row still fits both.  -->
+                        <StackPanel
+                            Grid.Column="2"
+                            Spacing="6"
+                            VerticalAlignment="Center">
+                            <!--  Closed off until the work is done: only executed work can be charged for.  -->
+                            <Border
+                                Classes="TagSign"
+                                Classes.Paid="{Binding Paid}"
+                                Classes.Pending="{Binding !Paid}">
+                                <TextBlock Text="{Binding PaidLabel}" />
+                            </Border>
+                            <Button
+                                Classes="Tag"
+                                Classes.Done="{Binding Done}"
+                                Classes.Todo="{Binding !Done}"
+                                Command="{Binding ToggleDoneCommand}"
+                                Content="{Binding DoneLabel}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Button>
+        </DataTemplate>
+    </UserControl.Resources>
+
     <Grid Background="{StaticResource ColorBg}" Width="720">
         <ScrollViewer>
             <StackPanel Spacing="0">
@@ -135,145 +217,83 @@
                 </Border>
 
                 <!--
-                    Per-dog summary. Replaces the chronological list while "incluir pagos" is on,
-                    where every past booking is in scope and a flat list runs to hundreds of rows.
+                    Always grouped by dog. Every filter above — the period chips, the type chips and
+                    "mostrar pagos" — narrows what a dog expands to; none of them change the shape of
+                    the list. Each dog folds away until tapped.
                 -->
                 <ItemsControl
-                    IsVisible="{Binding ShowSummary}"
-                    ItemsSource="{Binding DogSummaries}"
+                    ItemsSource="{Binding DogGroups}"
                     Margin="32,0,32,48">
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="utils:DogSummaryRow">
-                            <Border
-                                BorderBrush="{StaticResource ColorDivider}"
-                                BorderThickness="0,2,0,0"
-                                Padding="0,24">
-                                <StackPanel Spacing="14">
-                                    <Grid ColumnDefinitions="*,Auto">
-                                        <TextBlock
-                                            FontFamily="{StaticResource FontHeading}"
-                                            FontSize="40"
-                                            FontWeight="Medium"
-                                            Foreground="{StaticResource ColorText}"
-                                            Text="{Binding DogName}"
-                                            VerticalAlignment="Center" />
-                                        <TextBlock
-                                            FontFamily="{StaticResource FontHeading}"
-                                            FontSize="37"
-                                            Foreground="{StaticResource ColorAccentDark800}"
-                                            Grid.Column="1"
-                                            Text="{Binding TotalLabel}"
-                                            VerticalAlignment="Center" />
-                                    </Grid>
+                        <DataTemplate DataType="utils:DogServiceGroup">
+                            <StackPanel>
+                                <!--  The whole header row is the tap target, not just a chevron.  -->
+                                <Button Classes="RowButton" Command="{Binding ToggleCommand}">
+                                    <Border
+                                        BorderBrush="{StaticResource ColorDivider}"
+                                        BorderThickness="0,2,0,0"
+                                        Padding="0,24">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                                            <!--
+                                                Two geometries swapped by visibility rather than one
+                                                rotated: a RotateTransform would need a converter
+                                                for the angle, and this reads plainly in the markup.
+                                            -->
+                                            <Panel
+                                                Grid.Column="0"
+                                                Height="28"
+                                                Margin="0,0,20,0"
+                                                VerticalAlignment="Center"
+                                                Width="28">
+                                                <Path
+                                                    Data="{StaticResource IconChevronRight}"
+                                                    IsVisible="{Binding !IsExpanded}"
+                                                    Stretch="Uniform"
+                                                    Stroke="{StaticResource ColorAccent}"
+                                                    StrokeJoin="Round"
+                                                    StrokeLineCap="Round"
+                                                    StrokeThickness="2" />
+                                                <Path
+                                                    Data="{StaticResource IconChevronDown}"
+                                                    IsVisible="{Binding IsExpanded}"
+                                                    Stretch="Uniform"
+                                                    Stroke="{StaticResource ColorAccent}"
+                                                    StrokeJoin="Round"
+                                                    StrokeLineCap="Round"
+                                                    StrokeThickness="2" />
+                                            </Panel>
 
-                                    <ItemsControl ItemsSource="{Binding Lines}">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate DataType="utils:DogSummaryLine">
-                                                <Grid ColumnDefinitions="*,Auto" Margin="24,0,0,8">
-                                                    <TextBlock
-                                                        FontFamily="{StaticResource FontBody}"
-                                                        FontSize="27"
-                                                        Foreground="{StaticResource ColorTextMuted65}"
-                                                        Text="{Binding CountLabel}"
-                                                        VerticalAlignment="Center" />
-                                                    <TextBlock
-                                                        FontFamily="{StaticResource FontBody}"
-                                                        FontSize="27"
-                                                        Foreground="{StaticResource ColorTextMuted55}"
-                                                        Grid.Column="1"
-                                                        Text="{Binding AmountLabel}"
-                                                        VerticalAlignment="Center" />
-                                                </Grid>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </StackPanel>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-
-                <ItemsControl
-                    IsVisible="{Binding ShowServiceList}"
-                    ItemsSource="{Binding FilteredServices}"
-                    Margin="32,0,32,48">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="utils:ServiceRow">
-                            <Button Classes="RowButton" Command="{Binding OpenCommand}">
-                                <Border
-                                    BorderBrush="{StaticResource ColorDivider}"
-                                    BorderThickness="0,2,0,0"
-                                    Padding="0,24">
-                                    <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
-                                        <Border
-                                            BorderBrush="{StaticResource ColorDivider}"
-                                            BorderThickness="0,0,2,0"
-                                            Padding="0,0,16,0"
-                                            Width="91">
-                                            <StackPanel VerticalAlignment="Center">
-                                                <TextBlock
-                                                    FontFamily="{StaticResource FontHeading}"
-                                                    FontSize="46"
-                                                    Foreground="{StaticResource ColorText}"
-                                                    HorizontalAlignment="Center"
-                                                    Text="{Binding DayNum}" />
-                                                <TextBlock
-                                                    FontFamily="{StaticResource FontBody}"
-                                                    FontSize="20"
-                                                    Foreground="{StaticResource ColorTextMuted50}"
-                                                    HorizontalAlignment="Center"
-                                                    LetterSpacing="1"
-                                                    Text="{Binding MonthShort}" />
-                                            </StackPanel>
-                                        </Border>
-                                        <StackPanel
-                                            Grid.Column="1"
-                                            Margin="24,0,16,0"
-                                            VerticalAlignment="Center">
                                             <TextBlock
                                                 FontFamily="{StaticResource FontHeading}"
-                                                FontSize="37"
+                                                FontSize="40"
                                                 FontWeight="Medium"
                                                 Foreground="{StaticResource ColorText}"
-                                                Text="{Binding DogName}" />
+                                                Grid.Column="1"
+                                                Text="{Binding DogName}"
+                                                VerticalAlignment="Center" />
+
                                             <TextBlock
                                                 FontFamily="{StaticResource FontBody}"
                                                 FontSize="25"
-                                                Foreground="{StaticResource ColorTextMuted55}">
-                                                <Run Text="{Binding TypeLabel}" />
-                                                <Run Text=" · " />
-                                                <Run Text="{Binding TimeLabel}" />
-                                                <Run Text=" · " />
-                                                <Run Text="{Binding PriceLabel}" />
-                                            </TextBlock>
-                                        </StackPanel>
-                                        <!--  Two independent states, stacked so a narrow row still fits both.  -->
-                                        <StackPanel
-                                            Grid.Column="2"
-                                            Spacing="6"
-                                            VerticalAlignment="Center">
-                                            <!--  Closed off until the work is done: only executed work can be charged for.  -->
-                                            <Border
-                                                Classes="TagSign"
-                                                Classes.Paid="{Binding Paid}"
-                                                Classes.Pending="{Binding !Paid}">
-                                                <TextBlock Text="{Binding PaidLabel}" />
-                                            </Border>
-                                            <Button
-                                                Classes="Tag"
-                                                Classes.Done="{Binding Done}"
-                                                Classes.Todo="{Binding !Done}"
-                                                Command="{Binding ToggleDoneCommand}"
-                                                Content="{Binding DoneLabel}"
-                                                HorizontalAlignment="Stretch"
-                                                HorizontalContentAlignment="Center" />
-                                        </StackPanel>
-                                    </Grid>
-                                </Border>
-                            </Button>
+                                                Foreground="{StaticResource ColorTextMuted55}"
+                                                Grid.Column="2"
+                                                Text="{Binding CountLabel}"
+                                                VerticalAlignment="Center" />
+                                        </Grid>
+                                    </Border>
+                                </Button>
+
+                                <!--  Indented so an expanded dog's services read as belonging to it.  -->
+                                <ItemsControl
+                                    IsVisible="{Binding IsExpanded}"
+                                    ItemTemplate="{StaticResource ServiceRowTemplate}"
+                                    ItemsSource="{Binding Services}"
+                                    Margin="28,0,0,0" />
+                            </StackPanel>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
+
             </StackPanel>
         </ScrollViewer>
     </Grid>

@@ -174,16 +174,14 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
     public bool HasNothingBooked { get; private set; }
 
     /// <summary>
-    /// Gets a value indicating whether the per-dog summary replaces the chronological list. Turning
-    /// on "incluir pagos" brings in every past booking, which is what makes a flat list unreadable.
+    /// Gets the dogs with services under the current filters, each collapsed until tapped.
     /// </summary>
-    public bool ShowSummary => HomeShowPaid;
-
-    public bool ShowServiceList => !HomeShowPaid;
-
-    public ObservableCollection<ServiceRow> FilteredServices { get; } = [];
-
-    public ObservableCollection<DogSummaryRow> DogSummaries { get; } = [];
+    /// <remarks>
+    /// The only shape the agenda has. "Mostrar pagos" changes which services are in scope, not how
+    /// they are presented — a flat list and a grouped one behaving differently for the same data
+    /// was the part that made the screen hard to read.
+    /// </remarks>
+    public ObservableCollection<DogServiceGroup> DogGroups { get; } = [];
 
     /// <summary>Public because the View calls it from OnLoaded — see the class remarks.</summary>
     public async Task ReloadAsync()
@@ -194,9 +192,17 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
 
         var filtered = all.Where(Matches).OrderBy(sv => sv.Date).ToArray();
 
+        // Ticking Paid or Feito writes, which raises DataChanged, which lands back here — so a
+        // reload happens while the user is looking at an open dog. The groups are rebuilt from
+        // scratch each time, so which ones were open has to be carried across or the list would
+        // snap shut under them.
+        var expanded = DogGroups
+            .Where(group => group.IsExpanded)
+            .Select(group => group.DogName)
+            .ToHashSet(StringComparer.Ordinal);
+
         ClearRows();
-        BuildServiceRows(filtered);
-        BuildDogSummaries(filtered);
+        BuildDogGroups(filtered, expanded);
 
         HasNoServices = filtered.Length == 0;
         HasNothingBooked = all.Length == 0;
@@ -311,51 +317,67 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
         }
     }
 
-    private void BuildServiceRows(ServiceItem[] filtered)
+    /// <summary>
+    /// Groups the filtered services under their dog, collapsed until tapped.
+    /// </summary>
+    /// <remarks>
+    /// Every filter still applies inside a group — the period chips, the type chips and the paid
+    /// checkbox all narrow what a dog expands to. Dogs are alphabetical, and their services keep
+    /// the list's own newest-first order.
+    /// </remarks>
+    /// <param name="filtered">The services in scope, already narrowed by every filter.</param>
+    /// <param name="expanded">
+    /// Dogs that were open before the rebuild, by name. Name rather than id because that is what
+    /// the grouping keys on, and it survives a service being added or removed underneath.
+    /// </param>
+    private void BuildDogGroups(ServiceItem[] filtered, IReadOnlySet<string> expanded)
     {
-        foreach (var sv in filtered)
+        var byDog = filtered
+            .GroupBy(s => s.DogName, StringComparer.Ordinal)
+            .OrderBy(g => g.Key, StringComparer.CurrentCulture);
+
+        foreach (var dog in byDog)
         {
-            var priceLabel = sv.Kind == ServiceKind.Hotel
-                ? AppSession.Money(sv.Price) + " / dia"
-                : AppSession.Money(sv.Price);
+            var services = dog.Select(CreateRow).ToArray();
+            var count = services.Length == 1 ? "1 serviço" : $"{services.Length} serviços";
 
-            // CA2000: ownership passes to the ServiceRow below, which disposes every command
-            // when this list is rebuilt (see ClearRows).
-#pragma warning disable CA2000
-            var openCommand = new SynchronizedCommand(() => Open(sv.Kind, sv.ServiceId), SynchronizationBehavior.Discard, true);
-            var toggleCommand = new SynchronizedCommand(() => TogglePaid(sv.Kind, sv.ServiceId, !sv.ServicePaid), SynchronizationBehavior.Discard, true);
-            var toggleDoneCommand = new SynchronizedCommand(() => ToggleDone(sv.Kind, sv.ServiceId, sv.DogId, !sv.ServiceDone), SynchronizationBehavior.Discard, true);
-#pragma warning restore CA2000
-
-            FilteredServices.Add(new ServiceRow(
-                sv.Date.Day.ToString("00", CultureInfo.InvariantCulture),
-                MonthsShort[sv.Date.Month - 1],
-                sv.DogName,
-                AppSession.TypeLabel(sv.Kind),
-                AppSession.TimeLabel(sv.Date, sv.Kind),
-                priceLabel,
-                sv.ServicePaid,
-                sv.ServicePaid ? "Pago" : "Pendente",
-                sv.ServiceDone,
-                sv.ServiceDone ? "Feito" : "A fazer",
-                sv.ServiceDone || sv.ServicePaid,
-                openCommand,
-                toggleCommand,
-                toggleDoneCommand));
+            DogGroups.Add(new DogServiceGroup(dog.Key, count, services)
+            {
+                IsExpanded = expanded.Contains(dog.Key),
+            });
         }
     }
 
-    /// <summary>
-    /// Collapses the filtered services into one card per dog: each service type with how many of
-    /// them and what they came to, plus the dog's total for the timeframe. A hotel stay is billed
-    /// per day, so its contribution is the daily rate times the nights booked.
-    /// </summary>
-    private void BuildDogSummaries(ServiceItem[] filtered)
+    /// <summary>Builds one agenda row. Shared so a grouped row behaves exactly like a flat one.</summary>
+    private ServiceRow CreateRow(ServiceItem sv)
     {
-        foreach (var row in DogSummaryBuilder.Build(filtered, AppSession.Money))
-        {
-            DogSummaries.Add(row);
-        }
+        var priceLabel = sv.Kind == ServiceKind.Hotel
+            ? AppSession.Money(sv.Price) + " / dia"
+            : AppSession.Money(sv.Price);
+
+        // CA2000: ownership passes to the ServiceRow below, which disposes every command when
+        // this list is rebuilt (see ClearRows).
+#pragma warning disable CA2000
+        var openCommand = new SynchronizedCommand(() => Open(sv.Kind, sv.ServiceId), SynchronizationBehavior.Discard, true);
+        var toggleCommand = new SynchronizedCommand(() => TogglePaid(sv.Kind, sv.ServiceId, !sv.ServicePaid), SynchronizationBehavior.Discard, true);
+        var toggleDoneCommand = new SynchronizedCommand(() => ToggleDone(sv.Kind, sv.ServiceId, sv.DogId, !sv.ServiceDone), SynchronizationBehavior.Discard, true);
+#pragma warning restore CA2000
+
+        return new ServiceRow(
+            sv.Date.Day.ToString("00", CultureInfo.InvariantCulture),
+            MonthsShort[sv.Date.Month - 1],
+            sv.DogName,
+            AppSession.TypeLabel(sv.Kind),
+            AppSession.TimeLabel(sv.Date, sv.Kind),
+            priceLabel,
+            sv.ServicePaid,
+            sv.ServicePaid ? "Pago" : "Pendente",
+            sv.ServiceDone,
+            sv.ServiceDone ? "Feito" : "A fazer",
+            sv.ServiceDone || sv.ServicePaid,
+            openCommand,
+            toggleCommand,
+            toggleDoneCommand);
     }
 
     private void SetRange(HomeRangeFilter range)
@@ -372,13 +394,13 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
 
     private void ClearRows()
     {
-        foreach (var row in FilteredServices)
+        // Disposing a group disposes the rows inside it, and each row its three commands.
+        foreach (var group in DogGroups)
         {
-            row.Dispose();
+            group.Dispose();
         }
 
-        FilteredServices.Clear();
-        DogSummaries.Clear();
+        DogGroups.Clear();
     }
 
     private async Task TogglePaid(ServiceKind kind, int serviceId, bool paid)

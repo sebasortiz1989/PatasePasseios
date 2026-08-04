@@ -50,6 +50,10 @@
         <StreamGeometry x:Key="IconNew">M12 5v14 M5 12h14</StreamGeometry>
         <StreamGeometry x:Key="IconProfile">M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2 M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0z</StreamGeometry>
 
+        <!--  Same stroked 24×24 convention: the expand/collapse chevrons on the agenda's dog groups.  -->
+        <StreamGeometry x:Key="IconChevronRight">M9 5l7 7-7 7</StreamGeometry>
+        <StreamGeometry x:Key="IconChevronDown">M5 9l7 7 7-7</StreamGeometry>
+
         <!--  Same stroked 24×24 convention: a calendar page with a plus, for "add to calendar".  -->
         <StreamGeometry x:Key="IconCalendarAdd">M8 2v4 M16 2v4 M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z M3 10h18 M12 13v6 M9 16h6</StreamGeometry>
 
