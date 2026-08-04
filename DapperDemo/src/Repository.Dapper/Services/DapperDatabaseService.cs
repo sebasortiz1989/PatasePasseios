@@ -59,6 +59,8 @@ public sealed class DapperDatabaseService
 
         connection.Execute(
             sql: """
+                 DROP TABLE IF EXISTS TutorPaymentAllocations;
+                 DROP TABLE IF EXISTS TutorPayments;
                  DROP TABLE IF EXISTS WalkingService;
                  DROP TABLE IF EXISTS PetSittingService;
                  DROP TABLE IF EXISTS PetHotelService;
@@ -215,6 +217,31 @@ public sealed class DapperDatabaseService
                      ServiceDone BOOLEAN NOT NULL DEFAULT 0,
                      FOREIGN KEY (DogId) REFERENCES Dogs(DogId),
                      FOREIGN KEY (PetSitterId) REFERENCES PetSitter(PetSitterId));
+
+                 -- What a tutor actually handed over, kept as an event of its own so it can be
+                 -- corrected or undone. Without it a payment was only its consequences: some
+                 -- services settled, maybe some credit banked, and nothing tying them together.
+                 CREATE TABLE IF NOT EXISTS TutorPayments (
+                     TutorPaymentId INTEGER PRIMARY KEY AUTOINCREMENT,
+                     TutorId INTEGER NOT NULL,
+                     PetSitterId INTEGER NOT NULL,
+                     Date DATETIME NOT NULL,
+                     Amount DECIMAL(10, 2) NOT NULL,
+                     -- The part of Amount that had no chargeable work to land on and went to credit.
+                     CreditStored DECIMAL(10, 2) NOT NULL DEFAULT 0,
+                     FOREIGN KEY (TutorId) REFERENCES Tutors(TutorId),
+                     FOREIGN KEY (PetSitterId) REFERENCES PetSitter(PetSitterId));
+
+                 -- Where the rest of the payment went, one row per service it settled. Kind is the
+                 -- ServiceKind literal, matching the agenda queries, since the four service tables
+                 -- have no shared key to point at.
+                 CREATE TABLE IF NOT EXISTS TutorPaymentAllocations (
+                     TutorPaymentAllocationId INTEGER PRIMARY KEY AUTOINCREMENT,
+                     TutorPaymentId INTEGER NOT NULL,
+                     Kind INTEGER NOT NULL,
+                     ServiceId INTEGER NOT NULL,
+                     Amount DECIMAL(10, 2) NOT NULL,
+                     FOREIGN KEY (TutorPaymentId) REFERENCES TutorPayments(TutorPaymentId));
                  """);
     }
 
