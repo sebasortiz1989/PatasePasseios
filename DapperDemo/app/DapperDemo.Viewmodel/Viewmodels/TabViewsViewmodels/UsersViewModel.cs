@@ -314,7 +314,9 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
             ServiceCountLabel = services
                 .Count(s => s.Date.Year == SelectedYear && s.Date.Month == month)
                 .ToString(CultureInfo.InvariantCulture);
-            PendingCountLabel = services.Count(s => !s.ServicePaid).ToString(CultureInfo.InvariantCulture);
+
+            // Chargeable rather than merely unpaid: an unexecuted booking is not money owed.
+            PendingCountLabel = services.Count(s => s.AmountDue > 0m).ToString(CultureInfo.InvariantCulture);
         }
         finally
         {
@@ -364,7 +366,10 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     private void RefreshMonthDetail()
     {
         var paid = monthServices.Where(s => s.ServicePaid).ToArray();
-        var pending = monthServices.Where(s => !s.ServicePaid).ToArray();
+
+        // Only work already carried out is owed for. A booking still to do belongs to neither
+        // column: it has not been paid, but it cannot be billed either.
+        var pending = monthServices.Where(s => s.AmountDue > 0m).ToArray();
 
         PaidSummaries.Clear();
         foreach (var row in DogSummaryBuilder.Build(paid, Money))
@@ -480,12 +485,12 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
             EmptyMessage = "Nenhum serviço neste mês.",
         };
 
-        foreach (var column in new[] { "Cachorro", "Tipo", "Data", "Valor", "Situação" })
+        foreach (var column in new[] { "Cachorro", "Tipo", "Data", "Valor", "Execução", "Pagamento" })
         {
             services.Columns.Add(column);
         }
 
-        foreach (var aligned in new[] { false, false, false, true, true })
+        foreach (var aligned in new[] { false, false, false, true, true, true })
         {
             services.RightAligned.Add(aligned);
         }
@@ -497,12 +502,27 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
                 AppSession.TypeLabel(service.Kind),
                 AppSession.DateTimeLabel(service.Date, service.Kind),
                 AppSession.Money(service.Total),
+                service.ServiceDone ? "Feito" : "A fazer",
                 service.ServicePaid ? "Pago" : "Pendente"));
         }
 
-        var pending = monthServices.Where(s => !s.ServicePaid).Sum(s => s.Total);
+        // Only executed work may be billed, so the receivable is what has actually been carried
+        // out and not yet paid for. Work still to come is reported separately rather than folded
+        // in, so the figure is never one the sitter cannot ask for.
+        var chargeable = monthServices.Sum(s => s.AmountDue);
+        var upcoming = monthServices.Sum(s => s.AmountUpcoming);
+
         services.Totals.Add(new ReportField("Serviços no mês", monthServices.Length.ToString(CultureInfo.InvariantCulture)));
-        services.Totals.Add(new ReportField("A receber no mês", AppSession.Money(pending), true));
+        services.Totals.Add(new ReportField(
+            "Realizados no mês",
+            monthServices.Count(s => s.ServiceDone).ToString(CultureInfo.InvariantCulture)));
+
+        if (upcoming > 0m)
+        {
+            services.Totals.Add(new ReportField("A executar (ainda não cobrado)", AppSession.Money(upcoming)));
+        }
+
+        services.Totals.Add(new ReportField("A receber no mês", AppSession.Money(chargeable), true));
         report.Sections.Add(services);
 
         var monthNumber = (SelectedMonth?.Number ?? 1).ToString("00", CultureInfo.InvariantCulture);

@@ -87,6 +87,14 @@ public sealed class DapperDatabaseService
         AddColumnIfMissing(connection, "PetSitter", "HideMoney", "INTEGER NOT NULL DEFAULT 0");
         AddColumnIfMissing(connection, "Tutors", "Credit", "DECIMAL(10, 2) NOT NULL DEFAULT 0");
         AddColumnIfMissing(connection, "PetHotelService", "ExtraCharge", "DECIMAL(10, 2) NOT NULL DEFAULT 0");
+
+        // Whether the booking actually happened, tracked separately from whether it was paid for.
+        // Defaults to 0 rather than deriving from the date: a booking in the past is not proof the
+        // sitter turned up, and the flag is only worth having if it is the sitter who sets it.
+        AddColumnIfMissing(connection, "WalkingService", "ServiceDone", "BOOLEAN NOT NULL DEFAULT 0");
+        AddColumnIfMissing(connection, "PetSittingService", "ServiceDone", "BOOLEAN NOT NULL DEFAULT 0");
+        AddColumnIfMissing(connection, "PetHotelService", "ServiceDone", "BOOLEAN NOT NULL DEFAULT 0");
+        AddColumnIfMissing(connection, "DayCareService", "ServiceDone", "BOOLEAN NOT NULL DEFAULT 0");
     }
 
     private static void AddColumnIfMissing(SqliteConnection connection, string table, string column, string type)
@@ -148,9 +156,12 @@ public sealed class DapperDatabaseService
                      Date DATETIME NOT NULL,
                      Price DECIMAL(10, 2) NOT NULL,
                      ServicePaid BOOLEAN,
+                     -- Whether the walk actually happened. Independent of ServicePaid: work is
+                     -- often done before it is settled, and sometimes settled before it is done.
+                     ServiceDone BOOLEAN NOT NULL DEFAULT 0,
                      FOREIGN KEY (DogId) REFERENCES Dogs(DogId),
                      FOREIGN KEY (PetSitterId) REFERENCES PetSitter(PetSitterId));
-                 
+
                  CREATE TABLE IF NOT EXISTS PetSittingService (
                      PetSittingServiceId INTEGER PRIMARY KEY AUTOINCREMENT,
                      DogId INTEGER NOT NULL,
@@ -158,9 +169,10 @@ public sealed class DapperDatabaseService
                      Date DATETIME NOT NULL,
                      Price DECIMAL(10, 2) NOT NULL,
                      ServicePaid BOOLEAN,
+                     ServiceDone BOOLEAN NOT NULL DEFAULT 0,
                      FOREIGN KEY (DogId) REFERENCES Dogs(DogId),
                      FOREIGN KEY (PetSitterId) REFERENCES PetSitter(PetSitterId));
-                 
+
                  -- PricePerDay, not a total: the agenda and the billing summary both treat a
                  -- hotel stay as a daily rate.
                  CREATE TABLE IF NOT EXISTS PetHotelService (
@@ -174,6 +186,7 @@ public sealed class DapperDatabaseService
                      ExtraCharge DECIMAL(10, 2) NOT NULL DEFAULT 0,
                      RequiresWalking BOOLEAN NOT NULL DEFAULT 0,
                      ServicePaid BOOLEAN,
+                     ServiceDone BOOLEAN NOT NULL DEFAULT 0,
                      FOREIGN KEY (DogId) REFERENCES Dogs(DogId),
                      FOREIGN KEY (PetSitterId) REFERENCES PetSitter(PetSitterId));
 
@@ -187,6 +200,7 @@ public sealed class DapperDatabaseService
                      Price DECIMAL(10, 2) NOT NULL,
                      RequiresWalking BOOLEAN NOT NULL DEFAULT 0,
                      ServicePaid BOOLEAN,
+                     ServiceDone BOOLEAN NOT NULL DEFAULT 0,
                      FOREIGN KEY (DogId) REFERENCES Dogs(DogId),
                      FOREIGN KEY (PetSitterId) REFERENCES PetSitter(PetSitterId));
                  """);

@@ -180,9 +180,13 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
         OwnerName = owner?.Label ?? string.Empty;
 
         var services = await repositoryServices.ListForDogAsync(session.CurrentPetSitterId, dogId).WithSync();
+
+        // Upcoming and still owed for. A booking that has already been settled is nothing the
+        // sitter has to act on, so it drops off this list the moment a payment covers it — the
+        // same rule the tutor screen's "Serviços em aberto" follows.
         var now = DateTime.Now;
         var future = services
-            .Where(s => s.Date >= now)
+            .Where(s => s.Date >= now && !s.ServicePaid)
             .OrderBy(s => s.Date)
             .ToArray();
 
@@ -203,6 +207,8 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
                 AppSession.DateTimeLabel(service.Date, service.Kind),
                 service.ServicePaid,
                 service.ServicePaid ? "Pago" : "Pendente",
+                service.ServiceDone,
+                service.ServiceDone ? "Feito" : "A fazer",
                 openCommand));
         }
 

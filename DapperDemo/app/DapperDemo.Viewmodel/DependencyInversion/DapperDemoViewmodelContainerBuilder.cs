@@ -4,6 +4,7 @@ using DapperDemo.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;
 using DapperDemo.Viewmodel.Viewmodels.NavigationViewsViewmodels;
 using DapperDemo.Viewmodel.Viewmodels.Session;
 using DapperDemo.Viewmodel.Viewmodels.TabViewsViewmodels;
+using DapperDemo.Viewmodel.Viewmodels.Utils;
 
 namespace DapperDemo.Viewmodel.DependencyInversion
 {
@@ -18,6 +19,7 @@ namespace DapperDemo.Viewmodel.DependencyInversion
         {
             yield return CreateSingleton<AppSession>();
             yield return CreateSingleton<CurrentView>();
+            yield return CreateSingleton<CreditSpender>();
             yield return CreateTransient<LoginViewModel>().WithAbstractions();
             yield return CreateTransient<SignUpViewModel>().WithAbstractions();
             yield return CreateTransient<MainViewModel>().WithAbstractions();

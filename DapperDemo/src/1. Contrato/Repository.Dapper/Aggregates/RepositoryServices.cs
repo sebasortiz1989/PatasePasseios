@@ -22,7 +22,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
     /// </summary>
     private const string WalkSelect = """
         SELECT w.WalkingServiceId AS ServiceId, 0 AS Kind, w.DogId, d.Name AS DogName, d.Image AS DogImage,
-               t.Name AS TutorName, t.Address AS TutorAddress, w.Date, w.Price, w.ServicePaid
+               t.Name AS TutorName, t.Address AS TutorAddress, w.Date, w.Price, w.ServicePaid, w.ServiceDone
         FROM WalkingService w
         INNER JOIN Dogs d ON d.DogId = w.DogId
         INNER JOIN Tutors t ON t.TutorId = d.TutorId
@@ -31,7 +31,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
 
     private const string SittingSelect = """
         SELECT s.PetSittingServiceId AS ServiceId, 1 AS Kind, s.DogId, d.Name AS DogName, d.Image AS DogImage,
-               t.Name AS TutorName, t.Address AS TutorAddress, s.Date, s.Price, s.ServicePaid
+               t.Name AS TutorName, t.Address AS TutorAddress, s.Date, s.Price, s.ServicePaid, s.ServiceDone
         FROM PetSittingService s
         INNER JOIN Dogs d ON d.DogId = s.DogId
         INNER JOIN Tutors t ON t.TutorId = d.TutorId
@@ -40,7 +40,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
 
     private const string HotelSelect = """
         SELECT h.PetHotelServiceId AS ServiceId, 2 AS Kind, h.DogId, d.Name AS DogName, d.Image AS DogImage,
-               t.Name AS TutorName, t.Address AS TutorAddress, h.StartDate AS Date, h.EndDate, h.PricePerDay AS Price, h.ExtraCharge, h.RequiresWalking, h.ServicePaid
+               t.Name AS TutorName, t.Address AS TutorAddress, h.StartDate AS Date, h.EndDate, h.PricePerDay AS Price, h.ExtraCharge, h.RequiresWalking, h.ServicePaid, h.ServiceDone
         FROM PetHotelService h
         INNER JOIN Dogs d ON d.DogId = h.DogId
         INNER JOIN Tutors t ON t.TutorId = d.TutorId
@@ -49,7 +49,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
 
     private const string DayCareSelect = """
         SELECT c.DayCareServiceId AS ServiceId, 3 AS Kind, c.DogId, d.Name AS DogName, d.Image AS DogImage,
-               t.Name AS TutorName, t.Address AS TutorAddress, c.Date, c.Price, c.RequiresWalking, c.ServicePaid
+               t.Name AS TutorName, t.Address AS TutorAddress, c.Date, c.Price, c.RequiresWalking, c.ServicePaid, c.ServiceDone
         FROM DayCareService c
         INNER JOIN Dogs d ON d.DogId = c.DogId
         INNER JOIN Tutors t ON t.TutorId = d.TutorId
@@ -88,31 +88,31 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
 
     public Task<Response> AddWalkAsync(WalkingService service) => InsertAsync(
         """
-        INSERT INTO WalkingService (DogId, PetSitterId, Date, Price, ServicePaid)
-        VALUES (@DogId, @PetSitterId, @Date, @Price, @ServicePaid)
+        INSERT INTO WalkingService (DogId, PetSitterId, Date, Price, ServicePaid, ServiceDone)
+        VALUES (@DogId, @PetSitterId, @Date, @Price, @ServicePaid, @ServiceDone)
         """,
-        new { service.DogId, service.PetSitterId, service.Date, service.Price, service.ServicePaid });
+        new { service.DogId, service.PetSitterId, service.Date, service.Price, service.ServicePaid, service.ServiceDone });
 
     public Task<Response> AddSittingAsync(PetSittingService service) => InsertAsync(
         """
-        INSERT INTO PetSittingService (DogId, PetSitterId, Date, Price, ServicePaid)
-        VALUES (@DogId, @PetSitterId, @Date, @Price, @ServicePaid)
+        INSERT INTO PetSittingService (DogId, PetSitterId, Date, Price, ServicePaid, ServiceDone)
+        VALUES (@DogId, @PetSitterId, @Date, @Price, @ServicePaid, @ServiceDone)
         """,
-        new { service.DogId, service.PetSitterId, service.Date, service.Price, service.ServicePaid });
+        new { service.DogId, service.PetSitterId, service.Date, service.Price, service.ServicePaid, service.ServiceDone });
 
     public Task<Response> AddHotelAsync(PetHotelService service) => InsertAsync(
         """
-        INSERT INTO PetHotelService (DogId, PetSitterId, StartDate, EndDate, PricePerDay, ExtraCharge, RequiresWalking, ServicePaid)
-        VALUES (@DogId, @PetSitterId, @StartDate, @EndDate, @PricePerDay, @ExtraCharge, @RequiresWalking, @ServicePaid)
+        INSERT INTO PetHotelService (DogId, PetSitterId, StartDate, EndDate, PricePerDay, ExtraCharge, RequiresWalking, ServicePaid, ServiceDone)
+        VALUES (@DogId, @PetSitterId, @StartDate, @EndDate, @PricePerDay, @ExtraCharge, @RequiresWalking, @ServicePaid, @ServiceDone)
         """,
-        new { service.DogId, service.PetSitterId, service.StartDate, service.EndDate, service.PricePerDay, service.ExtraCharge, service.RequiresWalking, service.ServicePaid });
+        new { service.DogId, service.PetSitterId, service.StartDate, service.EndDate, service.PricePerDay, service.ExtraCharge, service.RequiresWalking, service.ServicePaid, service.ServiceDone });
 
     public Task<Response> AddDayCareAsync(DayCareService service) => InsertAsync(
         """
-        INSERT INTO DayCareService (DogId, PetSitterId, Date, Price, RequiresWalking, ServicePaid)
-        VALUES (@DogId, @PetSitterId, @Date, @Price, @RequiresWalking, @ServicePaid)
+        INSERT INTO DayCareService (DogId, PetSitterId, Date, Price, RequiresWalking, ServicePaid, ServiceDone)
+        VALUES (@DogId, @PetSitterId, @Date, @Price, @RequiresWalking, @ServicePaid, @ServiceDone)
         """,
-        new { service.DogId, service.PetSitterId, service.Date, service.Price, service.RequiresWalking, service.ServicePaid });
+        new { service.DogId, service.PetSitterId, service.Date, service.Price, service.RequiresWalking, service.ServicePaid, service.ServiceDone });
 
     /// <summary>
     /// Saves an edit to an existing booking: its date, its price, and for a hotel stay the
@@ -205,6 +205,38 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
             await connection.ExecuteAsync(
                 sql: $"UPDATE {table} SET ServicePaid = @Paid WHERE {key} = @ServiceId",
                 param: new { Paid = paid, ServiceId = serviceId }).ConfigureAwait(false);
+
+            return Response.Successful;
+        }
+        catch (SqliteException e)
+        {
+            Console.WriteLine(e);
+            return Response.Failed;
+        }
+    }
+
+    /// <summary>
+    /// Marks a service done or still to do. The table and key column depend on the kind.
+    /// </summary>
+    /// <remarks>
+    /// Separate from <see cref="SetPaidAsync"/> on purpose: settling a booking says nothing about
+    /// whether it happened, and a walk can be done long before the tutor pays for it.
+    /// </remarks>
+    /// <param name="kind">Which of the four service tables the booking lives in.</param>
+    /// <param name="serviceId">The booking's id within that table.</param>
+    /// <param name="done">Whether the work has been carried out.</param>
+    /// <returns>Whether the write succeeded.</returns>
+    public async Task<Response> SetDoneAsync(ServiceKind kind, int serviceId, bool done)
+    {
+        var (table, key, _) = TableFor(kind);
+
+        try
+        {
+            using var connection = DapperDatabaseService.Connection;
+            await connection.OpenAsync().ConfigureAwait(false);
+            await connection.ExecuteAsync(
+                sql: $"UPDATE {table} SET ServiceDone = @Done WHERE {key} = @ServiceId",
+                param: new { Done = done, ServiceId = serviceId }).ConfigureAwait(false);
 
             return Response.Successful;
         }

@@ -247,14 +247,31 @@
                                                 <Run Text="{Binding PriceLabel}" />
                                             </TextBlock>
                                         </StackPanel>
-                                        <Button
-                                            Classes="Tag"
-                                            Classes.Paid="{Binding Paid}"
-                                            Classes.Pending="{Binding !Paid}"
-                                            Command="{Binding ToggleCommand}"
-                                            Content="{Binding PaidLabel}"
+                                        <!--  Two independent states, stacked so a narrow row still fits both.  -->
+                                        <StackPanel
                                             Grid.Column="2"
-                                            VerticalAlignment="Center" />
+                                            Spacing="6"
+                                            VerticalAlignment="Center">
+                                            <!--  Closed off until the work is done: only executed work can be charged for.  -->
+                                            <Button
+                                                Classes="Tag"
+                                                Classes.Paid="{Binding Paid}"
+                                                Classes.Pending="{Binding !Paid}"
+                                                Command="{Binding ToggleCommand}"
+                                                Content="{Binding PaidLabel}"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center"
+                                                IsEnabled="{Binding CanTogglePaid}"
+                                                ToolTip.Tip="Marque o serviço como feito para poder cobrar." />
+                                            <Button
+                                                Classes="Tag"
+                                                Classes.Done="{Binding Done}"
+                                                Classes.Todo="{Binding !Done}"
+                                                Command="{Binding ToggleDoneCommand}"
+                                                Content="{Binding DoneLabel}"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center" />
+                                        </StackPanel>
                                     </Grid>
                                 </Border>
                             </Button>

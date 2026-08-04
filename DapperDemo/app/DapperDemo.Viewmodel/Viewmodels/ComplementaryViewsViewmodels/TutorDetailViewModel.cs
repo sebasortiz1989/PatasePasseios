@@ -120,11 +120,20 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
 
     public string DogNames { get; private set; } = string.Empty;
 
-    /// <summary>Gets everything this tutor still owes, across every month.</summary>
+    /// <summary>
+    /// Gets what may be billed today: work already carried out and not yet paid for, across every
+    /// month. Booked-but-unexecuted services are not in it — see <see cref="UpcomingTotalLabel"/>.
+    /// </summary>
     public string TotalDueLabel { get; private set; } = string.Empty;
 
     /// <summary>Gets a value indicating whether there is anything to collect, so the button can hide when there is not.</summary>
     public bool HasBalance { get; private set; }
+
+    /// <summary>Gets what the tutor's booked-but-not-yet-carried-out work will come to once it is done.</summary>
+    public string UpcomingTotalLabel { get; private set; } = string.Empty;
+
+    /// <summary>Gets a value indicating whether there is unexecuted work worth showing a figure for.</summary>
+    public bool HasUpcoming { get; private set; }
 
     /// <summary>
     /// Gets what is owed back to the tutor: money they handed over beyond their balance. Spent
@@ -206,12 +215,18 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         var dogIds = dogs.Select(d => d.DogId).ToHashSet();
         tutorServices = [.. services.Where(s => dogIds.Contains(s.DogId)).OrderBy(s => s.Date).ThenBy(s => s.ServiceId)];
 
+        // Only executed work can be billed, which AmountDue already encodes.
         var due = tutorServices.Sum(s => s.AmountDue);
         TotalDueLabel = AppSession.Money(due);
         HasBalance = due > 0m;
 
-        // Only what is still owed: this list is the tutor's bill, not their diary. A settled
-        // service drops off it the moment a payment covers it.
+        var upcoming = tutorServices.Sum(s => s.AmountUpcoming);
+        UpcomingTotalLabel = AppSession.Money(upcoming);
+        HasUpcoming = upcoming > 0m;
+
+        // Everything unsettled, executed or not: the sitter needs to see the work still to come as
+        // well as the bill. Which of the two a row is shows in its Feito / A fazer tag, and only
+        // the executed ones are counted into the figure above.
         var pending = tutorServices
             .Where(s => !s.ServicePaid)
             .ToArray();
@@ -234,64 +249,12 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
                 AppSession.DateTimeLabel(service.Date, service.Kind),
                 service.ServicePaid,
                 service.ServicePaid ? "Pago" : "Pendente",
+                service.ServiceDone,
+                service.ServiceDone ? "Feito" : "A fazer",
                 openCommand));
         }
 
         NoPending = pending.Length == 0;
-    }
-
-    /// <summary>
-    /// Spreads an amount received over what a tutor owes, oldest service first.
-    /// </summary>
-    /// <remarks>
-    /// Static and free of state so the rule can be reasoned about on its own. Services the money
-    /// covers in full keep their price and are marked paid. The one service the money runs out on
-    /// has its price cut to the remainder and stays unpaid — so a 100 service part-paid by 75
-    /// becomes an unpaid 25. Anything left once every service is settled has nowhere to go: the
-    /// caller reports it rather than storing a credit.
-    /// </remarks>
-    /// <param name="services">The tutor's services, any order.</param>
-    /// <param name="amount">The amount received.</param>
-    /// <returns>The services to write, and how much of the payment was actually used.</returns>
-    internal static (List<ServicePayment> Payments, decimal Applied) AllocatePayment(IEnumerable<ServiceItem> services, decimal amount)
-    {
-        ArgumentNullException.ThrowIfNull(services);
-
-        var payments = new List<ServicePayment>();
-        var remaining = amount;
-
-        // Oldest first, so the debt that has been outstanding longest is cleared first. ServiceId
-        // breaks ties, which keeps the order stable for two services booked at the same moment.
-        foreach (var service in services.Where(s => !s.ServicePaid).OrderBy(s => s.Date).ThenBy(s => s.ServiceId))
-        {
-            if (remaining <= 0m)
-            {
-                break;
-            }
-
-            var due = service.AmountDue;
-            if (remaining >= due)
-            {
-                remaining -= due;
-                payments.Add(new ServicePayment(service.Kind, service.ServiceId, service.Price, true, service.ExtraCharge));
-                continue;
-            }
-
-            // Falls short: the price becomes what is still owed. A hotel stay prices per night,
-            // so the remainder is divided back out over the nights it spans.
-            var shortfall = due - remaining;
-            var newPrice = service.Kind == ServiceKind.Hotel
-                ? decimal.Round(shortfall / service.Nights, 2, MidpointRounding.AwayFromZero)
-                : shortfall;
-
-            // The remainder is carried entirely by the rate, so any extra is folded in and the
-            // extra column cleared — otherwise it would be charged on top a second time.
-            payments.Add(new ServicePayment(service.Kind, service.ServiceId, newPrice, false, 0m));
-            remaining = 0m;
-            break;
-        }
-
-        return (payments, amount - remaining);
     }
 
     protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
@@ -329,15 +292,11 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
             return;
         }
 
-        var (payments, applied) = AllocatePayment(tutorServices, amount);
-        if (payments.Count == 0)
-        {
-            PaymentError = "Este tutor não tem serviços pendentes.";
-            return;
-        }
+        // No payments is not a failure: a tutor may hand money over before any of the work has been
+        // carried out, and the whole of it then becomes credit.
+        var (payments, applied) = PaymentAllocation.Allocate(tutorServices, amount);
 
-        var result = await repositoryServices.RegisterPaymentAsync(payments).WithSync();
-        if (result != Response.Successful)
+        if (payments.Count > 0 && await repositoryServices.RegisterPaymentAsync(payments).WithSync() != Response.Successful)
         {
             PaymentError = "Não foi possível registrar o pagamento.";
             return;
@@ -345,15 +304,20 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
 
         var settled = payments.Count(p => p.FullyPaid);
         var leftover = amount - applied;
-        var message = $"Recebido {AppSession.Money(applied)} — {(settled == 1 ? "1 serviço quitado" : $"{settled} serviços quitados")}.";
+        var message = applied > 0m
+            ? $"Recebido {AppSession.Money(applied)} — {(settled == 1 ? "1 serviço quitado" : $"{settled} serviços quitados")}."
+            : string.Empty;
 
         if (leftover > 0m && session.SelectedTutorId is int creditTutorId)
         {
-            // Overpaying leaves a balance in the tutor's favour rather than vanishing. It is spent
-            // automatically the next time a service is booked for one of their dogs.
+            // More than the executed work came to, so the remainder is an advance. It is held as
+            // credit in the tutor's favour and spent as each future service is carried out.
             var tutor = await repositoryTutors.GetAsync(creditTutorId).WithSync();
             await repositoryTutors.SetCreditAsync(creditTutorId, (tutor?.Credit ?? 0m) + leftover).WithSync();
-            message += $" Sobraram {AppSession.Money(leftover)}, guardados como crédito.";
+
+            message += message.Length == 0
+                ? $"Recebido {AppSession.Money(leftover)} adiantado, guardado como crédito para os próximos serviços."
+                : $" {AppSession.Money(leftover)} ficam como crédito para os próximos serviços.";
         }
 
         PaymentError = string.Empty;
@@ -371,10 +335,11 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
             return string.Empty;
         }
 
-        var (payments, applied) = AllocatePayment(tutorServices, amount);
+        var (payments, applied) = PaymentAllocation.Allocate(tutorServices, amount);
         if (payments.Count == 0)
         {
-            return "Nada pendente para este tutor.";
+            // Nothing carried out yet to charge for, so the whole amount is an advance.
+            return $"Nada executado a cobrar. {AppSession.Money(amount)} viram crédito para os próximos serviços.";
         }
 
         var settled = payments.Count(p => p.FullyPaid);
@@ -393,7 +358,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         {
             var leftover = amount - applied;
             preview += leftover > 0m
-                ? $". Sobram {AppSession.Money(leftover)}, que viram crédito do tutor."
+                ? $". Sobram {AppSession.Money(leftover)}, que viram crédito para os próximos serviços."
                 : " — nada fica em aberto.";
         }
 
@@ -455,12 +420,14 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
                 Heading = $"{char.ToUpper(monthName[0], Brazil)}{monthName[1..]} de {month.Key.Year.ToString(CultureInfo.InvariantCulture)}",
             };
 
-            foreach (var column in new[] { "Cachorro", "Tipo", "Data", "Valor", "Situação" })
+            // Execução and Pagamento are separate columns because they answer separate questions:
+            // a tutor querying a bill wants to see that the work happened as well as what is owed.
+            foreach (var column in new[] { "Cachorro", "Tipo", "Data", "Valor", "Execução", "Pagamento" })
             {
                 section.Columns.Add(column);
             }
 
-            foreach (var aligned in new[] { false, false, false, true, true })
+            foreach (var aligned in new[] { false, false, false, true, true, true })
             {
                 section.RightAligned.Add(aligned);
             }
@@ -472,14 +439,24 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
                     AppSession.TypeLabel(service.Kind),
                     AppSession.DateTimeLabel(service.Date, service.Kind),
                     AppSession.Money(service.Total),
+                    service.ServiceDone ? "Feito" : "A fazer",
                     service.ServicePaid ? "Pago" : "Pendente"));
             }
 
+            // Only executed work is billable, so the month's headline figure is what may actually
+            // be asked for. Work still to come is listed separately rather than folded in, so the
+            // tutor is never shown a total that includes services that have not happened.
             var paid = month.Where(s => s.ServicePaid).Sum(s => s.Total);
-            var pending = month.Where(s => !s.ServicePaid).Sum(s => s.Total);
-            section.Totals.Add(new ReportField("Total do mês", AppSession.Money(paid + pending)));
+            var chargeable = month.Sum(s => s.AmountDue);
+            var upcoming = month.Sum(s => s.AmountUpcoming);
+
             section.Totals.Add(new ReportField("Já pago", AppSession.Money(paid)));
-            section.Totals.Add(new ReportField("A pagar", AppSession.Money(pending), true));
+            if (upcoming > 0m)
+            {
+                section.Totals.Add(new ReportField("A executar (ainda não cobrado)", AppSession.Money(upcoming)));
+            }
+
+            section.Totals.Add(new ReportField("A pagar", AppSession.Money(chargeable), true));
             report.Sections.Add(section);
         }
 
@@ -492,8 +469,9 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
             });
         }
 
-        var allPending = tutorServices.Where(s => !s.ServicePaid).Sum(s => s.Total);
-        await AddPaymentSectionAsync(report, allPending).WithSync();
+        // What the tutor is actually being asked for: executed and unpaid, nothing else.
+        var chargeableTotal = tutorServices.Sum(s => s.AmountDue);
+        await AddPaymentSectionAsync(report, chargeableTotal).WithSync();
 
         var slug = new string([.. Name.ToLowerInvariant().Select(c => char.IsLetterOrDigit(c) ? c : '-')]).Trim('-');
         var fileName = await reportExporter.ExportAsync(report, $"servicos-{slug}").WithSync();
@@ -509,13 +487,16 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     /// and a Pix key edited on the profile screen has to reach the next export.
     /// </remarks>
     /// <param name="report">The report being built.</param>
-    /// <param name="pending">What the tutor still owes across every month.</param>
-    private async Task AddPaymentSectionAsync(ReportDocument report, decimal pending)
+    /// <param name="chargeable">
+    /// What may be billed today — executed and unpaid, across every month. Never includes work
+    /// that has not been carried out: the tutor is not asked for money the sitter has not earned.
+    /// </param>
+    private async Task AddPaymentSectionAsync(ReportDocument report, decimal chargeable)
     {
         var petSitter = await repositoryPetSitter.GetAsync(session.CurrentPetSitterId).WithSync();
 
         // Nothing to say if there is no key on file and nothing outstanding.
-        if (string.IsNullOrWhiteSpace(petSitter?.Pix) && pending <= 0m)
+        if (string.IsNullOrWhiteSpace(petSitter?.Pix) && chargeable <= 0m)
         {
             return;
         }
@@ -534,8 +515,8 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
 
         payment.Fields.Add(new ReportField(
             "Total a pagar",
-            pending > 0m ? AppSession.Money(pending) : "Nada pendente. Obrigado!",
-            pending > 0m));
+            chargeable > 0m ? AppSession.Money(chargeable) : "Nada pendente. Obrigado!",
+            chargeable > 0m));
 
         report.Sections.Add(payment);
     }

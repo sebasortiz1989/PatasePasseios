@@ -106,7 +106,7 @@
                                                     BorderThickness="0,0,0,2"
                                                     Margin="0,0,0,12"
                                                     Padding="0,0,0,12">
-                                                    <Grid ColumnDefinitions="*,Auto,14,Auto">
+                                                    <Grid ColumnDefinitions="*,Auto,14,Auto,10,Auto">
                                                         <TextBlock
                                                             FontFamily="{StaticResource FontBody}"
                                                             FontSize="29"
@@ -123,11 +123,19 @@
                                                             Grid.Column="1"
                                                             Text="{Binding DateLabel}"
                                                             VerticalAlignment="Center" />
+                                                        <!--  Whether it happened, and whether it was paid for — two separate states.  -->
+                                                        <Border
+                                                            Classes="TagSign"
+                                                            Classes.Done="{Binding Done}"
+                                                            Classes.Todo="{Binding !Done}"
+                                                            Grid.Column="3">
+                                                            <TextBlock Text="{Binding DoneLabel}" />
+                                                        </Border>
                                                         <Border
                                                             Classes="TagSign"
                                                             Classes.Paid="{Binding Paid}"
                                                             Classes.Pending="{Binding !Paid}"
-                                                            Grid.Column="3">
+                                                            Grid.Column="5">
                                                             <TextBlock Text="{Binding PaidLabel}" />
                                                         </Border>
                                                     </Grid>
@@ -145,10 +153,11 @@
                             BorderThickness="0,2,0,0"
                             Padding="0,20,0,0">
                             <StackPanel Spacing="12">
+                                <!--  Only executed work is billable, so this is what may be asked for today.  -->
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock
                                         Classes="Kicker"
-                                        Text="Em aberto"
+                                        Text="A cobrar (já executado)"
                                         VerticalAlignment="Center" />
                                     <TextBlock
                                         FontFamily="{StaticResource FontHeading}"
@@ -156,6 +165,20 @@
                                         Foreground="{StaticResource ColorAccentDark700}"
                                         Grid.Column="1"
                                         Text="{Binding TotalDueLabel}" />
+                                </Grid>
+
+                                <!--  Booked but not yet carried out: revenue coming, not money owed.  -->
+                                <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding HasUpcoming}">
+                                    <TextBlock
+                                        Classes="Kicker"
+                                        Text="A executar"
+                                        VerticalAlignment="Center" />
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontHeading}"
+                                        FontSize="35"
+                                        Foreground="{StaticResource ColorTextMuted70}"
+                                        Grid.Column="1"
+                                        Text="{Binding UpcomingTotalLabel}" />
                                 </Grid>
 
                                 <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding HasCredit}">
@@ -176,7 +199,7 @@
                                     FontStyle="Italic"
                                     Foreground="{StaticResource ColorTextMuted45}"
                                     IsVisible="{Binding HasCredit}"
-                                    Text="Será usado automaticamente no próximo serviço agendado."
+                                    Text="Adiantamento do tutor. Será usado automaticamente quando o próximo serviço for marcado como feito."
                                     TextWrapping="Wrap" />
 
                                 <buttons:VButton

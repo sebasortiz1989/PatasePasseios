@@ -149,6 +149,117 @@ public class RepositoryServicesTests
     [Theory]
     [InlineData(ServiceKind.Walk)]
     [InlineData(ServiceKind.Sitting)]
+    [InlineData(ServiceKind.Hotel)]
+    [InlineData(ServiceKind.DayCare)]
+    public async Task AServiceCanBeMarkedDoneAndNotDoneAgain(ServiceKind kind)
+    {
+        using var db = new TestDatabase();
+        var (petSitterId, _, dogId) = await db.SeedAccountAsync();
+        await AddAsync(db, kind, petSitterId, dogId, August1, 100m);
+        var service = (await db.Services.ListForPetSitterAsync(petSitterId)).Single();
+
+        Assert.False(service.ServiceDone);
+
+        await db.Services.SetDoneAsync(kind, service.ServiceId, true);
+        Assert.True((await db.Services.GetAsync(petSitterId, kind, service.ServiceId))!.ServiceDone);
+
+        await db.Services.SetDoneAsync(kind, service.ServiceId, false);
+        Assert.False((await db.Services.GetAsync(petSitterId, kind, service.ServiceId))!.ServiceDone);
+    }
+
+    /// <summary>
+    /// The two flags answer different questions, so neither write may disturb the other: work is
+    /// often done before it is settled, and occasionally settled before it is done.
+    /// </summary>
+    [Fact]
+    public async Task MarkingAServiceDoneLeavesItsPaymentAlone()
+    {
+        using var db = new TestDatabase();
+        var (petSitterId, _, dogId) = await db.SeedAccountAsync();
+        await AddAsync(db, ServiceKind.Walk, petSitterId, dogId, August1, 100m);
+        var walk = (await db.Services.ListForPetSitterAsync(petSitterId)).Single();
+
+        await db.Services.SetDoneAsync(ServiceKind.Walk, walk.ServiceId, true);
+
+        var done = (await db.Services.GetAsync(petSitterId, ServiceKind.Walk, walk.ServiceId))!;
+        Assert.True(done.ServiceDone);
+        Assert.False(done.ServicePaid);
+        Assert.Equal(100m, done.AmountDue);
+
+        await db.Services.SetPaidAsync(ServiceKind.Walk, walk.ServiceId, true);
+
+        var settled = (await db.Services.GetAsync(petSitterId, ServiceKind.Walk, walk.ServiceId))!;
+        Assert.True(settled.ServiceDone);
+        Assert.True(settled.ServicePaid);
+    }
+
+    /// <summary>A booking can be paid up front and still not have happened yet.</summary>
+    [Fact]
+    public async Task SettlingAServiceDoesNotMarkItDone()
+    {
+        using var db = new TestDatabase();
+        var (petSitterId, _, dogId) = await db.SeedAccountAsync();
+        await AddAsync(db, ServiceKind.Sitting, petSitterId, dogId, August1, 80m);
+        var sitting = (await db.Services.ListForPetSitterAsync(petSitterId)).Single();
+
+        await db.Services.RegisterPaymentAsync([new ServicePayment(sitting.Kind, sitting.ServiceId, sitting.Price, true)]);
+
+        var after = (await db.Services.GetAsync(petSitterId, ServiceKind.Sitting, sitting.ServiceId))!;
+        Assert.True(after.ServicePaid);
+        Assert.False(after.ServiceDone);
+    }
+
+    /// <summary>An edit changes the date and the price; it must not silently un-tick the work.</summary>
+    [Fact]
+    public async Task EditingAServiceKeepsItsDoneFlag()
+    {
+        using var db = new TestDatabase();
+        var (petSitterId, _, dogId) = await db.SeedAccountAsync();
+        await AddAsync(db, ServiceKind.Walk, petSitterId, dogId, August1, 100m);
+        var walk = (await db.Services.ListForPetSitterAsync(petSitterId)).Single();
+        await db.Services.SetDoneAsync(ServiceKind.Walk, walk.ServiceId, true);
+
+        await db.Services.UpdateAsync(new ServiceItem
+        {
+            ServiceId = walk.ServiceId,
+            Kind = ServiceKind.Walk,
+            DogId = dogId,
+            DogName = walk.DogName,
+            TutorName = walk.TutorName,
+            Date = August1.AddDays(1),
+            Price = 120m,
+        });
+
+        var edited = (await db.Services.GetAsync(petSitterId, ServiceKind.Walk, walk.ServiceId))!;
+        Assert.Equal(120m, edited.Price);
+        Assert.True(edited.ServiceDone);
+    }
+
+    /// <summary>A booking that carries the flag at insert time keeps it — the column is really written.</summary>
+    [Fact]
+    public async Task AServiceCanBeCreatedAlreadyDone()
+    {
+        using var db = new TestDatabase();
+        var (petSitterId, _, dogId) = await db.SeedAccountAsync();
+
+        await db.Services.AddWalkAsync(new WalkingService
+        {
+            DogId = dogId,
+            PetSitterId = petSitterId,
+            Date = August1,
+            Price = 40m,
+            ServiceDone = true,
+        });
+
+        var walk = (await db.Services.ListForPetSitterAsync(petSitterId)).Single();
+
+        Assert.True(walk.ServiceDone);
+        Assert.False(walk.ServicePaid);
+    }
+
+    [Theory]
+    [InlineData(ServiceKind.Walk)]
+    [InlineData(ServiceKind.Sitting)]
     public async Task EditingAServiceSavesItsDateAndPrice(ServiceKind kind)
     {
         using var db = new TestDatabase();
@@ -259,6 +370,13 @@ public class RepositoryServicesTests
         var (petSitterId, _, dogId) = await db.SeedAccountAsync();
         await AddAsync(db, ServiceKind.Walk, petSitterId, dogId, August1, 100m);
         await AddAsync(db, ServiceKind.Sitting, petSitterId, dogId, August1.AddDays(1), 100m);
+
+        var booked = await db.Services.ListForPetSitterAsync(petSitterId);
+        foreach (var service in booked)
+        {
+            // Both carried out, so both are chargeable — a payment can only land on executed work.
+            await db.Services.SetDoneAsync(service.Kind, service.ServiceId, true);
+        }
 
         var before = await db.Services.ListForPetSitterAsync(petSitterId);
         var first = before.Single(s => s.Kind == ServiceKind.Walk);
@@ -407,12 +525,22 @@ public class RepositoryServicesTests
             ExtraCharge = 40m,
         });
 
-        var stay = (await db.Services.ListForPetSitterAsync(petSitterId)).Single();
+        var booked = (await db.Services.ListForPetSitterAsync(petSitterId)).Single();
 
-        Assert.Equal(5, stay.Nights);
-        Assert.Equal(40m, stay.ExtraCharge);
-        Assert.Equal(540m, stay.Total);
+        Assert.Equal(5, booked.Nights);
+        Assert.Equal(40m, booked.ExtraCharge);
+        Assert.Equal(540m, booked.Total);
+
+        // Not carried out yet, so nothing may be charged for it — the total is only what it will
+        // come to once the stay has happened.
+        Assert.Equal(0m, booked.AmountDue);
+        Assert.Equal(540m, booked.AmountUpcoming);
+
+        await db.Services.SetDoneAsync(ServiceKind.Hotel, booked.ServiceId, true);
+
+        var stay = (await db.Services.GetAsync(petSitterId, ServiceKind.Hotel, booked.ServiceId))!;
         Assert.Equal(540m, stay.AmountDue);
+        Assert.Equal(0m, stay.AmountUpcoming);
     }
 
     [Fact]

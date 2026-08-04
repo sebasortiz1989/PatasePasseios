@@ -10,6 +10,7 @@ using DapperDemo.Repository.Dapper.Dtos;
 using DapperDemo.Repository.Dapper.Services;
 using DapperDemo.Viewmodel.Services;
 using DapperDemo.Viewmodel.Viewmodels.Session;
+using DapperDemo.Viewmodel.Viewmodels.Utils;
 using PropertyChanged;
 
 namespace DapperDemo.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;
@@ -18,6 +19,7 @@ namespace DapperDemo.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;
 public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
 {
     private readonly RepositoryServices repositoryServices;
+    private readonly CreditSpender creditSpender;
     private readonly AppSession session;
     private readonly UriLauncher uriLauncher;
 
@@ -27,15 +29,18 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
     public ServiceDetailViewModel(
         CurrentView currentView,
         RepositoryServices repositoryServices,
+        CreditSpender creditSpender,
         AppSession session,
         UriLauncher uriLauncher)
     {
         this.repositoryServices = repositoryServices;
+        this.creditSpender = creditSpender;
         this.session = session;
         this.uriLauncher = uriLauncher;
         BackCommand = new SynchronizedCommand(currentView.GoBack, SynchronizationBehavior.Discard, true);
         AddToCalendarCommand = new SynchronizedCommand(AddToCalendar, SynchronizationBehavior.Discard, true);
         TogglePaidCommand = new SynchronizedCommand(TogglePaid, SynchronizationBehavior.Discard, true);
+        ToggleDoneCommand = new SynchronizedCommand(ToggleDone, SynchronizationBehavior.Discard, true);
         AskDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = true, SynchronizationBehavior.Discard, true);
         CancelDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = false, SynchronizationBehavior.Discard, true);
         ConfirmDeleteCommand = new SynchronizedCommand(Delete, SynchronizationBehavior.Discard, true);
@@ -49,6 +54,8 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
     public ICommand AddToCalendarCommand { get; }
 
     public ICommand TogglePaidCommand { get; }
+
+    public ICommand ToggleDoneCommand { get; }
 
     public ICommand AskDeleteCommand { get; }
 
@@ -122,6 +129,26 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
     public bool Paid { get; private set; }
 
     public string PaidActionLabel { get; private set; } = string.Empty;
+
+    /// <summary>Gets a value indicating whether the work has been carried out — see <see cref="ServiceItem.ServiceDone"/>.</summary>
+    public bool Done { get; private set; }
+
+    public string DoneActionLabel { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Gets a value indicating whether the payment chip does anything. Work is only billable once
+    /// it has happened, so settling is closed off until then — an advance is taken as tutor credit
+    /// on the tutor screen. Already-settled bookings stay togglable so a mistake can be undone.
+    /// </summary>
+    public bool CanTogglePaid => Done || Paid;
+
+    /// <summary>Gets a value indicating whether to explain why the payment chip is closed off.</summary>
+    public bool ShowsPaymentBlockedHint => !Done && !Paid;
+
+    /// <summary>Gets what happened to the tutor's credit when this booking was marked done, or empty.</summary>
+    public string CreditMsg { get; private set; } = string.Empty;
+
+    public bool HasCreditMsg => !string.IsNullOrEmpty(CreditMsg);
 
     // Avalonia has no datetime-local control, so date and time are edited separately, the same
     // way the new-service form splits them.
@@ -239,6 +266,11 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
         await uriLauncher.LaunchAsync(BuildCalendarUri(service)).WithSync();
     }
 
+    /// <summary>
+    /// Settles the booking, or takes the mark back off. Refuses to settle work that has not been
+    /// carried out — an advance from the tutor is credit, not a paid service, and is taken on the
+    /// tutor screen instead.
+    /// </summary>
     private async Task TogglePaid()
     {
         if (session.SelectedServiceKind is not ServiceKind kind || session.SelectedServiceId is not int serviceId)
@@ -246,9 +278,45 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
             return;
         }
 
+        if (!CanTogglePaid)
+        {
+            return;
+        }
+
         await repositoryServices.SetPaidAsync(kind, serviceId, !Paid).WithSync();
         session.NotifyDataChanged();
         await LoadAsync().WithSync();
+    }
+
+    /// <summary>
+    /// Marks the booking as carried out, or takes the mark back off. This is the screen where the
+    /// flag is set, the agenda's tag being the shortcut.
+    /// </summary>
+    /// <remarks>
+    /// Carrying the work out is what makes it billable, so this is also the moment any credit the
+    /// tutor is holding gets spent — see <see cref="CreditSpender"/>. Un-marking spends nothing;
+    /// money that has already moved is not taken back by correcting a tick.
+    /// </remarks>
+    private async Task ToggleDone()
+    {
+        if (session.SelectedServiceKind is not ServiceKind kind || session.SelectedServiceId is not int serviceId)
+        {
+            return;
+        }
+
+        var nowDone = !Done;
+        await repositoryServices.SetDoneAsync(kind, serviceId, nowDone).WithSync();
+
+        var spent = nowDone && current is ServiceItem service
+            ? await creditSpender.SpendForDogAsync(session.CurrentPetSitterId, service.DogId).WithSync()
+            : string.Empty;
+
+        session.NotifyDataChanged();
+
+        // After the reload, which clears the message so it belongs to this action rather than
+        // lingering from a previous one.
+        await LoadAsync().WithSync();
+        CreditMsg = spent.Trim();
     }
 
     private Task StartEdit()
@@ -326,6 +394,7 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
             ExtraCharge = service.Kind == ServiceKind.Hotel ? extraCharge : 0m,
             RequiresWalking = EditRequiresWalking,
             ServicePaid = service.ServicePaid,
+            ServiceDone = service.ServiceDone,
         }).WithSync();
 
         if (result != Response.Successful)
@@ -360,6 +429,7 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
         IsEditing = false;
         EditError = string.Empty;
         ConfirmingDelete = false;
+        CreditMsg = string.Empty;
 
         if (session.SelectedServiceKind is not ServiceKind kind || session.SelectedServiceId is not int serviceId)
         {
@@ -400,5 +470,8 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
 
         Paid = service.ServicePaid;
         PaidActionLabel = service.ServicePaid ? "Pago" : "Marcar como pago";
+
+        Done = service.ServiceDone;
+        DoneActionLabel = service.ServiceDone ? "Feito" : "Marcar como feito";
     }
 }

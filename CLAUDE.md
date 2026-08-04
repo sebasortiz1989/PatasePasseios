@@ -242,6 +242,42 @@ flat `Price` for the day rather than the hotel's daily rate. `AppSession`'s
 kind-aware `DateTimeLabel`/`TimeLabel` overloads exist so it never renders
 `00:00`.
 
+### Executed before paid — the charging rule
+
+**Every service table carries two flags**: `ServicePaid` (the money arrived,
+written by `SetPaidAsync` and `RegisterPaymentAsync`) and `ServiceDone` (the work
+happened, written by `SetDoneAsync`). Neither is derived from the date — a booking
+in the past is no evidence the sitter turned up. `UpdateAsync` touches neither, so
+an edit cannot silently un-tick either one.
+
+They are not symmetric. **Work is only billable once it has been carried out**, so
+the order is always *executed → paid*:
+
+- `ServiceItem.AmountDue` is the single home of that rule: `ServicePaid ||
+  !ServiceDone ? 0 : Total`. Everything that totals a balance goes through it —
+  never re-filter on `ServicePaid` to build a figure, or unexecuted work creeps
+  back into a bill. `AmountUpcoming` is its complement: what a booking will be
+  worth once done, and zero after.
+- The paid toggle is **disabled until the service is done** (`CanTogglePaid =>
+  Done || Paid`), on both the agenda row and the service screen. Already-paid
+  bookings stay togglable so a mistake can be undone.
+- `PaymentAllocation.Allocate` (data layer, beside `ServicePayment`) skips
+  anything with no `AmountDue`, so a payment can never land on unexecuted work
+  however old it is.
+
+**An advance is credit, not a paid service.** A tutor may pay before the work
+happens; `ConfirmPayment` accepts that with nothing to allocate and banks the whole
+amount as `Tutors.Credit` — money the sitter owes back in services. Credit is then
+spent **when a service is marked done**, not when one is booked, by `CreditSpender`
+(a Viewmodel DI singleton). Both places that can mark a service done call it, and
+booking no longer spends credit at all.
+
+Both flags surface on the agenda row, the dog and tutor detail rows, the service
+detail screen, and the two PNG reports as the `Execução` / `Pagamento` columns,
+whose totals bill only executed work and list `A executar` separately.
+`GetMonthlyIncomeAsync` is untouched by all this — income has always counted
+`ServicePaid` only.
+
 Operations return the `Response` enum rather than throwing;
 `EnumExtensions.GetDescription()` turns it into user-facing text at the
 presentation boundary. Passwords are BCrypt-hashed in `RepositoryPetSitter`.
@@ -341,8 +377,9 @@ Say what is real — several things here are not:
   writing the first one.
 - **Walk and pet-sitting bookings have no stored duration.** The Google Calendar
   export assumes one hour.
-- Detail screens list **future services only** (`s.Date >= now`), so past unpaid
-  work is invisible on the dog and tutor screens.
+- The dog screen lists **upcoming unpaid services only** (`s.Date >= now &&
+  !s.ServicePaid`), so past unpaid work is invisible there. The tutor screen lists
+  every unpaid service regardless of date, because that list is the tutor's bill.
 
 ### Known drift
 

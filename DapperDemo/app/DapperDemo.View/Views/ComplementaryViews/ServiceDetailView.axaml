@@ -256,9 +256,10 @@
                             </Border>
                         </StackPanel>
 
+                        <!--  Whether the work happened. Independent of payment: this is where the flag is set.  -->
                         <Border
                             BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="0,2,0,2"
+                            BorderThickness="0,2,0,0"
                             Padding="0,20,0,20"
                             VerticalAlignment="Center">
                             <Grid ColumnDefinitions="*,Auto">
@@ -267,15 +268,60 @@
                                     FontSize="25"
                                     Foreground="{StaticResource ColorTextMuted55}"
                                     LetterSpacing="1"
-                                    Text="PAGAMENTO"
+                                    Text="EXECUÇÃO"
                                     VerticalAlignment="Center" />
                                 <Button
                                     Classes="Chip"
-                                    Classes.Active="{Binding Paid}"
-                                    Command="{Binding TogglePaidCommand}"
-                                    Content="{Binding PaidActionLabel}"
+                                    Classes.Active="{Binding Done}"
+                                    Command="{Binding ToggleDoneCommand}"
+                                    Content="{Binding DoneActionLabel}"
                                     Grid.Column="1" />
                             </Grid>
+                        </Border>
+
+                        <!--  What marking it done did to the tutor's credit, when it did anything.  -->
+                        <TextBlock
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="24"
+                            FontStyle="Italic"
+                            Foreground="{StaticResource ColorAccentDark700}"
+                            IsVisible="{Binding HasCreditMsg}"
+                            Margin="0,0,0,12"
+                            Text="{Binding CreditMsg}"
+                            TextWrapping="Wrap" />
+
+                        <Border
+                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderThickness="0,2,0,2"
+                            Padding="0,20,0,20"
+                            VerticalAlignment="Center">
+                            <StackPanel Spacing="10">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="25"
+                                        Foreground="{StaticResource ColorTextMuted55}"
+                                        LetterSpacing="1"
+                                        Text="PAGAMENTO"
+                                        VerticalAlignment="Center" />
+                                    <!--  Only executed work can be charged for, so this waits on the row above.  -->
+                                    <Button
+                                        Classes="Chip"
+                                        Classes.Active="{Binding Paid}"
+                                        Command="{Binding TogglePaidCommand}"
+                                        Content="{Binding PaidActionLabel}"
+                                        Grid.Column="1"
+                                        IsEnabled="{Binding CanTogglePaid}" />
+                                </Grid>
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="23"
+                                    FontStyle="Italic"
+                                    Foreground="{StaticResource ColorTextMuted45}"
+                                    IsVisible="{Binding ShowsPaymentBlockedHint}"
+                                    Text="Marque como feito para poder cobrar. Um adiantamento do tutor entra como crédito na tela dele."
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
                         </Border>
 
                         <buttons:VButton

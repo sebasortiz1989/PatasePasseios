@@ -3,10 +3,10 @@ using System.Windows.Input;
 namespace DapperDemo.Viewmodel.Viewmodels.Utils;
 
 /// <summary>
-/// One row of the agenda. Owns its two commands, so the list can dispose them when the
-/// filters rebuild it rather than leaking a pair per row on every filter change.
+/// One row of the agenda. Owns its three commands, so the list can dispose them when the
+/// filters rebuild it rather than leaking a set per row on every filter change.
 /// </summary>
-public sealed class ServiceRow(string dayNum, string monthShort, string dogName, string typeLabel, string timeLabel, string priceLabel, bool paid, string paidLabel, ICommand openCommand, ICommand toggleCommand) : IDisposable
+public sealed class ServiceRow(string dayNum, string monthShort, string dogName, string typeLabel, string timeLabel, string priceLabel, bool paid, string paidLabel, bool done, string doneLabel, bool canTogglePaid, ICommand openCommand, ICommand toggleCommand, ICommand toggleDoneCommand) : IDisposable
 {
     public string DayNum { get; } = dayNum;
 
@@ -24,13 +24,29 @@ public sealed class ServiceRow(string dayNum, string monthShort, string dogName,
 
     public string PaidLabel { get; } = paidLabel;
 
+    /// <summary>Gets a value indicating whether the work has been carried out. Drives its own tag, separate from <see cref="Paid"/>.</summary>
+    public bool Done { get; } = done;
+
+    public string DoneLabel { get; } = doneLabel;
+
+    /// <summary>
+    /// Gets a value indicating whether the paid tag does anything. Work is only billable once it
+    /// has happened, so a booking still to do cannot be settled from here; an already-settled one
+    /// stays togglable so a mistake can be undone.
+    /// </summary>
+    public bool CanTogglePaid { get; } = canTogglePaid;
+
     public ICommand OpenCommand { get; } = openCommand;
 
     public ICommand ToggleCommand { get; } = toggleCommand;
+
+    /// <summary>Gets the command that flips <see cref="Done"/>, so a walk can be ticked off from the agenda.</summary>
+    public ICommand ToggleDoneCommand { get; } = toggleDoneCommand;
 
     public void Dispose()
     {
         (OpenCommand as IDisposable)?.Dispose();
         (ToggleCommand as IDisposable)?.Dispose();
+        (ToggleDoneCommand as IDisposable)?.Dispose();
     }
 }

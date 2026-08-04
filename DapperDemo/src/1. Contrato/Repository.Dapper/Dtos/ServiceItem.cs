@@ -66,6 +66,16 @@ public sealed class ServiceItem
     public bool ServicePaid { get; init; }
 
     /// <summary>
+    /// Gets a value indicating whether the booking actually happened.
+    /// </summary>
+    /// <remarks>
+    /// Deliberately independent of <see cref="ServicePaid"/> and of <see cref="Date"/>: work is
+    /// often done before it is settled and sometimes settled before it is done, and a date in the
+    /// past is no proof the sitter turned up. Only the sitter marking it makes it true.
+    /// </remarks>
+    public bool ServiceDone { get; init; }
+
+    /// <summary>
     /// Gets the nights billed. Only a hotel stay spans more than one; check-in and check-out on
     /// the same day still bills one, which is how a day rate is charged and stops a stay totalling
     /// nothing.
@@ -79,11 +89,25 @@ public sealed class ServiceItem
     public decimal Total => Kind == ServiceKind.Hotel ? (Price * Nights) + ExtraCharge : Price;
 
     /// <summary>
-    /// Gets what is still owed on this service.
+    /// Gets what may be charged for this service right now.
     /// </summary>
     /// <remarks>
+    /// <para>
+    /// Work is only billable once it has happened, so an unexecuted booking is worth nothing yet
+    /// however much it will eventually cost — see <see cref="AmountUpcoming"/> for that figure.
+    /// This is the single place that rule lives; everything that totals a balance goes through
+    /// here rather than filtering on <see cref="ServicePaid"/> itself.
+    /// </para>
+    /// <para>
     /// There is no separate "amount paid" column: a part-paid service has its price cut to the
     /// remainder and stays unpaid, so what is owed is simply the whole of an unpaid service.
+    /// </para>
     /// </remarks>
-    public decimal AmountDue => ServicePaid ? 0m : Total;
+    public decimal AmountDue => ServicePaid || !ServiceDone ? 0m : Total;
+
+    /// <summary>
+    /// Gets what this booking will be worth once it has been carried out, and nothing once it has.
+    /// Money the sitter has coming rather than money they may ask for today.
+    /// </summary>
+    public decimal AmountUpcoming => ServicePaid || ServiceDone ? 0m : Total;
 }

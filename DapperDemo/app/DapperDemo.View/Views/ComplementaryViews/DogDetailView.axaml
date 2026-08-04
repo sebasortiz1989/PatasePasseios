@@ -125,14 +125,15 @@
                             BorderThickness="0,2,0,0"
                             Padding="0,20,0,0">
                             <StackPanel Spacing="12">
-                                <TextBlock Classes="Kicker" Text="Próximos serviços" />
+                                <!--  Upcoming and still owed for; a settled booking drops off.  -->
+                                <TextBlock Classes="Kicker" Text="Próximos serviços em aberto" />
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="29"
                                     FontStyle="Italic"
                                     Foreground="{StaticResource ColorTextMuted45}"
                                     IsVisible="{Binding NoFuture}"
-                                    Text="Nada agendado." />
+                                    Text="Nada agendado em aberto." />
                                 <ItemsControl ItemsSource="{Binding FutureServices}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate DataType="utils:FutureServiceRow">
@@ -142,7 +143,7 @@
                                                     BorderThickness="0,0,0,2"
                                                     Margin="0,0,0,12"
                                                     Padding="0,0,0,12">
-                                                    <Grid ColumnDefinitions="*,Auto,14,Auto">
+                                                    <Grid ColumnDefinitions="*,Auto,14,Auto,10,Auto">
                                                         <TextBlock
                                                             FontFamily="{StaticResource FontBody}"
                                                             FontSize="29"
@@ -156,11 +157,19 @@
                                                             Grid.Column="1"
                                                             Text="{Binding DateLabel}"
                                                             VerticalAlignment="Center" />
+                                                        <!--  Whether it happened, and whether it was paid for — two separate states.  -->
+                                                        <Border
+                                                            Classes="TagSign"
+                                                            Classes.Done="{Binding Done}"
+                                                            Classes.Todo="{Binding !Done}"
+                                                            Grid.Column="3">
+                                                            <TextBlock Text="{Binding DoneLabel}" />
+                                                        </Border>
                                                         <Border
                                                             Classes="TagSign"
                                                             Classes.Paid="{Binding Paid}"
                                                             Classes.Pending="{Binding !Paid}"
-                                                            Grid.Column="3">
+                                                            Grid.Column="5">
                                                             <TextBlock Text="{Binding PaidLabel}" />
                                                         </Border>
                                                     </Grid>

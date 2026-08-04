@@ -301,6 +301,20 @@
     </Style>
 
     <!--
+        Execution is a second, independent state on the same row — the work happening and the
+        money arriving are different events. Same two-tone vocabulary as Paid/Pending, named for
+        what it means so a row's markup says which of the two it is showing.
+    -->
+    <Style Selector="Button.Tag.Todo">
+        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
+        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted55}" />
+    </Style>
+    <Style Selector="Button.Tag.Done">
+        <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
+        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+    </Style>
+
+    <!--
         The read-only twin of Button.Tag, for lists where paid/pending is a label rather than a
         control. A Button here would sit inside the row's own tap target and look pressable while
         doing nothing. Border carries no text properties, so the type styling lives on its child.
@@ -326,6 +340,18 @@
         <Setter Property="Foreground" Value="{StaticResource ColorTextMuted55}" />
     </Style>
     <Style Selector="Border.TagSign.Paid > TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+    </Style>
+    <Style Selector="Border.TagSign.Todo">
+        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
+    </Style>
+    <Style Selector="Border.TagSign.Done">
+        <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
+    </Style>
+    <Style Selector="Border.TagSign.Todo > TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted55}" />
+    </Style>
+    <Style Selector="Border.TagSign.Done > TextBlock">
         <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
     </Style>
 

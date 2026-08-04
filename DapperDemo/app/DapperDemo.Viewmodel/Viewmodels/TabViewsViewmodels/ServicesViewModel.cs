@@ -268,6 +268,7 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
                 PricePerDay = pricePerDay,
                 RequiresWalking = SvcRequiresWalking,
                 ServicePaid = false,
+                ServiceDone = false,
             }).WithSync();
         }
         else
@@ -299,6 +300,7 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
                         Date = occurrence,
                         Price = price,
                         ServicePaid = false,
+                        ServiceDone = false,
                     }).WithSync(),
 
                     // Date only — BuildOccurrences already pinned day-care to midnight.
@@ -310,6 +312,7 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
                         Price = price,
                         RequiresWalking = SvcRequiresWalking,
                         ServicePaid = false,
+                        ServiceDone = false,
                     }).WithSync(),
 
                     _ => await repositoryServices.AddWalkAsync(new WalkingService
@@ -319,6 +322,7 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
                         Date = occurrence,
                         Price = price,
                         ServicePaid = false,
+                        ServiceDone = false,
                     }).WithSync(),
                 };
 
@@ -334,13 +338,13 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
                 return;
             }
 
-            var recurringCredit = await SpendCreditAsync(SelectedDog.TutorId).WithSync();
-
+            // No credit is spent here. A booking is not chargeable until it has been carried out,
+            // so the tutor's credit waits for the service to be marked done — see CreditSpender.
             ResetForm();
             SvcMsgIsError = created < occurrences.Count;
-            SvcMsg = (created == occurrences.Count
+            SvcMsg = created == occurrences.Count
                 ? created == 1 ? "Serviço agendado." : $"{created} serviços agendados."
-                : $"{created} de {occurrences.Count} serviços agendados.") + recurringCredit;
+                : $"{created} de {occurrences.Count} serviços agendados.";
 
             session.NotifyDataChanged();
             return;
@@ -352,57 +356,11 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
             return;
         }
 
-        var hotelCredit = await SpendCreditAsync(SelectedDog.TutorId).WithSync();
-
         ResetForm();
         SvcMsgIsError = false;
-        SvcMsg = "Serviço agendado." + hotelCredit;
+        SvcMsg = "Serviço agendado.";
 
         session.NotifyDataChanged();
-    }
-
-    /// <summary>
-    /// Spends whatever the tutor has in credit against what they now owe.
-    /// </summary>
-    /// <remarks>
-    /// Credit is money handed over beyond the balance at the time, so booking is the natural
-    /// moment to use it. It is spread by the same rule a payment is — oldest unpaid service
-    /// first, the one it runs out on repriced to the remainder — which in the usual case (credit
-    /// taken, then a service booked) means it lands squarely on the new booking. Anything left
-    /// stays on the tutor for next time.
-    /// </remarks>
-    /// <param name="tutorId">The tutor who owns the dog just booked for.</param>
-    /// <returns>A sentence to append to the confirmation, or empty when there was no credit.</returns>
-    private async Task<string> SpendCreditAsync(int tutorId)
-    {
-        var tutor = await repositoryTutors.GetAsync(tutorId).WithSync();
-        if (tutor is not { Credit: > 0m })
-        {
-            return string.Empty;
-        }
-
-        var dogs = await repositoryDogs.ListForTutorAsync(tutorId).WithSync();
-        var dogIds = dogs.Select(d => d.DogId).ToHashSet();
-        var services = await repositoryServices.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
-        var pending = services.Where(s => dogIds.Contains(s.DogId) && !s.ServicePaid).ToArray();
-
-        var (payments, applied) = TutorDetailViewModel.AllocatePayment(pending, tutor.Credit);
-        if (payments.Count == 0 || applied <= 0m)
-        {
-            return string.Empty;
-        }
-
-        if (await repositoryServices.RegisterPaymentAsync(payments).WithSync() != Response.Successful)
-        {
-            return string.Empty;
-        }
-
-        var left = tutor.Credit - applied;
-        await repositoryTutors.SetCreditAsync(tutorId, left).WithSync();
-
-        return left > 0m
-            ? $" Crédito de {AppSession.Money(applied)} usado; restam {AppSession.Money(left)}."
-            : $" Crédito de {AppSession.Money(applied)} usado.";
     }
 
     /// <summary>

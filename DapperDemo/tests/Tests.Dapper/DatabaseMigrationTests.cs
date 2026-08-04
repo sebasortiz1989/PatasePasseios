@@ -45,6 +45,53 @@ public class DatabaseMigrationTests : IDisposable
         connection.Execute($"PRAGMA user_version = {DapperDatabaseService.CurrentSchemaVersion};");
     }
 
+    /// <summary>
+    /// The four service tables in the shape that shipped before ServiceDone existed. Separate from
+    /// <see cref="CreateLegacyDatabase"/> so the tests that only care about the account stay small.
+    /// </summary>
+    private void CreateLegacyServiceTables()
+    {
+        using var connection = new SqliteConnection(new SqliteConnectionStringBuilder { DataSource = path }.ToString());
+        connection.Open();
+        connection.Execute(
+            """
+            CREATE TABLE WalkingService (
+                WalkingServiceId INTEGER PRIMARY KEY AUTOINCREMENT,
+                DogId INTEGER NOT NULL,
+                PetSitterId INTEGER NOT NULL,
+                Date DATETIME NOT NULL,
+                Price DECIMAL(10, 2) NOT NULL,
+                ServicePaid BOOLEAN);
+
+            CREATE TABLE PetSittingService (
+                PetSittingServiceId INTEGER PRIMARY KEY AUTOINCREMENT,
+                DogId INTEGER NOT NULL,
+                PetSitterId INTEGER NOT NULL,
+                Date DATETIME NOT NULL,
+                Price DECIMAL(10, 2) NOT NULL,
+                ServicePaid BOOLEAN);
+
+            CREATE TABLE PetHotelService (
+                PetHotelServiceId INTEGER PRIMARY KEY AUTOINCREMENT,
+                DogId INTEGER NOT NULL,
+                PetSitterId INTEGER NOT NULL,
+                StartDate DATETIME NOT NULL,
+                EndDate DATETIME NOT NULL,
+                PricePerDay DECIMAL(10, 2) NOT NULL,
+                RequiresWalking BOOLEAN NOT NULL DEFAULT 0,
+                ServicePaid BOOLEAN);
+
+            CREATE TABLE DayCareService (
+                DayCareServiceId INTEGER PRIMARY KEY AUTOINCREMENT,
+                DogId INTEGER NOT NULL,
+                PetSitterId INTEGER NOT NULL,
+                Date DATETIME NOT NULL,
+                Price DECIMAL(10, 2) NOT NULL,
+                RequiresWalking BOOLEAN NOT NULL DEFAULT 0,
+                ServicePaid BOOLEAN);
+            """);
+    }
+
     [Fact]
     public void OpeningAnOlderDatabaseAddsTheMissingColumns()
     {
@@ -92,6 +139,57 @@ public class DatabaseMigrationTests : IDisposable
 
         Assert.NotNull(account);
         Assert.Equal("Conta Antiga", account!.Name);
+    }
+
+    /// <summary>
+    /// ServiceDone arrived after the service tables shipped, so it has to reach a database that
+    /// already has them — on all four, since the agenda reads every one of them.
+    /// </summary>
+    [Fact]
+    public void OpeningAnOlderDatabaseAddsServiceDoneToEveryServiceTable()
+    {
+        CreateLegacyDatabase();
+        CreateLegacyServiceTables();
+
+        _ = new DapperDatabaseService(path);
+
+        using var connection = new SqliteConnection(new SqliteConnectionStringBuilder { DataSource = path }.ToString());
+        connection.Open();
+
+        foreach (var table in new[] { "WalkingService", "PetSittingService", "PetHotelService", "DayCareService" })
+        {
+            var columns = connection.Query<string>($"SELECT name FROM pragma_table_info('{table}')").ToArray();
+            Assert.Contains("ServiceDone", columns);
+        }
+    }
+
+    /// <summary>
+    /// A booking that predates the column is not retroactively declared done. Its date is in the
+    /// past but that is no evidence the sitter turned up, so it comes back as still to do.
+    /// </summary>
+    [Fact]
+    public void ABookingFromBeforeTheColumnExistedIsNotMarkedDone()
+    {
+        CreateLegacyDatabase();
+        CreateLegacyServiceTables();
+
+        using (var seed = new SqliteConnection(new SqliteConnectionStringBuilder { DataSource = path }.ToString()))
+        {
+            seed.Open();
+            seed.Execute(
+                "INSERT INTO WalkingService (DogId, PetSitterId, Date, Price, ServicePaid) VALUES (1, 1, @Date, 40, 1)",
+                new { Date = new DateTime(2020, 3, 1, 9, 0, 0) });
+        }
+
+        _ = new DapperDatabaseService(path);
+
+        using var connection = new SqliteConnection(new SqliteConnectionStringBuilder { DataSource = path }.ToString());
+        connection.Open();
+        var done = connection.ExecuteScalar<bool>("SELECT ServiceDone FROM WalkingService");
+        var paid = connection.ExecuteScalar<bool>("SELECT ServicePaid FROM WalkingService");
+
+        Assert.False(done);
+        Assert.True(paid);
     }
 
     /// <summary>A fresh file gets the whole schema, including the four service tables.</summary>
