@@ -187,7 +187,7 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
     public string EditPrice { get; set; } = string.Empty;
 
     /// <summary>
-    /// A one-off amount charged on top of a hotel stay — a late pick-up, say. Blank means none.
+    /// Gets or sets a one-off amount charged on top of a hotel stay — a late pick-up, say. Blank means none.
     /// </summary>
     public string EditExtraCharge { get; set; } = string.Empty;
 

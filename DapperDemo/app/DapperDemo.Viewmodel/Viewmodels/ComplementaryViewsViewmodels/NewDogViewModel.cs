@@ -67,7 +67,7 @@ public class NewDogViewModel : PresentationModelBase<Unit, Unit>
     public string Description { get; set; } = string.Empty;
 
     /// <summary>
-    /// The photo's file name in the store, or empty for none.
+    /// Gets or sets the photo's file name in the store, or empty for none.
     /// </summary>
     /// <remarks>
     /// The file is copied in as soon as it is picked rather than on save, so the form can show a

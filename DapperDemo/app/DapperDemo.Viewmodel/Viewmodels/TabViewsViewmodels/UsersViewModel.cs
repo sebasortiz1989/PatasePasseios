@@ -149,7 +149,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
 
     public ICommand ToggleMoneyVisibleCommand { get; }
 
-    /// <summary>Saves the selected month's billing as an image.</summary>
+    /// <summary>Gets saves the selected month's billing as an image.</summary>
     public ICommand ExportSummaryCommand { get; }
 
     public ICommand ExportBackupCommand { get; }

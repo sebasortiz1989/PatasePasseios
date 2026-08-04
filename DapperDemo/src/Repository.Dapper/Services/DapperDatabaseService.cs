@@ -21,6 +21,7 @@ public sealed class DapperDatabaseService
     }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="DapperDatabaseService"/> class.
     /// Opens a database at a given path rather than the app's own.
     /// </summary>
     /// <remarks>

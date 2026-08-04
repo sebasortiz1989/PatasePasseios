@@ -17,9 +17,9 @@ public class ServiceDateSlot(DateTime date, ICommand removeCommand)
 {
     public DateTime Date { get; set; } = date;
 
-    /// <summary>Removes this row from the list. Hidden while it is the only one left.</summary>
+    /// <summary>Gets removes this row from the list. Hidden while it is the only one left.</summary>
     public ICommand RemoveCommand { get; } = removeCommand;
 
-    /// <summary>Whether this row may be removed; the form always needs at least one date.</summary>
+    /// <summary>Gets or sets a value indicating whether whether this row may be removed; the form always needs at least one date.</summary>
     public bool CanRemove { get; set; } = true;
 }

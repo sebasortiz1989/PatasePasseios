@@ -16,9 +16,9 @@ public class ServiceTimeSlot(TimeSpan time, ICommand removeCommand)
 {
     public TimeSpan Time { get; set; } = time;
 
-    /// <summary>Removes this row from the list. Disabled while it is the only one left.</summary>
+    /// <summary>Gets removes this row from the list. Disabled while it is the only one left.</summary>
     public ICommand RemoveCommand { get; } = removeCommand;
 
-    /// <summary>Whether this row may be removed; the form always needs at least one time.</summary>
+    /// <summary>Gets or sets a value indicating whether whether this row may be removed; the form always needs at least one time.</summary>
     public bool CanRemove { get; set; } = true;
 }

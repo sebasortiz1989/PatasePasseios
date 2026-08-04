@@ -15,6 +15,6 @@ public class DogOption(int id, string name, int tutorId, string tutorName)
 
     public string TutorName { get; } = tutorName;
 
-    /// <summary>What the picker shows: "Toby · Marina Alves".</summary>
+    /// <summary>Gets what the picker shows: "Toby · Marina Alves".</summary>
     public string Label { get; } = string.IsNullOrWhiteSpace(tutorName) ? name : $"{name} · {tutorName}";
 }

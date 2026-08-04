@@ -61,7 +61,7 @@ public class LoginViewModel : PresentationModelBase<Unit, Unit>
     public ICommand SignUpCommand { get; }
 
     /// <summary>
-    /// Restores a backup before anyone has signed in.
+    /// Gets restores a backup before anyone has signed in.
     /// </summary>
     /// <remarks>
     /// The same restore the profile screen offers, reachable from here because the case that

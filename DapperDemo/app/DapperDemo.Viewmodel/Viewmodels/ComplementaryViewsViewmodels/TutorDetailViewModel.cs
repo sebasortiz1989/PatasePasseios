@@ -162,7 +162,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     /// <summary>Gets a value indicating whether the amount-received form is open.</summary>
     public bool IsRegisteringPayment { get; private set; }
 
-    /// <summary>The amount received, as typed.</summary>
+    /// <summary>Gets or sets the amount received, as typed.</summary>
     public string PaymentAmount { get; set; } = string.Empty;
 
     /// <summary>

@@ -106,13 +106,13 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
     public DogOption? SelectedDog { get; set; }
 
     /// <summary>
-    /// The tutor of the dog currently picked. A service is stored against the dog, but the tutor
+    /// Gets the tutor of the dog currently picked. A service is stored against the dog, but the tutor
     /// is who the booking is with — showing it confirms the right one was chosen before saving.
     /// Fody raises this whenever <see cref="SelectedDog"/> changes, since it reads that property.
     /// </summary>
     public string SelectedTutorName => SelectedDog?.TutorName ?? string.Empty;
 
-    /// <summary>Whether there is a tutor to show, so the form can hide the row before a dog is picked.</summary>
+    /// <summary>Gets a value indicating whether whether there is a tutor to show, so the form can hide the row before a dog is picked.</summary>
     public bool HasSelectedTutor => !string.IsNullOrEmpty(SelectedTutorName);
 
     // Avalonia has no datetime-local control, so date and time are picked separately and recombined.
@@ -129,7 +129,7 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
     public DateTime SvcEndDate => SvcEndDatePart.Date + SvcEndTimePart;
 
     /// <summary>
-    /// Switches the date section between a list of individual days and a continuous range.
+    /// Gets or sets a value indicating whether switches the date section between a list of individual days and a continuous range.
     /// Scattered days (the 1st, 3rd and 10th) are the common case, so the list is the default.
     /// Hotel bookings already span a range and use neither.
     /// </summary>
@@ -138,31 +138,31 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
     public bool SvcUsesDateList => !SvcUseDateRange;
 
     /// <summary>
-    /// The individual days a service happens, when not using a range. Always holds at least one.
+    /// Gets the individual days a service happens, when not using a range. Always holds at least one.
     /// </summary>
     public ObservableCollection<ServiceDateSlot> SvcDates { get; } = [];
 
-    /// <summary>First day of a range, used only when <see cref="SvcUseDateRange"/> is set.</summary>
+    /// <summary>Gets or sets first day of a range, used only when <see cref="SvcUseDateRange"/> is set.</summary>
     public DateTime SvcRangeFromPart { get; set; }
 
-    /// <summary>Last day of a range, inclusive.</summary>
+    /// <summary>Gets or sets last day of a range, inclusive.</summary>
     public DateTime SvcRepeatUntilPart { get; set; }
 
     /// <summary>
-    /// The times of day the service happens — one row per occurrence, so a sitting can run
+    /// Gets the times of day the service happens — one row per occurrence, so a sitting can run
     /// morning and night. Always holds at least one entry.
     /// </summary>
     public ObservableCollection<ServiceTimeSlot> SvcTimes { get; } = [];
 
-    /// <summary>Whether the recurrence controls apply at all (everything except a hotel stay).</summary>
+    /// <summary>Gets a value indicating whether whether the recurrence controls apply at all (everything except a hotel stay).</summary>
     public bool SvcSupportsRecurrence => SvcType != ServiceKind.Hotel;
 
-    /// <summary>How many services the current settings would create.</summary>
+    /// <summary>Gets how many services the current settings would create.</summary>
     public int SvcOccurrenceCount => SvcSupportsRecurrence
         ? DayCount * (SvcUsesTimes ? Math.Max(SvcTimes.Count, 1) : 1)
         : 1;
 
-    /// <summary>Plain-language confirmation of what pressing the button will do.</summary>
+    /// <summary>Gets plain-language confirmation of what pressing the button will do.</summary>
     public string SvcOccurrenceSummary => SvcOccurrenceCount <= 1
         ? string.Empty
         : $"{SvcOccurrenceCount} serviços serão criados.";
