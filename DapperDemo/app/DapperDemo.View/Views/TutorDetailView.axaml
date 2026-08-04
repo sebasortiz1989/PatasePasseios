@@ -141,6 +141,75 @@
                                 </StackPanel>
                             </Border>
 
+                            <!--  Money owed, and the button that settles it oldest-service-first.  -->
+                            <Border
+                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderThickness="0,2,0,0"
+                                Padding="0,20,0,0">
+                                <StackPanel Spacing="12">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Classes="Kicker" Text="Em aberto" VerticalAlignment="Center" />
+                                        <TextBlock
+                                            FontFamily="{StaticResource FontHeading}"
+                                            FontSize="41"
+                                            Foreground="{StaticResource ColorAccentDark700}"
+                                            Grid.Column="1"
+                                            Text="{Binding TotalDueLabel}" />
+                                    </Grid>
+
+                                    <buttons:VButton
+                                        Classes="BtnPrimary"
+                                        Command="{Binding OpenPaymentCommand}"
+                                        Height="80"
+                                        HorizontalAlignment="Stretch"
+                                        IsVisible="{Binding !IsRegisteringPayment}"
+                                        VText="Registrar pagamento" />
+
+                                    <StackPanel IsVisible="{Binding IsRegisteringPayment}" Spacing="12">
+                                        <TextBlock Classes="FormLabel" Text="Valor recebido (R$)" />
+                                        <TextBox Classes="FormInput" Text="{Binding PaymentAmount}" />
+                                        <TextBlock
+                                            FontFamily="{StaticResource FontBody}"
+                                            FontSize="26"
+                                            FontStyle="Italic"
+                                            Foreground="{StaticResource ColorTextMuted70}"
+                                            IsVisible="{Binding HasPaymentPreview}"
+                                            Text="{Binding PaymentPreview}"
+                                            TextWrapping="Wrap" />
+                                        <TextBlock
+                                            Classes="FormMsg Error"
+                                            FontFamily="{StaticResource FontBody}"
+                                            FontSize="26"
+                                            FontStyle="Italic"
+                                            IsVisible="{Binding HasPaymentError}"
+                                            Text="{Binding PaymentError}"
+                                            TextWrapping="Wrap" />
+                                        <Grid ColumnDefinitions="*,16,*">
+                                            <buttons:VButton
+                                                Classes="BtnSecondary"
+                                                Command="{Binding CancelPaymentCommand}"
+                                                Height="80"
+                                                VText="Cancelar" />
+                                            <buttons:VButton
+                                                Classes="BtnPrimary"
+                                                Command="{Binding ConfirmPaymentCommand}"
+                                                Grid.Column="2"
+                                                Height="80"
+                                                VText="Confirmar" />
+                                        </Grid>
+                                    </StackPanel>
+
+                                    <TextBlock
+                                        Classes="FormMsg"
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="26"
+                                        FontStyle="Italic"
+                                        IsVisible="{Binding HasPaymentMsg}"
+                                        Text="{Binding PaymentMsg}"
+                                        TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+
                             <buttons:VButton
                                 Classes="BtnPrimary"
                                 Command="{Binding EditCommand}"

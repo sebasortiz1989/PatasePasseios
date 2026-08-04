@@ -58,4 +58,26 @@ public sealed class ServiceItem
     public bool RequiresWalking { get; init; }
 
     public bool ServicePaid { get; init; }
+
+    /// <summary>
+    /// Gets the nights billed. Only a hotel stay spans more than one; check-in and check-out on
+    /// the same day still bills one, which is how a day rate is charged and stops a stay totalling
+    /// nothing.
+    /// </summary>
+    public int Nights => EndDate is DateTime finish ? Math.Max((finish.Date - Date.Date).Days, 1) : 1;
+
+    /// <summary>
+    /// Gets what this service costs in full. A hotel stay's <see cref="Price"/> is a nightly rate
+    /// so it multiplies out; everything else is a one-off fee.
+    /// </summary>
+    public decimal Total => Kind == ServiceKind.Hotel ? Price * Nights : Price;
+
+    /// <summary>
+    /// Gets what is still owed on this service.
+    /// </summary>
+    /// <remarks>
+    /// There is no separate "amount paid" column: a part-paid service has its price cut to the
+    /// remainder and stays unpaid, so what is owed is simply the whole of an unpaid service.
+    /// </remarks>
+    public decimal AmountDue => ServicePaid ? 0m : Total;
 }

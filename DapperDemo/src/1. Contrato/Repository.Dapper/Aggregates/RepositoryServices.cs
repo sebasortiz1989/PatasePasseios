@@ -174,7 +174,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
     /// <summary>Removes a single booking, whichever of the four tables it lives in.</summary>
     public async Task<Response> DeleteAsync(ServiceKind kind, int serviceId)
     {
-        var (table, key) = TableFor(kind);
+        var (table, key, _) = TableFor(kind);
 
         try
         {
@@ -196,7 +196,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
     /// <summary>Marks a service paid or pending. The table and key column depend on the kind.</summary>
     public async Task<Response> SetPaidAsync(ServiceKind kind, int serviceId, bool paid)
     {
-        var (table, key) = TableFor(kind);
+        var (table, key, _) = TableFor(kind);
 
         try
         {
@@ -206,6 +206,52 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
                 sql: $"UPDATE {table} SET ServicePaid = @Paid WHERE {key} = @ServiceId",
                 param: new { Paid = paid, ServiceId = serviceId }).ConfigureAwait(false);
 
+            return Response.Successful;
+        }
+        catch (SqliteException e)
+        {
+            Console.WriteLine(e);
+            return Response.Failed;
+        }
+    }
+
+    /// <summary>
+    /// Writes a payment that has already been split across services, all or nothing.
+    /// </summary>
+    /// <remarks>
+    /// One transaction because a payment is one event: a crash halfway through must not leave a
+    /// tutor credited for part of what they handed over. The split is worked out by the caller —
+    /// see <see cref="ServicePayment"/>. A service the payment only partly covers has its price
+    /// cut to what is still owed and stays unpaid, so the balance is carried by the price itself
+    /// rather than by a second column.
+    /// </remarks>
+    /// <param name="payments">The services to settle, in the order the money reaches them.</param>
+    /// <returns>Whether the write succeeded.</returns>
+    public async Task<Response> RegisterPaymentAsync(IReadOnlyList<ServicePayment> payments)
+    {
+        ArgumentNullException.ThrowIfNull(payments);
+
+        if (payments.Count == 0)
+        {
+            return Response.Successful;
+        }
+
+        try
+        {
+            using var connection = DapperDatabaseService.Connection;
+            await connection.OpenAsync().ConfigureAwait(false);
+            using var transaction = await connection.BeginTransactionAsync().ConfigureAwait(false);
+
+            foreach (var payment in payments)
+            {
+                var (table, key, priceColumn) = TableFor(payment.Kind);
+                await connection.ExecuteAsync(
+                    sql: $"UPDATE {table} SET {priceColumn} = @Price, ServicePaid = @FullyPaid WHERE {key} = @ServiceId",
+                    param: new { Price = payment.Price, payment.FullyPaid, payment.ServiceId },
+                    transaction: transaction).ConfigureAwait(false);
+            }
+
+            await transaction.CommitAsync().ConfigureAwait(false);
             return Response.Successful;
         }
         catch (SqliteException e)
@@ -235,12 +281,12 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
         };
     }
 
-    private static (string Table, string Key) TableFor(ServiceKind kind) => kind switch
+    private static (string Table, string Key, string PriceColumn) TableFor(ServiceKind kind) => kind switch
     {
-        ServiceKind.Walk => ("WalkingService", "WalkingServiceId"),
-        ServiceKind.Sitting => ("PetSittingService", "PetSittingServiceId"),
-        ServiceKind.Hotel => ("PetHotelService", "PetHotelServiceId"),
-        ServiceKind.DayCare => ("DayCareService", "DayCareServiceId"),
+        ServiceKind.Walk => ("WalkingService", "WalkingServiceId", "Price"),
+        ServiceKind.Sitting => ("PetSittingService", "PetSittingServiceId", "Price"),
+        ServiceKind.Hotel => ("PetHotelService", "PetHotelServiceId", "PricePerDay"),
+        ServiceKind.DayCare => ("DayCareService", "DayCareServiceId", "Price"),
         _ => throw new ArgumentOutOfRangeException(nameof(kind)),
     };
 
