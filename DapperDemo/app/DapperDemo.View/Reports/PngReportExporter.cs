@@ -154,11 +154,14 @@ public sealed class PngReportExporter : ReportExporter
     {
         var grid = new Grid();
 
-        // The first column carries the name and takes the slack; the rest are dates, amounts and
-        // statuses, which are all about the same width.
+        // Only the first column is proportional; the rest size to their content. Star columns gave
+        // every one an equal slice regardless of what it held, which is what wrapped "04/08/2026,
+        // 09:00" onto three lines while the status columns sat half empty.
         for (var i = 0; i < section.Columns.Count; i++)
         {
-            grid.ColumnDefinitions.Add(new ColumnDefinition(i == 0 ? 3 : 2, GridUnitType.Star));
+            grid.ColumnDefinitions.Add(i == 0
+                ? new ColumnDefinition(1, GridUnitType.Star)
+                : new ColumnDefinition(GridLength.Auto));
         }
 
         for (var i = 0; i <= section.Rows.Count; i++)
@@ -166,10 +169,16 @@ public sealed class PngReportExporter : ReportExporter
             grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
         }
 
+        var last = section.Columns.Count - 1;
+
         for (var column = 0; column < section.Columns.Count; column++)
         {
             var header = Text(section.Columns[column], 20, Muted, Body, FontWeight.SemiBold);
-            header.Margin = new Thickness(0, 0, 0, 8);
+
+            // The gap lives on every column but the last, so a right-aligned value can never touch
+            // the heading beside it — which is what ran "Valor" into "Execução".
+            header.Margin = new Thickness(0, 0, column == last ? 0 : ColumnGap, 10);
+            header.TextWrapping = TextWrapping.NoWrap;
             header.HorizontalAlignment = IsRightAligned(section, column) ? HorizontalAlignment.Right : HorizontalAlignment.Left;
             Grid.SetColumn(header, column);
             Grid.SetRow(header, 0);
@@ -182,7 +191,11 @@ public sealed class PngReportExporter : ReportExporter
             for (var column = 0; column < cells.Count && column < section.Columns.Count; column++)
             {
                 var cell = Text(cells[column], 23, Ink);
-                cell.Margin = new Thickness(0, 8, 0, 8);
+                cell.Margin = new Thickness(0, 9, column == last ? 0 : ColumnGap, 9);
+
+                // Auto columns measure at their unwrapped width, so only the first — the star one
+                // that absorbs the slack — is allowed to wrap.
+                cell.TextWrapping = column == 0 ? TextWrapping.Wrap : TextWrapping.NoWrap;
                 cell.HorizontalAlignment = IsRightAligned(section, column) ? HorizontalAlignment.Right : HorizontalAlignment.Left;
                 Grid.SetColumn(cell, column);
                 Grid.SetRow(cell, row + 1);

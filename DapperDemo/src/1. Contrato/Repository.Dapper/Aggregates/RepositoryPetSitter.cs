@@ -20,8 +20,8 @@ public sealed class RepositoryPetSitter : RepositoryBase<PetSitter>
             await connection.OpenAsync().ConfigureAwait(false);
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(petSitter.Password);
             await connection.ExecuteAsync(
-                sql: "INSERT INTO PetSitter (Email, PasswordHash, Name, BirthDate) VALUES (@Email, @PasswordHash, @Name, @BirthDate)",
-                param: new { petSitter.Email, PasswordHash = hashedPassword, petSitter.Name, petSitter.BirthDate }).ConfigureAwait(false);
+                sql: "INSERT INTO PetSitter (Email, PasswordHash, Name, BirthDate, Image) VALUES (@Email, @PasswordHash, @Name, @BirthDate, @Image)",
+                param: new { petSitter.Email, PasswordHash = hashedPassword, petSitter.Name, petSitter.BirthDate, petSitter.Image }).ConfigureAwait(false);
 
             return Response.Successful;
         }
@@ -99,10 +99,10 @@ public sealed class RepositoryPetSitter : RepositoryBase<PetSitter>
             await connection.ExecuteAsync(
                 sql: """
                      UPDATE PetSitter
-                     SET Name = @Name, BirthDate = @BirthDate, Pix = @Pix
+                     SET Name = @Name, BirthDate = @BirthDate, Pix = @Pix, Image = @Image
                      WHERE PetSitterId = @PetSitterId
                      """,
-                param: new { petSitter.PetSitterId, petSitter.Name, petSitter.BirthDate, petSitter.Pix }).ConfigureAwait(false);
+                param: new { petSitter.PetSitterId, petSitter.Name, petSitter.BirthDate, petSitter.Pix, petSitter.Image }).ConfigureAwait(false);
 
             return Response.Successful;
         }
@@ -199,7 +199,7 @@ public sealed class RepositoryPetSitter : RepositoryBase<PetSitter>
         using var connection = DapperDatabaseService.Connection;
         await connection.OpenAsync().ConfigureAwait(false);
         return await connection.QueryFirstOrDefaultAsync<PetSitter>(
-            sql: "SELECT PetSitterId, Email, PasswordHash, Name, BirthDate, Pix, HideMoney FROM PetSitter WHERE PetSitterId = @PetSitterId",
+            sql: "SELECT PetSitterId, Email, PasswordHash, Name, BirthDate, Pix, HideMoney, Image FROM PetSitter WHERE PetSitterId = @PetSitterId",
             param: new { PetSitterId = petSitterId }).ConfigureAwait(false);
     }
 
@@ -222,7 +222,7 @@ public sealed class RepositoryPetSitter : RepositoryBase<PetSitter>
         using var connection = DapperDatabaseService.Connection;
         await connection.OpenAsync().ConfigureAwait(false);
         return await connection.QueryFirstOrDefaultAsync<PetSitter>(
-            sql: "SELECT PetSitterId, Email, PasswordHash, Name, BirthDate, Pix, HideMoney FROM PetSitter WHERE Email = @Email",
+            sql: "SELECT PetSitterId, Email, PasswordHash, Name, BirthDate, Pix, HideMoney, Image FROM PetSitter WHERE Email = @Email",
             param: new { Email = email }).ConfigureAwait(false);
     }
 

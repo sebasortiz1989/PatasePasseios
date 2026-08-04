@@ -25,6 +25,12 @@ public class PetSitter
     /// per account rather than kept in memory, so closing the app does not reveal them again.
     /// </summary>
     public bool HideMoney { get; init; }
+
+    /// <summary>
+    /// Gets the profile photo's file name, not the bytes — the image itself lives beside the
+    /// database in <see cref="Services.DogImageStore"/>, exactly as a dog's photo does.
+    /// </summary>
+    public string? Image { get; init; }
 }
 
 // CREATE TABLE IF NOT EXISTS PetSitter (
@@ -34,4 +40,5 @@ public class PetSitter
 //     Name VARCHAR(100) NOT NULL,
 //     BirthDate DATETIME,
 //     Pix VARCHAR(255),
-//     HideMoney INTEGER NOT NULL DEFAULT 0);
+//     HideMoney INTEGER NOT NULL DEFAULT 0,
+//     Image VARCHAR(255));

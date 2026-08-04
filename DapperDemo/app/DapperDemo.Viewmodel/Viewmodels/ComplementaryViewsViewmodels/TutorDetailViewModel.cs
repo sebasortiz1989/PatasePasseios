@@ -306,6 +306,15 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         return Task.CompletedTask;
     }
 
+    /// <summary>PropertyChanged.Fody convention hook — invoked whenever ShowPaidServices changes.</summary>
+    protected void OnShowPaidServicesChanged() => ReloadIfIdle();
+
+    /// <summary>PropertyChanged.Fody convention hook — invoked whenever SelectedMonth changes.</summary>
+    protected void OnSelectedMonthChanged() => ReloadIfIdle();
+
+    /// <summary>PropertyChanged.Fody convention hook — invoked whenever SelectedYear changes.</summary>
+    protected void OnSelectedYearChanged() => ReloadIfIdle();
+
     private static bool TryParseAmount(string text, out decimal amount) =>
         decimal.TryParse(text?.Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out amount);
 
@@ -417,15 +426,6 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         currentView.ViewShown = serviceDetailView;
         return Task.CompletedTask;
     }
-
-    /// <summary>PropertyChanged.Fody convention hook — invoked whenever ShowPaidServices changes.</summary>
-    protected void OnShowPaidServicesChanged() => ReloadIfIdle();
-
-    /// <summary>PropertyChanged.Fody convention hook — invoked whenever SelectedMonth changes.</summary>
-    protected void OnSelectedMonthChanged() => ReloadIfIdle();
-
-    /// <summary>PropertyChanged.Fody convention hook — invoked whenever SelectedYear changes.</summary>
-    protected void OnSelectedYearChanged() => ReloadIfIdle();
 
     private void ReloadIfIdle()
     {

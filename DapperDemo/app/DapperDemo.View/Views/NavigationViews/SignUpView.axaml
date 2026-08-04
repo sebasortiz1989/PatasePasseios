@@ -72,6 +72,53 @@
                         Width="63" />
                 </StackPanel>
 
+                <!--  Optional: an account without a photo falls back to the accent circle.  -->
+                <Panel
+                    Height="168"
+                    HorizontalAlignment="Center"
+                    Width="168">
+                    <Image
+                        IsVisible="{Binding HasPhoto}"
+                        Source="{Binding PhotoPath, Converter={StaticResource ImagePathConverter}}"
+                        Stretch="UniformToFill">
+                        <Image.Clip>
+                            <EllipseGeometry Rect="0,0,168,168" />
+                        </Image.Clip>
+                    </Image>
+                    <Border
+                        BorderBrush="{StaticResource ColorAccent}"
+                        BorderThickness="2"
+                        CornerRadius="84">
+                        <TextBlock
+                            FontFamily="{StaticResource FontHeading}"
+                            FontSize="60"
+                            Foreground="{StaticResource ColorAccentDark700}"
+                            HorizontalAlignment="Center"
+                            IsVisible="{Binding NoPhoto}"
+                            Text="Foto"
+                            VerticalAlignment="Center" />
+                    </Border>
+                </Panel>
+
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="12">
+                    <buttons:VButton
+                        Classes="BtnSecondary"
+                        Command="{Binding ChoosePhotoCommand}"
+                        Height="64"
+                        VText="Escolher foto"
+                        Width="240" />
+                    <buttons:VButton
+                        Classes="BtnGhost"
+                        Command="{Binding RemovePhotoCommand}"
+                        Height="64"
+                        IsVisible="{Binding HasPhoto}"
+                        VText="Remover"
+                        Width="180" />
+                </StackPanel>
+
                 <inputs:VTextBoxWithLabel
                     Classes="ClassicInput"
                     VDescriptionText="Nome completo"

@@ -34,9 +34,17 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     private readonly RepositoryPetSitter repositoryPetSitter;
     private readonly ReportExporter reportExporter;
     private readonly AppSession session;
+    private readonly ImagePicker imagePicker;
     private readonly BackupArchive backupArchive;
     private readonly BackupFileDialog backupFileDialog;
     private readonly EventHandler dataChangedHandler;
+
+    /// <summary>
+    /// The photo file name currently in the database, as opposed to <see cref="PhotoFileName"/>
+    /// which is what the open editor would save. The two differ while a new photo has been picked
+    /// but not yet saved, which is what lets Cancel put the old one back.
+    /// </summary>
+    private string storedPhotoFileName = string.Empty;
 
     /// <summary>
     /// The figures behind the labels, kept so toggling the eye can re-render them without
@@ -61,8 +69,10 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         ReportExporter reportExporter,
         AppSession session,
         BackupArchive backupArchive,
-        BackupFileDialog backupFileDialog)
+        BackupFileDialog backupFileDialog,
+        ImagePicker imagePicker)
     {
+        this.imagePicker = imagePicker;
         this.repositoryServices = repositoryServices;
         this.repositoryDogs = repositoryDogs;
         this.repositoryTutors = repositoryTutors;
@@ -81,6 +91,8 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         SavePasswordCommand = new SynchronizedCommand(SavePassword, SynchronizationBehavior.Discard, true);
         LogoutCommand = new SynchronizedCommand(session.RequestLogout, SynchronizationBehavior.Discard, true);
         EditProfileCommand = new SynchronizedCommand(StartEditProfile, SynchronizationBehavior.Discard, true);
+        ChoosePhotoCommand = new SynchronizedCommand(ChoosePhoto, SynchronizationBehavior.Discard, true);
+        RemovePhotoCommand = new SynchronizedCommand(RemovePhoto, SynchronizationBehavior.Discard, true);
         CancelProfileCommand = new SynchronizedCommand(CancelEditProfile, SynchronizationBehavior.Discard, true);
         SaveProfileCommand = new SynchronizedCommand(SaveProfile, SynchronizationBehavior.Discard, true);
         ToggleMoneyVisibleCommand = new SynchronizedCommand(ToggleMoneyVisible, SynchronizationBehavior.Discard, true);
@@ -117,6 +129,23 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     public ICommand CancelProfileCommand { get; }
 
     public ICommand SaveProfileCommand { get; }
+
+    public ICommand ChoosePhotoCommand { get; }
+
+    public ICommand RemovePhotoCommand { get; }
+
+    /// <summary>Gets the photo file name the editor would save; also what the read view shows.</summary>
+    public string PhotoFileName { get; private set; } = string.Empty;
+
+    /// <summary>Gets the photo's full path, or null when the account has none.</summary>
+    public string? PhotoPath => DogImageStore.ResolvePath(PhotoFileName);
+
+    public bool HasPhoto => PhotoPath != null;
+
+    public bool NoPhoto => !HasPhoto;
+
+    /// <summary>Gets the sitter's initials, shown in place of a missing photo.</summary>
+    public string Initials => AppSession.Initials(CurrentUserName);
 
     public ICommand ToggleMoneyVisibleCommand { get; }
 
@@ -290,6 +319,8 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
             CurrentUserName = petSitter?.Name ?? session.CurrentUserName;
             Email = petSitter?.Email ?? string.Empty;
             PixLabel = string.IsNullOrWhiteSpace(petSitter?.Pix) ? NoPix : petSitter.Pix;
+            storedPhotoFileName = petSitter?.Image ?? string.Empty;
+            PhotoFileName = storedPhotoFileName;
             BirthDateLabel = petSitter is null ? string.Empty : petSitter.BirthDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
 
             // Read before the labels are built below, so a hidden account never renders its
@@ -462,11 +493,9 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
             Footer = $"Gerado em {DateTime.Now.ToString("dd/MM/yyyy 'às' HH:mm", CultureInfo.InvariantCulture)}",
         };
 
+        // No Pix key here: this report is the sitter's own record of the month, not something a
+        // tutor is asked to pay against. The tutor summary is where the key belongs.
         report.Summary.Add(new ReportField("Pet sitter", CurrentUserName));
-        if (PixLabel != NoPix)
-        {
-            report.Summary.Add(new ReportField("Chave Pix", PixLabel));
-        }
 
         var received = new ReportSection { Heading = "Recebido no mês" };
         received.Columns.Add("Tipo");
@@ -485,25 +514,36 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
             EmptyMessage = "Nenhum serviço neste mês.",
         };
 
-        foreach (var column in new[] { "Cachorro", "Tipo", "Data", "Valor", "Execução", "Pagamento" })
+        // Grouped rather than listed one booking per line: a busy month runs to hundreds of rows,
+        // and the sitter reads this to see who brought in what, not to audit individual walks.
+        foreach (var column in new[] { "Cachorro", "Tipo", "Qtd.", "Recebido", "A receber" })
         {
             services.Columns.Add(column);
         }
 
-        foreach (var aligned in new[] { false, false, false, true, true, true })
+        foreach (var aligned in new[] { false, false, true, true, true })
         {
             services.RightAligned.Add(aligned);
         }
 
-        foreach (var service in monthServices)
+        var grouped = monthServices
+            .GroupBy(s => (s.DogName, s.Kind))
+            .OrderBy(g => g.Key.DogName, StringComparer.CurrentCulture)
+            .ThenBy(g => g.Key.Kind);
+
+        foreach (var group in grouped)
         {
+            // Received is money actually in; AmountDue is what may still be asked for, which is
+            // zero for anything unexecuted — the charging rule, not just "unpaid".
+            var receivedFromGroup = group.Where(s => s.ServicePaid).Sum(s => s.Total);
+            var owedFromGroup = group.Sum(s => s.AmountDue);
+
             services.Rows.Add(new ReportRow(
-                service.DogName,
-                AppSession.TypeLabel(service.Kind),
-                AppSession.DateTimeLabel(service.Date, service.Kind),
-                AppSession.Money(service.Total),
-                service.ServiceDone ? "Feito" : "A fazer",
-                service.ServicePaid ? "Pago" : "Pendente"));
+                group.Key.DogName,
+                AppSession.TypeLabel(group.Key.Kind),
+                group.Count().ToString(CultureInfo.InvariantCulture),
+                AppSession.Money(receivedFromGroup),
+                AppSession.Money(owedFromGroup)));
         }
 
         // Only executed work may be billed, so the receivable is what has actually been carried
@@ -513,9 +553,6 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         var upcoming = monthServices.Sum(s => s.AmountUpcoming);
 
         services.Totals.Add(new ReportField("Serviços no mês", monthServices.Length.ToString(CultureInfo.InvariantCulture)));
-        services.Totals.Add(new ReportField(
-            "Realizados no mês",
-            monthServices.Count(s => s.ServiceDone).ToString(CultureInfo.InvariantCulture)));
 
         if (upcoming > 0m)
         {
@@ -603,14 +640,49 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         EditBirthDate = DateTime.TryParseExact(BirthDateLabel, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var birthDate)
             ? birthDate
             : DateTime.Now.Date;
+        PhotoFileName = storedPhotoFileName;
         ProfileMsg = string.Empty;
         IsEditingProfile = true;
     }
 
     private void CancelEditProfile()
     {
+        DiscardUnsavedPhoto();
         ProfileMsg = string.Empty;
         IsEditingProfile = false;
+    }
+
+    private async Task ChoosePhoto()
+    {
+        using var picked = await imagePicker.PickAsync().WithSync();
+        if (picked == null)
+        {
+            return;
+        }
+
+        DiscardUnsavedPhoto();
+        PhotoFileName = await DogImageStore.SaveAsync(picked.Content, picked.Extension).WithSync();
+    }
+
+    private Task RemovePhoto()
+    {
+        DiscardUnsavedPhoto();
+        PhotoFileName = string.Empty;
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Drops a photo that was picked but never saved. The stored one is left alone — it is still
+    /// what the database points at until Save says otherwise.
+    /// </summary>
+    private void DiscardUnsavedPhoto()
+    {
+        if (PhotoFileName != storedPhotoFileName)
+        {
+            DogImageStore.Delete(PhotoFileName);
+        }
+
+        PhotoFileName = storedPhotoFileName;
     }
 
     private async Task SaveProfile()
@@ -638,6 +710,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
             Name = EditName.Trim(),
             BirthDate = EditBirthDate.Date,
             Pix = string.IsNullOrWhiteSpace(EditPix) ? null : EditPix.Trim(),
+            Image = string.IsNullOrEmpty(PhotoFileName) ? null : PhotoFileName,
         };
 
         var result = await repositoryPetSitter.Update(updated).WithSync();
@@ -646,6 +719,13 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         {
             ProfileMsg = "Não foi possível salvar o perfil.";
             return;
+        }
+
+        // Only now is the replaced photo unreferenced, so this is where it can go.
+        if (storedPhotoFileName != PhotoFileName)
+        {
+            DogImageStore.Delete(storedPhotoFileName);
+            storedPhotoFileName = PhotoFileName;
         }
 
         // The greeting on every other screen comes from the session, so it has to hear about

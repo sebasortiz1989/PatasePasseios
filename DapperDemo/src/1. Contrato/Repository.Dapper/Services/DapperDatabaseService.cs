@@ -85,6 +85,7 @@ public sealed class DapperDatabaseService
     {
         AddColumnIfMissing(connection, "PetSitter", "Pix", "VARCHAR(255)");
         AddColumnIfMissing(connection, "PetSitter", "HideMoney", "INTEGER NOT NULL DEFAULT 0");
+        AddColumnIfMissing(connection, "PetSitter", "Image", "VARCHAR(255)");
         AddColumnIfMissing(connection, "Tutors", "Credit", "DECIMAL(10, 2) NOT NULL DEFAULT 0");
         AddColumnIfMissing(connection, "PetHotelService", "ExtraCharge", "DECIMAL(10, 2) NOT NULL DEFAULT 0");
 
@@ -121,7 +122,8 @@ public sealed class DapperDatabaseService
                      Name VARCHAR(100) NOT NULL,
                      BirthDate DATETIME,
                      Pix VARCHAR(255),
-                     HideMoney INTEGER NOT NULL DEFAULT 0);
+                     HideMoney INTEGER NOT NULL DEFAULT 0,
+                     Image VARCHAR(255));
                  
                  -- Credit is money the tutor has already handed over beyond what they owed; it
                  -- is spent automatically against the next service booked for one of their dogs.
@@ -224,17 +226,40 @@ public sealed class DapperDatabaseService
         }
     }
 
+    /// <summary>
+    /// Inserts the demo account, once.
+    /// </summary>
+    /// <remarks>
+    /// Guarded by a lookup rather than inserting and swallowing the failure. The unconditional
+    /// insert worked — Email is UNIQUE, so the second launch onwards simply lost the race — but it
+    /// printed a SqliteException and its stack trace to the console every single time, which reads
+    /// as a startup crash rather than as a seed that was already there. Checking first also skips
+    /// a BCrypt hash on every launch, which is deliberately slow.
+    /// </remarks>
     private void CreateMockData(SqliteConnection connection)
     {
+        const string mockEmail = "test@test.com";
+
         try
         {
+            var alreadySeeded = connection.ExecuteScalar<long>(
+                sql: "SELECT COUNT(*) FROM PetSitter WHERE Email = @Email",
+                param: new { Email = mockEmail }) > 0;
+
+            if (alreadySeeded)
+            {
+                return;
+            }
+
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword("8998");
             connection.Execute(
                 "INSERT INTO PetSitter (Email, PasswordHash, Name, BirthDate) VALUES (@Email, @PasswordHash, @Name, @BirthDate)",
-                new { Email = "test@test.com", PasswordHash = hashedPassword, Name = "TestUser", BirthDate = DateTime.Now });
+                new { Email = mockEmail, PasswordHash = hashedPassword, Name = "TestUser", BirthDate = DateTime.Now });
         }
         catch (SqliteException e)
         {
+            // Kept for a genuine failure — a locked file, a corrupt page. Seeding is best-effort:
+            // the app is still usable with whatever accounts already exist.
             Console.WriteLine(e);
         }
     }

@@ -29,6 +29,55 @@
                     <!--  Profile card  -->
                     <Border Classes="Card">
                         <StackPanel Spacing="16">
+                            <!--  Photo when there is one, initials otherwise, so the layout never collapses.  -->
+                            <Panel
+                                Height="168"
+                                HorizontalAlignment="Center"
+                                Width="168">
+                                <Image
+                                    IsVisible="{Binding HasPhoto}"
+                                    Source="{Binding PhotoPath, Converter={StaticResource ImagePathConverter}}"
+                                    Stretch="UniformToFill">
+                                    <Image.Clip>
+                                        <EllipseGeometry Rect="0,0,168,168" />
+                                    </Image.Clip>
+                                </Image>
+                                <Border
+                                    BorderBrush="{StaticResource ColorAccent}"
+                                    BorderThickness="2"
+                                    CornerRadius="84">
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontHeading}"
+                                        FontSize="71"
+                                        Foreground="{StaticResource ColorAccentDark700}"
+                                        HorizontalAlignment="Center"
+                                        IsVisible="{Binding NoPhoto}"
+                                        Text="{Binding Initials}"
+                                        VerticalAlignment="Center" />
+                                </Border>
+                            </Panel>
+
+                            <!--  Photo controls only while editing; reading a record should not offer to change it.  -->
+                            <StackPanel
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding IsEditingProfile}"
+                                Orientation="Horizontal"
+                                Spacing="12">
+                                <buttons:VButton
+                                    Classes="BtnSecondary"
+                                    Command="{Binding ChoosePhotoCommand}"
+                                    Height="64"
+                                    VText="Escolher foto"
+                                    Width="240" />
+                                <buttons:VButton
+                                    Classes="BtnGhost"
+                                    Command="{Binding RemovePhotoCommand}"
+                                    Height="64"
+                                    IsVisible="{Binding HasPhoto}"
+                                    VText="Remover"
+                                    Width="180" />
+                            </StackPanel>
+
                             <!--  Reading state  -->
                             <StackPanel IsVisible="{Binding IsViewingProfile}" Spacing="16">
                                 <Grid ColumnDefinitions="*,Auto">
