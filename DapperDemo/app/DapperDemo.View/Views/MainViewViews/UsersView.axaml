@@ -346,6 +346,26 @@
                                 TextWrapping="Wrap" />
                         </Border>
 
+                        <!--  An image rather than a document, so it can be sent straight from the phone.  -->
+                        <buttons:VButton
+                            Classes="BtnSecondary"
+                            Command="{Binding ExportSummaryCommand}"
+                            Height="80"
+                            HorizontalAlignment="Stretch"
+                            Margin="0,20,0,0"
+                            VText="Exportar resumo do mês (PNG)" />
+                        <TextBlock
+                            Classes="FormMsg"
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="24"
+                            FontStyle="Italic"
+                            HorizontalAlignment="Center"
+                            IsVisible="{Binding HasSummaryMsg}"
+                            Margin="0,8,0,0"
+                            Text="{Binding SummaryMsg}"
+                            TextAlignment="Center"
+                            TextWrapping="Wrap" />
+
                         <!--
                             Opt-in detail: the figures above answer how the month went, this answers
                             who still owes for it. Same per-dog shape as the home screen's summary.

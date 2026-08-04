@@ -1,5 +1,6 @@
 ﻿using AvaloniaFramework.DependencyInjection;
 using AvaloniaFramework.Hosting.DependencyInjection;
+using DapperDemo.View.Reports;
 using DapperDemo.View.Services;
 using DapperDemo.View.Views;
 using DapperDemo.View.Views.MainViewViews;
@@ -32,6 +33,10 @@ namespace DapperDemo.View.DependencyInversion
             // UriLauncher abstraction and this layer supplies the Avalonia one.
             yield return CreateSingleton<AvaloniaUriLauncher>().WithAbstractions();
             yield return CreateSingleton<StorageProviderBackupFileDialog>().WithAbstractions();
+
+            // Drawing and the save dialog both need this layer; the view models build a
+            // ReportDocument and never see a control.
+            yield return CreateSingleton<PngReportExporter>().WithAbstractions();
 
             yield return CreateTransient<LoginView>().WithAbstractions();
             yield return CreateTransient<SignUpView>().WithAbstractions();

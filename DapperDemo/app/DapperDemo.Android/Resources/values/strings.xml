@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        The one place the app's name is written. Both the manifest's application label (Settings →
+        Apps) and MainActivity's label (the launcher) point here, so the two cannot drift apart.
+        The ampersand is escaped because this is XML.
+    -->
+    <string name="app_name">Patas &amp; Passeios</string>
+</resources>

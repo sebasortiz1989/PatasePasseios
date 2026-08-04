@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        The Classical palette's accent, the same brown the app is built around, so the launcher
+        icon reads as part of the app rather than as a sticker on a white square.
+    -->
+    <color name="ic_launcher_background">#B68235</color>
+</resources>

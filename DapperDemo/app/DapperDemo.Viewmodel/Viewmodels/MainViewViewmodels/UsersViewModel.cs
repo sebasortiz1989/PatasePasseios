@@ -5,6 +5,7 @@ using DapperDemo.Repository.Dapper;
 using DapperDemo.Repository.Dapper.Aggregates;
 using DapperDemo.Repository.Dapper.Dtos;
 using DapperDemo.Repository.Dapper.Services;
+using DapperDemo.Viewmodel.Reports;
 using DapperDemo.Viewmodel.Services;
 using DapperDemo.Viewmodel.Viewmodels.Session;
 using PropertyChanged;
@@ -21,12 +22,16 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     /// <summary>What a hidden amount reads as. Wide enough not to hint at the figure's length.</summary>
     private const string HiddenMoney = "••••••";
 
+    /// <summary>Shown in place of a Pix key that has not been set. Also how the editor spots one.</summary>
+    private const string NoPix = "Não informada";
+
     private static readonly CultureInfo Brazil = new("pt-BR");
 
     private readonly RepositoryServices repositoryServices;
     private readonly RepositoryDogs repositoryDogs;
     private readonly RepositoryTutors repositoryTutors;
     private readonly RepositoryPetSitter repositoryPetSitter;
+    private readonly ReportExporter reportExporter;
     private readonly AppSession session;
     private readonly BackupArchive backupArchive;
     private readonly BackupFileDialog backupFileDialog;
@@ -52,6 +57,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         RepositoryDogs repositoryDogs,
         RepositoryTutors repositoryTutors,
         RepositoryPetSitter repositoryPetSitter,
+        ReportExporter reportExporter,
         AppSession session,
         BackupArchive backupArchive,
         BackupFileDialog backupFileDialog)
@@ -60,6 +66,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         this.repositoryDogs = repositoryDogs;
         this.repositoryTutors = repositoryTutors;
         this.repositoryPetSitter = repositoryPetSitter;
+        this.reportExporter = reportExporter;
         this.session = session;
         this.backupArchive = backupArchive;
         this.backupFileDialog = backupFileDialog;
@@ -76,6 +83,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         CancelProfileCommand = new SynchronizedCommand(CancelEditProfile, SynchronizationBehavior.Discard, true);
         SaveProfileCommand = new SynchronizedCommand(SaveProfile, SynchronizationBehavior.Discard, true);
         ToggleMoneyVisibleCommand = new SynchronizedCommand(ToggleMoneyVisible, SynchronizationBehavior.Discard, true);
+        ExportSummaryCommand = new SynchronizedCommand(ExportSummary, SynchronizationBehavior.Discard, true);
         ExportBackupCommand = new SynchronizedCommand(ExportBackup, SynchronizationBehavior.Discard, true);
         ImportBackupCommand = new SynchronizedCommand(ImportBackup, SynchronizationBehavior.Discard, true);
         DismissInvalidBackupCommand = new SynchronizedCommand(() => ShowInvalidBackupAlert = false, SynchronizationBehavior.Discard, true);
@@ -111,6 +119,9 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
 
     public ICommand ToggleMoneyVisibleCommand { get; }
 
+    /// <summary>Saves the selected month's billing as an image.</summary>
+    public ICommand ExportSummaryCommand { get; }
+
     public ICommand ExportBackupCommand { get; }
 
     public ICommand ImportBackupCommand { get; }
@@ -123,6 +134,11 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     /// and nothing happened, so it has to be impossible to miss.
     /// </summary>
     public bool ShowInvalidBackupAlert { get; private set; }
+
+    /// <summary>Gets the confirmation left after a summary image is written, or empty.</summary>
+    public string SummaryMsg { get; private set; } = string.Empty;
+
+    public bool HasSummaryMsg => !string.IsNullOrEmpty(SummaryMsg);
 
     /// <summary>Gets the outcome of the last export or import, shown under the two buttons.</summary>
     public string BackupMsg { get; private set; } = string.Empty;
@@ -250,6 +266,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     {
         IsEditingProfile = false;
         ProfileMsg = string.Empty;
+        SummaryMsg = string.Empty;
 
         ShowPasswordForm = false;
         CurrentPw = string.Empty;
@@ -271,7 +288,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
             var petSitter = await repositoryPetSitter.GetAsync(session.CurrentPetSitterId).WithSync();
             CurrentUserName = petSitter?.Name ?? session.CurrentUserName;
             Email = petSitter?.Email ?? string.Empty;
-            PixLabel = string.IsNullOrWhiteSpace(petSitter?.Pix) ? "Não informada" : petSitter.Pix;
+            PixLabel = string.IsNullOrWhiteSpace(petSitter?.Pix) ? NoPix : petSitter.Pix;
             BirthDateLabel = petSitter is null ? string.Empty : petSitter.BirthDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
 
             // Read before the labels are built below, so a hidden account never renders its
@@ -419,6 +436,79 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         OnPropertyChanged(nameof(SelectedYear));
     }
 
+    /// <summary>
+    /// Writes the selected month's billing to an image: what came in by type, and every service
+    /// with whether it has been paid.
+    /// </summary>
+    /// <remarks>
+    /// The eye is not consulted. Hiding amounts on screen is about who is standing next to you,
+    /// and a summary of bulleted-out figures would be useless.
+    /// </remarks>
+    private async Task ExportSummary()
+    {
+        var monthName = SelectedMonth?.Label ?? string.Empty;
+        var year = SelectedYear.ToString(CultureInfo.InvariantCulture);
+
+        var report = new ReportDocument
+        {
+            Title = "Faturamento",
+            Subtitle = $"{monthName} de {year}",
+            Footer = $"Gerado em {DateTime.Now.ToString("dd/MM/yyyy 'às' HH:mm", CultureInfo.InvariantCulture)}",
+        };
+
+        report.Summary.Add(new ReportField("Pet sitter", CurrentUserName));
+        if (PixLabel != NoPix)
+        {
+            report.Summary.Add(new ReportField("Chave Pix", PixLabel));
+        }
+
+        var received = new ReportSection { Heading = "Recebido no mês" };
+        received.Columns.Add("Tipo");
+        received.Columns.Add("Valor");
+        received.RightAligned.Add(false);
+        received.RightAligned.Add(true);
+        received.Rows.Add(new ReportRow("Passeio", AppSession.Money(income.Walk)));
+        received.Rows.Add(new ReportRow("Pet sitting", AppSession.Money(income.Sitting)));
+        received.Rows.Add(new ReportRow("Hotel", AppSession.Money(income.Hotel)));
+        received.Totals.Add(new ReportField("Total recebido", AppSession.Money(income.Total), true));
+        report.Sections.Add(received);
+
+        var services = new ReportSection
+        {
+            Heading = "Serviços do mês",
+            EmptyMessage = "Nenhum serviço neste mês.",
+        };
+
+        foreach (var column in new[] { "Cachorro", "Tipo", "Data", "Valor", "Situação" })
+        {
+            services.Columns.Add(column);
+        }
+
+        foreach (var aligned in new[] { false, false, false, true, true })
+        {
+            services.RightAligned.Add(aligned);
+        }
+
+        foreach (var service in monthServices)
+        {
+            services.Rows.Add(new ReportRow(
+                service.DogName,
+                AppSession.TypeLabel(service.Kind),
+                AppSession.DateTimeLabel(service.Date, service.Kind),
+                AppSession.Money(service.Total),
+                service.ServicePaid ? "Pago" : "Pendente"));
+        }
+
+        var pending = monthServices.Where(s => !s.ServicePaid).Sum(s => s.Total);
+        services.Totals.Add(new ReportField("Serviços no mês", monthServices.Length.ToString(CultureInfo.InvariantCulture)));
+        services.Totals.Add(new ReportField("A receber no mês", AppSession.Money(pending), true));
+        report.Sections.Add(services);
+
+        var monthNumber = (SelectedMonth?.Number ?? 1).ToString("00", CultureInfo.InvariantCulture);
+        var fileName = await reportExporter.ExportAsync(report, $"faturamento-{year}-{monthNumber}").WithSync();
+        SummaryMsg = fileName == null ? string.Empty : $"Resumo salvo: {fileName}";
+    }
+
     private async Task ExportBackup()
     {
         BackupMsgIsError = false;
@@ -488,7 +578,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     {
         // Seeded from the loaded record, so cancelling and reopening starts from the saved values.
         EditName = CurrentUserName;
-        EditPix = PixLabel == "Não informada" ? string.Empty : PixLabel;
+        EditPix = PixLabel == NoPix ? string.Empty : PixLabel;
         EditBirthDate = DateTime.TryParseExact(BirthDateLabel, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var birthDate)
             ? birthDate
             : DateTime.Now.Date;

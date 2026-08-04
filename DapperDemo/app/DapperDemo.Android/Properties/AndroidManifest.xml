@@ -18,5 +18,10 @@
 		</intent>
 	</queries>
 
-	<application android:label="DapperDemo.View" android:icon="@drawable/Icon" />
+	<!--
+		The launcher icon. roundIcon is declared alongside it for the launchers that ask for a
+		circular variant; both resolve to the same adaptive icon on API 26+, and to the plain
+		bitmaps in mipmap-*dpi on the older versions this app still supports.
+	-->
+	<application android:label="@string/app_name" android:icon="@mipmap/appicon" android:roundIcon="@mipmap/appicon_round" />
 </manifest>

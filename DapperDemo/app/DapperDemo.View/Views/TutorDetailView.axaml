@@ -229,12 +229,31 @@
                             </StackPanel>
                         </Border>
 
+                        <!--  Every service by month with the Pix key, ready to send to the tutor.  -->
+                        <StackPanel Margin="0,16,0,0" Spacing="8">
+                            <buttons:VButton
+                                Classes="BtnSecondary"
+                                Command="{Binding ExportCommand}"
+                                Height="80"
+                                HorizontalAlignment="Stretch"
+                                VText="Exportar resumo (PNG)" />
+                            <TextBlock
+                                Classes="FormMsg"
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="24"
+                                FontStyle="Italic"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding HasExportMsg}"
+                                Text="{Binding ExportMsg}"
+                                TextAlignment="Center"
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
                         <buttons:VButton
                             Classes="BtnPrimary"
                             Command="{Binding EditCommand}"
                             Height="80"
                             HorizontalAlignment="Stretch"
-                            Margin="0,16,0,0"
                             VText="Editar tutor" />
 
                         <!--  Destructive, so it asks first — see the ConfirmDialog at the end of this file.  -->

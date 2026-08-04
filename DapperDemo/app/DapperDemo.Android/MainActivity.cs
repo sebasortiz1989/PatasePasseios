@@ -11,7 +11,7 @@ using Avalonia.Android;
 namespace DapperDemo.Android;
 
 [Activity(
-    Label = "DapperDemo",
+    Label = "@string/app_name",
     Theme = "@style/MyTheme.NoActionBar",
     Icon = "@drawable/icon",
     MainLauncher = true,

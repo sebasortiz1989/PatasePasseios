@@ -84,7 +84,37 @@
                     Height="70"
                     VText="Criar uma conta"
                     Width="560" />
+
+                <!--
+                    Restoring belongs here as well as on the profile screen: a new phone has no
+                    account to sign into, so the profile screen cannot be reached at all.
+                -->
+                <buttons:VButton
+                    Classes="BtnGhost"
+                    Command="{Binding ImportBackupCommand}"
+                    Height="70"
+                    VText="Importar backup"
+                    Width="560" />
+                <TextBlock
+                    Classes="FormMsg"
+                    FontFamily="{StaticResource FontBody}"
+                    FontSize="26"
+                    FontStyle="Italic"
+                    HorizontalAlignment="Center"
+                    IsVisible="{Binding HasBackupMsg}"
+                    MaxWidth="560"
+                    Text="{Binding BackupMsg}"
+                    TextAlignment="Center"
+                    TextWrapping="Wrap" />
             </StackPanel>
+
+            <components:ConfirmDialog
+                ConfirmCommand="{Binding DismissInvalidBackupCommand}"
+                ConfirmText="Entendi"
+                IsOpen="{Binding ShowInvalidBackupAlert}"
+                Message="Este arquivo não é um backup do Patas &amp; Passeios. Escolha um .zip exportado por este aplicativo. Nada foi alterado neste aparelho."
+                ShowCancel="False"
+                Title="Backup inválido" />
         </Grid>
     </components:DesignCanvas>
 </UserControl>

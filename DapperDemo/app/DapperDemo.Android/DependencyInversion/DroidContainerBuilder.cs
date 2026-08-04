@@ -14,11 +14,5 @@ public sealed class DroidContainerBuilder : ImmutableContainerBuilder
     private static IEnumerable<ContainerBuilder> GetBuilders()
     {
         yield return new DapperDemoInfrastructureContainerBuilder();
-        yield return new ImmutableContainerBuilder(GetRegistrations());
-    }
-
-    private static IEnumerable<ContainerRegistration> GetRegistrations()
-    {
-        yield return CreateSingleton<ServicoNumeroSerieDispositivoDroid>();
     }
 }

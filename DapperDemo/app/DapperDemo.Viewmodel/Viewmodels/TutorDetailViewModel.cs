@@ -4,6 +4,7 @@ using AvaloniaFramework.Threading;
 using DapperDemo.Repository.Dapper;
 using DapperDemo.Repository.Dapper.Aggregates;
 using DapperDemo.Repository.Dapper.Dtos;
+using DapperDemo.Viewmodel.Reports;
 using DapperDemo.Viewmodel.Viewmodels.Session;
 using PropertyChanged;
 using System.Collections.ObjectModel;
@@ -15,9 +16,13 @@ namespace DapperDemo.Viewmodel.Viewmodels;
 [AddINotifyPropertyChangedInterface]
 public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
 {
+    private static readonly CultureInfo Brazil = new("pt-BR");
+
     private readonly RepositoryTutors repositoryTutors;
     private readonly RepositoryDogs repositoryDogs;
     private readonly RepositoryServices repositoryServices;
+    private readonly RepositoryPetSitter repositoryPetSitter;
+    private readonly ReportExporter reportExporter;
     private readonly AppSession session;
     private readonly CurrentView currentView;
 
@@ -34,12 +39,16 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         RepositoryTutors repositoryTutors,
         RepositoryDogs repositoryDogs,
         RepositoryServices repositoryServices,
+        RepositoryPetSitter repositoryPetSitter,
+        ReportExporter reportExporter,
         AppSession session,
         Factory<PresenterBase<ServiceDetailViewModel, Unit, Unit>> serviceDetailFactory)
     {
         this.repositoryTutors = repositoryTutors;
         this.repositoryDogs = repositoryDogs;
         this.repositoryServices = repositoryServices;
+        this.repositoryPetSitter = repositoryPetSitter;
+        this.reportExporter = reportExporter;
         this.session = session;
         this.currentView = currentView;
         serviceDetailView = serviceDetailFactory.Create();
@@ -53,6 +62,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         OpenPaymentCommand = new SynchronizedCommand(OpenPayment, SynchronizationBehavior.Discard, true);
         CancelPaymentCommand = new SynchronizedCommand(CancelPayment, SynchronizationBehavior.Discard, true);
         ConfirmPaymentCommand = new SynchronizedCommand(ConfirmPayment, SynchronizationBehavior.Discard, true);
+        ExportCommand = new SynchronizedCommand(Export, SynchronizationBehavior.Discard, true);
     }
 
     public ICommand BackCommand { get; }
@@ -74,6 +84,8 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     public ICommand CancelPaymentCommand { get; }
 
     public ICommand ConfirmPaymentCommand { get; }
+
+    public ICommand ExportCommand { get; }
 
     /// <summary>Gets a value indicating whether deleting takes two taps: the button swaps for a confirm/cancel pair.</summary>
     public bool ConfirmingDelete { get; private set; }
@@ -144,6 +156,11 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
 
     public bool HasPaymentMsg => !string.IsNullOrEmpty(PaymentMsg);
 
+    /// <summary>Gets the confirmation left after an image is written, or empty.</summary>
+    public string ExportMsg { get; private set; } = string.Empty;
+
+    public bool HasExportMsg => !string.IsNullOrEmpty(ExportMsg);
+
     public bool NoPending { get; private set; }
 
     public ObservableCollection<TutorFutureServiceRow> PendingServices { get; } = [];
@@ -161,6 +178,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         ConfirmingDelete = false;
         IsRegisteringPayment = false;
         PaymentError = string.Empty;
+        ExportMsg = string.Empty;
 
         if (session.SelectedTutorId is not int tutorId)
         {
@@ -401,6 +419,124 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         }
 
         PendingServices.Clear();
+    }
+
+    /// <summary>
+    /// Writes this tutor's history to an image: every service, grouped by month, with what has
+    /// been paid and what is still owed, and the Pix key to settle it with.
+    /// </summary>
+    /// <remarks>
+    /// Months run newest first, since a bill is usually about what just happened. An image rather
+    /// than a document because it is meant to be sent straight to the tutor over WhatsApp.
+    /// </remarks>
+    private async Task Export()
+    {
+        var report = new ReportDocument
+        {
+            Title = Name,
+            Subtitle = "Serviços por mês",
+            Footer = $"Gerado em {DateTime.Now.ToString("dd/MM/yyyy 'às' HH:mm", CultureInfo.InvariantCulture)}",
+        };
+
+        report.Summary.Add(new ReportField("Telefone", Phone));
+        if (!string.IsNullOrWhiteSpace(Neighborhood))
+        {
+            report.Summary.Add(new ReportField("Endereço", Neighborhood));
+        }
+
+        report.Summary.Add(new ReportField("Cachorros", DogNames));
+
+        foreach (var month in tutorServices.GroupBy(s => new DateTime(s.Date.Year, s.Date.Month, 1)).OrderByDescending(g => g.Key))
+        {
+            var monthName = Brazil.DateTimeFormat.GetMonthName(month.Key.Month);
+            var section = new ReportSection
+            {
+                Heading = $"{char.ToUpper(monthName[0], Brazil)}{monthName[1..]} de {month.Key.Year.ToString(CultureInfo.InvariantCulture)}",
+            };
+
+            foreach (var column in new[] { "Cachorro", "Tipo", "Data", "Valor", "Situação" })
+            {
+                section.Columns.Add(column);
+            }
+
+            foreach (var aligned in new[] { false, false, false, true, true })
+            {
+                section.RightAligned.Add(aligned);
+            }
+
+            foreach (var service in month.OrderBy(s => s.Date))
+            {
+                section.Rows.Add(new ReportRow(
+                    service.DogName,
+                    AppSession.TypeLabel(service.Kind),
+                    AppSession.DateTimeLabel(service.Date, service.Kind),
+                    AppSession.Money(service.Total),
+                    service.ServicePaid ? "Pago" : "Pendente"));
+            }
+
+            var paid = month.Where(s => s.ServicePaid).Sum(s => s.Total);
+            var pending = month.Where(s => !s.ServicePaid).Sum(s => s.Total);
+            section.Totals.Add(new ReportField("Total do mês", AppSession.Money(paid + pending)));
+            section.Totals.Add(new ReportField("Já pago", AppSession.Money(paid)));
+            section.Totals.Add(new ReportField("A pagar", AppSession.Money(pending), true));
+            report.Sections.Add(section);
+        }
+
+        if (report.Sections.Count == 0)
+        {
+            report.Sections.Add(new ReportSection
+            {
+                Heading = "Serviços",
+                EmptyMessage = "Nenhum serviço registrado para este tutor.",
+            });
+        }
+
+        var allPending = tutorServices.Where(s => !s.ServicePaid).Sum(s => s.Total);
+        await AddPaymentSectionAsync(report, allPending).WithSync();
+
+        var slug = new string([.. Name.ToLowerInvariant().Select(c => char.IsLetterOrDigit(c) ? c : '-')]).Trim('-');
+        var fileName = await reportExporter.ExportAsync(report, $"servicos-{slug}").WithSync();
+        ExportMsg = fileName == null ? string.Empty : $"Resumo salvo: {fileName}";
+    }
+
+    /// <summary>
+    /// Adds where to send the money: the pet sitter's own name and Pix key, with the outstanding
+    /// amount beside them, so the tutor can pay straight from the image.
+    /// </summary>
+    /// <remarks>
+    /// Read from the account rather than the session, because the session carries only the name —
+    /// and a Pix key edited on the profile screen has to reach the next export.
+    /// </remarks>
+    /// <param name="report">The report being built.</param>
+    /// <param name="pending">What the tutor still owes across every month.</param>
+    private async Task AddPaymentSectionAsync(ReportDocument report, decimal pending)
+    {
+        var petSitter = await repositoryPetSitter.GetAsync(session.CurrentPetSitterId).WithSync();
+
+        // Nothing to say if there is no key on file and nothing outstanding.
+        if (string.IsNullOrWhiteSpace(petSitter?.Pix) && pending <= 0m)
+        {
+            return;
+        }
+
+        var payment = new ReportSection { Heading = "Pagamento" };
+
+        if (petSitter != null)
+        {
+            payment.Fields.Add(new ReportField("Favorecido", petSitter.Name));
+        }
+
+        if (!string.IsNullOrWhiteSpace(petSitter?.Pix))
+        {
+            payment.Fields.Add(new ReportField("Chave Pix", petSitter.Pix, true));
+        }
+
+        payment.Fields.Add(new ReportField(
+            "Total a pagar",
+            pending > 0m ? AppSession.Money(pending) : "Nada pendente. Obrigado!",
+            pending > 0m));
+
+        report.Sections.Add(payment);
     }
 
     private Task StartEdit()
