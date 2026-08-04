@@ -29,7 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{1ACEDD09
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Dapper", "tests\Tests.Dapper\Tests.Dapper.csproj", "{D52F669B-1AE1-4D94-BA2E-F7E70A77E29E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repository.Dapper", "src\1. Contrato\Repository.Dapper\Repository.Dapper.csproj", "{2CF9BCE2-4E1F-4845-9F67-4DF6E664CD16}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repository.Dapper", "src\Repository.Dapper\Repository.Dapper.csproj", "{2CF9BCE2-4E1F-4845-9F67-4DF6E664CD16}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DapperDemo.Infrastructure", "app\DapperDemo.Infrastructure\DapperDemo.Infrastructure.csproj", "{38B5AD33-AFB3-44DF-B4B1-091CFBCD92B5}"
 EndProject

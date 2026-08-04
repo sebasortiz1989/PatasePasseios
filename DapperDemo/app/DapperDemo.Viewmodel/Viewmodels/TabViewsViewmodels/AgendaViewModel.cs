@@ -1,6 +1,3 @@
-using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Windows.Input;
 using AvaloniaFramework.Presentation;
 using AvaloniaFramework.Presentation.UseCase;
 using AvaloniaFramework.Threading;
@@ -10,6 +7,9 @@ using DapperDemo.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;
 using DapperDemo.Viewmodel.Viewmodels.Session;
 using DapperDemo.Viewmodel.Viewmodels.Utils;
 using PropertyChanged;
+using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Windows.Input;
 
 namespace DapperDemo.Viewmodel.Viewmodels.TabViewsViewmodels;
 
@@ -69,7 +69,8 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
             SelectedMonth = MonthOptions.First(m => m.Number == now.Month);
             SetRange(HomeRangeFilter.Hoje);
         },
-            SynchronizationBehavior.Discard, true);
+            SynchronizationBehavior.Discard,
+            true);
         SetRangeSemana = new SynchronizedCommand(
             () =>
         {
@@ -77,7 +78,8 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
             SelectedMonth = MonthOptions.First(m => m.Number == now.Month);
             SetRange(HomeRangeFilter.Semana);
         },
-            SynchronizationBehavior.Discard, true);
+            SynchronizationBehavior.Discard,
+            true);
 
         SetRangeData = new SynchronizedCommand(
             () =>
@@ -85,7 +87,8 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
             SelectedMonth = MonthOptions[0];
             SetRange(HomeRangeFilter.Data);
         },
-            SynchronizationBehavior.Discard, true);
+            SynchronizationBehavior.Discard,
+            true);
 
         SetTypeTodos = new SynchronizedCommand(() => SetType(null), SynchronizationBehavior.Discard, true);
         SetTypeWalk = new SynchronizedCommand(() => SetType(ServiceKind.Walk), SynchronizationBehavior.Discard, true);

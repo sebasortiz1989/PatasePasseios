@@ -87,7 +87,7 @@ public class PaymentAllocationTests
         Assert.True(payments[0].FullyPaid);
         Assert.Equal(2, payments[1].ServiceId);
         Assert.False(payments[1].FullyPaid);
-        Assert.Equal(50m, payments[1].Price);
+        Assert.Equal(50m, payments[1].Amount);
         Assert.Equal(150m, applied);
     }
 
@@ -137,8 +137,8 @@ public class PaymentAllocationTests
 
         Assert.Single(payments);
         Assert.False(payments[0].FullyPaid);
-        Assert.Equal(50m, payments[0].Price);
-        Assert.Equal(0m, payments[0].ExtraCharge);
+        Assert.Equal(150m, payments[0].Amount);
+        Assert.Equal(0m, payments[0].FromCredit);
         Assert.Equal(150m, applied);
     }
 

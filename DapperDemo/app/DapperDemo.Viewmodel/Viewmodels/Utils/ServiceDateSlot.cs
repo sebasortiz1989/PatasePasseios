@@ -1,5 +1,5 @@
-using System.Windows.Input;
 using PropertyChanged;
+using System.Windows.Input;
 
 namespace DapperDemo.Viewmodel.Viewmodels.Utils;
 

@@ -19,7 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\1. Contrato\Repository.Dapper\Repository.Dapper.csproj" />
+        <ProjectReference Include="..\..\src\Repository.Dapper\Repository.Dapper.csproj" />
     </ItemGroup>
 
 </Project>

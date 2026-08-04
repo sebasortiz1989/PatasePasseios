@@ -1,4 +1,3 @@
-using System.Windows.Input;
 using AvaloniaFramework.Presentation;
 using AvaloniaFramework.Presentation.UseCase;
 using AvaloniaFramework.Threading;
@@ -9,6 +8,7 @@ using DapperDemo.Repository.Dapper.Services;
 using DapperDemo.Viewmodel.Services;
 using DapperDemo.Viewmodel.Viewmodels.Session;
 using PropertyChanged;
+using System.Windows.Input;
 
 namespace DapperDemo.Viewmodel.Viewmodels.NavigationViewsViewmodels;
 
