@@ -351,7 +351,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
                 AppSession.TypeLabel(service.Kind),
                 AppSession.DateTimeLabel(service.Date, service.Kind),
                 service.ServicePaid,
-                service.ServicePaid ? "Pago" : "Pendente",
+                service.ServicePaid ? "Pago" : "Sem pagar",
                 service.ServiceDone,
                 service.ServiceDone ? "Feito" : "A fazer",
                 openCommand));
@@ -799,7 +799,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
                     AppSession.DateTimeLabel(service.Date, service.Kind),
                     AppSession.Money(service.Total),
                     service.ServiceDone ? "Feito" : "A fazer",
-                    service.ServicePaid ? "Pago" : "Pendente"));
+                    service.ServicePaid ? "Pago" : "Sem pagar"));
             }
 
             // Only executed work is billable, so the month's headline figure is what may actually

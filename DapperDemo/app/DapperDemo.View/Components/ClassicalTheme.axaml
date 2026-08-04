@@ -95,12 +95,10 @@
                                     HorizontalAlignment="Center"
                                     Spacing="5"
                                     VerticalAlignment="Center">
-                                    <ContentPresenter
-                                        Content="{TemplateBinding Content}"
-                                        HorizontalAlignment="Center" />
+                                    <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" />
                                     <TextBlock
                                         FontFamily="{StaticResource FontBody}"
-                                        FontSize="17"
+                                        FontSize="19"
                                         Foreground="{TemplateBinding Foreground}"
                                         HorizontalAlignment="Center"
                                         LetterSpacing="0.7"
@@ -129,12 +127,12 @@
 
         <!--
             A checkbox sized for a thumb on the 720-wide canvas, and drawn from the palette.
-
+            
             A full ControlTheme rather than styles over Fluent's: Fluent sets the 20px box's Width
             and Height as local values inside its template, and a local value beats a style setter,
             so the box cannot be resized from outside. Its box is also top-aligned to suit a
             wrapping label, which reads as misaligned once the box is taller than one line of text.
-
+            
             Applied per instance with Theme="{StaticResource ClassicCheckBox}", the same way NavTab
             is — an implicit ControlTheme keyed on the type is not picked up from a Styles file's
             resources.
@@ -203,21 +201,21 @@
     <Style Selector="TextBlock.Heading1">
         <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
         <Setter Property="FontWeight" Value="Normal" />
-        <Setter Property="FontSize" Value="62" />
+        <Setter Property="FontSize" Value="68" />
         <Setter Property="Foreground" Value="{StaticResource ColorText}" />
-        <Setter Property="LineHeight" Value="68" />
+        <Setter Property="LineHeight" Value="78" />
     </Style>
 
     <Style Selector="TextBlock.CardTitle">
         <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
         <Setter Property="FontWeight" Value="Medium" />
-        <Setter Property="FontSize" Value="40" />
+        <Setter Property="FontSize" Value="44" />
         <Setter Property="Foreground" Value="{StaticResource ColorText}" />
     </Style>
 
     <Style Selector="TextBlock.Kicker">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="FontSize" Value="23" />
+        <Setter Property="FontSize" Value="25" />
         <Setter Property="LetterSpacing" Value="2" />
         <Setter Property="Foreground" Value="{StaticResource ColorTextMuted50}" />
     </Style>
@@ -226,7 +224,7 @@
     <Style Selector="buttons|VButton.BtnPrimary">
         <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
         <Setter Property="VFontWeight" Value="600" />
-        <Setter Property="VFontSize" Value="29" />
+        <Setter Property="VFontSize" Value="32" />
         <Setter Property="VBorderThickness" Value="2" />
         <Setter Property="VCornerRadius" Value="7" />
         <Setter Property="VNormalBackground" Value="Transparent" />
@@ -242,7 +240,7 @@
     <Style Selector="buttons|VButton.BtnSecondary">
         <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
         <Setter Property="VFontWeight" Value="600" />
-        <Setter Property="VFontSize" Value="29" />
+        <Setter Property="VFontSize" Value="32" />
         <Setter Property="VBorderThickness" Value="2" />
         <Setter Property="VCornerRadius" Value="7" />
         <Setter Property="VNormalBackground" Value="Transparent" />
@@ -258,7 +256,7 @@
     <Style Selector="buttons|VButton.BtnGhost">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
         <Setter Property="VFontWeight" Value="Normal" />
-        <Setter Property="VFontSize" Value="26" />
+        <Setter Property="VFontSize" Value="29" />
         <Setter Property="VBorderThickness" Value="0" />
         <Setter Property="VCornerRadius" Value="7" />
         <Setter Property="VNormalBackground" Value="Transparent" />
@@ -288,7 +286,7 @@
     -->
     <Style Selector="Button.Tag">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="FontSize" Value="23" />
+        <Setter Property="FontSize" Value="25" />
         <Setter Property="Padding" Value="17,5" />
         <Setter Property="CornerRadius" Value="3" />
         <Setter Property="BorderThickness" Value="2" />
@@ -336,14 +334,14 @@
     <Style Selector="Border.TagSign.Paid">
         <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
     </Style>
-    <Style Selector="Border.TagSign > TextBlock">
+    <Style Selector="Border.TagSign &gt; TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="FontSize" Value="23" />
+        <Setter Property="FontSize" Value="25" />
     </Style>
-    <Style Selector="Border.TagSign.Pending > TextBlock">
+    <Style Selector="Border.TagSign.Pending &gt; TextBlock">
         <Setter Property="Foreground" Value="{StaticResource ColorTextMuted55}" />
     </Style>
-    <Style Selector="Border.TagSign.Paid > TextBlock">
+    <Style Selector="Border.TagSign.Paid &gt; TextBlock">
         <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
     </Style>
     <Style Selector="Border.TagSign.Todo">
@@ -352,16 +350,16 @@
     <Style Selector="Border.TagSign.Done">
         <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
     </Style>
-    <Style Selector="Border.TagSign.Todo > TextBlock">
+    <Style Selector="Border.TagSign.Todo &gt; TextBlock">
         <Setter Property="Foreground" Value="{StaticResource ColorTextMuted55}" />
     </Style>
-    <Style Selector="Border.TagSign.Done > TextBlock">
+    <Style Selector="Border.TagSign.Done &gt; TextBlock">
         <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
     </Style>
 
     <Style Selector="Button.Chip">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="FontSize" Value="25" />
+        <Setter Property="FontSize" Value="28" />
         <Setter Property="Padding" Value="21,9" />
         <Setter Property="CornerRadius" Value="7" />
         <Setter Property="BorderThickness" Value="2" />
@@ -378,7 +376,7 @@
 
     <Style Selector="Button.SegOption">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="FontSize" Value="28" />
+        <Setter Property="FontSize" Value="31" />
         <Setter Property="Padding" Value="21,12" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{StaticResource ColorTextMuted65}" />
@@ -415,14 +413,14 @@
     <Style Selector="inputs|VTextBoxWithLabel.ClassicInput">
         <Setter Property="VBorderBrush" Value="{StaticResource ColorDivider}" />
         <Setter Property="VBorderBrushFocus" Value="{StaticResource ColorAccent}" />
-        <Setter Property="VContentFontSize" Value="31" />
+        <Setter Property="VContentFontSize" Value="34" />
         <Setter Property="VCornerRadius" Value="7" />
-        <Setter Property="VDescriptionFontSize" Value="25" />
+        <Setter Property="VDescriptionFontSize" Value="28" />
         <Setter Property="VDescriptionForeground" Value="{StaticResource ColorTextMuted70}" />
         <Setter Property="VDescriptionBackground" Value="{StaticResource ColorBg}" />
         <Setter Property="VTextForeground" Value="{StaticResource ColorText}" />
         <Setter Property="VTextForegroundFocus" Value="{StaticResource ColorText}" />
-        <Setter Property="VTextFontSize" Value="31" />
+        <Setter Property="VTextFontSize" Value="34" />
         <Setter Property="VCaretBrush" Value="{StaticResource ColorAccent}" />
         <Setter Property="VCaretBrushFocus" Value="{StaticResource ColorAccent}" />
     </Style>
@@ -450,7 +448,7 @@
     -->
     <Style Selector="TextBlock.FormLabel">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="FontSize" Value="25" />
+        <Setter Property="FontSize" Value="28" />
         <Setter Property="Foreground" Value="{StaticResource ColorTextMuted70}" />
     </Style>
     <Style Selector="TextBox.FormInput">
@@ -459,15 +457,15 @@
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="CornerRadius" Value="7" />
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="FontSize" Value="31" />
+        <Setter Property="FontSize" Value="34" />
         <Setter Property="Foreground" Value="{StaticResource ColorText}" />
-        <Setter Property="MinHeight" Value="82" />
+        <Setter Property="MinHeight" Value="90" />
         <Setter Property="Padding" Value="18,0" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
     <!--  A multi-line field needs top padding and cannot centre its content.  -->
     <Style Selector="TextBox.FormInput.Multiline">
-        <Setter Property="MinHeight" Value="160" />
+        <Setter Property="MinHeight" Value="176" />
         <Setter Property="Padding" Value="18,12" />
         <Setter Property="VerticalContentAlignment" Value="Top" />
     </Style>
@@ -476,9 +474,9 @@
         <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="CornerRadius" Value="7" />
-        <Setter Property="FontSize" Value="31" />
+        <Setter Property="FontSize" Value="34" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <Setter Property="MinHeight" Value="82" />
+        <Setter Property="MinHeight" Value="90" />
         <Setter Property="Padding" Value="18,0" />
     </Style>
 
@@ -501,7 +499,7 @@
     -->
     <Style Selector="buttons|VButton.BtnBack">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="VFontSize" Value="28" />
+        <Setter Property="VFontSize" Value="31" />
         <Setter Property="VFontWeight" Value="Normal" />
         <Setter Property="VBorderThickness" Value="0" />
         <Setter Property="VCornerRadius" Value="7" />
@@ -514,7 +512,7 @@
         <Setter Property="VTextHorizontalAlignment" Value="Left" />
         <Setter Property="VTextVerticalAlignment" Value="Center" />
         <Setter Property="VPadding" Value="8,10" />
-        <Setter Property="Height" Value="66" />
+        <Setter Property="Height" Value="73" />
         <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>
 
@@ -575,7 +573,7 @@
     -->
     <Style Selector="CalendarDatePicker /template/ Button#PART_Button">
         <Setter Property="Width" Value="66" />
-        <Setter Property="Height" Value="66" />
+        <Setter Property="Height" Value="73" />
         <Setter Property="Margin" Value="0,0,4,0" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="CornerRadius" Value="7" />
@@ -652,7 +650,7 @@
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="CornerRadius" Value="7" />
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="FontSize" Value="34" />
+        <Setter Property="FontSize" Value="37" />
         <Setter Property="Foreground" Value="{StaticResource ColorText}" />
     </Style>
 
@@ -671,7 +669,7 @@
     </Style>
     <Style Selector="TimePicker /template/ TextBlock">
         <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="FontSize" Value="34" />
+        <Setter Property="FontSize" Value="37" />
     </Style>
 
     <Style Selector="TimePickerPresenter">
@@ -680,14 +678,14 @@
     </Style>
 
     <!--  The scrollable hour/minute columns inside the clock popup.  -->
-    <Style Selector="DateTimePickerPanel > ListBoxItem">
+    <Style Selector="DateTimePickerPanel &gt; ListBoxItem">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
         <Setter Property="Foreground" Value="{StaticResource ColorText}" />
     </Style>
-    <Style Selector="DateTimePickerPanel > ListBoxItem:pointerover">
+    <Style Selector="DateTimePickerPanel &gt; ListBoxItem:pointerover">
         <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
     </Style>
-    <Style Selector="DateTimePickerPanel > ListBoxItem:selected">
+    <Style Selector="DateTimePickerPanel &gt; ListBoxItem:selected">
         <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
         <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
     </Style>

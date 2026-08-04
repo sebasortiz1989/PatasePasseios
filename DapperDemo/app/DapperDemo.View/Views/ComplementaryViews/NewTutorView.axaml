@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     d:DesignHeight="1460"
     d:DesignWidth="720"
     mc:Ignorable="d"
@@ -24,7 +24,7 @@
                 <StackPanel Margin="32,24,32,16" Spacing="2">
                     <TextBlock
                         Classes="Heading1"
-                        FontSize="62"
+                        FontSize="68"
                         Text="Novo tutor" />
                     <TextBlock Classes="Kicker" Text="Cadastrar" />
                 </StackPanel>
@@ -33,7 +33,7 @@
                     <StackPanel Spacing="10">
                         <TextBlock
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="25"
+                            FontSize="28"
                             Foreground="{StaticResource ColorTextMuted70}"
                             Text="Nome completo" />
                         <TextBox
@@ -43,7 +43,7 @@
                             CaretBrush="{StaticResource ColorAccent}"
                             CornerRadius="7"
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="31"
+                            FontSize="34"
                             Foreground="{StaticResource ColorText}"
                             MinHeight="82"
                             Padding="18,0"
@@ -55,7 +55,7 @@
                     <StackPanel Spacing="10">
                         <TextBlock
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="25"
+                            FontSize="28"
                             Foreground="{StaticResource ColorTextMuted70}"
                             Text="Telefone" />
                         <TextBox
@@ -65,7 +65,7 @@
                             CaretBrush="{StaticResource ColorAccent}"
                             CornerRadius="7"
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="31"
+                            FontSize="34"
                             Foreground="{StaticResource ColorText}"
                             MinHeight="82"
                             Padding="18,0"
@@ -77,7 +77,7 @@
                     <StackPanel Spacing="10">
                         <TextBlock
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="25"
+                            FontSize="28"
                             Foreground="{StaticResource ColorTextMuted70}"
                             Text="Endereço" />
                         <TextBox
@@ -87,7 +87,7 @@
                             CaretBrush="{StaticResource ColorAccent}"
                             CornerRadius="7"
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="31"
+                            FontSize="34"
                             Foreground="{StaticResource ColorText}"
                             MinHeight="82"
                             Padding="18,0"
@@ -99,7 +99,7 @@
                     <TextBlock
                         Classes="FormMsg Error"
                         FontFamily="{StaticResource FontBody}"
-                        FontSize="28"
+                        FontSize="31"
                         FontStyle="Italic"
                         HorizontalAlignment="Center"
                         IsVisible="{Binding HasError}"
@@ -109,7 +109,7 @@
                     <buttons:VButton
                         Classes="BtnPrimary"
                         Command="{Binding SaveCommand}"
-                        Height="88"
+                        Height="97"
                         HorizontalAlignment="Stretch"
                         VText="Salvar tutor" />
                 </StackPanel>

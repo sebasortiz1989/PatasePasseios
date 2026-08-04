@@ -45,7 +45,6 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
         this.uriLauncher = uriLauncher;
         BackCommand = new SynchronizedCommand(currentView.GoBack, SynchronizationBehavior.Discard, true);
         AddToCalendarCommand = new SynchronizedCommand(AddToCalendar, SynchronizationBehavior.Discard, true);
-        TogglePaidCommand = new SynchronizedCommand(TogglePaid, SynchronizationBehavior.Discard, true);
         ToggleDoneCommand = new SynchronizedCommand(ToggleDone, SynchronizationBehavior.Discard, true);
         AskDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = true, SynchronizationBehavior.Discard, true);
         CancelDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = false, SynchronizationBehavior.Discard, true);
@@ -58,8 +57,6 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
     public ICommand BackCommand { get; }
 
     public ICommand AddToCalendarCommand { get; }
-
-    public ICommand TogglePaidCommand { get; }
 
     public ICommand ToggleDoneCommand { get; }
 
@@ -159,13 +156,6 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
 
     public string DoneActionLabel { get; private set; } = string.Empty;
 
-    /// <summary>
-    /// Gets a value indicating whether the payment chip does anything. Work is only billable once
-    /// it has happened, so settling is closed off until then — an advance is taken as tutor credit
-    /// on the tutor screen. Already-settled bookings stay togglable so a mistake can be undone.
-    /// </summary>
-    public bool CanTogglePaid => Done || Paid;
-
     /// <summary>Gets a value indicating whether to explain why the payment chip is closed off.</summary>
     public bool ShowsPaymentBlockedHint => !Done && !Paid;
 
@@ -252,7 +242,7 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
             details.Append("\nPasseios: ").Append(service.RequiresWalking ? "Incluídos" : "Não incluídos");
         }
 
-        details.Append("\nPagamento: ").Append(service.ServicePaid ? "Pago" : "Pendente");
+        details.Append("\nPagamento: ").Append(service.ServicePaid ? "Pago" : "Sem pagar");
 
         var url = new StringBuilder("https://calendar.google.com/calendar/render?action=TEMPLATE");
         url.Append("&text=").Append(Uri.EscapeDataString($"{AppSession.TypeLabel(service.Kind)} — {service.DogName}"));
@@ -288,28 +278,6 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
         }
 
         await uriLauncher.LaunchAsync(BuildCalendarUri(service)).WithSync();
-    }
-
-    /// <summary>
-    /// Settles the booking, or takes the mark back off. Refuses to settle work that has not been
-    /// carried out — an advance from the tutor is credit, not a paid service, and is taken on the
-    /// tutor screen instead.
-    /// </summary>
-    private async Task TogglePaid()
-    {
-        if (session.SelectedServiceKind is not ServiceKind kind || session.SelectedServiceId is not int serviceId)
-        {
-            return;
-        }
-
-        if (!CanTogglePaid)
-        {
-            return;
-        }
-
-        await repositoryServices.SetPaidAsync(kind, serviceId, !Paid).WithSync();
-        session.NotifyDataChanged();
-        await LoadAsync().WithSync();
     }
 
     /// <summary>
@@ -530,9 +498,9 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
             : string.Empty;
 
         Paid = service.ServicePaid;
-        PaidActionLabel = service.ServicePaid ? "Pago" : "Marcar como pago";
+        PaidActionLabel = service.ServicePaid ? "Pago" : "Sem pagar";
 
         Done = service.ServiceDone;
-        DoneActionLabel = service.ServiceDone ? "Feito" : "Marcar como feito";
+        DoneActionLabel = service.ServiceDone ? "Feito" : "A fazer";
     }
 }

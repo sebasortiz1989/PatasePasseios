@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     d:DesignHeight="1460"
     d:DesignWidth="720"
     mc:Ignorable="d"
@@ -17,7 +17,7 @@
             once so a grouped row cannot drift from a flat one — same tags, same commands, same
             tap-through to the service screen.
         -->
-        <DataTemplate x:Key="ServiceRowTemplate" DataType="utils:ServiceRow">
+        <DataTemplate DataType="utils:ServiceRow" x:Key="ServiceRowTemplate">
             <Button Classes="RowButton" Command="{Binding OpenCommand}">
                 <Border
                     BorderBrush="{StaticResource ColorDivider}"
@@ -32,13 +32,13 @@
                             <StackPanel VerticalAlignment="Center">
                                 <TextBlock
                                     FontFamily="{StaticResource FontHeading}"
-                                    FontSize="46"
+                                    FontSize="51"
                                     Foreground="{StaticResource ColorText}"
                                     HorizontalAlignment="Center"
                                     Text="{Binding DayNum}" />
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="20"
+                                    FontSize="22"
                                     Foreground="{StaticResource ColorTextMuted50}"
                                     HorizontalAlignment="Center"
                                     LetterSpacing="1"
@@ -51,13 +51,13 @@
                             VerticalAlignment="Center">
                             <TextBlock
                                 FontFamily="{StaticResource FontHeading}"
-                                FontSize="37"
+                                FontSize="41"
                                 FontWeight="Medium"
                                 Foreground="{StaticResource ColorText}"
                                 Text="{Binding DogName}" />
                             <TextBlock
                                 FontFamily="{StaticResource FontBody}"
-                                FontSize="25"
+                                FontSize="28"
                                 Foreground="{StaticResource ColorTextMuted55}">
                                 <Run Text="{Binding TypeLabel}" />
                                 <Run Text=" · " />
@@ -71,21 +71,18 @@
                             Grid.Column="2"
                             Spacing="6"
                             VerticalAlignment="Center">
-                            <!--  Closed off until the work is done: only executed work can be charged for.  -->
                             <Border
                                 Classes="TagSign"
                                 Classes.Paid="{Binding Paid}"
                                 Classes.Pending="{Binding !Paid}">
                                 <TextBlock Text="{Binding PaidLabel}" />
                             </Border>
-                            <Button
-                                Classes="Tag"
-                                Classes.Done="{Binding Done}"
-                                Classes.Todo="{Binding !Done}"
-                                Command="{Binding ToggleDoneCommand}"
-                                Content="{Binding DoneLabel}"
-                                HorizontalAlignment="Stretch"
-                                HorizontalContentAlignment="Center" />
+                            <Border
+                                Classes="TagSign"
+                                Classes.Paid="{Binding Done}"
+                                Classes.Pending="{Binding !Done}">
+                                <TextBlock Text="{Binding DoneLabel}" />
+                            </Border>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -99,7 +96,7 @@
                 <StackPanel Margin="32,32,32,16" Spacing="2">
                     <TextBlock
                         Classes="Heading1"
-                        FontSize="62"
+                        FontSize="68"
                         Text="Agenda" />
                     <TextBlock Classes="Kicker" Text="{Binding TodayLabel}" />
                 </StackPanel>
@@ -195,7 +192,7 @@
                 <CheckBox
                     Content="Mostrar serviços já pagos"
                     FontFamily="{StaticResource FontBody}"
-                    FontSize="28"
+                    FontSize="31"
                     Foreground="{StaticResource ColorTextMuted65}"
                     IsChecked="{Binding HomeShowPaid}"
                     Margin="32,24,32,16"
@@ -209,7 +206,7 @@
                     Padding="32,64">
                     <TextBlock
                         FontFamily="{StaticResource FontBody}"
-                        FontSize="29"
+                        FontSize="32"
                         FontStyle="Italic"
                         Foreground="{StaticResource ColorTextMuted45}"
                         HorizontalAlignment="Center"
@@ -221,9 +218,7 @@
                     "mostrar pagos" — narrows what a dog expands to; none of them change the shape of
                     the list. Each dog folds away until tapped.
                 -->
-                <ItemsControl
-                    ItemsSource="{Binding DogGroups}"
-                    Margin="32,0,32,48">
+                <ItemsControl ItemsSource="{Binding DogGroups}" Margin="32,0,32,48">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="utils:DogServiceGroup">
                             <StackPanel>
@@ -265,7 +260,7 @@
 
                                             <TextBlock
                                                 FontFamily="{StaticResource FontHeading}"
-                                                FontSize="40"
+                                                FontSize="44"
                                                 FontWeight="Medium"
                                                 Foreground="{StaticResource ColorText}"
                                                 Grid.Column="1"
@@ -274,7 +269,7 @@
 
                                             <TextBlock
                                                 FontFamily="{StaticResource FontBody}"
-                                                FontSize="25"
+                                                FontSize="28"
                                                 Foreground="{StaticResource ColorTextMuted55}"
                                                 Grid.Column="2"
                                                 Text="{Binding CountLabel}"

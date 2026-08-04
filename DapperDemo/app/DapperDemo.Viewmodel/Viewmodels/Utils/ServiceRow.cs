@@ -38,15 +38,8 @@ public sealed class ServiceRow(string dayNum, string monthShort, string dogName,
 
     public ICommand OpenCommand { get; } = openCommand;
 
-    public ICommand ToggleCommand { get; } = toggleCommand;
-
-    /// <summary>Gets the command that flips <see cref="Done"/>, so a walk can be ticked off from the agenda.</summary>
-    public ICommand ToggleDoneCommand { get; } = toggleDoneCommand;
-
     public void Dispose()
     {
         (OpenCommand as IDisposable)?.Dispose();
-        (ToggleCommand as IDisposable)?.Dispose();
-        (ToggleDoneCommand as IDisposable)?.Dispose();
     }
 }

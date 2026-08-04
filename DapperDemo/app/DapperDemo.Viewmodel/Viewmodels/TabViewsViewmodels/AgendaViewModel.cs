@@ -371,7 +371,7 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
             AppSession.TimeLabel(sv.Date, sv.Kind),
             priceLabel,
             sv.ServicePaid,
-            sv.ServicePaid ? "Pago" : "Pendente",
+            sv.ServicePaid ? "Pago" : "Sem pagar",
             sv.ServiceDone,
             sv.ServiceDone ? "Feito" : "A fazer",
             sv.ServiceDone || sv.ServicePaid,

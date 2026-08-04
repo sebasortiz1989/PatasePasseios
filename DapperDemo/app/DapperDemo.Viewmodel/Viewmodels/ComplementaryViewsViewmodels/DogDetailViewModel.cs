@@ -240,7 +240,7 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
                 AppSession.TypeLabel(service.Kind),
                 AppSession.DateTimeLabel(service.Date, service.Kind),
                 service.ServicePaid,
-                service.ServicePaid ? "Pago" : "Pendente",
+                service.ServicePaid ? "Pago" : "Sem pagar",
                 service.ServiceDone,
                 service.ServiceDone ? "Feito" : "A fazer",
                 openCommand));
