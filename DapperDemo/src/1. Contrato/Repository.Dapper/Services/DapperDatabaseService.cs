@@ -16,9 +16,23 @@ public sealed class DapperDatabaseService
     private string connectionString = string.Empty;
 
     public DapperDatabaseService()
+        : this(Path.Combine(AppStorage.Folder, "DapperDemo.db"))
+    {
+    }
+
+    /// <summary>
+    /// Opens a database at a given path rather than the app's own.
+    /// </summary>
+    /// <remarks>
+    /// The parameterless constructor is what the app uses. This one exists so the tests can drive
+    /// the real schema and the real repositories against a throwaway file instead of the records
+    /// on the machine running them.
+    /// </remarks>
+    /// <param name="databasePath">Where the SQLite file lives. Created if it does not exist.</param>
+    public DapperDatabaseService(string databasePath)
     {
         SQLitePCL.Batteries.Init();
-        InitializeDatabase();
+        InitializeDatabase(databasePath);
     }
 
     /// <summary>Gets the schema this build expects, stamped into a backup so a restore can check it.</summary>
@@ -171,10 +185,8 @@ public sealed class DapperDatabaseService
                  """);
     }
 
-    private void InitializeDatabase()
+    private void InitializeDatabase(string databasePath)
     {
-        string databaseFileName = "DapperDemo.db";
-        var databasePath = Path.Combine(AppStorage.Folder, databaseFileName);
         DatabasePath = databasePath;
         connectionString = new SqliteConnectionStringBuilder
         {
