@@ -296,14 +296,43 @@ whose totals bill only executed work and list `A executar` separately.
 `GetMonthlyIncomeAsync` counts `AmountSettled`, falling back to the full total for
 a service marked paid before that column existed.
 
+### A payment is an event, not just its consequences
+
+`TutorPayments` + `TutorPaymentAllocations` are the ledger: what a tutor handed
+over, and which services it landed on. `RepositoryPayments` is the only place a
+payment is written or unwound, and it does the whole thing in one transaction —
+settle the services, bank the remainder as `Tutors.Credit`, record that both came
+from one amount. `RegisterPaymentAsync` on `RepositoryServices` is now only for
+credit being *spent* (`CreditSpender`), which is a consequence of an earlier
+payment and deliberately stays out of the ledger.
+
+This exists so a mistyped amount can be taken back. `DeleteAsync` recomputes each
+touched service's settled total rather than decrementing it in SQL, so a service
+settled by two payments keeps the other's share, and `ServicePaid` is decided from
+the service's own total instead of a flag written when the payment was taken. Only
+services the reversal touches are rewritten — a booking ticked paid by hand is
+never quietly un-ticked.
+
+The hard half is credit. An advance may already have been spent on later bookings,
+so whatever the tutor's balance cannot cover is followed into the services that
+`CreditApplied` went to, newest first, and reclaimed there. Editing is delete +
+re-apply (`TutorDetailViewModel.ApplyPaymentAsync`), re-allocating from scratch:
+raising 50 to 500 must reach services the smaller amount never got to, and
+lowering it must let go of the ones it should never have settled.
+
+Deleting a service or a dog drops the allocation rows pointing at it — a reversal
+must not meet a service that is gone — but keeps the payment headers, since the
+tutor did hand that money over. Add a fifth service kind and `RepositoryDogs.Delete`
+needs its `Kind = n` branch too.
+
 Operations return the `Response` enum rather than throwing;
 `EnumExtensions.GetDescription()` turns it into user-facing text at the
 presentation boundary. Passwords are BCrypt-hashed in `RepositoryPetSitter`.
 
 **Deleting a dog or tutor cascades by hand** — `RepositoryDogs.Delete` and
 `RepositoryTutors.Delete` each `DELETE FROM` all four service tables in a
-transaction. Add a fifth service table and you must add it to both, or orphaned
-rows silently accumulate.
+transaction, plus the payment-ledger rows hanging off them. Add a fifth service
+table and you must add it to both, or orphaned rows silently accumulate.
 
 ### Dog photos are not in the database
 

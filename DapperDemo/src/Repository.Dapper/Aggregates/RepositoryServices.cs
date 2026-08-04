@@ -22,7 +22,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
     /// </summary>
     private const string WalkSelect = """
         SELECT w.WalkingServiceId AS ServiceId, 0 AS Kind, w.DogId, d.Name AS DogName, d.Image AS DogImage,
-               t.Name AS TutorName, t.Address AS TutorAddress, w.Date, w.Price, w.ServicePaid, w.ServiceDone, w.AmountSettled, w.CreditApplied
+               t.TutorId, t.Name AS TutorName, t.Address AS TutorAddress, w.Date, w.Price, w.ServicePaid, w.ServiceDone, w.AmountSettled, w.CreditApplied
         FROM WalkingService w
         INNER JOIN Dogs d ON d.DogId = w.DogId
         INNER JOIN Tutors t ON t.TutorId = d.TutorId
@@ -31,7 +31,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
 
     private const string SittingSelect = """
         SELECT s.PetSittingServiceId AS ServiceId, 1 AS Kind, s.DogId, d.Name AS DogName, d.Image AS DogImage,
-               t.Name AS TutorName, t.Address AS TutorAddress, s.Date, s.Price, s.ServicePaid, s.ServiceDone, s.AmountSettled, s.CreditApplied
+               t.TutorId, t.Name AS TutorName, t.Address AS TutorAddress, s.Date, s.Price, s.ServicePaid, s.ServiceDone, s.AmountSettled, s.CreditApplied
         FROM PetSittingService s
         INNER JOIN Dogs d ON d.DogId = s.DogId
         INNER JOIN Tutors t ON t.TutorId = d.TutorId
@@ -40,7 +40,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
 
     private const string HotelSelect = """
         SELECT h.PetHotelServiceId AS ServiceId, 2 AS Kind, h.DogId, d.Name AS DogName, d.Image AS DogImage,
-               t.Name AS TutorName, t.Address AS TutorAddress, h.StartDate AS Date, h.EndDate, h.PricePerDay AS Price, h.ExtraCharge, h.RequiresWalking, h.ServicePaid, h.ServiceDone, h.AmountSettled, h.CreditApplied
+               t.TutorId, t.Name AS TutorName, t.Address AS TutorAddress, h.StartDate AS Date, h.EndDate, h.PricePerDay AS Price, h.ExtraCharge, h.RequiresWalking, h.ServicePaid, h.ServiceDone, h.AmountSettled, h.CreditApplied
         FROM PetHotelService h
         INNER JOIN Dogs d ON d.DogId = h.DogId
         INNER JOIN Tutors t ON t.TutorId = d.TutorId
@@ -49,7 +49,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
 
     private const string DayCareSelect = """
         SELECT c.DayCareServiceId AS ServiceId, 3 AS Kind, c.DogId, d.Name AS DogName, d.Image AS DogImage,
-               t.Name AS TutorName, t.Address AS TutorAddress, c.Date, c.Price, c.RequiresWalking, c.ServicePaid, c.ServiceDone, c.AmountSettled, c.CreditApplied
+               t.TutorId, t.Name AS TutorName, t.Address AS TutorAddress, c.Date, c.Price, c.RequiresWalking, c.ServicePaid, c.ServiceDone, c.AmountSettled, c.CreditApplied
         FROM DayCareService c
         INNER JOIN Dogs d ON d.DogId = c.DogId
         INNER JOIN Tutors t ON t.TutorId = d.TutorId
@@ -78,6 +78,19 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
     {
         var all = await ListForPetSitterAsync(petSitterId).ConfigureAwait(false);
         return [.. all.Where(s => s.DogId == dogId)];
+    }
+
+    /// <summary>
+    /// The services booked for every dog of one tutor — their whole history, which is what a bill
+    /// and a payment are settled against.
+    /// </summary>
+    /// <param name="petSitterId">The signed-in account, which scopes the read.</param>
+    /// <param name="tutorId">The tutor whose dogs' services to return.</param>
+    /// <returns>The tutor's services, soonest first.</returns>
+    public async Task<ServiceItem[]> ListForTutorAsync(int petSitterId, int tutorId)
+    {
+        var all = await ListForPetSitterAsync(petSitterId).ConfigureAwait(false);
+        return [.. all.Where(s => s.TutorId == tutorId)];
     }
 
     public async Task<ServiceItem?> GetAsync(int petSitterId, ServiceKind kind, int serviceId)
@@ -174,15 +187,21 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
     /// <summary>Removes a single booking, whichever of the four tables it lives in.</summary>
     public async Task<Response> DeleteAsync(ServiceKind kind, int serviceId)
     {
-        var (table, key, _) = TableFor(kind);
+        var (table, key) = ServiceTables.For(kind);
 
         try
         {
             using var connection = DapperDatabaseService.Connection;
             await connection.OpenAsync().ConfigureAwait(false);
+            // The payment ledger's allocations go with it: a reversal must not try to unsettle a
+            // row that is no longer there. The payment headers stay — the tutor did hand that
+            // money over, whatever became of the booking it paid for.
             await connection.ExecuteAsync(
-                sql: $"DELETE FROM {table} WHERE {key} = @ServiceId",
-                param: new { ServiceId = serviceId }).ConfigureAwait(false);
+                sql: $"""
+                      DELETE FROM {table} WHERE {key} = @ServiceId;
+                      DELETE FROM TutorPaymentAllocations WHERE Kind = @Kind AND ServiceId = @ServiceId;
+                      """,
+                param: new { ServiceId = serviceId, Kind = (int)kind }).ConfigureAwait(false);
 
             return Response.Successful;
         }
@@ -196,7 +215,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
     /// <summary>Marks a service paid or pending. The table and key column depend on the kind.</summary>
     public async Task<Response> SetPaidAsync(ServiceKind kind, int serviceId, bool paid)
     {
-        var (table, key, _) = TableFor(kind);
+        var (table, key) = ServiceTables.For(kind);
 
         try
         {
@@ -228,7 +247,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
     /// <returns>Whether the write succeeded.</returns>
     public async Task<Response> SetDoneAsync(ServiceKind kind, int serviceId, bool done)
     {
-        var (table, key, _) = TableFor(kind);
+        var (table, key) = ServiceTables.For(kind);
 
         try
         {
@@ -276,7 +295,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
 
             foreach (var payment in payments)
             {
-                var (table, key, _) = TableFor(payment.Kind);
+                var (table, key) = ServiceTables.For(payment.Kind);
 
                 // Accumulated, not assigned: a service can be settled more than once — some credit
                 // at booking, cash later — and each write must add to what is already there. The
@@ -330,15 +349,6 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
             DayCare = Received(ServiceKind.DayCare),
         };
     }
-
-    private static (string Table, string Key, string PriceColumn) TableFor(ServiceKind kind) => kind switch
-    {
-        ServiceKind.Walk => ("WalkingService", "WalkingServiceId", "Price"),
-        ServiceKind.Sitting => ("PetSittingService", "PetSittingServiceId", "Price"),
-        ServiceKind.Hotel => ("PetHotelService", "PetHotelServiceId", "PricePerDay"),
-        ServiceKind.DayCare => ("DayCareService", "DayCareServiceId", "Price"),
-        _ => throw new ArgumentOutOfRangeException(nameof(kind)),
-    };
 
     private async Task<Response> InsertAsync(string sql, object param)
     {
