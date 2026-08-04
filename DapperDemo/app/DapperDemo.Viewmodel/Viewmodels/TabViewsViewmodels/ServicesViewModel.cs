@@ -1,16 +1,15 @@
-using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Windows.Input;
 using AvaloniaFramework.Presentation;
 using AvaloniaFramework.Presentation.UseCase;
 using AvaloniaFramework.Threading;
 using DapperDemo.Repository.Dapper;
 using DapperDemo.Repository.Dapper.Aggregates;
 using DapperDemo.Repository.Dapper.Dtos;
-using DapperDemo.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;
 using DapperDemo.Viewmodel.Viewmodels.Session;
 using DapperDemo.Viewmodel.Viewmodels.Utils;
 using PropertyChanged;
+using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Windows.Input;
 
 namespace DapperDemo.Viewmodel.Viewmodels.TabViewsViewmodels;
 
@@ -21,18 +20,21 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
     private readonly RepositoryTutors repositoryTutors;
     private readonly RepositoryServices repositoryServices;
     private readonly AppSession session;
+    private readonly CreditSpender creditSpender;
     private readonly EventHandler dataChangedHandler;
 
     public ServicesViewModel(
         RepositoryDogs repositoryDogs,
         RepositoryTutors repositoryTutors,
         RepositoryServices repositoryServices,
-        AppSession session)
+        AppSession session,
+        CreditSpender creditSpender)
     {
         this.repositoryDogs = repositoryDogs;
         this.repositoryTutors = repositoryTutors;
         this.repositoryServices = repositoryServices;
         this.session = session;
+        this.creditSpender = creditSpender;
 
         // A dog added on the Cachorros tab has to show up in this picker without a relaunch.
         dataChangedHandler = (_, _) => AppSession.FireAndForget(ReloadDogsAsync());
@@ -338,13 +340,14 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
                 return;
             }
 
-            // No credit is spent here. A booking is not chargeable until it has been carried out,
-            // so the tutor's credit waits for the service to be marked done — see CreditSpender.
+            // Credit is spent here, against the bookings just made — see CreditSpender.
+            var creditNote = await creditSpender.SpendForDogAsync(session.CurrentPetSitterId, SelectedDog.Id).WithSync();
+
             ResetForm();
             SvcMsgIsError = created < occurrences.Count;
-            SvcMsg = created == occurrences.Count
+            SvcMsg = (created == occurrences.Count
                 ? created == 1 ? "Serviço agendado." : $"{created} serviços agendados."
-                : $"{created} de {occurrences.Count} serviços agendados.";
+                : $"{created} de {occurrences.Count} serviços agendados.") + creditNote;
 
             session.NotifyDataChanged();
             return;
@@ -356,9 +359,12 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
             return;
         }
 
+        // Same as the recurring path: the hotel stay just booked is what the credit lands on.
+        var hotelCreditNote = await creditSpender.SpendForDogAsync(session.CurrentPetSitterId, SelectedDog.Id).WithSync();
+
         ResetForm();
         SvcMsgIsError = false;
-        SvcMsg = "Serviço agendado.";
+        SvcMsg = "Serviço agendado." + hotelCreditNote;
 
         session.NotifyDataChanged();
     }

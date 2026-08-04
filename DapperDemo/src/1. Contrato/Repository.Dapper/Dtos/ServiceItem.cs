@@ -89,25 +89,38 @@ public sealed class ServiceItem
     public decimal Total => Kind == ServiceKind.Hotel ? (Price * Nights) + ExtraCharge : Price;
 
     /// <summary>
+    /// Gets how much of <see cref="Total"/> has already been settled, by cash or by credit.
+    /// </summary>
+    /// <remarks>
+    /// A part-settled service keeps its price and records what has been paid against it. Earlier
+    /// this cut the price down to the remainder instead, which balanced but destroyed the record
+    /// of what the service actually cost.
+    /// </remarks>
+    public decimal AmountSettled { get; init; }
+
+    /// <summary>
+    /// Gets the part of <see cref="AmountSettled"/> that came out of the tutor's credit rather than
+    /// a payment. Kept separately only so the screen can say where the money came from.
+    /// </summary>
+    public decimal CreditApplied { get; init; }
+
+    /// <summary>Gets what is still unsettled, whether or not it may be charged yet.</summary>
+    public decimal Outstanding => Math.Max(Total - AmountSettled, 0m);
+
+    /// <summary>
     /// Gets what may be charged for this service right now.
     /// </summary>
     /// <remarks>
-    /// <para>
     /// Work is only billable once it has happened, so an unexecuted booking is worth nothing yet
     /// however much it will eventually cost — see <see cref="AmountUpcoming"/> for that figure.
     /// This is the single place that rule lives; everything that totals a balance goes through
     /// here rather than filtering on <see cref="ServicePaid"/> itself.
-    /// </para>
-    /// <para>
-    /// There is no separate "amount paid" column: a part-paid service has its price cut to the
-    /// remainder and stays unpaid, so what is owed is simply the whole of an unpaid service.
-    /// </para>
     /// </remarks>
-    public decimal AmountDue => ServicePaid || !ServiceDone ? 0m : Total;
+    public decimal AmountDue => ServicePaid || !ServiceDone ? 0m : Outstanding;
 
     /// <summary>
     /// Gets what this booking will be worth once it has been carried out, and nothing once it has.
     /// Money the sitter has coming rather than money they may ask for today.
     /// </summary>
-    public decimal AmountUpcoming => ServicePaid || ServiceDone ? 0m : Total;
+    public decimal AmountUpcoming => ServicePaid || ServiceDone ? 0m : Outstanding;
 }

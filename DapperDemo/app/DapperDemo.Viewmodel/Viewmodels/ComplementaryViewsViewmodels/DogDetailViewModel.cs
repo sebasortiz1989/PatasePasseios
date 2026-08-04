@@ -258,7 +258,11 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
     }
 
     /// <summary>PropertyChanged.Fody convention hook — invoked whenever ShowPaidServices changes.</summary>
-    protected void OnShowPaidServicesChanged() => ReloadIfIdle();
+    protected void OnShowPaidServicesChanged()
+    {
+        ReloadIfIdle();
+        SelectedMonth = ShowPaidServices ? MonthOptions.FirstOrDefault(x => x.Number == DateTime.Now.Month) : MonthOptions[0];
+    }
 
     /// <summary>PropertyChanged.Fody convention hook — invoked whenever SelectedMonth changes.</summary>
     protected void OnSelectedMonthChanged() => ReloadIfIdle();

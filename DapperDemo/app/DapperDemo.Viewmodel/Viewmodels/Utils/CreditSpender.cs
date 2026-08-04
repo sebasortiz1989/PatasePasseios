@@ -11,9 +11,11 @@ namespace DapperDemo.Viewmodel.Viewmodels.Utils;
 /// <remarks>
 /// <para>
 /// Credit is money the tutor handed over beyond what was chargeable at the time — an advance on
-/// work not yet done. Because only executed work may be billed, the moment to spend it is when a
-/// service is marked done, not when one is booked: a booking creates no debt for the credit to
-/// settle. Both places that can mark a service done go through here so the two cannot drift.
+/// work not yet done. It is spent the moment a service is <em>booked</em>: the tutor already
+/// handed the money over, so putting it against a new booking is bookkeeping, not billing. The
+/// executed-before-paid rule stops the sitter *asking* for money too early; it does not stop them
+/// recording money they already hold, which is why this uses
+/// <see cref="PaymentAllocation.AllocateCredit"/> rather than the chargeable-only rule.
 /// </para>
 /// <para>
 /// A DI singleton rather than a static helper because it needs three repositories; registered in
@@ -47,9 +49,8 @@ public sealed class CreditSpender(
     /// Settles what it can of a tutor's credit against their chargeable services.
     /// </summary>
     /// <remarks>
-    /// Spread by the same rule a payment is — oldest chargeable service first, the one it runs out
-    /// on repriced to the remainder. Anything left stays on the tutor for the next service to be
-    /// carried out.
+    /// Spread oldest service first, each one keeping its price and recording what the credit
+    /// covered. Anything left stays on the tutor for the next service booked.
     /// </remarks>
     /// <param name="petSitterId">The signed-in account, which scopes the service read.</param>
     /// <param name="tutorId">The tutor whose credit is being spent.</param>
@@ -67,7 +68,7 @@ public sealed class CreditSpender(
         var services = await RepositoryServices.ListForPetSitterAsync(petSitterId).NoSync();
         var chargeable = services.Where(s => dogIds.Contains(s.DogId)).ToArray();
 
-        var (payments, applied) = PaymentAllocation.Allocate(chargeable, tutor.Credit);
+        var (payments, applied) = PaymentAllocation.AllocateCredit(chargeable, tutor.Credit);
         if (payments.Count == 0 || applied <= 0m)
         {
             return string.Empty;

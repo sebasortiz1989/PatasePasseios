@@ -254,8 +254,8 @@ They are not symmetric. **Work is only billable once it has been carried out**, 
 the order is always *executed → paid*:
 
 - `ServiceItem.AmountDue` is the single home of that rule: `ServicePaid ||
-  !ServiceDone ? 0 : Total`. Everything that totals a balance goes through it —
-  never re-filter on `ServicePaid` to build a figure, or unexecuted work creeps
+  !ServiceDone ? 0 : Outstanding`. Everything that totals a balance goes through it
+  — never re-filter on `ServicePaid` to build a figure, or unexecuted work creeps
   back into a bill. `AmountUpcoming` is its complement: what a booking will be
   worth once done, and zero after.
 - The paid toggle is **disabled until the service is done** (`CanTogglePaid =>
@@ -265,18 +265,36 @@ the order is always *executed → paid*:
   anything with no `AmountDue`, so a payment can never land on unexecuted work
   however old it is.
 
+### Settling never reprices
+
+Each service carries `AmountSettled` (how much has been paid against it) and
+`CreditApplied` (how much of that came from tutor credit); `Outstanding` is
+`Total - AmountSettled`. A part-paid 100 service stays a 100 service with 75
+settled and 25 outstanding.
+
+It used to cut the price to the remainder instead — that balanced, but destroyed
+the record of what the service actually cost, and there was nowhere to say the
+money came from credit. `RegisterPaymentAsync` therefore **adds** to
+`AmountSettled` rather than assigning, because one service can be settled more
+than once: some credit at booking, cash later.
+
 **An advance is credit, not a paid service.** A tutor may pay before the work
-happens; `ConfirmPayment` accepts that with nothing to allocate and banks the whole
-amount as `Tutors.Credit` — money the sitter owes back in services. Credit is then
-spent **when a service is marked done**, not when one is booked, by `CreditSpender`
-(a Viewmodel DI singleton). Both places that can mark a service done call it, and
-booking no longer spends credit at all.
+happens; `ConfirmPayment` banks what it cannot allocate as `Tutors.Credit`.
+`CreditSpender` (a Viewmodel DI singleton) then spends it **when a service is
+booked** — `ServicesViewModel` calls it after creating the bookings.
+
+Credit uses `PaymentAllocation.AllocateCredit`, which — unlike `Allocate` —
+covers services that have **not** been carried out. That is deliberate and is the
+one place the executed-before-paid rule is bypassed: the rule stops the sitter
+*asking* for money too early, not recording money the tutor already handed over.
+Deleting a service returns its `CreditApplied` to the tutor, or the money would
+vanish with the row.
 
 Both flags surface on the agenda row, the dog and tutor detail rows, the service
 detail screen, and the two PNG reports as the `Execução` / `Pagamento` columns,
 whose totals bill only executed work and list `A executar` separately.
-`GetMonthlyIncomeAsync` is untouched by all this — income has always counted
-`ServicePaid` only.
+`GetMonthlyIncomeAsync` counts `AmountSettled`, falling back to the full total for
+a service marked paid before that column existed.
 
 Operations return the `Response` enum rather than throwing;
 `EnumExtensions.GetDescription()` turns it into user-facing text at the

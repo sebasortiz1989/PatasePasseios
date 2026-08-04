@@ -19,6 +19,8 @@ namespace DapperDemo.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;
 public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
 {
     private readonly RepositoryServices repositoryServices;
+    private readonly RepositoryDogs repositoryDogs;
+    private readonly RepositoryTutors repositoryTutors;
     private readonly CreditSpender creditSpender;
     private readonly AppSession session;
     private readonly UriLauncher uriLauncher;
@@ -29,11 +31,15 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
     public ServiceDetailViewModel(
         CurrentView currentView,
         RepositoryServices repositoryServices,
+        RepositoryDogs repositoryDogs,
+        RepositoryTutors repositoryTutors,
         CreditSpender creditSpender,
         AppSession session,
         UriLauncher uriLauncher)
     {
         this.repositoryServices = repositoryServices;
+        this.repositoryDogs = repositoryDogs;
+        this.repositoryTutors = repositoryTutors;
         this.creditSpender = creditSpender;
         this.session = session;
         this.uriLauncher = uriLauncher;
@@ -119,6 +125,24 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
 
     /// <summary>Gets the daily rate times the nights, plus any extra. Hotel stays only.</summary>
     public string TotalLabel { get; private set; } = string.Empty;
+
+    /// <summary>Gets how much of this service has been settled, however it was funded.</summary>
+    public string SettledLabel { get; private set; } = string.Empty;
+
+    /// <summary>Gets what is still unsettled on this service.</summary>
+    public string OutstandingLabel { get; private set; } = string.Empty;
+
+    /// <summary>Gets the sentence naming the part covered by the tutor's credit, or empty.</summary>
+    public string CreditNote { get; private set; } = string.Empty;
+
+    public bool HasCreditNote => !string.IsNullOrEmpty(CreditNote);
+
+    /// <summary>
+    /// Gets a value indicating whether the settled/outstanding split is worth showing. Only when
+    /// something has been settled but the service is not yet fully paid — otherwise the single
+    /// price line already says everything.
+    /// </summary>
+    public bool HasPartialSettlement { get; private set; }
 
     /// <summary>Gets the one-off extra on a hotel stay, formatted.</summary>
     public string ExtraChargeLabel { get; private set; } = string.Empty;
@@ -415,11 +439,38 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
             return;
         }
 
+        // Credit put against this booking goes back to the tutor before the row disappears.
+        // Without this the money the tutor handed over would simply vanish with the service.
+        await RefundCreditAsync(current).WithSync();
+
         await repositoryServices.DeleteAsync(kind, serviceId).WithSync();
         session.SelectedServiceKind = null;
         session.SelectedServiceId = null;
         session.NotifyDataChanged();
         BackCommand.Execute(null);
+    }
+
+    /// <summary>Returns a deleted service's applied credit to the tutor who funded it.</summary>
+    private async Task RefundCreditAsync(ServiceItem? service)
+    {
+        if (service is not { CreditApplied: > 0m })
+        {
+            return;
+        }
+
+        var dog = await repositoryDogs.GetAsync(service.DogId).WithSync();
+        if (dog == null)
+        {
+            return;
+        }
+
+        var tutor = await repositoryTutors.GetAsync(dog.TutorId).WithSync();
+        if (tutor == null)
+        {
+            return;
+        }
+
+        await repositoryTutors.SetCreditAsync(dog.TutorId, tutor.Credit + service.CreditApplied).WithSync();
     }
 
     private async Task LoadAsync()
@@ -467,6 +518,16 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
         var nights = NightsBetween(service.Date, service.EndDate);
         DaysLabel = nights == 1 ? "1 diária" : $"{nights} diárias";
         TotalLabel = AppSession.Money(service.Total);
+
+        SettledLabel = AppSession.Money(service.AmountSettled);
+        OutstandingLabel = AppSession.Money(service.Outstanding);
+        HasPartialSettlement = !service.ServicePaid && service.AmountSettled > 0m;
+
+        // Names where the money came from, which is the whole point of tracking credit separately
+        // from a payment — the sitter needs to recognise a service they were never handed cash for.
+        CreditNote = service.CreditApplied > 0m
+            ? $"{AppSession.Money(service.CreditApplied)} deste serviço foram pagos com o crédito do tutor."
+            : string.Empty;
 
         Paid = service.ServicePaid;
         PaidActionLabel = service.ServicePaid ? "Pago" : "Marcar como pago";

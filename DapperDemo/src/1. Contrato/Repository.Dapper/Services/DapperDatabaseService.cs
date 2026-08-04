@@ -96,6 +96,15 @@ public sealed class DapperDatabaseService
         AddColumnIfMissing(connection, "PetSittingService", "ServiceDone", "BOOLEAN NOT NULL DEFAULT 0");
         AddColumnIfMissing(connection, "PetHotelService", "ServiceDone", "BOOLEAN NOT NULL DEFAULT 0");
         AddColumnIfMissing(connection, "DayCareService", "ServiceDone", "BOOLEAN NOT NULL DEFAULT 0");
+
+        // What has been settled against each booking, and how much of that came from tutor credit.
+        // Additive so existing rows start at zero: an already-paid service reads as fully settled
+        // through ServicePaid, which every balance still checks first.
+        foreach (var table in new[] { "WalkingService", "PetSittingService", "PetHotelService", "DayCareService" })
+        {
+            AddColumnIfMissing(connection, table, "AmountSettled", "DECIMAL(10, 2) NOT NULL DEFAULT 0");
+            AddColumnIfMissing(connection, table, "CreditApplied", "DECIMAL(10, 2) NOT NULL DEFAULT 0");
+        }
     }
 
     private static void AddColumnIfMissing(SqliteConnection connection, string table, string column, string type)

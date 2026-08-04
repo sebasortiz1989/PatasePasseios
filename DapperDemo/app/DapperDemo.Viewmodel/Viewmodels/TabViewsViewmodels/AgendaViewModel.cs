@@ -62,9 +62,31 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
         dataChangedHandler = (_, _) => AppSession.FireAndForget(ReloadAsync());
         session.DataChanged += dataChangedHandler;
 
-        SetRangeHoje = new SynchronizedCommand(() => SetRange(HomeRangeFilter.Hoje), SynchronizationBehavior.Discard, true);
-        SetRangeSemana = new SynchronizedCommand(() => SetRange(HomeRangeFilter.Semana), SynchronizationBehavior.Discard, true);
-        SetRangeData = new SynchronizedCommand(() => SetRange(HomeRangeFilter.Data), SynchronizationBehavior.Discard, true);
+        SetRangeHoje = new SynchronizedCommand(
+            () =>
+        {
+            var now = DateTime.Now;
+            SelectedMonth = MonthOptions.First(m => m.Number == now.Month);
+            SetRange(HomeRangeFilter.Hoje);
+        },
+            SynchronizationBehavior.Discard, true);
+        SetRangeSemana = new SynchronizedCommand(
+            () =>
+        {
+            var now = DateTime.Now;
+            SelectedMonth = MonthOptions.First(m => m.Number == now.Month);
+            SetRange(HomeRangeFilter.Semana);
+        },
+            SynchronizationBehavior.Discard, true);
+
+        SetRangeData = new SynchronizedCommand(
+            () =>
+        {
+            SelectedMonth = MonthOptions[0];
+            SetRange(HomeRangeFilter.Data);
+        },
+            SynchronizationBehavior.Discard, true);
+
         SetTypeTodos = new SynchronizedCommand(() => SetType(null), SynchronizationBehavior.Discard, true);
         SetTypeWalk = new SynchronizedCommand(() => SetType(ServiceKind.Walk), SynchronizationBehavior.Discard, true);
         SetTypeSitting = new SynchronizedCommand(() => SetType(ServiceKind.Sitting), SynchronizationBehavior.Discard, true);
@@ -246,7 +268,7 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
             return false;
         }
 
-        return HomeShowPaid || !service.ServicePaid;
+        return HomeShowPaid || !service.ServicePaid || !service.ServiceDone;
     }
 
     /// <summary>

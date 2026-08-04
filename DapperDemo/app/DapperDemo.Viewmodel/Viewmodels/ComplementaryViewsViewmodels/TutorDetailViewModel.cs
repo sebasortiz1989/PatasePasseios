@@ -307,7 +307,11 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     }
 
     /// <summary>PropertyChanged.Fody convention hook — invoked whenever ShowPaidServices changes.</summary>
-    protected void OnShowPaidServicesChanged() => ReloadIfIdle();
+    protected void OnShowPaidServicesChanged()
+    {
+        ReloadIfIdle();
+        SelectedMonth = ShowPaidServices ? MonthOptions.FirstOrDefault(x => x.Number == DateTime.Now.Month) : MonthOptions[0];
+    }
 
     /// <summary>PropertyChanged.Fody convention hook — invoked whenever SelectedMonth changes.</summary>
     protected void OnSelectedMonthChanged() => ReloadIfIdle();
@@ -398,9 +402,10 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
 
         if (partial != null)
         {
-            var remainder = partial.Kind == ServiceKind.Hotel
-                ? partial.Price * tutorServices.First(s => s.Kind == partial.Kind && s.ServiceId == partial.ServiceId).Nights
-                : partial.Price;
+            // The service keeps its price now, so what is left over is simply the part of it this
+            // payment did not reach — no dividing a reduced total back out over hotel nights.
+            var service = tutorServices.First(s => s.Kind == partial.Kind && s.ServiceId == partial.ServiceId);
+            var remainder = service.AmountDue - partial.Amount;
 
             preview += $" e deixa {AppSession.Money(remainder)} em aberto no seguinte.";
         }

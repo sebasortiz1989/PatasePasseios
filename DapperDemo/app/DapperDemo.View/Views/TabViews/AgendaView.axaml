@@ -253,16 +253,12 @@
                                             Spacing="6"
                                             VerticalAlignment="Center">
                                             <!--  Closed off until the work is done: only executed work can be charged for.  -->
-                                            <Button
-                                                Classes="Tag"
+                                            <Border
+                                                Classes="TagSign"
                                                 Classes.Paid="{Binding Paid}"
-                                                Classes.Pending="{Binding !Paid}"
-                                                Command="{Binding ToggleCommand}"
-                                                Content="{Binding PaidLabel}"
-                                                HorizontalAlignment="Stretch"
-                                                HorizontalContentAlignment="Center"
-                                                IsEnabled="{Binding CanTogglePaid}"
-                                                ToolTip.Tip="Marque o serviço como feito para poder cobrar." />
+                                                Classes.Pending="{Binding !Paid}">
+                                                <TextBlock Text="{Binding PaidLabel}" />
+                                            </Border>
                                             <Button
                                                 Classes="Tag"
                                                 Classes.Done="{Binding Done}"

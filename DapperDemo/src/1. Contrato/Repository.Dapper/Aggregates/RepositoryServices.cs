@@ -22,7 +22,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
     /// </summary>
     private const string WalkSelect = """
         SELECT w.WalkingServiceId AS ServiceId, 0 AS Kind, w.DogId, d.Name AS DogName, d.Image AS DogImage,
-               t.Name AS TutorName, t.Address AS TutorAddress, w.Date, w.Price, w.ServicePaid, w.ServiceDone
+               t.Name AS TutorName, t.Address AS TutorAddress, w.Date, w.Price, w.ServicePaid, w.ServiceDone, w.AmountSettled, w.CreditApplied
         FROM WalkingService w
         INNER JOIN Dogs d ON d.DogId = w.DogId
         INNER JOIN Tutors t ON t.TutorId = d.TutorId
@@ -31,7 +31,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
 
     private const string SittingSelect = """
         SELECT s.PetSittingServiceId AS ServiceId, 1 AS Kind, s.DogId, d.Name AS DogName, d.Image AS DogImage,
-               t.Name AS TutorName, t.Address AS TutorAddress, s.Date, s.Price, s.ServicePaid, s.ServiceDone
+               t.Name AS TutorName, t.Address AS TutorAddress, s.Date, s.Price, s.ServicePaid, s.ServiceDone, s.AmountSettled, s.CreditApplied
         FROM PetSittingService s
         INNER JOIN Dogs d ON d.DogId = s.DogId
         INNER JOIN Tutors t ON t.TutorId = d.TutorId
@@ -40,7 +40,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
 
     private const string HotelSelect = """
         SELECT h.PetHotelServiceId AS ServiceId, 2 AS Kind, h.DogId, d.Name AS DogName, d.Image AS DogImage,
-               t.Name AS TutorName, t.Address AS TutorAddress, h.StartDate AS Date, h.EndDate, h.PricePerDay AS Price, h.ExtraCharge, h.RequiresWalking, h.ServicePaid, h.ServiceDone
+               t.Name AS TutorName, t.Address AS TutorAddress, h.StartDate AS Date, h.EndDate, h.PricePerDay AS Price, h.ExtraCharge, h.RequiresWalking, h.ServicePaid, h.ServiceDone, h.AmountSettled, h.CreditApplied
         FROM PetHotelService h
         INNER JOIN Dogs d ON d.DogId = h.DogId
         INNER JOIN Tutors t ON t.TutorId = d.TutorId
@@ -49,7 +49,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
 
     private const string DayCareSelect = """
         SELECT c.DayCareServiceId AS ServiceId, 3 AS Kind, c.DogId, d.Name AS DogName, d.Image AS DogImage,
-               t.Name AS TutorName, t.Address AS TutorAddress, c.Date, c.Price, c.RequiresWalking, c.ServicePaid, c.ServiceDone
+               t.Name AS TutorName, t.Address AS TutorAddress, c.Date, c.Price, c.RequiresWalking, c.ServicePaid, c.ServiceDone, c.AmountSettled, c.CreditApplied
         FROM DayCareService c
         INNER JOIN Dogs d ON d.DogId = c.DogId
         INNER JOIN Tutors t ON t.TutorId = d.TutorId
@@ -276,15 +276,20 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
 
             foreach (var payment in payments)
             {
-                var (table, key, priceColumn) = TableFor(payment.Kind);
+                var (table, key, _) = TableFor(payment.Kind);
 
-                // Only a hotel stay has an extra to carry, and a repriced one has to have it
-                // cleared — otherwise the remainder in the nightly rate would be added to again.
-                var extra = payment.Kind == ServiceKind.Hotel ? ", ExtraCharge = @ExtraCharge" : string.Empty;
-
+                // Accumulated, not assigned: a service can be settled more than once — some credit
+                // at booking, cash later — and each write must add to what is already there. The
+                // price is deliberately untouched, so the record of what the service cost survives.
                 await connection.ExecuteAsync(
-                    sql: $"UPDATE {table} SET {priceColumn} = @Price{extra}, ServicePaid = @FullyPaid WHERE {key} = @ServiceId",
-                    param: new { payment.Price, payment.ExtraCharge, payment.FullyPaid, payment.ServiceId },
+                    sql: $"""
+                          UPDATE {table}
+                          SET AmountSettled = AmountSettled + @Amount,
+                              CreditApplied = CreditApplied + @FromCredit,
+                              ServicePaid = @FullyPaid
+                          WHERE {key} = @ServiceId
+                          """,
+                    param: new { payment.Amount, payment.FromCredit, payment.FullyPaid, payment.ServiceId },
                     transaction: transaction).ConfigureAwait(false);
             }
 
@@ -305,16 +310,24 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
     public async Task<MonthlyIncome> GetMonthlyIncomeAsync(int petSitterId, int year, int month)
     {
         var services = await ListForPetSitterAsync(petSitterId).ConfigureAwait(false);
-        var paidThisMonth = services
-            .Where(s => s.ServicePaid && s.Date.Year == year && s.Date.Month == month)
+
+        // Settled, not "paid": a service can now be part-settled, and what came in is that partial
+        // amount rather than nothing. A fully paid service settled before this column existed has
+        // AmountSettled 0, so ServicePaid falls back to its full total.
+        var thisMonth = services
+            .Where(s => s.Date.Year == year && s.Date.Month == month)
             .ToArray();
+
+        decimal Received(ServiceKind kind) => thisMonth
+            .Where(s => s.Kind == kind)
+            .Sum(s => s.ServicePaid ? Math.Max(s.AmountSettled, s.Total) : s.AmountSettled);
 
         return new MonthlyIncome
         {
-            Walk = paidThisMonth.Where(s => s.Kind == ServiceKind.Walk).Sum(s => s.Price),
-            Sitting = paidThisMonth.Where(s => s.Kind == ServiceKind.Sitting).Sum(s => s.Price),
-            Hotel = paidThisMonth.Where(s => s.Kind == ServiceKind.Hotel).Sum(s => s.Price),
-            DayCare = paidThisMonth.Where(s => s.Kind == ServiceKind.DayCare).Sum(s => s.Price),
+            Walk = Received(ServiceKind.Walk),
+            Sitting = Received(ServiceKind.Sitting),
+            Hotel = Received(ServiceKind.Hotel),
+            DayCare = Received(ServiceKind.DayCare),
         };
     }
 

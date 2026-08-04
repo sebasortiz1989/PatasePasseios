@@ -1,36 +1,33 @@
 namespace DapperDemo.Repository.Dapper.Dtos;
 
 /// <summary>
-/// What a payment does to one service.
+/// What a settlement does to one service.
 /// </summary>
 /// <remarks>
-/// A tutor pays a lump sum, which is then spread over what they owe, oldest first. Services the
-/// money covers in full are simply marked paid at their existing price. At most one service is
-/// left part-covered: its price is cut to the remainder and it stays unpaid, so the outstanding
-/// balance lives in the price rather than in a separate column.
+/// A tutor pays a lump sum, or hands money over in advance that becomes credit; either way it is
+/// spread over their services oldest first. Each service records how much of it has been settled
+/// and keeps its price — earlier the odd one out had its price cut to the remainder, which
+/// balanced but left no record of what the service actually cost.
 /// </remarks>
 /// <param name="kind">Which table the service lives in.</param>
 /// <param name="serviceId">The service being settled.</param>
-/// <param name="price">
-/// The price to store. Unchanged for a service paid in full; for a hotel stay it is a nightly
-/// rate, so a reduced figure is the remainder divided by the nights.
+/// <param name="amount">How much this settlement puts against the service. Added to what is already settled.</param>
+/// <param name="fullyPaid">Whether the service is fully settled once this is applied.</param>
+/// <param name="fromCredit">
+/// How much of <paramref name="amount"/> came out of the tutor's credit rather than a payment.
+/// Recorded only so the service screen can say where the money came from.
 /// </param>
-/// <param name="fullyPaid">Whether this payment clears the service.</param>
-/// <param name="extraCharge">
-/// A hotel stay's one-off extra. Left as it stands when the stay is paid in full; zeroed when the
-/// stay is repriced, because the remainder is expressed entirely through the nightly rate.
-/// </param>
-public sealed class ServicePayment(ServiceKind kind, int serviceId, decimal price, bool fullyPaid, decimal extraCharge = 0m)
+public sealed class ServicePayment(ServiceKind kind, int serviceId, decimal amount, bool fullyPaid, decimal fromCredit = 0m)
 {
     public ServiceKind Kind { get; } = kind;
 
     public int ServiceId { get; } = serviceId;
 
-    /// <summary>Gets the price to store — reduced only when the payment falls short.</summary>
-    public decimal Price { get; } = price;
+    /// <summary>Gets how much this settlement adds to the service's settled total.</summary>
+    public decimal Amount { get; } = amount;
 
     public bool FullyPaid { get; } = fullyPaid;
 
-    /// <summary>Gets the extra to store on a hotel stay. Ignored for every other kind.</summary>
-    public decimal ExtraCharge { get; } = extraCharge;
+    /// <summary>Gets the part of <see cref="Amount"/> funded by tutor credit.</summary>
+    public decimal FromCredit { get; } = fromCredit;
 }

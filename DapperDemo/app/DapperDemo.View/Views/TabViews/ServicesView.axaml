@@ -421,7 +421,8 @@
                         HorizontalAlignment="Center"
                         IsVisible="{Binding HasSvcMsg}"
                         Text="{Binding SvcMsg}"
-                        TextAlignment="Center" />
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
 
                     <buttons:VButton
                         Classes="BtnPrimary"

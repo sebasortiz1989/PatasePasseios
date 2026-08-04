@@ -263,6 +263,67 @@
                             </Border>
                         </StackPanel>
 
+                        <!--
+                            The settled/outstanding split, shown only while a service is part
+                            settled. A service keeps its price now, so this is where the money that
+                            has already landed on it is accounted for.
+                        -->
+                        <StackPanel IsVisible="{Binding HasPartialSettlement}">
+                            <Border
+                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderThickness="0,2,0,0"
+                                Padding="0,20,0,20">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="25"
+                                        Foreground="{StaticResource ColorTextMuted55}"
+                                        LetterSpacing="1"
+                                        Text="JÁ PAGO" />
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontHeading}"
+                                        FontSize="41"
+                                        Foreground="{StaticResource ColorText}"
+                                        Grid.Column="1"
+                                        Text="{Binding SettledLabel}" />
+                                </Grid>
+                            </Border>
+                            <Border
+                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderThickness="0,2,0,0"
+                                Padding="0,20,0,20">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="25"
+                                        Foreground="{StaticResource ColorTextMuted55}"
+                                        LetterSpacing="1"
+                                        Text="EM ABERTO" />
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontHeading}"
+                                        FontSize="41"
+                                        Foreground="{StaticResource ColorAccentDark700}"
+                                        Grid.Column="1"
+                                        Text="{Binding OutstandingLabel}" />
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+
+                        <!--  Where the money came from, when part of it was the tutor's own credit.  -->
+                        <Border
+                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderThickness="0,2,0,0"
+                            IsVisible="{Binding HasCreditNote}"
+                            Padding="0,16,0,16">
+                            <TextBlock
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="26"
+                                FontStyle="Italic"
+                                Foreground="{StaticResource ColorAccentDark700}"
+                                Text="{Binding CreditNote}"
+                                TextWrapping="Wrap" />
+                        </Border>
+
                         <!--  Whether the work happened. Independent of payment: this is where the flag is set.  -->
                         <Border
                             BorderBrush="{StaticResource ColorDivider}"
