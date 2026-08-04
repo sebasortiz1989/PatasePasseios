@@ -9,6 +9,7 @@ using AvaloniaFramework.Threading;
 using DapperDemo.View.DependencyInversion;
 using DapperDemo.View.Services;
 using DapperDemo.Viewmodel.Viewmodels;
+using DapperDemo.Viewmodel.Viewmodels.NavigationViewsViewmodels;
 
 namespace DapperDemo.View;
 

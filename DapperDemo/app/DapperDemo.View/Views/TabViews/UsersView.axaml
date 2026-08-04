@@ -1,0 +1,638 @@
+﻿<UserControl
+    d:DesignHeight="1460"
+    d:DesignWidth="720"
+    mc:Ignorable="d"
+    x:Class="DapperDemo.View.Views.TabViews.UsersView"
+    x:DataType="tabViewsViewmodels:UsersViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
+    xmlns:components="using:DapperDemo.View.Components"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sys="using:System"
+    xmlns:tabViewsViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.TabViewsViewmodels;assembly=DapperDemo.Viewmodel"
+    xmlns:utils="clr-namespace:DapperDemo.Viewmodel.Viewmodels.Utils;assembly=DapperDemo.Viewmodel"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Background="{StaticResource ColorBg}" Width="720">
+        <ScrollViewer>
+            <StackPanel Spacing="0">
+                <StackPanel Margin="32,32,32,16" Spacing="2">
+                    <TextBlock
+                        Classes="Heading1"
+                        FontSize="62"
+                        Text="{Binding CurrentUserName}" />
+                    <TextBlock Classes="Kicker" Text="Conta" />
+                </StackPanel>
+
+                <StackPanel Margin="32,16,32,48" Spacing="32">
+                    <!--  Profile card  -->
+                    <Border Classes="Card">
+                        <StackPanel Spacing="16">
+                            <!--  Reading state  -->
+                            <StackPanel IsVisible="{Binding IsViewingProfile}" Spacing="16">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock
+                                        Classes="CardTitle"
+                                        FontSize="37"
+                                        Text="Perfil"
+                                        VerticalAlignment="Center" />
+                                    <buttons:VButton
+                                        Classes="BtnSecondary"
+                                        Command="{Binding EditProfileCommand}"
+                                        Grid.Column="1"
+                                        Height="64"
+                                        VText="Editar"
+                                        VerticalAlignment="Center"
+                                        Width="160" />
+                                </Grid>
+                                <StackPanel Spacing="12">
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Classes="Kicker" Text="E-mail" />
+                                        <TextBlock
+                                            FontFamily="{StaticResource FontBody}"
+                                            FontSize="29"
+                                            Foreground="{StaticResource ColorText}"
+                                            Text="{Binding Email}" />
+                                    </StackPanel>
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Classes="Kicker" Text="Chave Pix" />
+                                        <TextBlock
+                                            FontFamily="{StaticResource FontBody}"
+                                            FontSize="29"
+                                            Foreground="{StaticResource ColorText}"
+                                            Text="{Binding PixLabel}"
+                                            TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Classes="Kicker" Text="Nascimento" />
+                                        <TextBlock
+                                            FontFamily="{StaticResource FontBody}"
+                                            FontSize="29"
+                                            Foreground="{StaticResource ColorText}"
+                                            Text="{Binding BirthDateLabel}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <!--  Editing state  -->
+                            <StackPanel IsVisible="{Binding IsEditingProfile}" Spacing="16">
+                                <TextBlock Classes="CardTitle" Text="Editar perfil" />
+                                <StackPanel Spacing="8">
+                                    <TextBlock Classes="FormLabel" Text="Nome" />
+                                    <TextBox
+                                        Classes="FormInput"
+                                        FontSize="29"
+                                        MinHeight="74"
+                                        Text="{Binding EditName}" />
+                                </StackPanel>
+                                <!--
+                                    Shown but not editable: the e-mail is the login, so it is
+                                    fixed once the account exists. Kept visible rather than
+                                    dropped, so it does not look like it went missing.
+                                -->
+                                <StackPanel Spacing="8">
+                                    <TextBlock Classes="FormLabel" Text="E-mail" />
+                                    <Border
+                                        BorderBrush="{StaticResource ColorDivider}"
+                                        BorderThickness="2"
+                                        CornerRadius="7"
+                                        MinHeight="74"
+                                        Padding="18,0">
+                                        <TextBlock
+                                            FontFamily="{StaticResource FontBody}"
+                                            FontSize="29"
+                                            Foreground="{StaticResource ColorTextMuted50}"
+                                            Text="{Binding Email}"
+                                            VerticalAlignment="Center" />
+                                    </Border>
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="23"
+                                        FontStyle="Italic"
+                                        Foreground="{StaticResource ColorTextMuted45}"
+                                        Text="O e-mail identifica a conta e não pode ser alterado."
+                                        TextWrapping="Wrap" />
+                                </StackPanel>
+                                <StackPanel Spacing="8">
+                                    <TextBlock Classes="FormLabel" Text="Chave Pix" />
+                                    <TextBox
+                                        Classes="FormInput"
+                                        FontSize="29"
+                                        MinHeight="74"
+                                        PlaceholderText="telefone, e-mail, CPF ou chave aleatória"
+                                        Text="{Binding EditPix}" />
+                                </StackPanel>
+                                <StackPanel Spacing="8">
+                                    <TextBlock Classes="FormLabel" Text="Nascimento" />
+                                    <CalendarDatePicker
+                                        Background="Transparent"
+                                        BorderBrush="{StaticResource ColorDivider}"
+                                        BorderThickness="2"
+                                        CornerRadius="7"
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="29"
+                                        Foreground="{StaticResource ColorText}"
+                                        MinHeight="74"
+                                        SelectedDate="{Binding EditBirthDate}" />
+                                </StackPanel>
+                                <TextBlock
+                                    Classes="FormMsg Error"
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="28"
+                                    FontStyle="Italic"
+                                    IsVisible="{Binding HasProfileMsg}"
+                                    Text="{Binding ProfileMsg}"
+                                    TextWrapping="Wrap" />
+                                <Grid ColumnDefinitions="*,16,*">
+                                    <buttons:VButton
+                                        Classes="BtnSecondary"
+                                        Command="{Binding CancelProfileCommand}"
+                                        Height="70"
+                                        VText="Cancelar" />
+                                    <buttons:VButton
+                                        Classes="BtnPrimary"
+                                        Command="{Binding SaveProfileCommand}"
+                                        Grid.Column="2"
+                                        Height="70"
+                                        VText="Salvar" />
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!--  Password card  -->
+                    <Border Classes="Card">
+                        <StackPanel Spacing="16">
+                            <!--  Editing state  -->
+                            <StackPanel IsVisible="{Binding ShowPasswordForm}" Spacing="16">
+                                <TextBlock Classes="CardTitle" Text="Alterar senha" />
+                                <!--  The current one is required: the app has no lock of its own.  -->
+                                <TextBox
+                                    Classes="FormInput"
+                                    FontSize="29"
+                                    MinHeight="74"
+                                    PasswordChar="•"
+                                    PlaceholderText="Senha atual"
+                                    Text="{Binding CurrentPw}" />
+                                <TextBox
+                                    Classes="FormInput"
+                                    FontSize="29"
+                                    MinHeight="74"
+                                    PasswordChar="•"
+                                    PlaceholderText="Nova senha"
+                                    Text="{Binding NewPw}" />
+                                <TextBox
+                                    Classes="FormInput"
+                                    FontSize="29"
+                                    MinHeight="74"
+                                    PasswordChar="•"
+                                    PlaceholderText="Confirmar senha"
+                                    Text="{Binding ConfirmPw}" />
+                                <Grid ColumnDefinitions="*,16,*">
+                                    <buttons:VButton
+                                        Classes="BtnSecondary"
+                                        Command="{Binding CancelPasswordFormCommand}"
+                                        Height="70"
+                                        VText="Cancelar" />
+                                    <buttons:VButton
+                                        Classes="BtnPrimary"
+                                        Command="{Binding SavePasswordCommand}"
+                                        Grid.Column="2"
+                                        Height="70"
+                                        VText="Salvar" />
+                                </Grid>
+                            </StackPanel>
+
+                            <!--  Outside both states: a success has to survive the form closing.  -->
+                            <TextBlock
+                                Classes="FormMsg"
+                                Classes.Error="{Binding PwMsgIsError}"
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="28"
+                                FontStyle="Italic"
+                                IsVisible="{Binding HasPwMsg}"
+                                Text="{Binding PwMsg}"
+                                TextWrapping="Wrap" />
+
+                            <!--  Summary state  -->
+                            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding ShowPasswordSummary}">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock
+                                        Classes="CardTitle"
+                                        FontSize="37"
+                                        Text="Senha" />
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="25"
+                                        Foreground="{StaticResource ColorTextMuted50}"
+                                        LetterSpacing="3"
+                                        Text="••••••••" />
+                                </StackPanel>
+                                <buttons:VButton
+                                    Classes="BtnSecondary"
+                                    Command="{Binding OpenPasswordFormCommand}"
+                                    Grid.Column="1"
+                                    Height="64"
+                                    VText="Alterar"
+                                    VerticalAlignment="Center"
+                                    Width="160" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!--  Monthly billing  -->
+                    <StackPanel Spacing="4">
+                        <TextBlock
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="23"
+                            Foreground="{StaticResource ColorAccent}"
+                            LetterSpacing="2"
+                            Text="FATURAMENTO" />
+
+                        <!--  Month and year pick the period; the eye hides the figures.  -->
+                        <Grid ColumnDefinitions="*,12,Auto,12,Auto" Margin="0,10,0,0">
+                            <ComboBox
+                                Classes="FormInput"
+                                FontSize="29"
+                                ItemsSource="{Binding MonthOptions}"
+                                MinHeight="72"
+                                SelectedItem="{Binding SelectedMonth}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate DataType="utils:MonthOption">
+                                        <TextBlock Text="{Binding Label}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <ComboBox
+                                Classes="FormInput"
+                                FontSize="29"
+                                Grid.Column="2"
+                                ItemsSource="{Binding YearOptions}"
+                                MinHeight="72"
+                                MinWidth="150"
+                                SelectedItem="{Binding SelectedYear}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate DataType="sys:Int32">
+                                        <TextBlock Text="{Binding}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <Button
+                                Classes="IconToggle"
+                                Command="{Binding ToggleMoneyVisibleCommand}"
+                                Grid.Column="4"
+                                ToolTip.Tip="Mostrar ou ocultar valores">
+                                <Viewbox Height="36" Width="36">
+                                    <Panel>
+                                        <Path
+                                            Data="{StaticResource IconEyeOpen}"
+                                            IsVisible="{Binding MoneyVisible}"
+                                            Stroke="{StaticResource ColorAccent}"
+                                            StrokeThickness="1.8" />
+                                        <Path
+                                            Data="{StaticResource IconEyeClosed}"
+                                            IsVisible="{Binding MoneyHidden}"
+                                            Stroke="{StaticResource ColorAccent}"
+                                            StrokeThickness="1.8" />
+                                    </Panel>
+                                </Viewbox>
+                            </Button>
+                        </Grid>
+
+                        <TextBlock
+                            FontFamily="{StaticResource FontHeading}"
+                            FontSize="88"
+                            Foreground="{StaticResource ColorText}"
+                            Margin="0,16,0,16"
+                            Text="{Binding MonthTotalLabel}" />
+
+                        <ItemsControl ItemsSource="{Binding IncomeBreakdown}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="utils:IncomeRow">
+                                    <Border
+                                        BorderBrush="{StaticResource ColorDivider}"
+                                        BorderThickness="0,2,0,0"
+                                        Padding="0,16">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <TextBlock
+                                                FontFamily="{StaticResource FontBody}"
+                                                FontSize="29"
+                                                Foreground="{StaticResource ColorTextMuted75}"
+                                                Text="{Binding Label}" />
+                                            <TextBlock
+                                                FontFamily="{StaticResource FontHeading}"
+                                                FontSize="36"
+                                                Foreground="{StaticResource ColorText}"
+                                                Grid.Column="1"
+                                                Text="{Binding Amount}" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <Border
+                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderThickness="0,2,0,0"
+                            Padding="0,16,0,0">
+                            <TextBlock
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="23"
+                                FontStyle="Italic"
+                                Foreground="{StaticResource ColorTextMuted45}"
+                                Text="Considera apenas serviços marcados como pagos. Pendentes conta todos os meses."
+                                TextWrapping="Wrap" />
+                        </Border>
+
+                        <!--  An image rather than a document, so it can be sent straight from the phone.  -->
+                        <buttons:VButton
+                            Classes="BtnSecondary"
+                            Command="{Binding ExportSummaryCommand}"
+                            Height="80"
+                            HorizontalAlignment="Stretch"
+                            Margin="0,20,0,0"
+                            VText="Exportar resumo do mês (PNG)" />
+                        <TextBlock
+                            Classes="FormMsg"
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="24"
+                            FontStyle="Italic"
+                            HorizontalAlignment="Center"
+                            IsVisible="{Binding HasSummaryMsg}"
+                            Margin="0,8,0,0"
+                            Text="{Binding SummaryMsg}"
+                            TextAlignment="Center"
+                            TextWrapping="Wrap" />
+
+                        <!--
+                            Opt-in detail: the figures above answer how the month went, this answers
+                            who still owes for it. Same per-dog shape as the home screen's summary.
+                        -->
+                        <CheckBox
+                            Content="Detalhar por cachorro"
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="28"
+                            Foreground="{StaticResource ColorTextMuted65}"
+                            IsChecked="{Binding ShowMonthDetail}"
+                            Margin="0,16,0,0"
+                            Theme="{StaticResource ClassicCheckBox}" />
+
+                        <StackPanel IsVisible="{Binding ShowMonthDetail}" Spacing="8">
+                            <TextBlock
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="23"
+                                Foreground="{StaticResource ColorAccent}"
+                                LetterSpacing="2"
+                                Margin="0,16,0,0"
+                                Text="RECEBIDO NO MÊS" />
+
+                            <TextBlock
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="27"
+                                FontStyle="Italic"
+                                Foreground="{StaticResource ColorTextMuted45}"
+                                IsVisible="{Binding HasNothingPaidInMonth}"
+                                Text="Nada recebido neste mês." />
+
+                            <ItemsControl ItemsSource="{Binding PaidSummaries}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="utils:DogSummaryRow">
+                                        <Border
+                                            BorderBrush="{StaticResource ColorDivider}"
+                                            BorderThickness="0,2,0,0"
+                                            Padding="0,18">
+                                            <StackPanel Spacing="10">
+                                                <Grid ColumnDefinitions="*,Auto">
+                                                    <TextBlock
+                                                        FontFamily="{StaticResource FontHeading}"
+                                                        FontSize="36"
+                                                        FontWeight="Medium"
+                                                        Foreground="{StaticResource ColorText}"
+                                                        Text="{Binding DogName}"
+                                                        VerticalAlignment="Center" />
+                                                    <TextBlock
+                                                        FontFamily="{StaticResource FontHeading}"
+                                                        FontSize="34"
+                                                        Foreground="{StaticResource ColorAccentDark800}"
+                                                        Grid.Column="1"
+                                                        Text="{Binding TotalLabel}"
+                                                        VerticalAlignment="Center" />
+                                                </Grid>
+                                                <ItemsControl ItemsSource="{Binding Lines}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate DataType="utils:DogSummaryLine">
+                                                            <Grid ColumnDefinitions="*,Auto" Margin="24,0,0,6">
+                                                                <TextBlock
+                                                                    FontFamily="{StaticResource FontBody}"
+                                                                    FontSize="26"
+                                                                    Foreground="{StaticResource ColorTextMuted65}"
+                                                                    Text="{Binding CountLabel}" />
+                                                                <TextBlock
+                                                                    FontFamily="{StaticResource FontBody}"
+                                                                    FontSize="26"
+                                                                    Foreground="{StaticResource ColorTextMuted55}"
+                                                                    Grid.Column="1"
+                                                                    Text="{Binding AmountLabel}" />
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <Grid ColumnDefinitions="*,Auto" Margin="0,24,0,0">
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="23"
+                                    Foreground="{StaticResource ColorAccent}"
+                                    LetterSpacing="2"
+                                    Text="A RECEBER NO MÊS"
+                                    VerticalAlignment="Center" />
+                                <TextBlock
+                                    FontFamily="{StaticResource FontHeading}"
+                                    FontSize="36"
+                                    Foreground="{StaticResource ColorText}"
+                                    Grid.Column="1"
+                                    Text="{Binding PendingTotalLabel}"
+                                    VerticalAlignment="Center" />
+                            </Grid>
+
+                            <TextBlock
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="27"
+                                FontStyle="Italic"
+                                Foreground="{StaticResource ColorTextMuted45}"
+                                IsVisible="{Binding HasNothingPendingInMonth}"
+                                Text="Nada pendente neste mês." />
+
+                            <ItemsControl ItemsSource="{Binding PendingSummaries}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="utils:DogSummaryRow">
+                                        <Border
+                                            BorderBrush="{StaticResource ColorDivider}"
+                                            BorderThickness="0,2,0,0"
+                                            Padding="0,18">
+                                            <StackPanel Spacing="10">
+                                                <Grid ColumnDefinitions="*,Auto">
+                                                    <TextBlock
+                                                        FontFamily="{StaticResource FontHeading}"
+                                                        FontSize="36"
+                                                        FontWeight="Medium"
+                                                        Foreground="{StaticResource ColorText}"
+                                                        Text="{Binding DogName}"
+                                                        VerticalAlignment="Center" />
+                                                    <TextBlock
+                                                        FontFamily="{StaticResource FontHeading}"
+                                                        FontSize="34"
+                                                        Foreground="{StaticResource ColorAccentDark800}"
+                                                        Grid.Column="1"
+                                                        Text="{Binding TotalLabel}"
+                                                        VerticalAlignment="Center" />
+                                                </Grid>
+                                                <ItemsControl ItemsSource="{Binding Lines}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate DataType="utils:DogSummaryLine">
+                                                            <Grid ColumnDefinitions="*,Auto" Margin="24,0,0,6">
+                                                                <TextBlock
+                                                                    FontFamily="{StaticResource FontBody}"
+                                                                    FontSize="26"
+                                                                    Foreground="{StaticResource ColorTextMuted65}"
+                                                                    Text="{Binding CountLabel}" />
+                                                                <TextBlock
+                                                                    FontFamily="{StaticResource FontBody}"
+                                                                    FontSize="26"
+                                                                    Foreground="{StaticResource ColorTextMuted55}"
+                                                                    Grid.Column="1"
+                                                                    Text="{Binding AmountLabel}" />
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!--  Portfolio counters  -->
+                    <Grid ColumnDefinitions="*,*,*,*">
+                        <StackPanel Spacing="2">
+                            <TextBlock
+                                FontFamily="{StaticResource FontHeading}"
+                                FontSize="46"
+                                Foreground="{StaticResource ColorText}"
+                                Text="{Binding TutorCountLabel}" />
+                            <TextBlock Classes="Kicker" Text="Tutores" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Spacing="2">
+                            <TextBlock
+                                FontFamily="{StaticResource FontHeading}"
+                                FontSize="46"
+                                Foreground="{StaticResource ColorText}"
+                                Text="{Binding DogCountLabel}" />
+                            <TextBlock Classes="Kicker" Text="Cães" />
+                        </StackPanel>
+                        <!--  Scoped to the month selected below, unlike the three around it.  -->
+                        <StackPanel Grid.Column="2" Spacing="2">
+                            <TextBlock
+                                FontFamily="{StaticResource FontHeading}"
+                                FontSize="46"
+                                Foreground="{StaticResource ColorText}"
+                                Text="{Binding ServiceCountLabel}" />
+                            <TextBlock Classes="Kicker" Text="No mês" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="3" Spacing="2">
+                            <TextBlock
+                                FontFamily="{StaticResource FontHeading}"
+                                FontSize="46"
+                                Foreground="{StaticResource ColorAccentDark700}"
+                                Text="{Binding PendingCountLabel}" />
+                            <TextBlock Classes="Kicker" Text="Pendentes" />
+                        </StackPanel>
+                    </Grid>
+
+                    <!--
+                        Backup. One .zip carries the database and the dog photos — the photos are
+                        files beside the database, not rows in it, so a bare .db would restore
+                        every record and lose every picture.
+                    -->
+                    <StackPanel Spacing="4">
+                        <TextBlock
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="23"
+                            Foreground="{StaticResource ColorAccent}"
+                            LetterSpacing="2"
+                            Text="BACKUP" />
+
+                        <TextBlock
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="25"
+                            Foreground="{StaticResource ColorTextMuted70}"
+                            Margin="0,8,0,16"
+                            Text="Exporte um arquivo .zip com todos os seus dados e fotos. Guarde-o no Drive ou envie para outro aparelho."
+                            TextWrapping="Wrap" />
+
+                        <Grid ColumnDefinitions="*,16,*">
+                            <buttons:VButton
+                                Classes="BtnPrimary"
+                                Command="{Binding ExportBackupCommand}"
+                                Height="80"
+                                VText="Exportar" />
+                            <buttons:VButton
+                                Classes="BtnSecondary"
+                                Command="{Binding ImportBackupCommand}"
+                                Grid.Column="2"
+                                Height="80"
+                                VText="Importar" />
+                        </Grid>
+
+                        <TextBlock
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="23"
+                            FontStyle="Italic"
+                            Foreground="{StaticResource ColorTextMuted45}"
+                            Margin="0,12,0,0"
+                            Text="Importar substitui tudo o que está neste aparelho e pede um novo login."
+                            TextWrapping="Wrap" />
+
+                        <TextBlock
+                            Classes="FormMsg"
+                            Classes.Error="{Binding BackupMsgIsError}"
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="27"
+                            FontStyle="Italic"
+                            IsVisible="{Binding HasBackupMsg}"
+                            Margin="0,12,0,0"
+                            Text="{Binding BackupMsg}"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <buttons:VButton
+                        Classes="BtnGhost"
+                        Command="{Binding LogoutCommand}"
+                        Height="70"
+                        HorizontalAlignment="Stretch"
+                        VText="Sair da conta" />
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!--
+            Alert form of the dialog: one button, nothing to decide. Shown when the chosen file is
+            not one of this app's backups — the import stopped before touching anything.
+        -->
+        <components:ConfirmDialog
+            ConfirmCommand="{Binding DismissInvalidBackupCommand}"
+            ConfirmText="Entendi"
+            IsOpen="{Binding ShowInvalidBackupAlert}"
+            Message="Este arquivo não é um backup do Patas &amp; Passeios. Escolha um .zip exportado por este aplicativo. Nada foi alterado neste aparelho."
+            ShowCancel="False"
+            Title="Backup inválido" />
+    </Grid>
+</UserControl>

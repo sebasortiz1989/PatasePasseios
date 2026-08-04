@@ -1,0 +1,119 @@
+﻿<UserControl
+    d:DesignHeight="1560"
+    d:DesignWidth="720"
+    mc:Ignorable="d"
+    x:Class="DapperDemo.View.Views.NavigationViews.LoginView"
+    x:DataType="navigationViewsViewmodels:LoginViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
+    xmlns:components="using:DapperDemo.View.Components"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:inputs="using:AvaloniaFramework.Controls.Inputs"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:navigationViewsViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.NavigationViewsViewmodels;assembly=DapperDemo.Viewmodel"
+    xmlns:viewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels;assembly=DapperDemo.Viewmodel"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <components:DesignCanvas DesignHeight="1560" DesignWidth="720">
+        <Grid Background="{StaticResource ColorBg}" Width="720">
+            <StackPanel
+                HorizontalAlignment="Center"
+                Spacing="32"
+                VerticalAlignment="Center">
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    Margin="0,0,0,8"
+                    Spacing="8">
+                    <TextBlock
+                        Classes="Heading1"
+                        FontSize="79"
+                        FontWeight="Normal"
+                        Height="100"
+                        HorizontalAlignment="Center"
+                        Text="Patas &amp; Passeios" />
+                    <Border
+                        Background="{StaticResource ColorAccent}"
+                        Height="2"
+                        HorizontalAlignment="Center"
+                        Margin="0,8,0,0"
+                        Width="77" />
+                    <TextBlock
+                        Classes="Kicker"
+                        HorizontalAlignment="Center"
+                        Margin="0,8,0,0"
+                        Text="Serviços para cães" />
+                </StackPanel>
+
+                <inputs:VTextBoxWithLabel
+                    Classes="ClassicInput"
+                    VDescriptionText="Email"
+                    VHeight="77"
+                    VText="{Binding Email}"
+                    VTextWatermark="email@exemplo.com"
+                    VWidth="560" />
+
+                <inputs:VTextBoxWithLabel
+                    Classes="ClassicInput"
+                    VDescriptionText="Senha"
+                    VHeight="77"
+                    VPasswordChar="•"
+                    VText="{Binding Password}"
+                    VTextWatermark="••••••••"
+                    VWidth="560" />
+
+                <TextBlock
+                    FontFamily="{StaticResource FontBody}"
+                    FontSize="28"
+                    FontStyle="Italic"
+                    Foreground="{StaticResource ColorAccentDark800}"
+                    HorizontalAlignment="Center"
+                    IsVisible="{Binding HasLoginError}"
+                    Text="{Binding LoginError}"
+                    TextAlignment="Center" />
+
+                <buttons:VButton
+                    Classes="BtnPrimary"
+                    Command="{Binding LoginCommand}"
+                    Height="80"
+                    VText="Entrar"
+                    Width="560" />
+                <buttons:VButton
+                    Classes="BtnGhost"
+                    Command="{Binding SignUpCommand}"
+                    Height="70"
+                    VText="Criar uma conta"
+                    Width="560" />
+
+                <!--
+                    Restoring belongs here as well as on the profile screen: a new phone has no
+                    account to sign into, so the profile screen cannot be reached at all.
+                -->
+                <buttons:VButton
+                    Classes="BtnGhost"
+                    Command="{Binding ImportBackupCommand}"
+                    Height="70"
+                    VText="Importar backup"
+                    Width="560" />
+                <TextBlock
+                    Classes="FormMsg"
+                    FontFamily="{StaticResource FontBody}"
+                    FontSize="26"
+                    FontStyle="Italic"
+                    HorizontalAlignment="Center"
+                    IsVisible="{Binding HasBackupMsg}"
+                    MaxWidth="560"
+                    Text="{Binding BackupMsg}"
+                    TextAlignment="Center"
+                    TextWrapping="Wrap" />
+            </StackPanel>
+
+            <components:ConfirmDialog
+                ConfirmCommand="{Binding DismissInvalidBackupCommand}"
+                ConfirmText="Entendi"
+                IsOpen="{Binding ShowInvalidBackupAlert}"
+                Message="Este arquivo não é um backup do Patas &amp; Passeios. Escolha um .zip exportado por este aplicativo. Nada foi alterado neste aparelho."
+                ShowCancel="False"
+                Title="Backup inválido" />
+        </Grid>
+    </components:DesignCanvas>
+</UserControl>

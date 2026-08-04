@@ -1,11 +1,20 @@
-﻿using AvaloniaFramework.DependencyInjection;
-using AvaloniaFramework.Hosting.DependencyInjection;
+﻿using AvaloniaFramework.Hosting.DependencyInjection;
 using DapperDemo.View.Reports;
 using DapperDemo.View.Services;
-using DapperDemo.View.Views;
-using DapperDemo.View.Views.MainViewViews;
 using DapperDemo.Viewmodel.DependencyInversion;
-using System.Collections.Generic;
+using AgendaView = DapperDemo.View.Views.TabViews.AgendaView;
+using DogDetailView = DapperDemo.View.Views.ComplementaryViews.DogDetailView;
+using DogsView = DapperDemo.View.Views.TabViews.DogsView;
+using LoginView = DapperDemo.View.Views.NavigationViews.LoginView;
+using MainView = DapperDemo.View.Views.NavigationViews.MainView;
+using NewDogView = DapperDemo.View.Views.ComplementaryViews.NewDogView;
+using NewTutorView = DapperDemo.View.Views.ComplementaryViews.NewTutorView;
+using ServiceDetailView = DapperDemo.View.Views.ComplementaryViews.ServiceDetailView;
+using ServicesView = DapperDemo.View.Views.TabViews.ServicesView;
+using SignUpView = DapperDemo.View.Views.NavigationViews.SignUpView;
+using TutorDetailView = DapperDemo.View.Views.ComplementaryViews.TutorDetailView;
+using TutorsView = DapperDemo.View.Views.TabViews.TutorsView;
+using UsersView = DapperDemo.View.Views.TabViews.UsersView;
 
 namespace DapperDemo.View.DependencyInversion
 {

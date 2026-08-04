@@ -1,7 +1,9 @@
 ﻿using AvaloniaFramework.DependencyInjection;
 using DapperDemo.Viewmodel.Viewmodels;
-using DapperDemo.Viewmodel.Viewmodels.MainViewViewmodels;
+using DapperDemo.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;
+using DapperDemo.Viewmodel.Viewmodels.NavigationViewsViewmodels;
 using DapperDemo.Viewmodel.Viewmodels.Session;
+using DapperDemo.Viewmodel.Viewmodels.TabViewsViewmodels;
 
 namespace DapperDemo.Viewmodel.DependencyInversion
 {
