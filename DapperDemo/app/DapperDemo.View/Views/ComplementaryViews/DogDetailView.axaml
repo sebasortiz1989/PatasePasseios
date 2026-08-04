@@ -125,15 +125,43 @@
                             BorderThickness="0,2,0,0"
                             Padding="0,20,0,0">
                             <StackPanel Spacing="12">
-                                <!--  Upcoming and still owed for; a settled booking drops off.  -->
-                                <TextBlock Classes="Kicker" Text="Próximos serviços em aberto" />
+                                <TextBlock Classes="Kicker" Text="Serviços" />
+
+                                <!--  Which period the list covers. "Ano todo" is the default month entry.  -->
+                                <Grid ColumnDefinitions="*,16,Auto">
+                                    <ComboBox
+                                        Classes="FormInput"
+                                        ItemsSource="{Binding MonthOptions}"
+                                        SelectedItem="{Binding SelectedMonth}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate DataType="utils:MonthOption">
+                                                <TextBlock Text="{Binding Label}" />
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                    <ComboBox
+                                        Classes="FormInput"
+                                        Grid.Column="2"
+                                        ItemsSource="{Binding YearOptions}"
+                                        MinWidth="180"
+                                        SelectedItem="{Binding SelectedYear}" />
+                                </Grid>
+
+                                <CheckBox
+                                    Content="Mostrar serviços já pagos"
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="27"
+                                    Foreground="{StaticResource ColorTextMuted65}"
+                                    IsChecked="{Binding ShowPaidServices}"
+                                    Theme="{StaticResource ClassicCheckBox}" />
+
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="29"
                                     FontStyle="Italic"
                                     Foreground="{StaticResource ColorTextMuted45}"
                                     IsVisible="{Binding NoFuture}"
-                                    Text="Nada agendado em aberto." />
+                                    Text="Nenhum serviço neste período." />
                                 <ItemsControl ItemsSource="{Binding FutureServices}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate DataType="utils:FutureServiceRow">

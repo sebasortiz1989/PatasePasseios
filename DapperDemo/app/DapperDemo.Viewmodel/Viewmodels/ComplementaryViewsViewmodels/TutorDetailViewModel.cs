@@ -35,6 +35,12 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     /// </summary>
     private ServiceItem[] tutorServices = [];
 
+    /// <summary>
+    /// Guards the picker hooks while <see cref="ReloadAsync"/> rebuilds the year list. Assigning
+    /// SelectedYear there would otherwise re-enter the reload through Fody's OnXChanged hook.
+    /// </summary>
+    private bool rebuildingOptions;
+
     public TutorDetailViewModel(
         CurrentView currentView,
         RepositoryTutors repositoryTutors,
@@ -64,6 +70,16 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         CancelPaymentCommand = new SynchronizedCommand(CancelPayment, SynchronizationBehavior.Discard, true);
         ConfirmPaymentCommand = new SynchronizedCommand(ConfirmPayment, SynchronizationBehavior.Discard, true);
         ExportCommand = new SynchronizedCommand(Export, SynchronizationBehavior.Discard, true);
+
+        foreach (var month in ServicePeriod.Months())
+        {
+            MonthOptions.Add(month);
+        }
+
+        // "Ano todo" by default so the bill still opens showing everything owed this year, rather
+        // than only what falls in the current month.
+        SelectedMonth = MonthOptions[0];
+        SelectedYear = DateTime.Now.Year;
     }
 
     public ICommand BackCommand { get; }
@@ -173,6 +189,23 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
 
     public bool NoPending { get; private set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether settled bookings are listed too. Off by default:
+    /// this list is the tutor's outstanding bill.
+    /// </summary>
+    public bool ShowPaidServices { get; set; }
+
+    /// <summary>Gets or sets the month the list is scoped to, or the whole-year entry.</summary>
+    public MonthOption? SelectedMonth { get; set; }
+
+    /// <summary>Gets or sets the year the list is scoped to.</summary>
+    public int SelectedYear { get; set; }
+
+    public ObservableCollection<MonthOption> MonthOptions { get; } = [];
+
+    /// <summary>Gets the years this tutor has services in, plus the current one.</summary>
+    public ObservableCollection<int> YearOptions { get; } = [];
+
     public ObservableCollection<TutorFutureServiceRow> PendingServices { get; } = [];
 
     /// <summary>
@@ -224,11 +257,19 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         UpcomingTotalLabel = AppSession.Money(upcoming);
         HasUpcoming = upcoming > 0m;
 
+        RefreshYearOptions(tutorServices);
+
         // Everything unsettled, executed or not: the sitter needs to see the work still to come as
         // well as the bill. Which of the two a row is shows in its Feito / A fazer tag, and only
         // the executed ones are counted into the figure above.
+        //
+        // Scoped to the chosen period, and widened to settled bookings when the user asks. The
+        // totals above stay whole-account on purpose — a balance owed does not shrink because the
+        // list is currently showing one month.
         var pending = tutorServices
-            .Where(s => !s.ServicePaid)
+            .Where(s => ServicePeriod.Matches(s, SelectedMonth, SelectedYear))
+            .Where(s => ShowPaidServices || !s.ServicePaid)
+            .OrderByDescending(s => s.Date)
             .ToArray();
 
         ClearPendingServices();
@@ -375,6 +416,58 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         session.SelectedServiceId = serviceId;
         currentView.ViewShown = serviceDetailView;
         return Task.CompletedTask;
+    }
+
+    /// <summary>PropertyChanged.Fody convention hook — invoked whenever ShowPaidServices changes.</summary>
+    protected void OnShowPaidServicesChanged() => ReloadIfIdle();
+
+    /// <summary>PropertyChanged.Fody convention hook — invoked whenever SelectedMonth changes.</summary>
+    protected void OnSelectedMonthChanged() => ReloadIfIdle();
+
+    /// <summary>PropertyChanged.Fody convention hook — invoked whenever SelectedYear changes.</summary>
+    protected void OnSelectedYearChanged() => ReloadIfIdle();
+
+    private void ReloadIfIdle()
+    {
+        if (!rebuildingOptions)
+        {
+            AppSession.FireAndForget(ReloadAsync());
+        }
+    }
+
+    /// <summary>
+    /// Keeps the year picker to years this tutor has services in, plus the current one. Rebuilt in
+    /// place under the guard so re-selecting the same value does not reload again.
+    /// </summary>
+    private void RefreshYearOptions(ServiceItem[] services)
+    {
+        var years = ServicePeriod.Years(services);
+        if (YearOptions.SequenceEqual(years))
+        {
+            return;
+        }
+
+        rebuildingOptions = true;
+        try
+        {
+            var kept = years.Contains(SelectedYear) ? SelectedYear : years[0];
+
+            YearOptions.Clear();
+            foreach (var year in years)
+            {
+                YearOptions.Add(year);
+            }
+
+            SelectedYear = kept;
+
+            // The item did not exist when the binding first ran, so the ComboBox has nothing
+            // selected; re-announcing the unchanged value is what makes it resolve the entry.
+            OnPropertyChanged(nameof(SelectedYear));
+        }
+        finally
+        {
+            rebuildingOptions = false;
+        }
     }
 
     private void ClearPendingServices()

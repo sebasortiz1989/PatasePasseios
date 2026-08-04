@@ -36,6 +36,12 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
     /// edit starts from the saved owner rather than the one that was picked and abandoned.</summary>
     private int storedTutorId;
 
+    /// <summary>
+    /// Guards the picker hooks while <see cref="ReloadAsync"/> rebuilds the year list. Assigning
+    /// SelectedYear there would otherwise re-enter the reload through Fody's OnXChanged hook.
+    /// </summary>
+    private bool rebuildingOptions;
+
     public DogDetailViewModel(
         CurrentView currentView,
         NavigationController navigationController,
@@ -62,6 +68,16 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
         SaveEditCommand = new SynchronizedCommand(SaveEdit, SynchronizationBehavior.Discard, true);
         ChoosePhotoCommand = new SynchronizedCommand(ChoosePhoto, SynchronizationBehavior.Discard, true);
         RemovePhotoCommand = new SynchronizedCommand(RemovePhoto, SynchronizationBehavior.Discard, true);
+
+        foreach (var month in ServicePeriod.Months())
+        {
+            MonthOptions.Add(month);
+        }
+
+        // "Ano todo" by default so opening a dog still shows everything booked this year, rather
+        // than silently hiding next month's bookings behind a month picker.
+        SelectedMonth = MonthOptions[0];
+        SelectedYear = DateTime.Now.Year;
     }
 
     public ICommand BackCommand { get; }
@@ -131,6 +147,23 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
 
     public bool NoFuture { get; private set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether settled bookings are listed too. Off by default:
+    /// the list is normally what the sitter still has to act on.
+    /// </summary>
+    public bool ShowPaidServices { get; set; }
+
+    /// <summary>Gets or sets the month the list is scoped to, or the whole-year entry.</summary>
+    public MonthOption? SelectedMonth { get; set; }
+
+    /// <summary>Gets or sets the year the list is scoped to.</summary>
+    public int SelectedYear { get; set; }
+
+    public ObservableCollection<MonthOption> MonthOptions { get; } = [];
+
+    /// <summary>Gets the years this dog has services in, plus the current one.</summary>
+    public ObservableCollection<int> YearOptions { get; } = [];
+
     public ObservableCollection<FutureServiceRow> FutureServices { get; } = [];
 
     /// <summary>
@@ -181,13 +214,14 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
 
         var services = await repositoryServices.ListForDogAsync(session.CurrentPetSitterId, dogId).WithSync();
 
-        // Upcoming and still owed for. A booking that has already been settled is nothing the
-        // sitter has to act on, so it drops off this list the moment a payment covers it — the
-        // same rule the tutor screen's "Serviços em aberto" follows.
-        var now = DateTime.Now;
+        RefreshYearOptions(services);
+
+        // Scoped to the chosen period, and to what is still owed unless the user asks for the
+        // settled ones too. Newest first, because browsing a past month is looking at history.
         var future = services
-            .Where(s => s.Date >= now && !s.ServicePaid)
-            .OrderBy(s => s.Date)
+            .Where(s => ServicePeriod.Matches(s, SelectedMonth, SelectedYear))
+            .Where(s => ShowPaidServices || !s.ServicePaid)
+            .OrderByDescending(s => s.Date)
             .ToArray();
 
         ClearFutureServices();
@@ -221,6 +255,58 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
     {
         ClearFutureServices();
         return Task.CompletedTask;
+    }
+
+    /// <summary>PropertyChanged.Fody convention hook — invoked whenever ShowPaidServices changes.</summary>
+    protected void OnShowPaidServicesChanged() => ReloadIfIdle();
+
+    /// <summary>PropertyChanged.Fody convention hook — invoked whenever SelectedMonth changes.</summary>
+    protected void OnSelectedMonthChanged() => ReloadIfIdle();
+
+    /// <summary>PropertyChanged.Fody convention hook — invoked whenever SelectedYear changes.</summary>
+    protected void OnSelectedYearChanged() => ReloadIfIdle();
+
+    private void ReloadIfIdle()
+    {
+        if (!rebuildingOptions)
+        {
+            AppSession.FireAndForget(ReloadAsync());
+        }
+    }
+
+    /// <summary>
+    /// Keeps the year picker to years this dog actually has services in, plus the current one.
+    /// Rebuilt in place under the guard so re-selecting the same value does not reload again.
+    /// </summary>
+    private void RefreshYearOptions(ServiceItem[] services)
+    {
+        var years = ServicePeriod.Years(services);
+        if (YearOptions.SequenceEqual(years))
+        {
+            return;
+        }
+
+        rebuildingOptions = true;
+        try
+        {
+            var kept = years.Contains(SelectedYear) ? SelectedYear : years[0];
+
+            YearOptions.Clear();
+            foreach (var year in years)
+            {
+                YearOptions.Add(year);
+            }
+
+            SelectedYear = kept;
+
+            // The item did not exist when the binding first ran, so the ComboBox has nothing
+            // selected; re-announcing the unchanged value is what makes it resolve the entry.
+            OnPropertyChanged(nameof(SelectedYear));
+        }
+        finally
+        {
+            rebuildingOptions = false;
+        }
     }
 
     /// <summary>

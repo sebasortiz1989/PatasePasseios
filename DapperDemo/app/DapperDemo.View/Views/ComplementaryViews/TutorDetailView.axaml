@@ -89,14 +89,46 @@
                             BorderThickness="0,2,0,0"
                             Padding="0,20,0,0">
                             <StackPanel Spacing="12">
-                                <TextBlock Classes="Kicker" Text="Serviços em aberto" />
+                                <TextBlock Classes="Kicker" Text="Serviços" />
+
+                                <!--
+                                    Scopes the list only. The totals above stay whole-account: a
+                                    balance owed does not shrink because one month is on screen.
+                                -->
+                                <Grid ColumnDefinitions="*,16,Auto">
+                                    <ComboBox
+                                        Classes="FormInput"
+                                        ItemsSource="{Binding MonthOptions}"
+                                        SelectedItem="{Binding SelectedMonth}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate DataType="utils:MonthOption">
+                                                <TextBlock Text="{Binding Label}" />
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                    <ComboBox
+                                        Classes="FormInput"
+                                        Grid.Column="2"
+                                        ItemsSource="{Binding YearOptions}"
+                                        MinWidth="180"
+                                        SelectedItem="{Binding SelectedYear}" />
+                                </Grid>
+
+                                <CheckBox
+                                    Content="Mostrar serviços já pagos"
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="27"
+                                    Foreground="{StaticResource ColorTextMuted65}"
+                                    IsChecked="{Binding ShowPaidServices}"
+                                    Theme="{StaticResource ClassicCheckBox}" />
+
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="29"
                                     FontStyle="Italic"
                                     Foreground="{StaticResource ColorTextMuted45}"
                                     IsVisible="{Binding NoPending}"
-                                    Text="Nenhum serviço em aberto." />
+                                    Text="Nenhum serviço neste período." />
                                 <ItemsControl ItemsSource="{Binding PendingServices}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate DataType="utils:TutorFutureServiceRow">

@@ -33,13 +33,20 @@
                         Grid.Column="1"
                         ToolTip.Tip="Adicionar à Google Agenda"
                         VerticalAlignment="Center">
-                        <Viewbox Height="36" Width="36">
+                        <Viewbox
+                            Height="36"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Width="36">
                             <Path
                                 Data="{StaticResource IconCalendarAdd}"
+                                HorizontalAlignment="Center"
+                                Margin="0,0,2,3"
                                 Stroke="{StaticResource ColorAccent}"
                                 StrokeJoin="Round"
                                 StrokeLineCap="Round"
-                                StrokeThickness="1.8" />
+                                StrokeThickness="1.8"
+                                VerticalAlignment="Center" />
                         </Viewbox>
                     </Button>
                 </Grid>

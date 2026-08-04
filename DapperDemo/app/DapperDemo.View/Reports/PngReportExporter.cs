@@ -28,8 +28,16 @@ namespace DapperDemo.View.Reports;
 /// </remarks>
 public sealed class PngReportExporter : ReportExporter
 {
-    private const double Width = 720;
+    /// <summary>
+    /// Wider than the app's 720 design canvas. This is a document to be shared and zoomed, not a
+    /// phone screen, and a six-column table does not fit in 720 without the columns colliding.
+    /// </summary>
+    private const double Width = 980;
+
     private const double Padding = 40;
+
+    /// <summary>Gap between table columns. Without one a right-aligned cell touches its neighbour.</summary>
+    private const double ColumnGap = 22;
 
     /// <summary>Rendered at twice the layout size, so the text is still sharp when zoomed into.</summary>
     private const double Scale = 2;
