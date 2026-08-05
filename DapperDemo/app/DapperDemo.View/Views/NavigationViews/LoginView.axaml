@@ -46,6 +46,7 @@
 
                 <inputs:VTextBoxWithLabel
                     Classes="ClassicInput"
+                    HorizontalAlignment="Center"
                     VDescriptionText="Email"
                     VHeight="77"
                     VText="{Binding Email}"
@@ -54,6 +55,7 @@
 
                 <inputs:VTextBoxWithLabel
                     Classes="ClassicInput"
+                    HorizontalAlignment="Center"
                     VDescriptionText="Senha"
                     VHeight="77"
                     VPasswordChar="•"
@@ -75,12 +77,14 @@
                     Classes="BtnPrimary"
                     Command="{Binding LoginCommand}"
                     Height="88"
+                    HorizontalAlignment="Center"
                     VText="Entrar"
                     Width="560" />
                 <buttons:VButton
                     Classes="BtnGhost"
                     Command="{Binding SignUpCommand}"
                     Height="77"
+                    HorizontalAlignment="Center"
                     VText="Criar uma conta"
                     Width="560" />
 
@@ -92,6 +96,7 @@
                     Classes="BtnGhost"
                     Command="{Binding ImportBackupCommand}"
                     Height="77"
+                    HorizontalAlignment="Center"
                     VText="Importar backup"
                     Width="560" />
                 <TextBlock

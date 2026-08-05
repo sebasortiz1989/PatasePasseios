@@ -1,4 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <color name="splash_background">#FFFFFF</color>
+  <!--
+    The Classical palette's ColorBg. This is the Android window's own colour, so it is what shows
+    in any strip the Avalonia surface does not cover — it was #FFFFFF, which is where the white
+    border around the app came from. Matching the app's background makes such a strip invisible.
+  -->
+  <color name="splash_background">#F3F2F2</color>
 </resources>

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <resources>
 
   <style name="MyTheme">
@@ -14,8 +14,16 @@
     <item name="postSplashScreenTheme">@style/MyTheme.Main</item>
 
   </style>
+
+  <!--
+    The theme the app actually runs under, once the splash is done.
+
+    It was translucent with no window background, which is what let the surface behind the app show
+    through as a white border. An opaque window painted in the app's own background colour leaves
+    nothing to see through to, and costs less to compose than a translucent one.
+  -->
   <style name="MyTheme.Main"
          parent ="MyTheme.NoActionBar">
-    <item name="android:windowIsTranslucent">true</item>
+    <item name="android:windowBackground">@color/splash_background</item>
   </style>
 </resources>

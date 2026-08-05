@@ -1,4 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <color name="splash_background">#212121</color>
+  <!--
+    Same value as the light variant on purpose: the app pins Avalonia to its Light theme, so its
+    background is #F3F2F2 whatever the system is set to. A dark window colour here would show as a
+    near-black border on a phone in dark mode.
+  -->
+  <color name="splash_background">#F3F2F2</color>
 </resources>
