@@ -501,6 +501,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     {
         editingPaymentId = payment.TutorPaymentId;
         editingPaymentDate = payment.Date;
+
         // Comma, like the rest of the app's money: TryParseAmount accepts either separator, and the
         // box should open showing the amount the way the sitter would have typed it.
         EditPaymentAmount = payment.Amount.ToString("0.##", CultureInfo.InvariantCulture).Replace('.', ',');

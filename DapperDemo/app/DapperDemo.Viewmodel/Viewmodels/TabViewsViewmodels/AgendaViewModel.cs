@@ -330,7 +330,7 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
     /// Dogs that were open before the rebuild, by name. Name rather than id because that is what
     /// the grouping keys on, and it survives a service being added or removed underneath.
     /// </param>
-    private void BuildDogGroups(ServiceItem[] filtered, IReadOnlySet<string> expanded)
+    private void BuildDogGroups(ServiceItem[] filtered, HashSet<string> expanded)
     {
         var byDog = filtered
             .GroupBy(s => s.DogName, StringComparer.Ordinal)

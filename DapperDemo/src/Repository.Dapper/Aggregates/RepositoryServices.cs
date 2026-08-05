@@ -193,6 +193,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
         {
             using var connection = DapperDatabaseService.Connection;
             await connection.OpenAsync().ConfigureAwait(false);
+
             // The payment ledger's allocations go with it: a reversal must not try to unsettle a
             // row that is no longer there. The payment headers stay — the tutor did hand that
             // money over, whatever became of the booking it paid for.
