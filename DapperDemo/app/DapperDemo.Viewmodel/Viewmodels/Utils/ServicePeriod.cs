@@ -35,12 +35,17 @@ internal static class ServicePeriod
     /// The years worth offering: every year these services touch, plus the current one so a dog
     /// with nothing booked still has something selectable. Most recent first.
     /// </summary>
-    public static int[] Years(IEnumerable<ServiceItem> services)
+    /// <param name="alsoFrom">
+    /// Extra dates that must stay reachable, such as the tutor's payments — a payment made in a
+    /// year with no bookings would otherwise have no year to select it by.
+    /// </param>
+    public static int[] Years(IEnumerable<ServiceItem> services, IEnumerable<DateTime>? alsoFrom = null)
     {
         ArgumentNullException.ThrowIfNull(services);
 
         return [.. services
             .Select(s => s.Date.Year)
+            .Concat(alsoFrom?.Select(d => d.Year) ?? [])
             .Append(DateTime.Now.Year)
             .Distinct()
             .OrderByDescending(year => year)];
@@ -54,11 +59,24 @@ internal static class ServicePeriod
     {
         ArgumentNullException.ThrowIfNull(service);
 
-        if (service.Date.Year != year)
+        return Matches(service.Date, month, year);
+    }
+
+    /// <summary>
+    /// Whether a date falls inside the selected period. The tutor screen scopes its payment list
+    /// with the same pickers it scopes its service list with, and a payment is only a date.
+    /// </summary>
+    /// <param name="date">The date to test.</param>
+    /// <param name="month">The selected month, or the whole-year entry.</param>
+    /// <param name="year">The selected year.</param>
+    /// <returns>Whether it falls in the period.</returns>
+    public static bool Matches(DateTime date, MonthOption? month, int year)
+    {
+        if (date.Year != year)
         {
             return false;
         }
 
-        return month is not { Number: not WholeYear } chosen || service.Date.Month == chosen.Number;
+        return month is not { Number: not WholeYear } chosen || date.Month == chosen.Number;
     }
 }

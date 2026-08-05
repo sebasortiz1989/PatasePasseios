@@ -27,6 +27,7 @@ public sealed class TestDatabase : IDisposable
         Tutors = new RepositoryTutors(Database);
         Dogs = new RepositoryDogs(Database);
         Services = new RepositoryServices(Database);
+        Payments = new RepositoryPayments(Database, Services);
     }
 
     public DapperDatabaseService Database { get; }
@@ -38,6 +39,9 @@ public sealed class TestDatabase : IDisposable
     public RepositoryDogs Dogs { get; }
 
     public RepositoryServices Services { get; }
+
+    /// <summary>The ledger of money received, which is also what unwinds a payment.</summary>
+    public RepositoryPayments Payments { get; }
 
     /// <summary>
     /// The account the schema seeds itself with. Every scoped read hangs off a pet sitter, so
