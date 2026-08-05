@@ -93,7 +93,7 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
 
     public ICommand BackCommand { get; }
 
-    /// <summary>Opens the tutor this dog belongs to.</summary>
+    /// <summary>Gets opens the tutor this dog belongs to.</summary>
     public ICommand OpenTutorCommand { get; }
 
     public ICommand AskDeleteCommand { get; }

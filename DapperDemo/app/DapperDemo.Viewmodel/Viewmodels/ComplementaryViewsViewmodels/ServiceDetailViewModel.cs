@@ -76,7 +76,7 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
 
     public ICommand BackCommand { get; }
 
-    /// <summary>Opens the tutor this service's dog belongs to.</summary>
+    /// <summary>Gets opens the tutor this service's dog belongs to.</summary>
     public ICommand OpenTutorCommand { get; }
 
     public ICommand AddToCalendarCommand { get; }

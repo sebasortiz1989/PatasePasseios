@@ -285,6 +285,11 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         ConfirmingDelete = false;
         IsRegisteringPayment = false;
         PaymentError = string.Empty;
+
+        // Cleared here too, even though the three places that set it do so after calling this —
+        // so the confirmation still appears for the tutor just paid. Without this it survived the
+        // switch to another tutor, announcing a payment that had nothing to do with them.
+        PaymentMsg = string.Empty;
         ExportMsg = string.Empty;
         IsEditingPayment = false;
         editingPaymentId = null;

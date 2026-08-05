@@ -31,8 +31,16 @@ public sealed class ServiceRow(string dayNum, string monthShort, string dogName,
 
     public ICommand OpenCommand { get; } = openCommand;
 
+    /// <summary>Gets marks the service paid or pending from the row itself, without opening it.</summary>
+    public ICommand ToggleCommand { get; } = toggleCommand;
+
+    /// <summary>Gets marks the work carried out or not, the other half of the pair of tags.</summary>
+    public ICommand ToggleDoneCommand { get; } = toggleDoneCommand;
+
     public void Dispose()
     {
         (OpenCommand as IDisposable)?.Dispose();
+        (ToggleCommand as IDisposable)?.Dispose();
+        (ToggleDoneCommand as IDisposable)?.Dispose();
     }
 }
