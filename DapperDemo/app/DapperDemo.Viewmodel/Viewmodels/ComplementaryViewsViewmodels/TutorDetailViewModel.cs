@@ -261,7 +261,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     /// <summary>Gets the years this tutor has services in, plus the current one.</summary>
     public ObservableCollection<int> YearOptions { get; } = [];
 
-    public ObservableCollection<TutorFutureServiceRow> PendingServices { get; } = [];
+    public ObservableCollection<ServiceTypeGroup> PendingServices { get; } = [];
 
     /// <summary>
     /// Gets what the tutor has handed over in the chosen period, newest first, each row able to be
@@ -345,27 +345,17 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
             .OrderByDescending(s => s.Date)
             .ToArray();
 
-        ClearPendingServices();
-        foreach (var service in pending)
-        {
-            // CA2000: ownership passes to the row, which disposes the command when the list is
-            // rebuilt — see ClearPendingServices.
-#pragma warning disable CA2000
-            var openCommand = new SynchronizedCommand(
-                () => Open(service.Kind, service.ServiceId),
-                SynchronizationBehavior.Discard,
-                true);
-#pragma warning restore CA2000
+        // Which kinds were open before the rebuild, so a reload does not fold the list back up
+        // under the user. Keyed on the label, which is what the grouping keys on too.
+        var expanded = PendingServices
+            .Where(group => group.IsExpanded)
+            .Select(group => group.TypeLabel)
+            .ToHashSet(StringComparer.Ordinal);
 
-            PendingServices.Add(new TutorFutureServiceRow(
-                service.DogName,
-                AppSession.TypeLabel(service.Kind),
-                AppSession.DateTimeLabel(service.Date, service.Kind),
-                service.ServicePaid,
-                service.ServicePaid ? "Pago" : "Sem pagar",
-                service.ServiceDone,
-                service.ServiceDone ? "Feito" : "A fazer",
-                openCommand));
+        ClearPendingServices();
+        foreach (var group in GroupByKind(pending, showsDogName: true, expanded))
+        {
+            PendingServices.Add(group);
         }
 
         NoPending = pending.Length == 0;
@@ -744,6 +734,58 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         finally
         {
             rebuildingOptions = false;
+        }
+    }
+
+    /// <summary>
+    /// Folds the services into one group per kind, collapsed until tapped.
+    /// </summary>
+    /// <remarks>
+    /// Kinds come out in the enum's own order — Passeio, Pet sitting, Hotel, Creche — which is the
+    /// order they appear in everywhere else, rather than alphabetical. Inside a group the list
+    /// keeps its newest-first order.
+    /// </remarks>
+    /// <param name="services">The services in scope, already filtered and sorted.</param>
+    /// <param name="showsDogName">Whether each row should lead with the dog's name.</param>
+    /// <param name="expanded">Kinds that were open before the rebuild, by label.</param>
+    /// <returns>The groups, in display order.</returns>
+    private IEnumerable<ServiceTypeGroup> GroupByKind(
+        IEnumerable<ServiceItem> services,
+        bool showsDogName,
+        HashSet<string> expanded)
+    {
+        foreach (var kind in services.GroupBy(s => s.Kind).OrderBy(g => g.Key))
+        {
+            var rows = new List<ServiceGroupRow>();
+            foreach (var service in kind)
+            {
+                // CA2000: ownership passes to the row, which the group disposes when the list is
+                // rebuilt — see ClearPendingServices.
+#pragma warning disable CA2000
+                var openCommand = new SynchronizedCommand(
+                    () => Open(service.Kind, service.ServiceId),
+                    SynchronizationBehavior.Discard,
+                    true);
+#pragma warning restore CA2000
+
+                rows.Add(new ServiceGroupRow(
+                    service.DogName,
+                    showsDogName,
+                    AppSession.DateTimeLabel(service.Date, service.Kind),
+                    service.ServicePaid,
+                    service.ServicePaid ? "Pago" : "Sem pagar",
+                    service.ServiceDone,
+                    service.ServiceDone ? "Feito" : "A fazer",
+                    openCommand));
+            }
+
+            var label = AppSession.TypeLabel(kind.Key);
+            var count = rows.Count == 1 ? "1 serviço" : $"{rows.Count} serviços";
+
+            yield return new ServiceTypeGroup(label, count, rows)
+            {
+                IsExpanded = expanded.Contains(label),
+            };
         }
     }
 
