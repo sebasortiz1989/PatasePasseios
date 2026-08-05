@@ -17,4 +17,7 @@ public class DogOption(int id, string name, int tutorId, string tutorName)
 
     /// <summary>Gets what the picker shows: "Toby · Marina Alves".</summary>
     public string Label { get; } = string.IsNullOrWhiteSpace(tutorName) ? name : $"{name} · {tutorName}";
+
+    /// <summary>What the searchable picker shows in a row and matches typing against.</summary>
+    public override string ToString() => Label;
 }

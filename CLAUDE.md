@@ -412,13 +412,20 @@ hex, font names or ad-hoc sizes in views.
   absorb a taller device. Only the three screens pushed by `NavigationController`
   (`LoginView`, `SignUpView`, `MainView`) carry a `DesignCanvas`; everything shown
   through `CurrentView` sits inside `MainView`'s and must not add its own.
-- **Popup content is not scaled by the canvas.** A drop-down, flyout or tooltip
-  renders in the top level's overlay layer, outside `DesignCanvas`'s transform, so
-  sizes inside one are **device pixels, not canvas units**. A canvas-derived `34`
-  in a `ComboBox`/`AutoCompleteBox` `ItemTemplate` lands at literal 34px — on a
-  phone that is roughly twice the height of the field it drops out of. Size popup
-  content in the 14–20 range and say why in a comment; the surrounding field, which
-  *is* inside the canvas, keeps its canvas-unit size.
+- **Popup content is not scaled by the canvas.** `DesignCanvas` scales with a
+  `RenderTransform`, which does not affect layout, and a popup lays out in its own
+  visual root — so a drop-down, flyout or tooltip measures in canvas units and
+  draws at scale 1. The field shrinks with the page; its drop-down does not. At a
+  phone-like 0.44 scale that is a list roughly **2.8× wider than the control it
+  belongs to**, with text to match. Tuning font sizes does not fix it: the width,
+  row height and padding are all wrong by the same factor.
+  - For dog/tutor pickers use **`inputs:VSearchableComboBox`** (AvaloniaFramework),
+    which lists its matches *inline* in ordinary layout for exactly this reason, so
+    everything stays in canvas units. Style it with `Classes="FormInput"`.
+  - Stock `ComboBox` and `CalendarDatePicker` still open real popups and still have
+    this mismatch. It is tolerable there because their content is short and uses
+    theme-default sizes rather than canvas-derived ones — but do not put a
+    canvas-sized `FontSize` in one of their item templates.
 - Inputs and buttons come from AvaloniaFramework (`inputs:VTextBoxWithLabel`,
   `buttons:VButton`, `buttons:GroupButton`), themed through `V*` properties on a
   style class in `ClassicalTheme.axaml`, not inline.

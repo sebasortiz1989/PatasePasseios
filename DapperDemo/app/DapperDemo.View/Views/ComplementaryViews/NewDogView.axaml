@@ -156,16 +156,8 @@
                         <inputs:VSearchableComboBox
                             Classes="FormInput"
                             ItemsSource="{Binding TutorOptions}"
-                            SelectedItem="{Binding SelectedTutor}"
-                            ValueMemberBinding="{Binding Label, DataType=utils:TutorOption}"
-                            PlaceholderText="Selecione…">
-                            <inputs:VSearchableComboBox.ItemTemplate>
-                                <DataTemplate DataType="utils:TutorOption">
-                                    <!--  Device pixels — the popup renders outside DesignCanvas. See ServicesView.  -->
-                                    <TextBlock FontSize="18" Text="{Binding Label}" />
-                                </DataTemplate>
-                            </inputs:VSearchableComboBox.ItemTemplate>
-                        </inputs:VSearchableComboBox>
+                            PlaceholderText="Selecione…"
+                            SelectedItem="{Binding SelectedTutor}" />
                     </StackPanel>
 
                     <StackPanel Spacing="10">
