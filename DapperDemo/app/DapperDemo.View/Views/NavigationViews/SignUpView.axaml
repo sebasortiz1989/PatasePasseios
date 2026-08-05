@@ -61,7 +61,7 @@
                     Spacing="8">
                     <TextBlock
                         Classes="Heading1"
-                        FontSize="74"
+                        FontSize="67"
                         HorizontalAlignment="Center"
                         Text="Criar Conta" />
                     <Border
@@ -91,7 +91,7 @@
                         CornerRadius="84">
                         <TextBlock
                             FontFamily="{StaticResource FontHeading}"
-                            FontSize="66"
+                            FontSize="60"
                             Foreground="{StaticResource ColorAccentDark700}"
                             HorizontalAlignment="Center"
                             IsVisible="{Binding NoPhoto}"
@@ -107,13 +107,13 @@
                     <buttons:VButton
                         Classes="BtnSecondary"
                         Command="{Binding ChoosePhotoCommand}"
-                        Height="70"
+                        Height="64"
                         VText="Escolher foto"
                         Width="240" />
                     <buttons:VButton
                         Classes="BtnGhost"
                         Command="{Binding RemovePhotoCommand}"
-                        Height="70"
+                        Height="64"
                         IsVisible="{Binding HasPhoto}"
                         VText="Remover"
                         Width="180" />
@@ -152,7 +152,7 @@
                         CornerRadius="7"
                         DisplayDateStart="{Binding MinimumDate}"
                         FontFamily="{StaticResource FontBody}"
-                        FontSize="34"
+                        FontSize="31"
                         Foreground="{StaticResource ColorText}"
                         Height="77"
                         HorizontalAlignment="Stretch"
@@ -168,7 +168,7 @@
                         <TextBlock
                             Background="Transparent"
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="28"
+                            FontSize="25"
                             Foreground="{StaticResource ColorTextMuted70}"
                             Margin="3,0,3,0"
                             Text="Data de nascimento" />
@@ -177,7 +177,7 @@
 
                 <TextBlock
                     FontFamily="{StaticResource FontBody}"
-                    FontSize="31"
+                    FontSize="28"
                     FontStyle="Italic"
                     Foreground="{StaticResource ColorAccentDark800}"
                     HorizontalAlignment="Center"
@@ -189,13 +189,13 @@
                     <buttons:VButton
                         Classes="BtnSecondary"
                         Command="{Binding BackCommand}"
-                        Height="88"
+                        Height="80"
                         VText="Voltar" />
                     <buttons:VButton
                         Classes="BtnPrimary"
                         Command="{Binding RegisterCommand}"
                         Grid.Column="2"
-                        Height="88"
+                        Height="80"
                         VText="Criar" />
                 </Grid>
             </StackPanel>

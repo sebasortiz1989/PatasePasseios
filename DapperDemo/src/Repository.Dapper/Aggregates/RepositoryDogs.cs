@@ -87,13 +87,6 @@ public class RepositoryDogs(DapperDatabaseService dapperDatabaseService) : Repos
 
             await connection.ExecuteAsync(
                 sql: """
-                     -- The ledger's allocations first, while the service rows they point at can
-                     -- still be found: a payment reversal must not meet a service that is gone.
-                     DELETE FROM TutorPaymentAllocations
-                     WHERE (Kind = 0 AND ServiceId IN (SELECT WalkingServiceId FROM WalkingService WHERE DogId = @DogId))
-                        OR (Kind = 1 AND ServiceId IN (SELECT PetSittingServiceId FROM PetSittingService WHERE DogId = @DogId))
-                        OR (Kind = 2 AND ServiceId IN (SELECT PetHotelServiceId FROM PetHotelService WHERE DogId = @DogId))
-                        OR (Kind = 3 AND ServiceId IN (SELECT DayCareServiceId FROM DayCareService WHERE DogId = @DogId));
                      DELETE FROM WalkingService WHERE DogId = @DogId;
                      DELETE FROM PetSittingService WHERE DogId = @DogId;
                      DELETE FROM PetHotelService WHERE DogId = @DogId;

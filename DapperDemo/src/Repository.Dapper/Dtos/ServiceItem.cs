@@ -35,12 +35,6 @@ public sealed class ServiceItem
     /// <summary>Gets the dog's photo file name, or null when it has none. See DogImageStore.</summary>
     public string? DogImage { get; init; }
 
-    /// <summary>
-    /// Gets the tutor who owns the dog. Carried on the row because every service query already
-    /// joins Tutors, and both the bill and a payment reversal work per tutor rather than per dog.
-    /// </summary>
-    public int TutorId { get; init; }
-
     public required string TutorName { get; init; }
 
     /// <summary>

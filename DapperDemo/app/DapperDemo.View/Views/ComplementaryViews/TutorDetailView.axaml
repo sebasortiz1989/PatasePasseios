@@ -35,7 +35,7 @@
                         Width="168">
                         <TextBlock
                             FontFamily="{StaticResource FontHeading}"
-                            FontSize="78"
+                            FontSize="71"
                             Foreground="{StaticResource ColorTextMuted70}"
                             HorizontalAlignment="Center"
                             Text="{Binding Initials}"
@@ -43,7 +43,7 @@
                     </Border>
                     <TextBlock
                         Classes="Heading1"
-                        FontSize="74"
+                        FontSize="67"
                         HorizontalAlignment="Center"
                         Text="{Binding Name}" />
                     <TextBlock
@@ -63,7 +63,7 @@
                                 <TextBlock Classes="Kicker" Text="Telefone" />
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="34"
+                                    FontSize="31"
                                     Foreground="{StaticResource ColorText}"
                                     Text="{Binding Phone}" />
                             </StackPanel>
@@ -77,7 +77,7 @@
                                 <TextBlock Classes="Kicker" Text="Cachorros" />
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="34"
+                                    FontSize="31"
                                     Foreground="{StaticResource ColorText}"
                                     Text="{Binding DogNames}" />
                             </StackPanel>
@@ -116,14 +116,14 @@
                                 <CheckBox
                                     Content="Mostrar serviços já pagos"
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="30"
+                                    FontSize="27"
                                     Foreground="{StaticResource ColorTextMuted65}"
                                     IsChecked="{Binding ShowPaidServices}"
                                     Theme="{StaticResource ClassicCheckBox}" />
 
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="32"
+                                    FontSize="29"
                                     FontStyle="Italic"
                                     Foreground="{StaticResource ColorTextMuted45}"
                                     IsVisible="{Binding NoPending}"
@@ -140,7 +140,7 @@
                                                     <Grid ColumnDefinitions="*,Auto,14,Auto,10,Auto">
                                                         <TextBlock
                                                             FontFamily="{StaticResource FontBody}"
-                                                            FontSize="32"
+                                                            FontSize="29"
                                                             Foreground="{StaticResource ColorText}"
                                                             VerticalAlignment="Center">
                                                             <Run Text="{Binding DogName}" />
@@ -185,7 +185,7 @@
                                         VerticalAlignment="Center" />
                                     <TextBlock
                                         FontFamily="{StaticResource FontHeading}"
-                                        FontSize="45"
+                                        FontSize="41"
                                         Foreground="{StaticResource ColorAccentDark700}"
                                         Grid.Column="1"
                                         Text="{Binding TotalDueLabel}" />
@@ -199,7 +199,7 @@
                                         VerticalAlignment="Center" />
                                     <TextBlock
                                         FontFamily="{StaticResource FontHeading}"
-                                        FontSize="38"
+                                        FontSize="35"
                                         Foreground="{StaticResource ColorTextMuted70}"
                                         Grid.Column="1"
                                         Text="{Binding UpcomingTotalLabel}" />
@@ -212,14 +212,14 @@
                                         VerticalAlignment="Center" />
                                     <TextBlock
                                         FontFamily="{StaticResource FontHeading}"
-                                        FontSize="38"
+                                        FontSize="35"
                                         Foreground="{StaticResource ColorAccent}"
                                         Grid.Column="1"
                                         Text="{Binding CreditLabel}" />
                                 </Grid>
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="25"
+                                    FontSize="23"
                                     FontStyle="Italic"
                                     Foreground="{StaticResource ColorTextMuted45}"
                                     IsVisible="{Binding HasCredit}"
@@ -229,7 +229,7 @@
                                 <buttons:VButton
                                     Classes="BtnPrimary"
                                     Command="{Binding OpenPaymentCommand}"
-                                    Height="88"
+                                    Height="80"
                                     HorizontalAlignment="Stretch"
                                     IsVisible="{Binding !IsRegisteringPayment}"
                                     VText="Registrar pagamento" />
@@ -239,7 +239,7 @@
                                     <TextBox Classes="FormInput" Text="{Binding PaymentAmount}" />
                                     <TextBlock
                                         FontFamily="{StaticResource FontBody}"
-                                        FontSize="29"
+                                        FontSize="26"
                                         FontStyle="Italic"
                                         Foreground="{StaticResource ColorTextMuted70}"
                                         IsVisible="{Binding HasPaymentPreview}"
@@ -248,7 +248,7 @@
                                     <TextBlock
                                         Classes="FormMsg Error"
                                         FontFamily="{StaticResource FontBody}"
-                                        FontSize="29"
+                                        FontSize="26"
                                         FontStyle="Italic"
                                         IsVisible="{Binding HasPaymentError}"
                                         Text="{Binding PaymentError}"
@@ -257,13 +257,13 @@
                                         <buttons:VButton
                                             Classes="BtnSecondary"
                                             Command="{Binding CancelPaymentCommand}"
-                                            Height="88"
+                                            Height="80"
                                             VText="Cancelar" />
                                         <buttons:VButton
                                             Classes="BtnPrimary"
                                             Command="{Binding ConfirmPaymentCommand}"
                                             Grid.Column="2"
-                                            Height="88"
+                                            Height="80"
                                             VText="Confirmar" />
                                     </Grid>
                                 </StackPanel>
@@ -271,118 +271,11 @@
                                 <TextBlock
                                     Classes="FormMsg"
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="29"
+                                    FontSize="26"
                                     FontStyle="Italic"
                                     IsVisible="{Binding HasPaymentMsg}"
                                     Text="{Binding PaymentMsg}"
                                     TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
-
-                        <!--
-                            What the tutor has already handed over, in the same period as the list
-                            above. A payment typed wrong scatters money across service rows, so
-                            each one can be corrected or undone from here.
-                        -->
-                        <Border
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="0,2,0,0"
-                            Padding="0,20,0,0">
-                            <StackPanel Spacing="12">
-                                <TextBlock Classes="Kicker" Text="Pagamentos recebidos" />
-
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="32"
-                                    FontStyle="Italic"
-                                    Foreground="{StaticResource ColorTextMuted45}"
-                                    IsVisible="{Binding NoPayments}"
-                                    Text="Nenhum pagamento neste período." />
-
-                                <!--  Hidden while a correction is open, so the form replaces the list rather than sitting under it.  -->
-                                <ItemsControl IsVisible="{Binding !IsEditingPayment}" ItemsSource="{Binding Payments}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate DataType="utils:TutorPaymentRow">
-                                            <Border
-                                                BorderBrush="{StaticResource ColorDivider}"
-                                                BorderThickness="0,0,0,2"
-                                                Margin="0,0,0,12"
-                                                Padding="0,0,0,12">
-                                                <Grid ColumnDefinitions="*,12,Auto,10,Auto">
-                                                    <StackPanel Spacing="2" VerticalAlignment="Center">
-                                                        <TextBlock
-                                                            FontFamily="{StaticResource FontHeading}"
-                                                            FontSize="36"
-                                                            Foreground="{StaticResource ColorAccentDark700}"
-                                                            Text="{Binding AmountLabel}" />
-                                                        <TextBlock
-                                                            FontFamily="{StaticResource FontBody}"
-                                                            FontSize="28"
-                                                            Foreground="{StaticResource ColorTextMuted65}"
-                                                            Text="{Binding DateLabel}" />
-                                                        <TextBlock
-                                                            FontFamily="{StaticResource FontBody}"
-                                                            FontSize="25"
-                                                            FontStyle="Italic"
-                                                            Foreground="{StaticResource ColorTextMuted45}"
-                                                            IsVisible="{Binding HasCredit}"
-                                                            Text="{Binding CreditLabel}" />
-                                                    </StackPanel>
-                                                    <Button
-                                                        Classes="Chip"
-                                                        Command="{Binding EditCommand}"
-                                                        Content="Corrigir"
-                                                        Grid.Column="2"
-                                                        VerticalAlignment="Center" />
-                                                    <Button
-                                                        Classes="Chip"
-                                                        Command="{Binding DeleteCommand}"
-                                                        Content="Excluir"
-                                                        Grid.Column="4"
-                                                        VerticalAlignment="Center" />
-                                                </Grid>
-                                            </Border>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-
-                                <!--
-                                    Correcting re-spreads the whole amount from scratch: the old
-                                    payment is undone first, so raising it reaches services the
-                                    smaller amount never got to and lowering it lets them go again.
-                                -->
-                                <StackPanel IsVisible="{Binding IsEditingPayment}" Spacing="12">
-                                    <TextBlock Classes="FormLabel" Text="Corrigir valor recebido (R$)" />
-                                    <TextBox Classes="FormInput" Text="{Binding EditPaymentAmount}" />
-                                    <TextBlock
-                                        FontFamily="{StaticResource FontBody}"
-                                        FontSize="26"
-                                        FontStyle="Italic"
-                                        Foreground="{StaticResource ColorTextMuted70}"
-                                        Text="O pagamento será refeito com o novo valor: os serviços que ele quitou voltam a ficar em aberto e o valor é distribuído de novo, do mais antigo para o mais recente."
-                                        TextWrapping="Wrap" />
-                                    <TextBlock
-                                        Classes="FormMsg Error"
-                                        FontFamily="{StaticResource FontBody}"
-                                        FontSize="29"
-                                        FontStyle="Italic"
-                                        IsVisible="{Binding HasEditPaymentError}"
-                                        Text="{Binding EditPaymentError}"
-                                        TextWrapping="Wrap" />
-                                    <Grid ColumnDefinitions="*,16,*">
-                                        <buttons:VButton
-                                            Classes="BtnSecondary"
-                                            Command="{Binding CancelPaymentEditCommand}"
-                                            Height="88"
-                                            VText="Cancelar" />
-                                        <buttons:VButton
-                                            Classes="BtnPrimary"
-                                            Command="{Binding SavePaymentEditCommand}"
-                                            Grid.Column="2"
-                                            Height="88"
-                                            VText="Salvar" />
-                                    </Grid>
-                                </StackPanel>
                             </StackPanel>
                         </Border>
 
@@ -391,13 +284,13 @@
                             <buttons:VButton
                                 Classes="BtnSecondary"
                                 Command="{Binding ExportCommand}"
-                                Height="88"
+                                Height="80"
                                 HorizontalAlignment="Stretch"
                                 VText="Exportar resumo (PNG)" />
                             <TextBlock
                                 Classes="FormMsg"
                                 FontFamily="{StaticResource FontBody}"
-                                FontSize="26"
+                                FontSize="24"
                                 FontStyle="Italic"
                                 HorizontalAlignment="Center"
                                 IsVisible="{Binding HasExportMsg}"
@@ -409,7 +302,7 @@
                         <buttons:VButton
                             Classes="BtnPrimary"
                             Command="{Binding EditCommand}"
-                            Height="88"
+                            Height="80"
                             HorizontalAlignment="Stretch"
                             VText="Editar tutor" />
 
@@ -417,7 +310,7 @@
                         <buttons:VButton
                             Classes="BtnSecondary"
                             Command="{Binding AskDeleteCommand}"
-                            Height="88"
+                            Height="80"
                             HorizontalAlignment="Stretch"
                             VText="Excluir tutor" />
                     </StackPanel>
@@ -442,7 +335,7 @@
                         <TextBlock
                             Classes="FormMsg Error"
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="31"
+                            FontSize="28"
                             FontStyle="Italic"
                             HorizontalAlignment="Center"
                             IsVisible="{Binding HasEditError}"
@@ -453,13 +346,13 @@
                             <buttons:VButton
                                 Classes="BtnSecondary"
                                 Command="{Binding CancelEditCommand}"
-                                Height="97"
+                                Height="88"
                                 VText="Cancelar" />
                             <buttons:VButton
                                 Classes="BtnPrimary"
                                 Command="{Binding SaveEditCommand}"
                                 Grid.Column="2"
-                                Height="97"
+                                Height="88"
                                 VText="Salvar" />
                         </Grid>
                     </StackPanel>
@@ -467,20 +360,12 @@
             </StackPanel>
         </ScrollViewer>
 
-        <!--  Last children of the Grid, so the scrim covers the screen underneath it.  -->
+        <!--  Last child of the Grid, so the scrim covers the screen underneath it.  -->
         <components:ConfirmDialog
             CancelCommand="{Binding CancelDeleteCommand}"
             ConfirmCommand="{Binding ConfirmDeleteCommand}"
             IsOpen="{Binding ConfirmingDelete}"
             Message="O tutor, seus cachorros e todos os serviços deles serão excluídos para sempre. Esta ação não pode ser desfeita."
             Title="Excluir tutor?" />
-
-        <!--  Only one of the two is ever open, so they can share the same corner of the Grid.  -->
-        <components:ConfirmDialog
-            CancelCommand="{Binding CancelPaymentDeleteCommand}"
-            ConfirmCommand="{Binding ConfirmPaymentDeleteCommand}"
-            IsOpen="{Binding ConfirmingPaymentDelete}"
-            Message="Os serviços quitados por ele voltam a ficar em aberto e o crédito que ele gerou é devolvido. Os serviços em si não são excluídos."
-            Title="Excluir este pagamento?" />
     </Grid>
 </UserControl>

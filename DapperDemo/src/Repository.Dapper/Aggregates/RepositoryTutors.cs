@@ -121,8 +121,6 @@ public sealed class RepositoryTutors(DapperDatabaseService dapperDatabaseService
 
             await connection.ExecuteAsync(
                 sql: """
-                     DELETE FROM TutorPaymentAllocations WHERE TutorPaymentId IN (SELECT TutorPaymentId FROM TutorPayments WHERE TutorId = @TutorId);
-                     DELETE FROM TutorPayments WHERE TutorId = @TutorId;
                      DELETE FROM WalkingService WHERE DogId IN (SELECT DogId FROM Dogs WHERE TutorId = @TutorId);
                      DELETE FROM PetSittingService WHERE DogId IN (SELECT DogId FROM Dogs WHERE TutorId = @TutorId);
                      DELETE FROM PetHotelService WHERE DogId IN (SELECT DogId FROM Dogs WHERE TutorId = @TutorId);

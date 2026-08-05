@@ -25,7 +25,7 @@
                 <StackPanel Margin="32,24,32,16" Spacing="2">
                     <TextBlock
                         Classes="Heading1"
-                        FontSize="68"
+                        FontSize="62"
                         Text="Novo cachorro" />
                     <TextBlock Classes="Kicker" Text="Cadastrar" />
                 </StackPanel>
@@ -39,7 +39,7 @@
                     Padding="32,64">
                     <TextBlock
                         FontFamily="{StaticResource FontBody}"
-                        FontSize="32"
+                        FontSize="29"
                         FontStyle="Italic"
                         Foreground="{StaticResource ColorTextMuted45}"
                         HorizontalAlignment="Center"
@@ -72,7 +72,7 @@
                                 CornerRadius="84">
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="30"
+                                    FontSize="27"
                                     FontStyle="Italic"
                                     Foreground="{StaticResource ColorTextMuted45}"
                                     HorizontalAlignment="Center"
@@ -88,13 +88,13 @@
                             <buttons:VButton
                                 Classes="BtnSecondary"
                                 Command="{Binding ChoosePhotoCommand}"
-                                Height="70"
+                                Height="64"
                                 VText="Escolher foto"
                                 Width="240" />
                             <buttons:VButton
                                 Classes="BtnGhost"
                                 Command="{Binding RemovePhotoCommand}"
-                                Height="70"
+                                Height="64"
                                 IsVisible="{Binding HasPhoto}"
                                 VText="Remover"
                                 Width="180" />
@@ -104,7 +104,7 @@
                     <StackPanel Spacing="10">
                         <TextBlock
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="28"
+                            FontSize="25"
                             Foreground="{StaticResource ColorTextMuted70}"
                             Text="Nome" />
                         <TextBox
@@ -114,7 +114,7 @@
                             CaretBrush="{StaticResource ColorAccent}"
                             CornerRadius="7"
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="34"
+                            FontSize="31"
                             Foreground="{StaticResource ColorText}"
                             MinHeight="82"
                             Padding="18,0"
@@ -126,7 +126,7 @@
                     <StackPanel Spacing="10">
                         <TextBlock
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="28"
+                            FontSize="25"
                             Foreground="{StaticResource ColorTextMuted70}"
                             Text="Raça" />
                         <TextBox
@@ -136,7 +136,7 @@
                             CaretBrush="{StaticResource ColorAccent}"
                             CornerRadius="7"
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="34"
+                            FontSize="31"
                             Foreground="{StaticResource ColorText}"
                             MinHeight="82"
                             Padding="18,0"
@@ -148,7 +148,7 @@
                     <StackPanel Spacing="10">
                         <TextBlock
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="28"
+                            FontSize="25"
                             Foreground="{StaticResource ColorTextMuted70}"
                             Text="Tutor" />
                         <ComboBox
@@ -157,7 +157,7 @@
                             BorderThickness="2"
                             CornerRadius="7"
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="34"
+                            FontSize="31"
                             Foreground="{StaticResource ColorText}"
                             HorizontalAlignment="Stretch"
                             ItemsSource="{Binding TutorOptions}"
@@ -176,7 +176,7 @@
                     <StackPanel Spacing="10">
                         <TextBlock
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="28"
+                            FontSize="25"
                             Foreground="{StaticResource ColorTextMuted70}"
                             Text="Descrição" />
                         <TextBox
@@ -187,7 +187,7 @@
                             CaretBrush="{StaticResource ColorAccent}"
                             CornerRadius="7"
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="34"
+                            FontSize="31"
                             Foreground="{StaticResource ColorText}"
                             MinHeight="160"
                             Padding="18,12"
@@ -199,7 +199,7 @@
                     <TextBlock
                         Classes="FormMsg Error"
                         FontFamily="{StaticResource FontBody}"
-                        FontSize="31"
+                        FontSize="28"
                         FontStyle="Italic"
                         HorizontalAlignment="Center"
                         IsVisible="{Binding HasError}"
@@ -209,7 +209,7 @@
                     <buttons:VButton
                         Classes="BtnPrimary"
                         Command="{Binding SaveCommand}"
-                        Height="97"
+                        Height="88"
                         HorizontalAlignment="Stretch"
                         VText="Salvar cachorro" />
                 </StackPanel>

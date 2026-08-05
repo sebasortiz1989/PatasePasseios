@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     d:DesignHeight="1460"
     d:DesignWidth="720"
     mc:Ignorable="d"
@@ -73,7 +73,7 @@
                                 CornerRadius="66">
                                 <TextBlock
                                     FontFamily="{StaticResource FontHeading}"
-                                    FontSize="62"
+                                    FontSize="56"
                                     Foreground="{StaticResource ColorAccentDark700}"
                                     HorizontalAlignment="Center"
                                     IsVisible="{Binding NoDogImage}"
@@ -89,13 +89,13 @@
                             <TextBlock Classes="Kicker" Text="{Binding TypeLabel}" />
                             <TextBlock
                                 Classes="Heading1"
-                                FontSize="68"
+                                FontSize="62"
                                 Margin="0,4,0,0"
                                 Text="{Binding DogName}"
                                 TextWrapping="Wrap" />
                             <TextBlock
                                 FontFamily="{StaticResource FontBody}"
-                                FontSize="31"
+                                FontSize="28"
                                 FontStyle="Italic"
                                 Foreground="{StaticResource ColorTextMuted55}"
                                 Margin="0,4,0,0">
@@ -122,13 +122,13 @@
                             <Grid ColumnDefinitions="*,Auto">
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="28"
+                                    FontSize="25"
                                     Foreground="{StaticResource ColorTextMuted55}"
                                     LetterSpacing="1"
                                     Text="DATA" />
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="34"
+                                    FontSize="31"
                                     Foreground="{StaticResource ColorText}"
                                     Grid.Column="1"
                                     Text="{Binding DateLabel}" />
@@ -144,13 +144,13 @@
                             <Grid ColumnDefinitions="*,Auto">
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="28"
+                                    FontSize="25"
                                     Foreground="{StaticResource ColorTextMuted55}"
                                     LetterSpacing="1"
                                     Text="SAÍDA" />
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="34"
+                                    FontSize="31"
                                     Foreground="{StaticResource ColorText}"
                                     Grid.Column="1"
                                     Text="{Binding EndLabel}" />
@@ -166,13 +166,13 @@
                             <Grid ColumnDefinitions="*,Auto">
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="28"
+                                    FontSize="25"
                                     Foreground="{StaticResource ColorTextMuted55}"
                                     LetterSpacing="1"
                                     Text="PASSEIOS" />
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="34"
+                                    FontSize="31"
                                     Foreground="{StaticResource ColorText}"
                                     Grid.Column="1"
                                     Text="{Binding WalkingLabel}" />
@@ -186,13 +186,13 @@
                             <Grid ColumnDefinitions="*,Auto">
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="28"
+                                    FontSize="25"
                                     Foreground="{StaticResource ColorTextMuted55}"
                                     LetterSpacing="1"
                                     Text="{Binding PriceFieldLabel}" />
                                 <TextBlock
                                     FontFamily="{StaticResource FontHeading}"
-                                    FontSize="45"
+                                    FontSize="41"
                                     Foreground="{StaticResource ColorText}"
                                     Grid.Column="1"
                                     Text="{Binding PriceLabel}" />
@@ -208,13 +208,13 @@
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock
                                         FontFamily="{StaticResource FontBody}"
-                                        FontSize="28"
+                                        FontSize="25"
                                         Foreground="{StaticResource ColorTextMuted55}"
                                         LetterSpacing="1"
                                         Text="DIÁRIAS" />
                                     <TextBlock
                                         FontFamily="{StaticResource FontBody}"
-                                        FontSize="34"
+                                        FontSize="31"
                                         Foreground="{StaticResource ColorText}"
                                         Grid.Column="1"
                                         Text="{Binding DaysLabel}" />
@@ -229,13 +229,13 @@
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock
                                         FontFamily="{StaticResource FontBody}"
-                                        FontSize="28"
+                                        FontSize="25"
                                         Foreground="{StaticResource ColorTextMuted55}"
                                         LetterSpacing="1"
                                         Text="ADICIONAL" />
                                     <TextBlock
                                         FontFamily="{StaticResource FontBody}"
-                                        FontSize="34"
+                                        FontSize="31"
                                         Foreground="{StaticResource ColorText}"
                                         Grid.Column="1"
                                         Text="{Binding ExtraChargeLabel}" />
@@ -248,14 +248,14 @@
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock
                                         FontFamily="{StaticResource FontBody}"
-                                        FontSize="28"
+                                        FontSize="25"
                                         Foreground="{StaticResource ColorAccentDark700}"
                                         LetterSpacing="1"
                                         Text="TOTAL"
                                         VerticalAlignment="Center" />
                                     <TextBlock
                                         FontFamily="{StaticResource FontHeading}"
-                                        FontSize="53"
+                                        FontSize="48"
                                         Foreground="{StaticResource ColorAccentDark700}"
                                         Grid.Column="1"
                                         Text="{Binding TotalLabel}" />
@@ -276,13 +276,13 @@
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock
                                         FontFamily="{StaticResource FontBody}"
-                                        FontSize="28"
+                                        FontSize="25"
                                         Foreground="{StaticResource ColorTextMuted55}"
                                         LetterSpacing="1"
                                         Text="JÁ PAGO" />
                                     <TextBlock
                                         FontFamily="{StaticResource FontHeading}"
-                                        FontSize="45"
+                                        FontSize="41"
                                         Foreground="{StaticResource ColorText}"
                                         Grid.Column="1"
                                         Text="{Binding SettledLabel}" />
@@ -295,13 +295,13 @@
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock
                                         FontFamily="{StaticResource FontBody}"
-                                        FontSize="28"
+                                        FontSize="25"
                                         Foreground="{StaticResource ColorTextMuted55}"
                                         LetterSpacing="1"
                                         Text="EM ABERTO" />
                                     <TextBlock
                                         FontFamily="{StaticResource FontHeading}"
-                                        FontSize="45"
+                                        FontSize="41"
                                         Foreground="{StaticResource ColorAccentDark700}"
                                         Grid.Column="1"
                                         Text="{Binding OutstandingLabel}" />
@@ -317,7 +317,7 @@
                             Padding="0,16,0,16">
                             <TextBlock
                                 FontFamily="{StaticResource FontBody}"
-                                FontSize="29"
+                                FontSize="26"
                                 FontStyle="Italic"
                                 Foreground="{StaticResource ColorAccentDark700}"
                                 Text="{Binding CreditNote}"
@@ -333,7 +333,7 @@
                             <Grid ColumnDefinitions="*,Auto">
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="28"
+                                    FontSize="25"
                                     Foreground="{StaticResource ColorTextMuted55}"
                                     LetterSpacing="1"
                                     Text="EXECUÇÃO"
@@ -350,7 +350,7 @@
                         <!--  What marking it done did to the tutor's credit, when it did anything.  -->
                         <TextBlock
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="26"
+                            FontSize="24"
                             FontStyle="Italic"
                             Foreground="{StaticResource ColorAccentDark700}"
                             IsVisible="{Binding HasCreditMsg}"
@@ -367,7 +367,7 @@
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock
                                         FontFamily="{StaticResource FontBody}"
-                                        FontSize="28"
+                                        FontSize="25"
                                         Foreground="{StaticResource ColorTextMuted55}"
                                         LetterSpacing="1"
                                         Text="PAGAMENTO"
@@ -383,7 +383,7 @@
                                 </Grid>
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="25"
+                                    FontSize="23"
                                     FontStyle="Italic"
                                     Foreground="{StaticResource ColorTextMuted45}"
                                     IsVisible="{Binding ShowsPaymentBlockedHint}"
@@ -395,7 +395,7 @@
                         <buttons:VButton
                             Classes="BtnPrimary"
                             Command="{Binding EditCommand}"
-                            Height="88"
+                            Height="80"
                             HorizontalAlignment="Stretch"
                             Margin="0,32,0,0"
                             VText="Editar serviço" />
@@ -404,7 +404,7 @@
                         <buttons:VButton
                             Classes="BtnSecondary"
                             Command="{Binding AskDeleteCommand}"
-                            Height="88"
+                            Height="80"
                             HorizontalAlignment="Stretch"
                             Margin="0,16,0,0"
                             VText="Excluir serviço" />
@@ -427,7 +427,7 @@
                                     BorderThickness="2"
                                     CornerRadius="7"
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="32"
+                                    FontSize="29"
                                     Foreground="{StaticResource ColorText}"
                                     MinHeight="74"
                                     SelectedDate="{Binding EditDatePart}" />
@@ -450,7 +450,7 @@
                                     BorderThickness="2"
                                     CornerRadius="7"
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="32"
+                                    FontSize="29"
                                     Foreground="{StaticResource ColorText}"
                                     MinHeight="74"
                                     SelectedDate="{Binding EditEndDatePart}" />
@@ -465,7 +465,7 @@
                         <CheckBox
                             Content="Inclui passeios"
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="32"
+                            FontSize="29"
                             Foreground="{StaticResource ColorTextMuted70}"
                             IsChecked="{Binding EditRequiresWalking}"
                             IsVisible="{Binding ShowsWalking}"
@@ -485,7 +485,7 @@
                                 Text="{Binding EditExtraCharge}" />
                             <TextBlock
                                 FontFamily="{StaticResource FontBody}"
-                                FontSize="25"
+                                FontSize="23"
                                 FontStyle="Italic"
                                 Foreground="{StaticResource ColorTextMuted45}"
                                 Text="Cobrado uma vez, somado ao total das diárias."
@@ -495,7 +495,7 @@
                         <TextBlock
                             Classes="FormMsg Error"
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="31"
+                            FontSize="28"
                             FontStyle="Italic"
                             HorizontalAlignment="Center"
                             IsVisible="{Binding HasEditError}"
@@ -506,13 +506,13 @@
                             <buttons:VButton
                                 Classes="BtnSecondary"
                                 Command="{Binding CancelEditCommand}"
-                                Height="97"
+                                Height="88"
                                 VText="Cancelar" />
                             <buttons:VButton
                                 Classes="BtnPrimary"
                                 Command="{Binding SaveEditCommand}"
                                 Grid.Column="2"
-                                Height="97"
+                                Height="88"
                                 VText="Salvar" />
                         </Grid>
                     </StackPanel>

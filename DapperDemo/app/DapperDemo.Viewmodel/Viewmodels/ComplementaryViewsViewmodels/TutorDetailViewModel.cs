@@ -22,7 +22,6 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     private readonly RepositoryTutors repositoryTutors;
     private readonly RepositoryDogs repositoryDogs;
     private readonly RepositoryServices repositoryServices;
-    private readonly RepositoryPayments repositoryPayments;
     private readonly RepositoryPetSitter repositoryPetSitter;
     private readonly ReportExporter reportExporter;
     private readonly AppSession session;
@@ -37,21 +36,6 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     private ServiceItem[] tutorServices = [];
 
     /// <summary>
-    /// Every payment this tutor has made, unfiltered. The list on screen is scoped to the chosen
-    /// period, but a correction re-reads from here, and the whole history is what a reversal has to
-    /// be consistent with.
-    /// </summary>
-    private TutorPayment[] tutorPayments = [];
-
-    /// <summary>The payment being corrected, and the date it keeps while its amount changes.</summary>
-    private int? editingPaymentId;
-
-    private DateTime editingPaymentDate;
-
-    /// <summary>The payment the confirm dialog is asking about.</summary>
-    private int? deletingPaymentId;
-
-    /// <summary>
     /// Guards the picker hooks while <see cref="ReloadAsync"/> rebuilds the year list. Assigning
     /// SelectedYear there would otherwise re-enter the reload through Fody's OnXChanged hook.
     /// </summary>
@@ -62,7 +46,6 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         RepositoryTutors repositoryTutors,
         RepositoryDogs repositoryDogs,
         RepositoryServices repositoryServices,
-        RepositoryPayments repositoryPayments,
         RepositoryPetSitter repositoryPetSitter,
         ReportExporter reportExporter,
         AppSession session,
@@ -71,7 +54,6 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         this.repositoryTutors = repositoryTutors;
         this.repositoryDogs = repositoryDogs;
         this.repositoryServices = repositoryServices;
-        this.repositoryPayments = repositoryPayments;
         this.repositoryPetSitter = repositoryPetSitter;
         this.reportExporter = reportExporter;
         this.session = session;
@@ -87,10 +69,6 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         OpenPaymentCommand = new SynchronizedCommand(OpenPayment, SynchronizationBehavior.Discard, true);
         CancelPaymentCommand = new SynchronizedCommand(CancelPayment, SynchronizationBehavior.Discard, true);
         ConfirmPaymentCommand = new SynchronizedCommand(ConfirmPayment, SynchronizationBehavior.Discard, true);
-        CancelPaymentEditCommand = new SynchronizedCommand(CancelPaymentEdit, SynchronizationBehavior.Discard, true);
-        SavePaymentEditCommand = new SynchronizedCommand(SavePaymentEdit, SynchronizationBehavior.Discard, true);
-        CancelPaymentDeleteCommand = new SynchronizedCommand(CancelPaymentDelete, SynchronizationBehavior.Discard, true);
-        ConfirmPaymentDeleteCommand = new SynchronizedCommand(ConfirmPaymentDelete, SynchronizationBehavior.Discard, true);
         ExportCommand = new SynchronizedCommand(Export, SynchronizationBehavior.Discard, true);
 
         foreach (var month in ServicePeriod.Months())
@@ -123,17 +101,6 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     public ICommand CancelPaymentCommand { get; }
 
     public ICommand ConfirmPaymentCommand { get; }
-
-    /// <summary>Gets the command that abandons a correction, leaving the payment as it was.</summary>
-    public ICommand CancelPaymentEditCommand { get; }
-
-    /// <summary>Gets the command that rewrites a payment to the amount now typed.</summary>
-    public ICommand SavePaymentEditCommand { get; }
-
-    public ICommand CancelPaymentDeleteCommand { get; }
-
-    /// <summary>Gets the command that undoes a payment: what it settled and what it left as credit.</summary>
-    public ICommand ConfirmPaymentDeleteCommand { get; }
 
     public ICommand ExportCommand { get; }
 
@@ -215,22 +182,6 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
 
     public bool HasPaymentMsg => !string.IsNullOrEmpty(PaymentMsg);
 
-    /// <summary>
-    /// Gets a value indicating whether a payment already taken is being corrected, which swaps that
-    /// row for an amount box.
-    /// </summary>
-    public bool IsEditingPayment { get; private set; }
-
-    /// <summary>Gets or sets the corrected amount, as typed.</summary>
-    public string EditPaymentAmount { get; set; } = string.Empty;
-
-    public string EditPaymentError { get; private set; } = string.Empty;
-
-    public bool HasEditPaymentError => !string.IsNullOrEmpty(EditPaymentError);
-
-    /// <summary>Gets a value indicating whether the delete-payment confirmation is up.</summary>
-    public bool ConfirmingPaymentDelete { get; private set; }
-
     /// <summary>Gets the confirmation left after an image is written, or empty.</summary>
     public string ExportMsg { get; private set; } = string.Empty;
 
@@ -258,15 +209,6 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     public ObservableCollection<TutorFutureServiceRow> PendingServices { get; } = [];
 
     /// <summary>
-    /// Gets what the tutor has handed over in the chosen period, newest first, each row able to be
-    /// corrected or undone. Scoped by the same pickers as the service list above it.
-    /// </summary>
-    public ObservableCollection<TutorPaymentRow> Payments { get; } = [];
-
-    /// <summary>Gets a value indicating whether nothing was received in this period, so the list can say so.</summary>
-    public bool NoPayments { get; private set; }
-
-    /// <summary>
     /// Public because the View calls it from OnLoaded — see <see cref="DogDetailViewModel"/> for
     /// why OnRunStarting is not enough for a screen shown through CurrentView.
     /// </summary>
@@ -280,11 +222,6 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         IsRegisteringPayment = false;
         PaymentError = string.Empty;
         ExportMsg = string.Empty;
-        IsEditingPayment = false;
-        editingPaymentId = null;
-        EditPaymentError = string.Empty;
-        ConfirmingPaymentDelete = false;
-        deletingPaymentId = null;
 
         if (session.SelectedTutorId is not int tutorId)
         {
@@ -307,8 +244,9 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         var dogs = await repositoryDogs.ListForTutorAsync(tutorId).WithSync();
         DogNames = dogs.Length == 0 ? "Nenhum cachorro cadastrado." : string.Join(", ", dogs.Select(d => d.Name));
 
-        await ReloadServicesAsync(tutorId).WithSync();
-        tutorPayments = await repositoryPayments.ListForTutorAsync(tutorId).WithSync();
+        var services = await repositoryServices.ListForPetSitterAsync(session.CurrentPetSitterId).WithSync();
+        var dogIds = dogs.Select(d => d.DogId).ToHashSet();
+        tutorServices = [.. services.Where(s => dogIds.Contains(s.DogId)).OrderBy(s => s.Date).ThenBy(s => s.ServiceId)];
 
         // Only executed work can be billed, which AmountDue already encodes.
         var due = tutorServices.Sum(s => s.AmountDue);
@@ -319,7 +257,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         UpcomingTotalLabel = AppSession.Money(upcoming);
         HasUpcoming = upcoming > 0m;
 
-        RefreshYearOptions(tutorServices, tutorPayments.Select(p => p.Date));
+        RefreshYearOptions(tutorServices);
 
         // Everything unsettled, executed or not: the sitter needs to see the work still to come as
         // well as the bill. Which of the two a row is shows in its Feito / A fazer tag, and only
@@ -358,8 +296,6 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         }
 
         NoPending = pending.Length == 0;
-
-        RebuildPayments();
     }
 
     protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
@@ -367,7 +303,6 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     protected override Task OnRunFinishing()
     {
         ClearPendingServices();
-        ClearPayments();
         return Task.CompletedTask;
     }
 
@@ -411,11 +346,32 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
             return;
         }
 
-        var message = await ApplyPaymentAsync(amount, DateTime.Now, replacing: null).WithSync();
-        if (message == null)
+        // No payments is not a failure: a tutor may hand money over before any of the work has been
+        // carried out, and the whole of it then becomes credit.
+        var (payments, applied) = PaymentAllocation.Allocate(tutorServices, amount);
+
+        if (payments.Count > 0 && await repositoryServices.RegisterPaymentAsync(payments).WithSync() != Response.Successful)
         {
             PaymentError = "Não foi possível registrar o pagamento.";
             return;
+        }
+
+        var settled = payments.Count(p => p.FullyPaid);
+        var leftover = amount - applied;
+        var message = applied > 0m
+            ? $"Recebido {AppSession.Money(applied)} — {(settled == 1 ? "1 serviço quitado" : $"{settled} serviços quitados")}."
+            : string.Empty;
+
+        if (leftover > 0m && session.SelectedTutorId is int creditTutorId)
+        {
+            // More than the executed work came to, so the remainder is an advance. It is held as
+            // credit in the tutor's favour and spent as each future service is carried out.
+            var tutor = await repositoryTutors.GetAsync(creditTutorId).WithSync();
+            await repositoryTutors.SetCreditAsync(creditTutorId, (tutor?.Credit ?? 0m) + leftover).WithSync();
+
+            message += message.Length == 0
+                ? $"Recebido {AppSession.Money(leftover)} adiantado, guardado como crédito para os próximos serviços."
+                : $" {AppSession.Money(leftover)} ficam como crédito para os próximos serviços.";
         }
 
         PaymentError = string.Empty;
@@ -423,222 +379,6 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         session.NotifyDataChanged();
         await ReloadAsync().WithSync();
         PaymentMsg = message;
-    }
-
-    /// <summary>
-    /// Takes an amount received and writes it: spread over what the tutor owes, remainder held as
-    /// credit, both recorded as one entry in the ledger.
-    /// </summary>
-    /// <remarks>
-    /// Correcting a payment goes through here too, undoing the old entry first and then applying
-    /// the new amount to the state that leaves behind. Re-allocating from scratch rather than
-    /// nudging the difference is what keeps a correction honest: raising 50 to 500 has to reach
-    /// services the smaller amount never got to, and lowering it has to let go of services it
-    /// should never have settled.
-    /// </remarks>
-    /// <param name="amount">The amount received, as corrected.</param>
-    /// <param name="date">When it was received. A correction keeps the original date.</param>
-    /// <param name="replacing">The payment this supersedes, or null for a new one.</param>
-    /// <returns>A sentence describing what was written, or null when nothing could be written.</returns>
-    private async Task<string?> ApplyPaymentAsync(decimal amount, DateTime date, int? replacing)
-    {
-        if (session.SelectedTutorId is not int tutorId)
-        {
-            return null;
-        }
-
-        if (replacing is int superseded)
-        {
-            if (await repositoryPayments.DeleteAsync(superseded).WithSync() != Response.Successful)
-            {
-                return null;
-            }
-
-            // The reversal moved settled amounts and possibly the tutor's credit, and the new
-            // amount is spread over what that left rather than over the stale figures on screen.
-            await ReloadServicesAsync(tutorId).WithSync();
-        }
-
-        // No allocations is not a failure: a tutor may hand money over before any of the work has
-        // been carried out, and the whole of it then becomes credit.
-        var (allocations, applied) = PaymentAllocation.Allocate(tutorServices, amount);
-        var leftover = amount - applied;
-
-        var written = await repositoryPayments.RecordAsync(new TutorPayment
-        {
-            TutorId = tutorId,
-            PetSitterId = session.CurrentPetSitterId,
-            Date = date,
-            Amount = amount,
-            CreditStored = leftover,
-            Allocations = allocations,
-        }).WithSync();
-
-        if (written != Response.Successful)
-        {
-            return null;
-        }
-
-        var settled = allocations.Count(p => p.FullyPaid);
-        var message = applied > 0m
-            ? $"Recebido {AppSession.Money(applied)} — {(settled == 1 ? "1 serviço quitado" : $"{settled} serviços quitados")}."
-            : string.Empty;
-
-        if (leftover > 0m)
-        {
-            // More than the executed work came to, so the remainder is an advance. It is held as
-            // credit in the tutor's favour and spent as each future service is booked.
-            message += message.Length == 0
-                ? $"Recebido {AppSession.Money(leftover)} adiantado, guardado como crédito para os próximos serviços."
-                : $" {AppSession.Money(leftover)} ficam como crédito para os próximos serviços.";
-        }
-
-        return message;
-    }
-
-    /// <summary>Opens one payment for correction, seeded with what was received.</summary>
-    private Task EditPayment(TutorPayment payment)
-    {
-        editingPaymentId = payment.TutorPaymentId;
-        editingPaymentDate = payment.Date;
-        // Comma, like the rest of the app's money: TryParseAmount accepts either separator, and the
-        // box should open showing the amount the way the sitter would have typed it.
-        EditPaymentAmount = payment.Amount.ToString("0.##", CultureInfo.InvariantCulture).Replace('.', ',');
-        EditPaymentError = string.Empty;
-        PaymentMsg = string.Empty;
-        IsRegisteringPayment = false;
-        IsEditingPayment = true;
-        return Task.CompletedTask;
-    }
-
-    private Task CancelPaymentEdit()
-    {
-        editingPaymentId = null;
-        EditPaymentError = string.Empty;
-        IsEditingPayment = false;
-        return Task.CompletedTask;
-    }
-
-    private async Task SavePaymentEdit()
-    {
-        if (editingPaymentId is not int paymentId)
-        {
-            return;
-        }
-
-        if (!TryParseAmount(EditPaymentAmount, out var amount) || amount <= 0m)
-        {
-            EditPaymentError = "Informe um valor válido.";
-            return;
-        }
-
-        var message = await ApplyPaymentAsync(amount, editingPaymentDate, paymentId).WithSync();
-
-        // Either half of the correction may have written before it failed, so the screen is reloaded
-        // whatever happened rather than left showing figures that are no longer true.
-        session.NotifyDataChanged();
-        await ReloadAsync().WithSync();
-
-        PaymentMsg = message == null
-            ? "Não foi possível corrigir o pagamento. Confira o pagamento na lista antes de tentar de novo."
-            : $"Pagamento corrigido para {AppSession.Money(amount)}. {message}";
-    }
-
-    private Task AskDeletePayment(TutorPayment payment)
-    {
-        deletingPaymentId = payment.TutorPaymentId;
-        PaymentMsg = string.Empty;
-        ConfirmingPaymentDelete = true;
-        return Task.CompletedTask;
-    }
-
-    private Task CancelPaymentDelete()
-    {
-        deletingPaymentId = null;
-        ConfirmingPaymentDelete = false;
-        return Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// Undoes a payment entirely: the services it settled go back to owing, and what it left as
-    /// credit is taken off the tutor — followed into the bookings it was since spent on if the
-    /// balance no longer holds it.
-    /// </summary>
-    private async Task ConfirmPaymentDelete()
-    {
-        if (deletingPaymentId is not int paymentId)
-        {
-            return;
-        }
-
-        var payment = tutorPayments.FirstOrDefault(p => p.TutorPaymentId == paymentId);
-        var undone = await repositoryPayments.DeleteAsync(paymentId).WithSync();
-
-        ConfirmingPaymentDelete = false;
-        deletingPaymentId = null;
-
-        if (undone != Response.Successful)
-        {
-            // Not PaymentError: that one lives inside the amount form, which is not open here.
-            PaymentMsg = "Não foi possível excluir o pagamento.";
-            return;
-        }
-
-        session.NotifyDataChanged();
-        await ReloadAsync().WithSync();
-        PaymentMsg = payment == null
-            ? "Pagamento excluído."
-            : $"Pagamento de {AppSession.Money(payment.Amount)} excluído.";
-    }
-
-    /// <summary>
-    /// Re-reads this tutor's services. Used both by the full reload and between the two halves of
-    /// a correction, where the second half must see what the first left behind.
-    /// </summary>
-    private async Task ReloadServicesAsync(int tutorId)
-    {
-        var services = await repositoryServices.ListForTutorAsync(session.CurrentPetSitterId, tutorId).WithSync();
-        tutorServices = [.. services.OrderBy(s => s.Date).ThenBy(s => s.ServiceId)];
-    }
-
-    /// <summary>Fills the payment list with what the tutor handed over inside the chosen period.</summary>
-    private void RebuildPayments()
-    {
-        ClearPayments();
-
-        var scoped = tutorPayments
-            .Where(p => ServicePeriod.Matches(p.Date, SelectedMonth, SelectedYear))
-            .ToArray();
-
-        foreach (var payment in scoped)
-        {
-            // CA2000: ownership passes to the row, which disposes both commands when the list is
-            // rebuilt — see ClearPayments.
-#pragma warning disable CA2000
-            var editCommand = new SynchronizedCommand(() => EditPayment(payment), SynchronizationBehavior.Discard, true);
-            var deleteCommand = new SynchronizedCommand(() => AskDeletePayment(payment), SynchronizationBehavior.Discard, true);
-#pragma warning restore CA2000
-
-            Payments.Add(new TutorPaymentRow(
-                payment.TutorPaymentId,
-                AppSession.DateTimeLabel(payment.Date),
-                AppSession.Money(payment.Amount),
-                payment.CreditStored > 0m ? $"{AppSession.Money(payment.CreditStored)} em crédito" : string.Empty,
-                editCommand,
-                deleteCommand));
-        }
-
-        NoPayments = scoped.Length == 0;
-    }
-
-    private void ClearPayments()
-    {
-        foreach (var row in Payments)
-        {
-            row.Dispose();
-        }
-
-        Payments.Clear();
     }
 
     /// <summary>Describes what confirming the typed amount would do, without writing anything.</summary>
@@ -704,9 +444,9 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     /// Keeps the year picker to years this tutor has services in, plus the current one. Rebuilt in
     /// place under the guard so re-selecting the same value does not reload again.
     /// </summary>
-    private void RefreshYearOptions(ServiceItem[] services, IEnumerable<DateTime> paymentDates)
+    private void RefreshYearOptions(ServiceItem[] services)
     {
-        var years = ServicePeriod.Years(services, paymentDates);
+        var years = ServicePeriod.Years(services);
         if (YearOptions.SequenceEqual(years))
         {
             return;

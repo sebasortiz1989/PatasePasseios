@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     d:DesignHeight="1560"
     d:DesignWidth="720"
     mc:Ignorable="d"
@@ -26,7 +26,7 @@
                     Spacing="8">
                     <TextBlock
                         Classes="Heading1"
-                        FontSize="87"
+                        FontSize="79"
                         FontWeight="Normal"
                         Height="100"
                         HorizontalAlignment="Center"
@@ -63,7 +63,7 @@
 
                 <TextBlock
                     FontFamily="{StaticResource FontBody}"
-                    FontSize="31"
+                    FontSize="28"
                     FontStyle="Italic"
                     Foreground="{StaticResource ColorAccentDark800}"
                     HorizontalAlignment="Center"
@@ -74,13 +74,13 @@
                 <buttons:VButton
                     Classes="BtnPrimary"
                     Command="{Binding LoginCommand}"
-                    Height="88"
+                    Height="80"
                     VText="Entrar"
                     Width="560" />
                 <buttons:VButton
                     Classes="BtnGhost"
                     Command="{Binding SignUpCommand}"
-                    Height="77"
+                    Height="70"
                     VText="Criar uma conta"
                     Width="560" />
 
@@ -91,13 +91,13 @@
                 <buttons:VButton
                     Classes="BtnGhost"
                     Command="{Binding ImportBackupCommand}"
-                    Height="77"
+                    Height="70"
                     VText="Importar backup"
                     Width="560" />
                 <TextBlock
                     Classes="FormMsg"
                     FontFamily="{StaticResource FontBody}"
-                    FontSize="29"
+                    FontSize="26"
                     FontStyle="Italic"
                     HorizontalAlignment="Center"
                     IsVisible="{Binding HasBackupMsg}"

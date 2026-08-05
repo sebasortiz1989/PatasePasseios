@@ -46,7 +46,7 @@
                             CornerRadius="84">
                             <TextBlock
                                 FontFamily="{StaticResource FontHeading}"
-                                FontSize="78"
+                                FontSize="71"
                                 Foreground="{StaticResource ColorAccentDark700}"
                                 HorizontalAlignment="Center"
                                 IsVisible="{Binding NoPhoto}"
@@ -64,13 +64,13 @@
                         <buttons:VButton
                             Classes="BtnSecondary"
                             Command="{Binding ChoosePhotoCommand}"
-                            Height="70"
+                            Height="64"
                             VText="Escolher foto"
                             Width="240" />
                         <buttons:VButton
                             Classes="BtnGhost"
                             Command="{Binding RemovePhotoCommand}"
-                            Height="70"
+                            Height="64"
                             IsVisible="{Binding HasPhoto}"
                             VText="Remover"
                             Width="180" />
@@ -78,7 +78,7 @@
 
                     <TextBlock
                         Classes="Heading1"
-                        FontSize="74"
+                        FontSize="67"
                         HorizontalAlignment="Center"
                         Text="{Binding Name}" />
                     <TextBlock
@@ -98,7 +98,7 @@
                                 <TextBlock Classes="Kicker" Text="Tutor" />
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="34"
+                                    FontSize="31"
                                     Foreground="{StaticResource ColorText}"
                                     Text="{Binding OwnerName}" />
                             </StackPanel>
@@ -112,7 +112,7 @@
                                 <TextBlock Classes="Kicker" Text="Descrição" />
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="34"
+                                    FontSize="31"
                                     Foreground="{StaticResource ColorText}"
                                     LineHeight="48"
                                     Text="{Binding Description}"
@@ -150,14 +150,14 @@
                                 <CheckBox
                                     Content="Mostrar serviços já pagos"
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="30"
+                                    FontSize="27"
                                     Foreground="{StaticResource ColorTextMuted65}"
                                     IsChecked="{Binding ShowPaidServices}"
                                     Theme="{StaticResource ClassicCheckBox}" />
 
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
-                                    FontSize="32"
+                                    FontSize="29"
                                     FontStyle="Italic"
                                     Foreground="{StaticResource ColorTextMuted45}"
                                     IsVisible="{Binding NoFuture}"
@@ -174,7 +174,7 @@
                                                     <Grid ColumnDefinitions="*,Auto,14,Auto,10,Auto">
                                                         <TextBlock
                                                             FontFamily="{StaticResource FontBody}"
-                                                            FontSize="32"
+                                                            FontSize="29"
                                                             Foreground="{StaticResource ColorText}"
                                                             Text="{Binding TypeLabel}"
                                                             VerticalAlignment="Center" />
@@ -205,7 +205,7 @@
                         <buttons:VButton
                             Classes="BtnPrimary"
                             Command="{Binding EditCommand}"
-                            Height="88"
+                            Height="80"
                             HorizontalAlignment="Stretch"
                             Margin="0,16,0,0"
                             VText="Editar cachorro" />
@@ -214,7 +214,7 @@
                         <buttons:VButton
                             Classes="BtnSecondary"
                             Command="{Binding AskDeleteCommand}"
-                            Height="88"
+                            Height="80"
                             HorizontalAlignment="Stretch"
                             VText="Excluir cachorro" />
                     </StackPanel>
@@ -258,7 +258,7 @@
                         <TextBlock
                             Classes="FormMsg Error"
                             FontFamily="{StaticResource FontBody}"
-                            FontSize="31"
+                            FontSize="28"
                             FontStyle="Italic"
                             HorizontalAlignment="Center"
                             IsVisible="{Binding HasEditError}"
@@ -269,13 +269,13 @@
                             <buttons:VButton
                                 Classes="BtnSecondary"
                                 Command="{Binding CancelEditCommand}"
-                                Height="97"
+                                Height="88"
                                 VText="Cancelar" />
                             <buttons:VButton
                                 Classes="BtnPrimary"
                                 Command="{Binding SaveEditCommand}"
                                 Grid.Column="2"
-                                Height="97"
+                                Height="88"
                                 VText="Salvar" />
                         </Grid>
                     </StackPanel>
