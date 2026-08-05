@@ -207,26 +207,46 @@
                                                                     BorderThickness="0,0,0,2"
                                                                     Padding="0,16">
                                                                     <Grid ColumnDefinitions="*,Auto,14,Auto,10,Auto">
-                                                                        <!--  The dog leads the row only where a screen has more than one.  -->
-                                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                                        <!--
+                                                                            With the dog's name: the date sits in an Auto column so it always gets the
+                                                                            width it needs, and the name takes whatever is left, trimming to an ellipsis
+                                                                            rather than pushing the date into the tags. A horizontal StackPanel could not
+                                                                            do this — it hands every child infinite width, so nothing ever trims and the
+                                                                            row simply overflows.
+                                                                        -->
+                                                                        <Grid
+                                                                            ColumnDefinitions="*,Auto"
+                                                                            IsVisible="{Binding ShowsDogName}"
+                                                                            VerticalAlignment="Center">
                                                                             <TextBlock
                                                                                 FontFamily="{StaticResource FontBody}"
                                                                                 FontSize="30"
                                                                                 Foreground="{StaticResource ColorText}"
-                                                                                IsVisible="{Binding ShowsDogName}"
-                                                                                Text="{Binding DogName}" />
-                                                                            <TextBlock
-                                                                                FontFamily="{StaticResource FontBody}"
-                                                                                FontSize="30"
-                                                                                Foreground="{StaticResource ColorTextMuted55}"
-                                                                                IsVisible="{Binding ShowsDogName}"
-                                                                                Text=" · " />
+                                                                                Grid.Column="0"
+                                                                                Margin="0,0,10,0"
+                                                                                Text="{Binding DogName}"
+                                                                                TextTrimming="CharacterEllipsis"
+                                                                                TextWrapping="NoWrap" />
                                                                             <TextBlock
                                                                                 FontFamily="{StaticResource FontBody}"
                                                                                 FontSize="30"
                                                                                 Foreground="{StaticResource ColorTextMuted65}"
-                                                                                Text="{Binding DateLabel}" />
-                                                                        </StackPanel>
+                                                                                Grid.Column="1"
+                                                                                TextWrapping="NoWrap">
+                                                                                <Run Foreground="{StaticResource ColorTextMuted55}" Text="·" />
+                                                                                <Run Text="{Binding DateLabel}" />
+                                                                            </TextBlock>
+                                                                        </Grid>
+
+                                                                        <!--  Date only, on a screen that is already about one dog.  -->
+                                                                        <TextBlock
+                                                                            FontFamily="{StaticResource FontBody}"
+                                                                            FontSize="30"
+                                                                            Foreground="{StaticResource ColorTextMuted65}"
+                                                                            IsVisible="{Binding !ShowsDogName}"
+                                                                            Text="{Binding DateLabel}"
+                                                                            TextWrapping="NoWrap"
+                                                                            VerticalAlignment="Center" />
 
                                                                         <!--  Whether it happened, and whether it was paid for — two separate states.  -->
                                                                         <Border
