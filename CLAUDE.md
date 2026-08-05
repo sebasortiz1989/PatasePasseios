@@ -352,6 +352,36 @@ invalid archive leaves the device untouched. Open validation connections with
 `Pooling = false` — a pooled connection holds the file handle past `Dispose` and
 leaks a full copy of the database per import.
 
+### Saving a file: never trust the save dialog on Android
+
+Every export — both report PNGs and the backup zip — goes through
+`FileExportDialog` (`StorageProviderFileExportDialog` in the View layer), which
+takes **two different routes** by platform. Do not collapse them.
+
+Avalonia's Android backend builds the `ACTION_CREATE_DOCUMENT` intent with a
+hard-coded `*/*` MIME type — `FileTypeChoices` reaches it only as a filter — and
+Android works out where the extension ends by comparing that MIME type against
+the name it was handed. With `*/*` nothing matches, so a colliding `maria.png`
+is treated as one long extensionless name and written as **`maria.png (2)`**,
+which no viewer will open. `ShowOverwritePrompt` is no help: the Android backend
+ignores it, and `ACTION_CREATE_DOCUMENT` renames rather than asking, by design.
+Neither is reachable from `FilePickerSaveOptions`.
+
+So on Android the user picks a **folder** and the app does the naming.
+`IStorageFolder.GetFileAsync` returns null when nothing is there, which is what
+makes the "Substituir?" question possible, and `CreateFileAsync` deliberately
+returns the *existing* file truncated rather than inventing `file (1)` — so the
+write overwrites in place and the name stays exact. Everywhere else the system
+save dialog already handles naming and overwriting properly, and is what users
+expect, so it is left alone.
+
+The replace question is asked through a `Func<string, Task<bool>>` passed in by
+the view model, because the answer comes from a `ConfirmDialog` bound to view
+model state that the View layer cannot reach. `ConfirmRequest`
+(`Viewmodels/Utils/`) is the awaitable form of that dialog — the app's other
+confirmations are a bool plus two commands, which suits a question the *user*
+starts, not one raised mid-operation.
+
 ## Styling
 
 `View/Components/ClassicalTheme.axaml` defines every design token (`ColorBg`,
@@ -382,6 +412,13 @@ hex, font names or ad-hoc sizes in views.
   absorb a taller device. Only the three screens pushed by `NavigationController`
   (`LoginView`, `SignUpView`, `MainView`) carry a `DesignCanvas`; everything shown
   through `CurrentView` sits inside `MainView`'s and must not add its own.
+- **Popup content is not scaled by the canvas.** A drop-down, flyout or tooltip
+  renders in the top level's overlay layer, outside `DesignCanvas`'s transform, so
+  sizes inside one are **device pixels, not canvas units**. A canvas-derived `34`
+  in a `ComboBox`/`AutoCompleteBox` `ItemTemplate` lands at literal 34px — on a
+  phone that is roughly twice the height of the field it drops out of. Size popup
+  content in the 14–20 range and say why in a comment; the surrounding field, which
+  *is* inside the canvas, keeps its canvas-unit size.
 - Inputs and buttons come from AvaloniaFramework (`inputs:VTextBoxWithLabel`,
   `buttons:VButton`, `buttons:GroupButton`), themed through `V*` properties on a
   style class in `ClassicalTheme.axaml`, not inline.

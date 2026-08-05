@@ -482,5 +482,17 @@
             IsOpen="{Binding ConfirmingPaymentDelete}"
             Message="Os serviços quitados por ele voltam a ficar em aberto e o crédito que ele gerou é devolvido. Os serviços em si não são excluídos."
             Title="Excluir este pagamento?" />
+
+        <!--
+            Asked from inside an export, on the platforms where the app names the file itself.
+            Android's save dialog never offers to replace — it quietly invents a new name — so this
+            is where that choice is actually made.
+        -->
+        <components:ConfirmDialog
+            CancelCommand="{Binding ReplaceRequest.CancelCommand}"
+            ConfirmCommand="{Binding ReplaceRequest.ConfirmCommand}"
+            IsOpen="{Binding ReplaceRequest.IsOpen}"
+            Message="{Binding ReplaceRequest.Message}"
+            Title="Substituir arquivo?" />
     </Grid>
 </UserControl>

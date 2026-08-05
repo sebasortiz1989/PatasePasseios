@@ -41,7 +41,7 @@ namespace DapperDemo.View.DependencyInversion
             // Same reasoning: launching a URI needs a TopLevel, so the view models take the
             // UriLauncher abstraction and this layer supplies the Avalonia one.
             yield return CreateSingleton<AvaloniaUriLauncher>().WithAbstractions();
-            yield return CreateSingleton<StorageProviderBackupFileDialog>().WithAbstractions();
+            yield return CreateSingleton<StorageProviderFileExportDialog>().WithAbstractions();
 
             // Drawing and the save dialog both need this layer; the view models build a
             // ReportDocument and never see a control.

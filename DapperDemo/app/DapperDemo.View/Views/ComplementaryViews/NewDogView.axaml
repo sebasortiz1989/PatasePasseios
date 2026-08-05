@@ -161,7 +161,8 @@
                             PlaceholderText="Selecione…">
                             <inputs:VSearchableComboBox.ItemTemplate>
                                 <DataTemplate DataType="utils:TutorOption">
-                                    <TextBlock FontSize="34" Text="{Binding Label}" />
+                                    <!--  Device pixels — the popup renders outside DesignCanvas. See ServicesView.  -->
+                                    <TextBlock FontSize="18" Text="{Binding Label}" />
                                 </DataTemplate>
                             </inputs:VSearchableComboBox.ItemTemplate>
                         </inputs:VSearchableComboBox>

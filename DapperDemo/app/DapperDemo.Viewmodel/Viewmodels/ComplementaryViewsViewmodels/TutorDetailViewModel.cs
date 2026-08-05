@@ -231,6 +231,12 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     /// <summary>Gets a value indicating whether the delete-payment confirmation is up.</summary>
     public bool ConfirmingPaymentDelete { get; private set; }
 
+    /// <summary>
+    /// Gets the "replace the file already there?" question, asked mid-export on the platforms where
+    /// the app names the file itself. Bound to its own dialog in the view.
+    /// </summary>
+    public ConfirmRequest ReplaceRequest { get; } = new();
+
     /// <summary>Gets the confirmation left after an image is written, or empty.</summary>
     public string ExportMsg { get; private set; } = string.Empty;
 
@@ -833,9 +839,18 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         await AddPaymentSectionAsync(report, chargeableTotal).WithSync();
 
         var slug = new string([.. Name.ToLowerInvariant().Select(c => char.IsLetterOrDigit(c) ? c : '-')]).Trim('-');
-        var fileName = await reportExporter.ExportAsync(report, $"servicos-{slug}").WithSync();
+        var fileName = await reportExporter
+            .ExportAsync(report, $"servicos-{slug}", AskReplaceAsync)
+            .WithSync();
+
         ExportMsg = fileName == null ? string.Empty : $"Resumo salvo: {fileName}";
     }
+
+    /// <summary>
+    /// Answers the export's "there is already one of these" question through the screen's dialog.
+    /// </summary>
+    private Task<bool> AskReplaceAsync(string fileName) =>
+        ReplaceRequest.AskAsync($"Já existe um arquivo chamado {fileName} nesta pasta. Substituir?");
 
     /// <summary>
     /// Adds where to send the money: the pet sitter's own name and Pix key, with the outstanding

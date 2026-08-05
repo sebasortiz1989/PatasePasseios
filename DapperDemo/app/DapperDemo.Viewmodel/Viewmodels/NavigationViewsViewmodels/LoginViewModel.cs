@@ -17,7 +17,7 @@ public class LoginViewModel : PresentationModelBase<Unit, Unit>
 {
     private readonly NavigationController navigationController;
     private readonly RepositoryPetSitter repositoryPetSitter;
-    private readonly BackupFileDialog backupFileDialog;
+    private readonly FileExportDialog fileExportDialog;
     private readonly BackupArchive backupArchive;
     private readonly SynchronizationContext synchronizationContext;
     private readonly AppSession session;
@@ -27,7 +27,7 @@ public class LoginViewModel : PresentationModelBase<Unit, Unit>
     public LoginViewModel(
         NavigationController navigationController,
         RepositoryPetSitter repositoryPetSitter,
-        BackupFileDialog backupFileDialog,
+        FileExportDialog fileExportDialog,
         BackupArchive backupArchive,
         SynchronizationContext synchronizationContext,
         AppSession session,
@@ -36,7 +36,7 @@ public class LoginViewModel : PresentationModelBase<Unit, Unit>
     {
         this.navigationController = navigationController;
         this.repositoryPetSitter = repositoryPetSitter;
-        this.backupFileDialog = backupFileDialog;
+        this.fileExportDialog = fileExportDialog;
         this.backupArchive = backupArchive;
         this.synchronizationContext = synchronizationContext;
         this.session = session;
@@ -129,7 +129,7 @@ public class LoginViewModel : PresentationModelBase<Unit, Unit>
     {
         BackupMsg = string.Empty;
 
-        var source = await backupFileDialog.OpenAsync().WithSync();
+        var source = await fileExportDialog.OpenBackupAsync().WithSync();
         if (source == null)
         {
             return;

@@ -26,9 +26,12 @@ public sealed class BackupArchive(DapperDatabaseService database)
 
     private DapperDatabaseService Database { get; } = database;
 
-    /// <summary>A dated file name to offer in the save dialog.</summary>
+    /// <summary>
+    /// A dated file name to offer in the save dialog, without extension — the dialog appends the
+    /// one that matches what is being written.
+    /// </summary>
     public static string SuggestedFileName() =>
-        "patas-backup-" + DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) + ".zip";
+        "patas-backup-" + DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 
     /// <summary>
     /// Writes the archive to <paramref name="destination"/>, which the caller owns and disposes.

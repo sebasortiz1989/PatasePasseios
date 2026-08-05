@@ -125,7 +125,13 @@
                             PlaceholderText="Selecione…">
                             <inputs:VSearchableComboBox.ItemTemplate>
                                 <DataTemplate DataType="utils:DogOption">
-                                    <TextBlock FontSize="34" Text="{Binding Label}" />
+                                    <!--
+                                        Device pixels, not canvas units: the drop-down is a popup,
+                                        so it renders in the top level's overlay layer and never
+                                        passes through DesignCanvas's scale. A canvas-sized 34 here
+                                        comes out roughly twice the height of the field it belongs to.
+                                    -->
+                                    <TextBlock FontSize="18" Text="{Binding Label}" />
                                 </DataTemplate>
                             </inputs:VSearchableComboBox.ItemTemplate>
                         </inputs:VSearchableComboBox>

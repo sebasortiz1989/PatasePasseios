@@ -6,6 +6,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using DapperDemo.View.Services;
 using DapperDemo.Viewmodel.Reports;
+using DapperDemo.Viewmodel.Services;
 using System;
 using System.Threading.Tasks;
 
@@ -26,7 +27,7 @@ namespace DapperDemo.View.Reports;
 /// would come back empty.
 /// </para>
 /// </remarks>
-public sealed class PngReportExporter : ReportExporter
+public sealed class PngReportExporter(FileExportDialog fileExportDialog) : ReportExporter
 {
     /// <summary>
     /// Wider than the app's 720 design canvas. This is a document to be shared and zoomed, not a
@@ -52,47 +53,30 @@ public sealed class PngReportExporter : ReportExporter
     private static readonly FontFamily Heading = new("Times New Roman,Georgia,serif");
     private static readonly FontFamily Body = new("Georgia,Times New Roman,serif");
 
-    private static readonly FilePickerFileType PngFileType = new("Imagem (.png)")
-    {
-        Patterns = ["*.png"],
-        MimeTypes = ["image/png"],
-        AppleUniformTypeIdentifiers = ["public.png"],
-    };
-
     /// <inheritdoc/>
-    public async Task<string?> ExportAsync(ReportDocument report, string suggestedFileName)
+    public async Task<string?> ExportAsync(ReportDocument report, string suggestedFileName, Func<string, Task<bool>> confirmReplace)
     {
         ArgumentNullException.ThrowIfNull(report);
 
-        var storageProvider = ShellTopLevel.Resolve()?.StorageProvider;
-        if (storageProvider is not { CanSave: true })
-        {
-            return null;
-        }
+        // Where the file goes, whether an existing one may be replaced, and how the platform is
+        // best asked, all belong to the dialog — this only knows how to draw.
+        var target = await fileExportDialog
+            .CreateAsync(suggestedFileName, ExportFileKind.Png, confirmReplace)
+            .ConfigureAwait(true);
 
-        var file = await storageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
-        {
-            Title = "Salvar resumo",
-            SuggestedFileName = suggestedFileName,
-            DefaultExtension = "png",
-            FileTypeChoices = [PngFileType],
-            ShowOverwritePrompt = true,
-        }).ConfigureAwait(true);
-
-        if (file == null)
+        if (target == null)
         {
             return null;
         }
 
         using var bitmap = Render(report);
 
-        var stream = await file.OpenWriteAsync().ConfigureAwait(true);
-        await using (stream.ConfigureAwait(true))
+        await using (target.Content.ConfigureAwait(true))
         {
-            bitmap.Save(stream, new PngBitmapEncoderOptions());
+            bitmap.Save(target.Content, new PngBitmapEncoderOptions());
         }
 
-        return file.Name;
+        return target.Name;
     }
 
     private static TextBlock Text(

@@ -36,7 +36,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     private readonly AppSession session;
     private readonly ImagePicker imagePicker;
     private readonly BackupArchive backupArchive;
-    private readonly BackupFileDialog backupFileDialog;
+    private readonly FileExportDialog fileExportDialog;
     private readonly EventHandler dataChangedHandler;
 
     /// <summary>
@@ -69,7 +69,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         ReportExporter reportExporter,
         AppSession session,
         BackupArchive backupArchive,
-        BackupFileDialog backupFileDialog,
+        FileExportDialog fileExportDialog,
         ImagePicker imagePicker)
     {
         this.imagePicker = imagePicker;
@@ -80,7 +80,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         this.reportExporter = reportExporter;
         this.session = session;
         this.backupArchive = backupArchive;
-        this.backupFileDialog = backupFileDialog;
+        this.fileExportDialog = fileExportDialog;
 
         // Billing totals depend on services marked paid elsewhere (Agenda, service detail).
         dataChangedHandler = (_, _) => AppSession.FireAndForget(ReloadAsync());
@@ -157,6 +157,12 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     public ICommand ImportBackupCommand { get; }
 
     public ICommand DismissInvalidBackupCommand { get; }
+
+    /// <summary>
+    /// Gets the "replace the file already there?" question, asked mid-export on the platforms where
+    /// the app names the file itself. Bound to its own dialog in the view.
+    /// </summary>
+    public ConfirmRequest ReplaceRequest { get; } = new();
 
     /// <summary>
     /// Gets a value indicating whether the "not a valid backup" alert is up. A popup rather than
@@ -563,25 +569,37 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         report.Sections.Add(services);
 
         var monthNumber = (SelectedMonth?.Number ?? 1).ToString("00", CultureInfo.InvariantCulture);
-        var fileName = await reportExporter.ExportAsync(report, $"faturamento-{year}-{monthNumber}").WithSync();
+        var fileName = await reportExporter
+            .ExportAsync(report, $"faturamento-{year}-{monthNumber}", AskReplaceAsync)
+            .WithSync();
+
         SummaryMsg = fileName == null ? string.Empty : $"Resumo salvo: {fileName}";
     }
+
+    /// <summary>
+    /// Answers the export's "there is already one of these" question through the screen's dialog.
+    /// </summary>
+    private Task<bool> AskReplaceAsync(string fileName) =>
+        ReplaceRequest.AskAsync($"Já existe um arquivo chamado {fileName} nesta pasta. Substituir?");
 
     private async Task ExportBackup()
     {
         BackupMsgIsError = false;
         BackupMsg = string.Empty;
 
-        var destination = await backupFileDialog.CreateAsync(BackupArchive.SuggestedFileName()).WithSync();
+        var destination = await fileExportDialog
+            .CreateAsync(BackupArchive.SuggestedFileName(), ExportFileKind.Zip, AskReplaceAsync)
+            .WithSync();
+
         if (destination == null)
         {
             return;
         }
 
         Response result;
-        await using (destination.ConfigureAwait(true))
+        await using (destination.Content.ConfigureAwait(true))
         {
-            result = await backupArchive.WriteToAsync(destination).WithSync();
+            result = await backupArchive.WriteToAsync(destination.Content).WithSync();
         }
 
         BackupMsgIsError = result != Response.Successful;
@@ -600,7 +618,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         BackupMsgIsError = false;
         BackupMsg = string.Empty;
 
-        var source = await backupFileDialog.OpenAsync().WithSync();
+        var source = await fileExportDialog.OpenBackupAsync().WithSync();
         if (source == null)
         {
             return;

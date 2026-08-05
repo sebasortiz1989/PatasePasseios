@@ -14,6 +14,10 @@ public interface ReportExporter
     /// </summary>
     /// <param name="report">The report's content.</param>
     /// <param name="suggestedFileName">The name to offer in the save dialog, without extension.</param>
+    /// <param name="confirmReplace">
+    /// Asked with the file name when one is already there, on the platforms where the app does the
+    /// naming itself. Returning false cancels the export.
+    /// </param>
     /// <returns>The name of the file written, or null if the user cancelled.</returns>
-    Task<string?> ExportAsync(ReportDocument report, string suggestedFileName);
+    Task<string?> ExportAsync(ReportDocument report, string suggestedFileName, Func<string, Task<bool>> confirmReplace);
 }
