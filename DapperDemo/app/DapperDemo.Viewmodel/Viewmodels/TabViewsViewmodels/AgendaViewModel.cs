@@ -277,7 +277,7 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
             return false;
         }
 
-        return HomeShowPaid || !service.ServicePaid || !service.ServiceDone;
+        return HomeShowPaid || !service.ServiceDone;
     }
 
     /// <summary>
@@ -374,7 +374,6 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
             sv.ServicePaid ? "Pago" : "Sem pagar",
             sv.ServiceDone,
             sv.ServiceDone ? "Feito" : "A fazer",
-            sv.ServiceDone || sv.ServicePaid,
             openCommand,
             toggleCommand,
             toggleDoneCommand);

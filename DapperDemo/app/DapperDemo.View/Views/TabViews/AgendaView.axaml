@@ -190,7 +190,7 @@
                 </WrapPanel>
 
                 <CheckBox
-                    Content="Mostrar serviços já pagos"
+                    Content="Mostrar serviços já feitos"
                     FontFamily="{StaticResource FontBody}"
                     FontSize="31"
                     Foreground="{StaticResource ColorTextMuted65}"
