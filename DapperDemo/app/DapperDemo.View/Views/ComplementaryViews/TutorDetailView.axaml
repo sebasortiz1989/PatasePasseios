@@ -13,15 +13,26 @@
     xmlns:utils="clr-namespace:DapperDemo.Viewmodel.Viewmodels.Utils;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Background="{StaticResource ColorBg}" Width="720">
-        <ScrollViewer>
-            <StackPanel Spacing="0">
-                <buttons:VButton
-                    Classes="BtnBack"
-                    Command="{Binding BackCommand}"
-                    Margin="32,32,0,0"
-                    VText="← Voltar" />
+    <Grid
+        Background="{StaticResource ColorBg}"
+        RowDefinitions="Auto,*"
+        Width="720">
 
+        <!--
+            Outside the ScrollViewer, in its own row, so it stays put while the rest scrolls
+            under it. It carries the background as well, or the content would show through as
+            it passes behind.
+        -->
+        <Border Background="{StaticResource ColorBg}" Grid.Row="0">
+            <buttons:VButton
+                Classes="BtnBack"
+                Command="{Binding BackCommand}"
+                Margin="32,32,0,12"
+                VText="← Voltar" />
+        </Border>
+
+        <ScrollViewer Grid.Row="1">
+            <StackPanel Spacing="0">
                 <StackPanel
                     HorizontalAlignment="Center"
                     Margin="32,32,32,24"
@@ -469,6 +480,7 @@
 
         <!--  Last children of the Grid, so the scrim covers the screen underneath it.  -->
         <components:ConfirmDialog
+            Grid.RowSpan="2"
             CancelCommand="{Binding CancelDeleteCommand}"
             ConfirmCommand="{Binding ConfirmDeleteCommand}"
             IsOpen="{Binding ConfirmingDelete}"
@@ -477,6 +489,7 @@
 
         <!--  Only one of the two is ever open, so they can share the same corner of the Grid.  -->
         <components:ConfirmDialog
+            Grid.RowSpan="2"
             CancelCommand="{Binding CancelPaymentDeleteCommand}"
             ConfirmCommand="{Binding ConfirmPaymentDeleteCommand}"
             IsOpen="{Binding ConfirmingPaymentDelete}"
@@ -489,6 +502,7 @@
             is where that choice is actually made.
         -->
         <components:ConfirmDialog
+            Grid.RowSpan="2"
             CancelCommand="{Binding ReplaceRequest.CancelCommand}"
             ConfirmCommand="{Binding ReplaceRequest.ConfirmCommand}"
             IsOpen="{Binding ReplaceRequest.IsOpen}"
