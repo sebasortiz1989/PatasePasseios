@@ -663,10 +663,10 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
 
         if (partial != null)
         {
-            // The service keeps its price now, so what is left over is simply the part of it this
-            // payment did not reach — no dividing a reduced total back out over hotel nights.
+            // Outstanding, not AmountDue: a payment now settles work that has not been carried out,
+            // and AmountDue is zero for exactly those — which would report a negative remainder.
             var service = tutorServices.First(s => s.Kind == partial.Kind && s.ServiceId == partial.ServiceId);
-            var remainder = service.AmountDue - partial.Amount;
+            var remainder = service.Outstanding - partial.Amount;
 
             preview += $" e deixa {AppSession.Money(remainder)} em aberto no seguinte.";
         }

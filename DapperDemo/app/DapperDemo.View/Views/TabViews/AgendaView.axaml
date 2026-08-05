@@ -279,11 +279,11 @@
                                 </Button>
 
                                 <!--  Indented so an expanded dog's services read as belonging to it.  -->
+                                <!--  Full width: an indent here narrowed every row and left a gap down the side.  -->
                                 <ItemsControl
                                     IsVisible="{Binding IsExpanded}"
                                     ItemTemplate="{StaticResource ServiceRowTemplate}"
-                                    ItemsSource="{Binding Services}"
-                                    Margin="28,0,0,0" />
+                                    ItemsSource="{Binding Services}" />
                             </StackPanel>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

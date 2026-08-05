@@ -24,6 +24,22 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
     private readonly CreditSpender creditSpender;
     private readonly AppSession session;
     private readonly UriLauncher uriLauncher;
+    private readonly CurrentView currentView;
+
+    /// <summary>
+    /// The tutor screen, built on first use rather than in the constructor.
+    /// </summary>
+    /// <remarks>
+    /// TutorDetailViewModel creates a service presenter in <em>its</em> constructor, so creating a
+    /// tutor presenter here eagerly would recurse: service → tutor → service → … until the stack
+    /// gives out. Nothing in the type system stops it, so the laziness is the guard.
+    /// </remarks>
+    private readonly Factory<PresenterBase<TutorDetailViewModel, Unit, Unit>> tutorDetailFactory;
+
+    private PresenterBase<TutorDetailViewModel, Unit, Unit>? tutorDetailView;
+
+    /// <summary>The tutor this service's dog belongs to, resolved when the record loads.</summary>
+    private int? tutorId;
 
     /// <summary>The record as last read, so an edit can be saved without re-reading it.</summary>
     private ServiceItem? current;
@@ -35,7 +51,8 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
         RepositoryTutors repositoryTutors,
         CreditSpender creditSpender,
         AppSession session,
-        UriLauncher uriLauncher)
+        UriLauncher uriLauncher,
+        Factory<PresenterBase<TutorDetailViewModel, Unit, Unit>> tutorDetailFactory)
     {
         this.repositoryServices = repositoryServices;
         this.repositoryDogs = repositoryDogs;
@@ -43,7 +60,10 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
         this.creditSpender = creditSpender;
         this.session = session;
         this.uriLauncher = uriLauncher;
+        this.currentView = currentView;
+        this.tutorDetailFactory = tutorDetailFactory;
         BackCommand = new SynchronizedCommand(currentView.GoBack, SynchronizationBehavior.Discard, true);
+        OpenTutorCommand = new SynchronizedCommand(OpenTutor, SynchronizationBehavior.Discard, true);
         AddToCalendarCommand = new SynchronizedCommand(AddToCalendar, SynchronizationBehavior.Discard, true);
         ToggleDoneCommand = new SynchronizedCommand(ToggleDone, SynchronizationBehavior.Discard, true);
         AskDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = true, SynchronizationBehavior.Discard, true);
@@ -55,6 +75,9 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
     }
 
     public ICommand BackCommand { get; }
+
+    /// <summary>Opens the tutor this service's dog belongs to.</summary>
+    public ICommand OpenTutorCommand { get; }
 
     public ICommand AddToCalendarCommand { get; }
 
@@ -418,6 +441,23 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
         BackCommand.Execute(null);
     }
 
+    /// <summary>
+    /// Shows the tutor behind this booking. CurrentView keeps a back stack, so the tutor screen's
+    /// own Back returns here.
+    /// </summary>
+    private Task OpenTutor()
+    {
+        if (tutorId is not int id)
+        {
+            return Task.CompletedTask;
+        }
+
+        session.SelectedTutorId = id;
+        tutorDetailView ??= tutorDetailFactory.Create();
+        currentView.ViewShown = tutorDetailView;
+        return Task.CompletedTask;
+    }
+
     /// <summary>Returns a deleted service's applied credit to the tutor who funded it.</summary>
     private async Task RefundCreditAsync(ServiceItem? service)
     {
@@ -468,6 +508,11 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
         DogInitials = AppSession.Initials(service.DogName);
         DogImagePath = DogImageStore.ResolvePath(service.DogImage);
         TutorName = service.TutorName;
+
+        // ServiceItem carries the tutor's name but not their id, so the link needs the dog to
+        // resolve who to open.
+        tutorId = (await repositoryDogs.GetAsync(service.DogId).WithSync())?.TutorId;
+
         DateLabel = AppSession.DateTimeLabel(service.Date, service.Kind);
         IsHotel = service.Kind == ServiceKind.Hotel;
         IsDayCare = service.Kind == ServiceKind.DayCare;

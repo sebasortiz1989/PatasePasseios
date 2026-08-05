@@ -9,6 +9,7 @@
     xmlns:complementaryViewsViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:components="using:DapperDemo.View.Components"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:inputs="using:AvaloniaFramework.Controls.Inputs"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:utils="clr-namespace:DapperDemo.Viewmodel.Viewmodels.Utils;assembly=DapperDemo.Viewmodel"
     xmlns:viewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels;assembly=DapperDemo.Viewmodel"
@@ -96,11 +97,23 @@
                             Padding="0,20,0,0">
                             <StackPanel Spacing="6">
                                 <TextBlock Classes="Kicker" Text="Tutor" />
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="34"
-                                    Foreground="{StaticResource ColorText}"
-                                    Text="{Binding OwnerName}" />
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock
+                                        FontFamily="{StaticResource FontBody}"
+                                        FontSize="34"
+                                        Foreground="{StaticResource ColorText}"
+                                        Text="{Binding OwnerName}"
+                                        VerticalAlignment="Center" />
+
+                                    <!--  Straight to this dog's tutor; their Back returns here.  -->
+                                    <buttons:VButton
+                                        Classes="BtnGhost"
+                                        Command="{Binding OpenTutorCommand}"
+                                        Grid.Column="1"
+                                        Height="56"
+                                        VText="Ver tutor →"
+                                        VerticalAlignment="Center" />
+                                </Grid>
                             </StackPanel>
                         </Border>
 
@@ -233,17 +246,19 @@
 
                         <StackPanel Spacing="10">
                             <TextBlock Classes="FormLabel" Text="Tutor" />
-                            <ComboBox
+                            <!--  Typeable: the tutor list grows, and scrolling it to find a name does not.  -->
+                            <inputs:VSearchableComboBox
                                 Classes="FormInput"
                                 ItemsSource="{Binding TutorOptions}"
-                                PlaceholderText="Selecione…"
-                                SelectedItem="{Binding EditTutor}">
-                                <ComboBox.ItemTemplate>
+                                SelectedItem="{Binding EditTutor}"
+                                ValueMemberBinding="{Binding Label, DataType=utils:TutorOption}"
+                                PlaceholderText="Selecione…">
+                                <inputs:VSearchableComboBox.ItemTemplate>
                                     <DataTemplate DataType="utils:TutorOption">
-                                        <TextBlock Text="{Binding Label}" />
+                                        <TextBlock FontSize="34" Text="{Binding Label}" />
                                     </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
+                                </inputs:VSearchableComboBox.ItemTemplate>
+                            </inputs:VSearchableComboBox>
                         </StackPanel>
 
                         <StackPanel Spacing="10">

@@ -481,6 +481,36 @@
     </Style>
 
     <!--
+        The searchable picker (framework VSearchableComboBox, themed as the AutoCompleteBox it
+        derives from) dressed to match ComboBox.FormInput beside it — a dog or tutor list should not
+        look like a different kind of field just because it can be typed into.
+
+        The outer control carries the border; the inner TextBox is stripped of its own and given the
+        size and padding, since that is the part actually holding the text.
+    -->
+    <Style Selector="AutoCompleteBox.FormInput">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="CornerRadius" Value="7" />
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="34" />
+        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="MinHeight" Value="90" />
+    </Style>
+    <Style Selector="AutoCompleteBox.FormInput /template/ TextBox">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="34" />
+        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+        <Setter Property="MinHeight" Value="90" />
+        <Setter Property="Padding" Value="18,0" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <!--
         Text selection. Fluent's default highlight reads as a near-black block on this light
         surface; these put it on the accent instead. SelectionBrush/SelectionForegroundBrush are
         plain TextBox properties, so this reaches the TextBox inside VTextBoxWithLabel's template

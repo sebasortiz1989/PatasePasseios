@@ -26,6 +26,12 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
     private readonly PresenterBase<ServiceDetailViewModel, Unit, Unit> serviceDetailView;
 
     /// <summary>
+    /// The tutor screen, built on first use. Lazy for the same reason as on the service screen —
+    /// eager creation of these cross-links recurses through the factories.
+    /// </summary>
+    private readonly Factory<PresenterBase<TutorDetailViewModel, Unit, Unit>> tutorDetailFactory;
+
+    /// <summary>
     /// The photo file name currently in the database, as opposed to <see cref="PhotoFileName"/>
     /// which is what the open editor would save. The two differ while a new photo has been picked
     /// but not yet saved, which is what lets Cancel put the old one back.
@@ -42,6 +48,8 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
     /// </summary>
     private bool rebuildingOptions;
 
+    private PresenterBase<TutorDetailViewModel, Unit, Unit>? tutorDetailView;
+
     public DogDetailViewModel(
         CurrentView currentView,
         NavigationController navigationController,
@@ -50,7 +58,8 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
         RepositoryServices repositoryServices,
         ImagePicker imagePicker,
         AppSession session,
-        Factory<PresenterBase<ServiceDetailViewModel, Unit, Unit>> serviceDetailFactory)
+        Factory<PresenterBase<ServiceDetailViewModel, Unit, Unit>> serviceDetailFactory,
+        Factory<PresenterBase<TutorDetailViewModel, Unit, Unit>> tutorDetailFactory)
     {
         this.repositoryDogs = repositoryDogs;
         this.repositoryTutors = repositoryTutors;
@@ -58,8 +67,10 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
         this.imagePicker = imagePicker;
         this.session = session;
         this.currentView = currentView;
+        this.tutorDetailFactory = tutorDetailFactory;
         serviceDetailView = serviceDetailFactory.Create();
         BackCommand = new SynchronizedCommand(currentView.GoBack, SynchronizationBehavior.Discard, true);
+        OpenTutorCommand = new SynchronizedCommand(OpenTutor, SynchronizationBehavior.Discard, true);
         AskDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = true, SynchronizationBehavior.Discard, true);
         CancelDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = false, SynchronizationBehavior.Discard, true);
         ConfirmDeleteCommand = new SynchronizedCommand(Delete, SynchronizationBehavior.Discard, true);
@@ -81,6 +92,9 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
     }
 
     public ICommand BackCommand { get; }
+
+    /// <summary>Opens the tutor this dog belongs to.</summary>
+    public ICommand OpenTutorCommand { get; }
 
     public ICommand AskDeleteCommand { get; }
 
@@ -317,6 +331,15 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
     /// Opens the tapped service. CurrentView keeps a back stack, so the service screen's own Back
     /// returns here rather than to the dogs list.
     /// </summary>
+    /// <summary>Shows this dog's tutor. The tutor screen's own Back returns here.</summary>
+    private Task OpenTutor()
+    {
+        session.SelectedTutorId = storedTutorId;
+        tutorDetailView ??= tutorDetailFactory.Create();
+        currentView.ViewShown = tutorDetailView;
+        return Task.CompletedTask;
+    }
+
     private Task Open(ServiceKind kind, int serviceId)
     {
         session.SelectedServiceKind = kind;

@@ -186,11 +186,16 @@ public class RepositoryPaymentsTests
     }
 
     /// <summary>
-    /// Work that has not been carried out is not chargeable, so a payment must not land on it —
-    /// the rule <see cref="ServiceItem.AmountDue"/> encodes still holds through the ledger.
+    /// A payment settles a booking that has not been carried out yet, and nothing spills into
+    /// credit. Paying up front is the ordinary case, and the sitter should not have to tick the
+    /// work done before the money lands on it.
     /// </summary>
+    /// <remarks>
+    /// The service is still not billable — <see cref="ServiceItem.AmountDue"/> stays zero until it
+    /// is executed. Settling it and being allowed to ask for it are two different questions.
+    /// </remarks>
     [Fact]
-    public async Task APaymentSkipsWorkThatHasNotBeenCarriedOut()
+    public async Task APaymentSettlesWorkThatHasNotBeenCarriedOut()
     {
         using var db = new TestDatabase();
         var (petSitterId, tutorId, dogId) = await db.SeedAccountAsync();
@@ -208,8 +213,36 @@ public class RepositoryPaymentsTests
         await PayAsync(db, petSitterId, tutorId, 100m);
 
         var service = (await db.Services.ListForTutorAsync(petSitterId, tutorId)).Single();
-        Assert.Equal(0m, service.AmountSettled);
-        Assert.Equal(100m, (await db.Tutors.GetAsync(tutorId))!.Credit);
+        Assert.Equal(100m, service.AmountSettled);
+        Assert.True(service.ServicePaid);
+        Assert.Equal(0m, service.Outstanding);
+
+        // Nothing was left over, so no credit was banked.
+        Assert.Equal(0m, (await db.Tutors.GetAsync(tutorId))!.Credit);
+    }
+
+    /// <summary>Only what the services could not absorb is held as credit.</summary>
+    [Fact]
+    public async Task OnlyTheSurplusBecomesCredit()
+    {
+        using var db = new TestDatabase();
+        var (petSitterId, tutorId, dogId) = await db.SeedAccountAsync();
+
+        await db.Services.AddWalkAsync(new WalkingService
+        {
+            DogId = dogId,
+            PetSitterId = petSitterId,
+            Date = August1,
+            Price = 100m,
+            ServicePaid = false,
+            ServiceDone = false,
+        });
+
+        await PayAsync(db, petSitterId, tutorId, 250m);
+
+        var service = (await db.Services.ListForTutorAsync(petSitterId, tutorId)).Single();
+        Assert.True(service.ServicePaid);
+        Assert.Equal(150m, (await db.Tutors.GetAsync(tutorId))!.Credit);
     }
 
     [Fact]

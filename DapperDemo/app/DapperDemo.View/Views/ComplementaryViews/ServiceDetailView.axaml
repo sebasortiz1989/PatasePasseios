@@ -102,6 +102,14 @@
                                 <Run Text="tutor: " />
                                 <Run Text="{Binding TutorName}" />
                             </TextBlock>
+
+                            <!--  Straight to the tutor behind this booking; their Back returns here.  -->
+                            <buttons:VButton
+                                Classes="BtnGhost"
+                                Command="{Binding OpenTutorCommand}"
+                                Height="56"
+                                HorizontalAlignment="Left"
+                                VText="Ver tutor →" />
                         </StackPanel>
                     </Grid>
 

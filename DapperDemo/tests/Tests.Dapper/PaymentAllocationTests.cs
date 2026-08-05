@@ -13,9 +13,13 @@ public class PaymentAllocationTests
 {
     private static readonly DateTime August1 = new(2026, 8, 1, 9, 0, 0);
 
-    /// <summary>An advance is not a payment: with nothing executed there is nothing to settle.</summary>
+    /// <summary>
+    /// Money already handed over settles the bookings it covers, carried out or not. The
+    /// executed-before-paid rule governs what the sitter may <em>ask</em> for — see
+    /// <see cref="ServiceItem.AmountDue"/> — not what a payment in hand may clear.
+    /// </summary>
     [Fact]
-    public void NothingExecutedMeansNothingIsAllocated()
+    public void APaymentSettlesWorkThatHasNotBeenCarriedOut()
     {
         var services = new[]
         {
@@ -25,37 +29,47 @@ public class PaymentAllocationTests
 
         var (payments, applied) = PaymentAllocation.Allocate(services, 500m);
 
-        Assert.Empty(payments);
-        Assert.Equal(0m, applied);
+        Assert.Equal(2, payments.Count);
+        Assert.All(payments, p => Assert.True(p.FullyPaid));
+        Assert.Equal(200m, applied);
+
+        // Neither is billable yet, so the tutor's balance is still nothing — the two figures are
+        // deliberately independent.
+        Assert.All(services, s => Assert.Equal(0m, s.AmountDue));
     }
 
     /// <summary>
-    /// The executed one is settled and the booking still to come is left alone, however much money
-    /// arrived — the sitter has not earned it yet.
+    /// A payment and the credit that same payment would have become settle identically. They used
+    /// to differ, which is what made paying before anything was ticked done behave strangely.
     /// </summary>
     [Fact]
-    public void OnlyExecutedServicesAreSettled()
+    public void APaymentAndCreditSettleTheSameServices()
     {
         var services = new[]
         {
-            Service(1, ServiceKind.Walk, August1, 100m, done: true),
-            Service(2, ServiceKind.Sitting, August1.AddDays(1), 100m),
+            Service(1, ServiceKind.Walk, August1, 100m),
+            Service(2, ServiceKind.Sitting, August1.AddDays(1), 100m, done: true),
         };
 
-        var (payments, applied) = PaymentAllocation.Allocate(services, 500m);
+        var payment = PaymentAllocation.Allocate(services, 150m);
+        var credit = PaymentAllocation.AllocateCredit(services, 150m);
 
-        Assert.Single(payments);
-        Assert.Equal(1, payments[0].ServiceId);
-        Assert.True(payments[0].FullyPaid);
-        Assert.Equal(100m, applied);
+        Assert.Equal(payment.Applied, credit.Applied);
+        Assert.Equal(
+            payment.Payments.Select(p => (p.ServiceId, p.Amount)),
+            credit.Payments.Select(p => (p.ServiceId, p.Amount)));
+
+        // The only difference is where the money is recorded as having come from.
+        Assert.All(payment.Payments, p => Assert.Equal(0m, p.FromCredit));
+        Assert.All(credit.Payments, p => Assert.True(p.FromCredit > 0m));
     }
 
     /// <summary>
-    /// Age does not override execution: an old booking that never happened is skipped in favour of
-    /// a newer one that did.
+    /// The longest-outstanding booking is cleared first, whether or not it has been carried out —
+    /// execution no longer moves a service up or down the queue.
     /// </summary>
     [Fact]
-    public void AnOlderUnexecutedServiceDoesNotJumpTheQueue()
+    public void TheOldestUnsettledServiceIsClearedFirst()
     {
         var services = new[]
         {
@@ -66,7 +80,7 @@ public class PaymentAllocationTests
         var (payments, applied) = PaymentAllocation.Allocate(services, 100m);
 
         Assert.Single(payments);
-        Assert.Equal(2, payments[0].ServiceId);
+        Assert.Equal(1, payments[0].ServiceId);
         Assert.Equal(100m, applied);
     }
 
@@ -160,9 +174,8 @@ public class PaymentAllocationTests
     }
 
     /// <summary>
-    /// The rule that separates credit from a payment. Credit is money already handed over, so it
-    /// settles a booking that has not happened yet — which <see cref="PaymentAllocation.Allocate"/>
-    /// refuses to do.
+    /// The scenario credit exists for: an advance spent on a booking that has not happened yet, with
+    /// the part it covered attributed to credit so the service screen can say where it came from.
     /// </summary>
     [Fact]
     public void CreditSettlesWorkThatHasNotBeenCarriedOut()
@@ -176,9 +189,6 @@ public class PaymentAllocationTests
         Assert.Equal(450m, payments[0].FromCredit);
         Assert.False(payments[0].FullyPaid);
         Assert.Equal(450m, applied);
-
-        // A payment of the same size would settle nothing at all here.
-        Assert.Empty(PaymentAllocation.Allocate(booked, 450m).Payments);
     }
 
     /// <summary>Credit beyond what the bookings cost stays with the tutor.</summary>

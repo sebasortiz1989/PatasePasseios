@@ -7,6 +7,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:inputs="using:AvaloniaFramework.Controls.Inputs"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:tabViewsViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.TabViewsViewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:utils="clr-namespace:DapperDemo.Viewmodel.Viewmodels.Utils;assembly=DapperDemo.Viewmodel"
@@ -115,26 +116,19 @@
                             FontSize="28"
                             Foreground="{StaticResource ColorTextMuted70}"
                             Text="Cachorro" />
-                        <ComboBox
-                            Background="Transparent"
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="2"
-                            CornerRadius="7"
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="34"
-                            Foreground="{StaticResource ColorText}"
-                            HorizontalAlignment="Stretch"
+                        <!--  Typeable: the dog list grows, and scrolling it to find a name does not.  -->
+                        <inputs:VSearchableComboBox
+                            Classes="FormInput"
                             ItemsSource="{Binding DogOptions}"
-                            MinHeight="74"
-                            Padding="18,0"
-                            PlaceholderText="Selecione…"
-                            SelectedItem="{Binding SelectedDog}">
-                            <ComboBox.ItemTemplate>
+                            SelectedItem="{Binding SelectedDog}"
+                            ValueMemberBinding="{Binding Label, DataType=utils:DogOption}"
+                            PlaceholderText="Selecione…">
+                            <inputs:VSearchableComboBox.ItemTemplate>
                                 <DataTemplate DataType="utils:DogOption">
-                                    <TextBlock Text="{Binding Label}" />
+                                    <TextBlock FontSize="34" Text="{Binding Label}" />
                                 </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
+                            </inputs:VSearchableComboBox.ItemTemplate>
+                        </inputs:VSearchableComboBox>
 
                         <!--  Confirms which tutor the booking is with, derived from the chosen dog.  -->
                         <StackPanel
