@@ -327,6 +327,10 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
     /// Billing for one month, counting only services already marked paid. Hotel stays contribute
     /// their daily rate, matching how the price is entered and shown.
     /// </summary>
+    /// <param name="month">
+    /// The month to scope to, 1-12, or a non-positive value to total the whole <paramref name="year"/>
+    /// instead — the sentinel the month picker's "whole year" entry carries.
+    /// </param>
     public async Task<MonthlyIncome> GetMonthlyIncomeAsync(int petSitterId, int year, int month)
     {
         var services = await ListForPetSitterAsync(petSitterId).ConfigureAwait(false);
@@ -335,7 +339,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
         // amount rather than nothing. A fully paid service settled before this column existed has
         // AmountSettled 0, so ServicePaid falls back to its full total.
         var thisMonth = services
-            .Where(s => s.Date.Year == year && s.Date.Month == month)
+            .Where(s => s.Date.Year == year && (month <= 0 || s.Date.Month == month))
             .ToArray();
 
         decimal Received(ServiceKind kind) => thisMonth

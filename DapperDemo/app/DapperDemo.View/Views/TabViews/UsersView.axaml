@@ -434,7 +434,7 @@
                                 Foreground="{StaticResource ColorAccent}"
                                 LetterSpacing="2"
                                 Margin="0,16,0,0"
-                                Text="RECEBIDO NO MÊS" />
+                                Text="{Binding ReceivedHeading}" />
 
                             <TextBlock
                                 FontFamily="{StaticResource FontBody}"
@@ -442,7 +442,7 @@
                                 FontStyle="Italic"
                                 Foreground="{StaticResource ColorTextMuted45}"
                                 IsVisible="{Binding HasNothingPaidInMonth}"
-                                Text="Nada recebido neste mês." />
+                                Text="{Binding NoPaidLabel}" />
 
                             <ItemsControl ItemsSource="{Binding PaidSummaries}">
                                 <ItemsControl.ItemTemplate>
@@ -499,7 +499,7 @@
                                     FontSize="25"
                                     Foreground="{StaticResource ColorAccent}"
                                     LetterSpacing="2"
-                                    Text="A RECEBER NO MÊS"
+                                    Text="{Binding PendingHeading}"
                                     VerticalAlignment="Center" />
                                 <TextBlock
                                     FontFamily="{StaticResource FontHeading}"
@@ -516,7 +516,7 @@
                                 FontStyle="Italic"
                                 Foreground="{StaticResource ColorTextMuted45}"
                                 IsVisible="{Binding HasNothingPendingInMonth}"
-                                Text="Nada pendente neste mês." />
+                                Text="{Binding NoPendingLabel}" />
 
                             <ItemsControl ItemsSource="{Binding PendingSummaries}">
                                 <ItemsControl.ItemTemplate>
@@ -594,7 +594,7 @@
                                 FontSize="51"
                                 Foreground="{StaticResource ColorText}"
                                 Text="{Binding ServiceCountLabel}" />
-                            <TextBlock Classes="Kicker" Text="No mês" />
+                            <TextBlock Classes="Kicker" Text="{Binding ServiceCountKicker}" />
                         </StackPanel>
                         <StackPanel Grid.Column="3" Spacing="2">
                             <TextBlock
