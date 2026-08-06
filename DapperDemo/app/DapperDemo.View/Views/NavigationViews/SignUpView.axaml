@@ -14,25 +14,12 @@
     xmlns:viewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <!--
+        The drop-down button used to be retemplated here, with its own copy of a calendar glyph.
+        ClassicalTheme now does it for every date field in the app, so this screen inherits the
+        shared icon and divider instead of drifting from them.
+    -->
     <UserControl.Styles>
-        <Style Selector="CalendarDatePicker /template/ Button">
-            <Setter Property="Width">80</Setter>
-            <Setter Property="Template">
-                <ControlTemplate>
-                    <Border
-                        BorderThickness="1,1,0,1"
-                        ClipToBounds="False"
-                        Width="80">
-                        <PathIcon
-                            Data="{StaticResource CalendarIcon}"
-                            Foreground="{StaticResource ColorAccent}"
-                            Height="38"
-                            Width="34" />
-                    </Border>
-                </ControlTemplate>
-            </Setter>
-        </Style>
-
         <Style Selector="CalendarDatePicker:pressed /template/ Border#Background">
             <Setter Property="Background" Value="{StaticResource ColorBg}" />
         </Style>
@@ -41,12 +28,6 @@
             <Setter Property="Background" Value="{StaticResource ColorBg}" />
         </Style>
     </UserControl.Styles>
-
-    <UserControl.Resources>
-        <StreamGeometry x:Key="CalendarIcon">
-            M3.91071 0.697266C4.32493 0.697266 4.66071 1.01906 4.66071 1.41602V2.31445H14.625V1.41602C14.625 1.01906 14.9608 0.697266 15.375 0.697266C15.7892 0.697266 16.125 1.01906 16.125 1.41602V2.37964C18.0451 2.71763 19.5 4.32978 19.5 6.26758L19.5 17.0489C19.5 19.2322 17.6532 21.0021 15.375 21.0021H4.125C1.84683 21.0021 0 19.2322 0 17.0489V6.26758C0 4.40255 1.3477 2.83917 3.16071 2.42305V1.41602C3.16071 1.01906 3.4965 0.697266 3.91071 0.697266ZM4.125 3.75195C2.67525 3.75195 1.5 4.87824 1.5 6.26758V6.99264C1.61032 6.93149 1.73839 6.89648 1.875 6.89648H17.625C17.7616 6.89648 17.8897 6.93149 18 6.99264V6.26758C18 4.87824 16.8247 3.75195 15.375 3.75195H4.125ZM18 8.23783C17.8897 8.29898 17.7616 8.33398 17.625 8.33398H1.875C1.73839 8.33398 1.61032 8.29898 1.5 8.23783V17.0489C1.5 18.4383 2.67525 19.5646 4.125 19.5646H15.375C16.8247 19.5646 18 18.4383 18 17.0489L18 8.23783ZM10.3125 11.128C10.7267 11.128 11.0625 11.4498 11.0625 11.8467V11.9278C11.0625 12.3247 10.7267 12.6465 10.3125 12.6465C9.89829 12.6465 9.5625 12.3247 9.5625 11.9278V11.8467C9.5625 11.4498 9.89829 11.128 10.3125 11.128ZM14.8125 11.128C15.2267 11.128 15.5625 11.4498 15.5625 11.8467V11.9278C15.5625 12.3247 15.2267 12.6465 14.8125 12.6465C14.3983 12.6465 14.0625 12.3247 14.0625 11.9278V11.8467C14.0625 11.4498 14.3983 11.128 14.8125 11.128ZM5.25 15.5215C5.66421 15.5215 6 15.8433 6 16.2403V16.3214C6 16.7183 5.66421 17.0401 5.25 17.0401C4.83579 17.0401 4.5 16.7183 4.5 16.3214V16.2403C4.5 15.8433 4.83579 15.5215 5.25 15.5215ZM10.3125 15.5215C10.7267 15.5215 11.0625 15.8433 11.0625 16.2403V16.3214C11.0625 16.7183 10.7267 17.0401 10.3125 17.0401C9.89829 17.0401 9.5625 16.7183 9.5625 16.3214V16.2403C9.5625 15.8433 9.89829 15.5215 10.3125 15.5215Z
-        </StreamGeometry>
-    </UserControl.Resources>
 
     <components:DesignCanvas DesignHeight="1560" DesignWidth="720">
         <Grid Background="{StaticResource ColorBg}" Width="720">

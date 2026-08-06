@@ -1,5 +1,5 @@
-using DapperDemo.View;
 using DapperDemo.iOS.DependencyInversion;
+using DapperDemo.View;
 
 namespace DapperDemo.iOS;
 

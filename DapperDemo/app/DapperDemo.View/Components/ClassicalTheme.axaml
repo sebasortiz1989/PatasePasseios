@@ -57,6 +57,9 @@
         <!--  Same stroked 24×24 convention: a calendar page with a plus, for "add to calendar".  -->
         <StreamGeometry x:Key="IconCalendarAdd">M8 2v4 M16 2v4 M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z M3 10h18 M12 13v6 M9 16h6</StreamGeometry>
 
+        <!--  The same page without the plus: the date pickers' drop-down button, which opens a calendar rather than adding to one.  -->
+        <StreamGeometry x:Key="IconCalendar">M8 2v4 M16 2v4 M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z M3 10h18</StreamGeometry>
+
         <!--  Same stroked 24×24 convention: the billing eye, open and struck through.  -->
         <StreamGeometry x:Key="IconEyeOpen">M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z</StreamGeometry>
         <StreamGeometry x:Key="IconEyeClosed">M17.9 17.9A10.1 10.1 0 0 1 12 19c-6.4 0-10-7-10-7a18.4 18.4 0 0 1 5.1-5.9 M10.9 5.2A9.1 9.1 0 0 1 12 5c6.4 0 10 7 10 7a18.5 18.5 0 0 1-2.2 3.2 M14.1 14.1a3 3 0 1 1-4.2-4.2 M2 2l20 20</StreamGeometry>
@@ -592,39 +595,72 @@
         The drop-down button that opens the calendar. Fluent sizes it for a mouse on a desktop
         window; on this 720-wide canvas it ends up a tiny tap target, so it is scaled to match
         the 74px-high field it sits in.
-    -->
-    <!--
-        Filled rather than a ghost: it sits inside the text field's own border, so without its own
-        colour the one part of a date field that is actually clickable looks like decoration.
+
+        The button is retemplated rather than restyled, because its glyph cannot be reached from
+        here. Fluent does not draw it with a PathIcon whose Data could be swapped — the
+        FluentCalendarDatePickerButton theme builds a miniature calendar out of Borders, an
+        Ellipse and a TextBlock of today's day number. At this canvas's scale those primitives
+        collapse into a couple of specks. Replacing the template discards them wholesale and puts
+        the app's own IconCalendar in their place, stroked with Path exactly like every other icon
+        in this file.
+
+        The left divider is the point of the Border: the button sits inside the text field's own
+        outline, so without a rule between them nothing marks which end of the field is a tap
+        target and which is typed into.
     -->
     <Style Selector="CalendarDatePicker /template/ Button#PART_Button">
-        <Setter Property="Width" Value="66" />
-        <Setter Property="Height" Value="73" />
-        <Setter Property="Margin" Value="0,0,4,0" />
+        <Setter Property="Width" Value="80" />
+        <Setter Property="Margin" Value="0" />
         <Setter Property="Padding" Value="0" />
-        <Setter Property="CornerRadius" Value="7" />
-        <Setter Property="Background" Value="{StaticResource ColorAccent}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
-    </Style>
-    <Style Selector="CalendarDatePicker /template/ Button#PART_Button:pointerover">
-        <Setter Property="Background" Value="{StaticResource ColorAccentDark700}" />
-    </Style>
-    <Style Selector="CalendarDatePicker /template/ Button#PART_Button:pressed">
-        <Setter Property="Background" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
+        <Setter Property="Foreground" Value="{StaticResource ColorAccent}" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <!--
+                    Inset by the field's own 2px border and rounded on the right only, so the
+                    button fills its end of the field without overpainting the outline or
+                    squaring off its corner.
+                -->
+                <Border
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{StaticResource ColorDivider}"
+                    BorderThickness="2,0,0,0"
+                    CornerRadius="0,5,5,0"
+                    Margin="0,2,2,2">
+                    <!--
+                        Viewbox rather than a sized Path, matching the other stroked icons: it
+                        scales the stroke along with the geometry, so the outline keeps its weight
+                        once DesignCanvas shrinks the field to phone scale.
+                    -->
+                    <Viewbox
+                        Height="34"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Width="34">
+                        <Path
+                            Data="{StaticResource IconCalendar}"
+                            Stretch="Uniform"
+                            Stroke="{TemplateBinding Foreground}"
+                            StrokeJoin="Round"
+                            StrokeLineCap="Round"
+                            StrokeThickness="2" />
+                    </Viewbox>
+                </Border>
+            </ControlTemplate>
+        </Setter>
     </Style>
     <!--
-        The glyph is black rather than the background colour: on the accent fill the pale version
-        was washed out to the point of being hard to find. The name-independent rule below it is
-        deliberate belt-and-braces — the glyph only inherits Foreground if the template does not
-        set its own, and the button's part name is not guaranteed across Avalonia versions.
+        Pressed and hover invert the pair: the tint fills with accent and the stroke drops to the
+        page colour, so the icon stays legible instead of disappearing into the fill.
     -->
-    <Style Selector="CalendarDatePicker /template/ Button#PART_Button PathIcon">
-        <Setter Property="Width" Value="34" />
-        <Setter Property="Height" Value="34" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+    <Style Selector="CalendarDatePicker /template/ Button#PART_Button:pointerover">
+        <Setter Property="Background" Value="{StaticResource ColorAccent}" />
+        <Setter Property="Foreground" Value="{StaticResource ColorBg}" />
     </Style>
-    <Style Selector="CalendarDatePicker /template/ PathIcon">
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+    <Style Selector="CalendarDatePicker /template/ Button#PART_Button:pressed">
+        <Setter Property="Background" Value="{StaticResource ColorAccentDark700}" />
+        <Setter Property="Foreground" Value="{StaticResource ColorBg}" />
     </Style>
 
     <Style Selector="Calendar">
