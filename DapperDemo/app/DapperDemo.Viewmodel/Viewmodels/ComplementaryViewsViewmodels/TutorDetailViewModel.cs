@@ -800,19 +800,25 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     }
 
     /// <summary>
-    /// Writes this tutor's history to an image: every service, grouped by month, with what has
-    /// been paid and what is still owed, and the Pix key to settle it with.
+    /// Writes this tutor's history to an image: every service in the period the screen's pickers
+    /// are scoped to, grouped by month, with what has been paid and what is still owed, and the
+    /// Pix key to settle it with.
     /// </summary>
     /// <remarks>
     /// Months run newest first, since a bill is usually about what just happened. An image rather
-    /// than a document because it is meant to be sent straight to the tutor over WhatsApp.
+    /// than a document because it is meant to be sent straight to the tutor over WhatsApp. The
+    /// subtitle names the same period the pickers show — "Ano todo de 2026" for the whole-year
+    /// entry, "Agosto de 2026" for a chosen month — so the exported bill matches what was on screen
+    /// when it was asked for, rather than always dumping the tutor's entire history.
     /// </remarks>
     private async Task Export()
     {
+        var periodLabel = $"{SelectedMonth?.Label ?? "Ano todo"} de {SelectedYear.ToString(CultureInfo.InvariantCulture)}";
+
         var report = new ReportDocument
         {
             Title = Name,
-            Subtitle = "Serviços por mês",
+            Subtitle = periodLabel,
             Footer = $"Gerado em {DateTime.Now.ToString("dd/MM/yyyy 'às' HH:mm", CultureInfo.InvariantCulture)}",
         };
 
@@ -824,7 +830,9 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
 
         report.Summary.Add(new ReportField("Cachorros", DogNames));
 
-        foreach (var month in tutorServices.GroupBy(s => new DateTime(s.Date.Year, s.Date.Month, 1)).OrderByDescending(g => g.Key))
+        var scopedServices = tutorServices.Where(s => ServicePeriod.Matches(s, SelectedMonth, SelectedYear)).ToArray();
+
+        foreach (var month in scopedServices.GroupBy(s => new DateTime(s.Date.Year, s.Date.Month, 1)).OrderByDescending(g => g.Key))
         {
             var monthName = Brazil.DateTimeFormat.GetMonthName(month.Key.Month);
             var section = new ReportSection
@@ -877,7 +885,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
             report.Sections.Add(new ReportSection
             {
                 Heading = "Serviços",
-                EmptyMessage = "Nenhum serviço registrado para este tutor.",
+                EmptyMessage = $"Nenhum serviço registrado para este tutor em {periodLabel.ToLower(Brazil)}.",
             });
         }
 

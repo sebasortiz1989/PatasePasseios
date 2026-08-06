@@ -26,8 +26,6 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     /// <summary>Shown in place of a Pix key that has not been set. Also how the editor spots one.</summary>
     private const string NoPix = "Não informada";
 
-    private static readonly CultureInfo Brazil = new("pt-BR");
-
     private readonly RepositoryServices repositoryServices;
     private readonly RepositoryDogs repositoryDogs;
     private readonly RepositoryTutors repositoryTutors;
@@ -101,14 +99,15 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         ImportBackupCommand = new SynchronizedCommand(ImportBackup, SynchronizationBehavior.Discard, true);
         DismissInvalidBackupCommand = new SynchronizedCommand(() => ShowInvalidBackupAlert = false, SynchronizationBehavior.Discard, true);
 
-        for (var month = 1; month <= 12; month++)
+        // "Ano todo" first, then the twelve months — the same list TutorDetail and DogDetail pick
+        // their period from, so a sitter learns one convention across every billing screen.
+        foreach (var month in ServicePeriod.Months())
         {
-            var name = Brazil.DateTimeFormat.GetMonthName(month);
-            MonthOptions.Add(new MonthOption(month, char.ToUpper(name[0], Brazil) + name[1..]));
+            MonthOptions.Add(month);
         }
 
         var now = DateTime.Now;
-        SelectedMonth = MonthOptions[now.Month - 1];
+        SelectedMonth = MonthOptions.First(m => m.Number == now.Month);
         SelectedYear = now.Year;
 
         // Reloading on a filter change rather than behind a button: two pickers and an Apply
@@ -246,6 +245,23 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
 
     public int SelectedYear { get; set; }
 
+    /// <summary>
+    /// Gets a value indicating whether the "Ano todo" entry is selected rather than one month —
+    /// what the labels around the billing figures switch on, since the same pickers now scope
+    /// either a month or the whole year.
+    /// </summary>
+    public bool IsWholeYearPeriod => SelectedMonth is null or { Number: ServicePeriod.WholeYear };
+
+    public string ReceivedHeading => IsWholeYearPeriod ? "RECEBIDO NO ANO" : "RECEBIDO NO MÊS";
+
+    public string PendingHeading => IsWholeYearPeriod ? "A RECEBER NO ANO" : "A RECEBER NO MÊS";
+
+    public string ServiceCountKicker => IsWholeYearPeriod ? "No ano" : "No mês";
+
+    public string NoPaidLabel => IsWholeYearPeriod ? "Nada recebido neste ano." : "Nada recebido neste mês.";
+
+    public string NoPendingLabel => IsWholeYearPeriod ? "Nada pendente neste ano." : "Nada pendente neste mês.";
+
     public string MonthTotalLabel { get; private set; } = string.Empty;
 
     public ObservableCollection<IncomeRow> IncomeBreakdown { get; } = [];
@@ -339,18 +355,19 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
 
             RefreshYearOptions(services);
 
+            // month is the WholeYear sentinel (0) when "Ano todo" is picked — the repository call
+            // and ServicePeriod.Matches both treat that as "any month", so the totals below become
+            // the year's rather than a single month's without a separate code path.
             var month = SelectedMonth?.Number ?? DateTime.Now.Month;
             income = await repositoryServices.GetMonthlyIncomeAsync(session.CurrentPetSitterId, SelectedYear, month).WithSync();
             monthServices = services
-                .Where(s => s.Date.Year == SelectedYear && s.Date.Month == month)
+                .Where(s => ServicePeriod.Matches(s, SelectedMonth, SelectedYear))
                 .ToArray();
             RefreshMoneyLabels();
 
             DogCountLabel = dogs.Length.ToString(CultureInfo.InvariantCulture);
             TutorCountLabel = tutors.Length.ToString(CultureInfo.InvariantCulture);
-            ServiceCountLabel = services
-                .Count(s => s.Date.Year == SelectedYear && s.Date.Month == month)
-                .ToString(CultureInfo.InvariantCulture);
+            ServiceCountLabel = monthServices.Length.ToString(CultureInfo.InvariantCulture);
 
             // Chargeable rather than merely unpaid: an unexecuted booking is not money owed.
             PendingCountLabel = services.Count(s => s.AmountDue > 0m).ToString(CultureInfo.InvariantCulture);
@@ -480,17 +497,23 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     }
 
     /// <summary>
-    /// Writes the selected month's billing to an image: what came in by type, and every service
+    /// Writes the selected period's billing to an image: what came in by type, and every service
     /// with whether it has been paid.
     /// </summary>
     /// <remarks>
     /// The eye is not consulted. Hiding amounts on screen is about who is standing next to you,
-    /// and a summary of bulleted-out figures would be useless.
+    /// and a summary of bulleted-out figures would be useless. The period is whatever the pickers
+    /// above are scoped to — the whole year for the "Ano todo" entry, one month otherwise — and
+    /// <see cref="monthServices"/> and <see cref="income"/> are already filtered to it by
+    /// <see cref="ReloadAsync"/>, so this only has to name it.
     /// </remarks>
     private async Task ExportSummary()
     {
+        var isWholeYear = IsWholeYearPeriod;
         var monthName = SelectedMonth?.Label ?? string.Empty;
         var year = SelectedYear.ToString(CultureInfo.InvariantCulture);
+        var periodPhrase = isWholeYear ? "no ano" : "no mês";
+        var periodDemonstrative = isWholeYear ? "neste ano" : "neste mês";
 
         var report = new ReportDocument
         {
@@ -499,11 +522,11 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
             Footer = $"Gerado em {DateTime.Now.ToString("dd/MM/yyyy 'às' HH:mm", CultureInfo.InvariantCulture)}",
         };
 
-        // No Pix key here: this report is the sitter's own record of the month, not something a
+        // No Pix key here: this report is the sitter's own record of the period, not something a
         // tutor is asked to pay against. The tutor summary is where the key belongs.
         report.Summary.Add(new ReportField("Pet sitter", CurrentUserName));
 
-        var received = new ReportSection { Heading = "Recebido no mês" };
+        var received = new ReportSection { Heading = $"Recebido {periodPhrase}" };
         received.Columns.Add("Tipo");
         received.Columns.Add("Valor");
         received.RightAligned.Add(false);
@@ -516,8 +539,8 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
 
         var services = new ReportSection
         {
-            Heading = "Serviços do mês",
-            EmptyMessage = "Nenhum serviço neste mês.",
+            Heading = isWholeYear ? "Serviços do ano" : "Serviços do mês",
+            EmptyMessage = $"Nenhum serviço {periodDemonstrative}.",
         };
 
         // Grouped rather than listed one booking per line: a busy month runs to hundreds of rows,
@@ -558,19 +581,21 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         var chargeable = monthServices.Sum(s => s.AmountDue);
         var upcoming = monthServices.Sum(s => s.AmountUpcoming);
 
-        services.Totals.Add(new ReportField("Serviços no mês", monthServices.Length.ToString(CultureInfo.InvariantCulture)));
+        services.Totals.Add(new ReportField($"Serviços {periodPhrase}", monthServices.Length.ToString(CultureInfo.InvariantCulture)));
 
         if (upcoming > 0m)
         {
             services.Totals.Add(new ReportField("A executar (ainda não cobrado)", AppSession.Money(upcoming)));
         }
 
-        services.Totals.Add(new ReportField("A receber no mês", AppSession.Money(chargeable), true));
+        services.Totals.Add(new ReportField($"A receber {periodPhrase}", AppSession.Money(chargeable), true));
         report.Sections.Add(services);
 
-        var monthNumber = (SelectedMonth?.Number ?? 1).ToString("00", CultureInfo.InvariantCulture);
+        var periodSlug = isWholeYear
+            ? year
+            : $"{year}-{(SelectedMonth?.Number ?? 1).ToString("00", CultureInfo.InvariantCulture)}";
         var fileName = await reportExporter
-            .ExportAsync(report, $"faturamento-{year}-{monthNumber}", AskReplaceAsync)
+            .ExportAsync(report, $"faturamento-{periodSlug}", AskReplaceAsync)
             .WithSync();
 
         SummaryMsg = fileName == null ? string.Empty : $"Resumo salvo: {fileName}";
