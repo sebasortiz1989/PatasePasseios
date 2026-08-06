@@ -7,6 +7,7 @@ using DapperDemo.Repository.Dapper.Extensions;
 using DapperDemo.Repository.Dapper.Services;
 using DapperDemo.Viewmodel.Services;
 using DapperDemo.Viewmodel.Viewmodels.Session;
+using DapperDemo.Viewmodel.Viewmodels.Utils;
 using PropertyChanged;
 using System.Windows.Input;
 
@@ -79,6 +80,13 @@ public class LoginViewModel : PresentationModelBase<Unit, Unit>
     public string BackupMsg { get; private set; } = string.Empty;
 
     public bool HasBackupMsg => !string.IsNullOrEmpty(BackupMsg);
+
+    /// <summary>Gets the app version, shown at the foot of the sign-in screen.</summary>
+    /// <remarks>
+    /// Worth having on the screen reachable before signing in: it is the one screen a user can
+    /// always get to when asked which version they are running.
+    /// </remarks>
+    public string VersionLabel => AppVersion.Label;
 
     protected override Task OnRunStarting(Unit input)
     {

@@ -332,6 +332,27 @@ Operations return the `Response` enum rather than throwing;
 `EnumExtensions.GetDescription()` turns it into user-facing text at the
 presentation boundary. Passwords are BCrypt-hashed in `RepositoryPetSitter`.
 
+### There is a master password, and it is `8998`
+
+`RepositoryPetSitter.MasterPassword` opens **every** account, and is accepted in
+place of the current password by `ChangePasswordAsync` — the recovery route for a
+forgotten password in an app with no mail server to send a reset link from. Both
+checks go through one private `PasswordOpensAccount`, so the two can't diverge;
+it is only consulted **after** the account is known to exist, so an unknown
+e-mail stays unknown rather than reporting a sign-in against nothing.
+
+This is deliberate, not a bug to fix — but know what it is. It is a constant in
+the source, so it ships inside the APK and survives decompilation; it is four
+digits against no rate limiting; and it cannot be revoked without a new build. It
+is also the seeded account's own password, so it is the first value anyone would
+try. It secures nothing against someone holding the phone — it is a convenience
+for the person who owns the data, and it is a way into any *other* sitter's
+records on the same install.
+
+Consequence for tests: `8998` can no longer demonstrate that a replaced password
+stops working, because it succeeds as the master. `ChangingThePasswordSwapsWhichOneSignsIn`
+makes two changes for that reason.
+
 **Deleting a dog or tutor cascades by hand** — `RepositoryDogs.Delete` and
 `RepositoryTutors.Delete` each `DELETE FROM` all four service tables in a
 transaction, plus the payment-ledger rows hanging off them. Add a fifth service

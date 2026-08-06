@@ -5,6 +5,13 @@
         <SupportedOSPlatformVersion>18.0</SupportedOSPlatformVersion>
 <!--        <VerifyXcodeVersion>false</VerifyXcodeVersion>-->
         <Nullable>enable</Nullable>
+
+        <!--
+            Overrides CFBundleShortVersionString in Info.plist, which still carries the template's
+            1.0. Unlike the Android SDK, the Apple one has no default for this — left unset it
+            would keep the stale plist value rather than following VersionPrefix.
+        -->
+        <ApplicationDisplayVersion>$(VersionPrefix)</ApplicationDisplayVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
       <CodesignKey>Apple Development: sebasortizsanta@gmail.com (FPTP4N5TLB)</CodesignKey>

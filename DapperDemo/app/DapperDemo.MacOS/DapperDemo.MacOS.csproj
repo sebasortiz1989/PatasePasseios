@@ -7,7 +7,9 @@
     <SupportedOSPlatformVersion>12.0</SupportedOSPlatformVersion>
     <ApplicationTitle>DapperDemo.MacOS</ApplicationTitle>
     <ApplicationId>com.dapperdemo.app</ApplicationId>
-    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <!--  CFBundleShortVersionString, from the one place the release number is written.  -->
+    <ApplicationDisplayVersion>$(VersionPrefix)</ApplicationDisplayVersion>
+    <!--  CFBundleVersion — a build counter rather than the release number, so it is bumped by hand.  -->
     <ApplicationVersion>1</ApplicationVersion>
     <AssemblyName>DapperDemo.MacOS</AssemblyName>
     <RootNamespace>DapperDemo.MacOS</RootNamespace>

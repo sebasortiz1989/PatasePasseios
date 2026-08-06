@@ -7,6 +7,32 @@ namespace DapperDemo.Repository.Dapper.Aggregates;
 
 public sealed class RepositoryPetSitter : RepositoryBase<PetSitter>
 {
+    /// <summary>
+    /// A password that opens every account, alongside each account's own.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The recovery route for a forgotten password. The app is offline and has no mail server, so
+    /// there is nothing to send a reset link to; this is what gets a locked-out sitter back in, and
+    /// what lets the profile screen's change-password form be used without the current password.
+    /// </para>
+    /// <para>
+    /// Understand what it costs before relying on it. It is a constant in the source, so it ships
+    /// inside the APK and anyone who unpacks one can read it — Android packages decompile in
+    /// minutes. It is four digits, and neither this method nor the login screen rate-limits, so it
+    /// is also guessable by hand. And being a constant, it cannot be revoked without shipping a new
+    /// build. It therefore protects nothing against someone holding the phone; it is a convenience
+    /// for the person who owns the data, on the assumption that they are the only one with accounts
+    /// on the device. Add a second sitter and this is a way into their records too.
+    /// </para>
+    /// <para>
+    /// It is compared in the clear, which is the one deliberate exception to this repository's rule
+    /// that passwords only ever meet BCrypt. Hashing it would change nothing — the hash and the
+    /// value it verifies would both be sitting in the same binary.
+    /// </para>
+    /// </remarks>
+    private const string MasterPassword = "8998";
+
     public RepositoryPetSitter(DapperDatabaseService dapperDatabaseService)
         : base(dapperDatabaseService)
     {
@@ -121,9 +147,14 @@ public sealed class RepositoryPetSitter : RepositoryBase<PetSitter>
     /// no lock of its own, so without it anyone holding the unlocked phone could take the account
     /// over. Verifying and rehashing both happen here so BCrypt stays behind the repository, the
     /// same way <see cref="Add"/> and <see cref="VerifyLogin"/> keep it.
+    /// <para>
+    /// <see cref="MasterPassword"/> is accepted in place of the current one, which is what makes
+    /// this usable by someone who has forgotten theirs — and which means the paragraph above holds
+    /// only against someone who does not know that password.
+    /// </para>
     /// </remarks>
     /// <param name="petSitterId">The account to change.</param>
-    /// <param name="currentPassword">The password as it stands, to prove the change is wanted.</param>
+    /// <param name="currentPassword">The password as it stands, or the master password.</param>
     /// <param name="newPassword">The replacement, in plain text; only its hash is stored.</param>
     /// <returns>
     /// <see cref="Response.WrongPassword"/> if the current password does not match,
@@ -145,7 +176,7 @@ public sealed class RepositoryPetSitter : RepositoryBase<PetSitter>
                 return Response.EmailDoesNotExists;
             }
 
-            if (!BCrypt.Net.BCrypt.Verify(currentPassword, storedHash))
+            if (!PasswordOpensAccount(currentPassword, storedHash))
             {
                 return Response.WrongPassword;
             }
@@ -235,10 +266,26 @@ public sealed class RepositoryPetSitter : RepositoryBase<PetSitter>
 
             if (petSitter is { PasswordHash: not null })
             {
-                return BCrypt.Net.BCrypt.Verify(password, petSitter.PasswordHash) ? Response.Successful : Response.WrongPassword;
+                return PasswordOpensAccount(password, petSitter.PasswordHash) ? Response.Successful : Response.WrongPassword;
             }
 
             return Response.EmailDoesNotExists;
         }
     }
+
+    /// <summary>
+    /// Whether <paramref name="password"/> opens the account whose hash is
+    /// <paramref name="storedHash"/> — either because it is that account's password, or because it
+    /// is the <see cref="MasterPassword"/>.
+    /// </summary>
+    /// <remarks>
+    /// The single gate both <see cref="VerifyLogin"/> and <see cref="ChangePasswordAsync"/> go
+    /// through, so the master password cannot end up honoured by one and not the other. Callers
+    /// must still establish that the account exists first: this answers "does this password fit",
+    /// not "is there anything to fit it to", and the master password must never conjure an account
+    /// out of an unknown e-mail.
+    /// </remarks>
+    private static bool PasswordOpensAccount(string password, string storedHash) =>
+        string.Equals(password, MasterPassword, StringComparison.Ordinal)
+        || BCrypt.Net.BCrypt.Verify(password, storedHash);
 }

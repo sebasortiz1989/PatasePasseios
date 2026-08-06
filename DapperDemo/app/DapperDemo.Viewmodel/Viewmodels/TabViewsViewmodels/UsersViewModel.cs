@@ -182,6 +182,9 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
 
     public bool BackupMsgIsError { get; private set; }
 
+    /// <summary>Gets the app version, shown at the foot of the profile screen.</summary>
+    public string VersionLabel => AppVersion.Label;
+
     public string CurrentUserName { get; private set; } = string.Empty;
 
     public string Email { get; private set; } = string.Empty;

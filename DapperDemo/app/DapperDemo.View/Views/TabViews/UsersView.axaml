@@ -668,6 +668,15 @@
                         Height="77"
                         HorizontalAlignment="Stretch"
                         VText="Sair da conta" />
+
+                    <!--
+                        The version comes from VersionPrefix in Directory.Packages.props by way of
+                        the assembly's own metadata, so this line never needs touching.
+                    -->
+                    <TextBlock
+                        Classes="Kicker"
+                        HorizontalAlignment="Center"
+                        Text="{Binding VersionLabel}" />
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

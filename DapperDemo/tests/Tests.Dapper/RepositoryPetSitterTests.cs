@@ -144,17 +144,75 @@ public class RepositoryPetSitterTests
         Assert.Equal(Response.Successful, db.PetSitters.VerifyLogin("test@test.com", "8998"));
     }
 
+    /// <summary>
+    /// A replaced password stops signing in. Shown with two changes rather than one because the
+    /// seeded password is 8998, which is also the master password — logging in with it after the
+    /// change would succeed for that reason and prove nothing about revocation.
+    /// </summary>
     [Fact]
     public async Task ChangingThePasswordSwapsWhichOneSignsIn()
     {
         using var db = new TestDatabase();
         var id = await db.SeedPetSitterAsync();
 
-        var response = await db.PetSitters.ChangePasswordAsync(id, "8998", "novaSenha1");
+        Assert.Equal(Response.Successful, await db.PetSitters.ChangePasswordAsync(id, "8998", "primeiraSenha"));
+        Assert.Equal(Response.Successful, db.PetSitters.VerifyLogin("test@test.com", "primeiraSenha"));
+
+        Assert.Equal(Response.Successful, await db.PetSitters.ChangePasswordAsync(id, "primeiraSenha", "novaSenha1"));
+
+        Assert.Equal(Response.Successful, db.PetSitters.VerifyLogin("test@test.com", "novaSenha1"));
+        Assert.Equal(Response.WrongPassword, db.PetSitters.VerifyLogin("test@test.com", "primeiraSenha"));
+    }
+
+    /// <summary>
+    /// The master password opens an account that has never used it, which is the whole point of
+    /// it — the seeded account's own password happens to be 8998, so a fresh one is used here.
+    /// </summary>
+    [Fact]
+    public async Task TheMasterPasswordSignsInToAnyAccount()
+    {
+        using var db = new TestDatabase();
+
+        await db.PetSitters.Add(new PetSitter
+        {
+            Email = "outra@test.com",
+            PasswordHash = string.Empty,
+            Password = "senhaParticular",
+            Name = "Outra",
+            BirthDate = new DateTime(1988, 3, 14),
+        });
+
+        Assert.Equal(Response.Successful, db.PetSitters.VerifyLogin("outra@test.com", "senhaParticular"));
+        Assert.Equal(Response.Successful, db.PetSitters.VerifyLogin("outra@test.com", "8998"));
+    }
+
+    /// <summary>The recovery path: replacing a password you cannot remember.</summary>
+    [Fact]
+    public async Task TheMasterPasswordReplacesAForgottenPassword()
+    {
+        using var db = new TestDatabase();
+        var id = await db.SeedPetSitterAsync();
+
+        Assert.Equal(Response.Successful, await db.PetSitters.ChangePasswordAsync(id, "8998", "esquecida"));
+
+        var response = await db.PetSitters.ChangePasswordAsync(id, "8998", "lembrada");
 
         Assert.Equal(Response.Successful, response);
-        Assert.Equal(Response.Successful, db.PetSitters.VerifyLogin("test@test.com", "novaSenha1"));
-        Assert.Equal(Response.WrongPassword, db.PetSitters.VerifyLogin("test@test.com", "8998"));
+        Assert.Equal(Response.Successful, db.PetSitters.VerifyLogin("test@test.com", "lembrada"));
+        Assert.Equal(Response.WrongPassword, db.PetSitters.VerifyLogin("test@test.com", "esquecida"));
+    }
+
+    /// <summary>
+    /// The master password answers "does this password fit", never "is there an account here".
+    /// An unknown e-mail has to stay unknown, or it would report a sign-in against nothing.
+    /// </summary>
+    [Fact]
+    public async Task TheMasterPasswordDoesNotOpenAnAccountThatDoesNotExist()
+    {
+        using var db = new TestDatabase();
+
+        Assert.Equal(Response.EmailDoesNotExists, db.PetSitters.VerifyLogin("ninguem@test.com", "8998"));
+        Assert.Equal(Response.EmailDoesNotExists, await db.PetSitters.ChangePasswordAsync(999, "8998", "nova"));
     }
 
     /// <summary>A refused change must not half-apply — the old password has to keep working.</summary>

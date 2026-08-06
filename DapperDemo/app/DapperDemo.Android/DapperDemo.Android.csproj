@@ -5,8 +5,20 @@
         <SupportedOSPlatformVersion>23</SupportedOSPlatformVersion>
         <Nullable>enable</Nullable>
         <ApplicationId>com.CompanyName.DapperDemo</ApplicationId>
+
+        <!--
+            android:versionCode. A build counter, not the release number: Google Play requires it to
+            increase on every upload and it has to stay an integer, so it cannot be derived from
+            VersionPrefix and is bumped by hand when a build is published.
+        -->
         <ApplicationVersion>1</ApplicationVersion>
-        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+
+        <!--
+            android:versionName — the version a user sees in Settings → Apps. Taken from
+            VersionPrefix in Directory.Packages.props, which is the one place the release number is
+            written; the screens read the same number back off the assembly.
+        -->
+        <ApplicationDisplayVersion>$(VersionPrefix)</ApplicationDisplayVersion>
         <AndroidPackageFormat>apk</AndroidPackageFormat>
         <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
         <!--
