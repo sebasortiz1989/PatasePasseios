@@ -10,9 +10,10 @@ A learning project for Dapper: a cross-platform **Avalonia** app for a
 pet-sitting business ("Patas & Passeios"). Identifiers, comments and docs are
 English; the UI text is Brazilian Portuguese.
 
-`README.md` (repo root) holds the intended entity model and a screen-by-screen
-spec. Read it before adding a feature — but treat it as a *design* document: it
-has drifted from the code in places (see **Known drift** below).
+`README.md` (repo root) describes the product as built — screens, schema names
+(`Tutors` / `PetSitterTutors`), and how to run it. For task-specific rules
+(billing, navigation, schema), prefer the skills below over inventing behaviour
+from memory.
 
 Everything below assumes you are in `DapperDemo/` (the solution directory, one
 level under the repo root). `CLAUDE.md` at the repo root is the fuller companion
@@ -115,9 +116,6 @@ tests, so anything in `DapperDemo.Viewmodel` is verified only by running the app
   export assumes one hour.
 - The dog screen lists **upcoming unpaid** services only; the tutor screen lists
   **every** unpaid service (it is the tutor's bill).
-- **Schema vs README naming**: the schema/code use `Tutors` / `PetSitterTutors`,
-  not README's Client / PetSitterClient. The schema wins — say so rather than
-  silently picking one.
 
 ## Domain rules index (auto-attach by file, or read on demand)
 

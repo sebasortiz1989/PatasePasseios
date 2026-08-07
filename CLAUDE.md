@@ -25,10 +25,10 @@ A learning project for Dapper: a cross-platform Avalonia app for a pet-sitting
 business ("Patas & Passeios"). Identifiers, comments and docs are English; the
 UI text is Brazilian Portuguese.
 
-`README.md` (repo root) holds the intended entity model, relationships and a
-screen-by-screen spec. **Read it before adding a feature** rather than inventing
-one — but note it is a design document and has drifted from the code in places
-(see *Known drift* below).
+`README.md` (repo root) describes the product as built — screens, schema names
+(`Tutors` / `PetSitterTutors`, not Client), and how to run it. For task-specific
+rules (billing, navigation, schema), prefer the skills below over inventing
+behaviour from memory.
 
 Everything below assumes you are in `DapperDemo/` (the solution directory, one
 level under the repo root).
@@ -197,9 +197,3 @@ Say what is real — several things here are not:
 - The dog screen lists **upcoming unpaid services only** (`s.Date >= now &&
   !s.ServicePaid`), so past unpaid work is invisible there. The tutor screen lists
   every unpaid service regardless of date, because that list is the tutor's bill.
-
-### Known drift
-
-`README.md` says Client / PetSitterClient; the schema says `Tutors` /
-`PetSitterTutors`, and the code follows the schema. The schema wins — say so
-rather than silently picking one.

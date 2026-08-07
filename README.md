@@ -1,153 +1,155 @@
-
 <div align="center">
-    <h1>Dapper Demo</h1>
-    <img src="images/logo.png" width="150">
+
+# Patas & Passeios
+
+**Serviços para cães** — a cross-platform pet-sitting app built to learn [Dapper](https://github.com/DapperLib/Dapper) over SQLite.
+
+<img src="images/screenshots/login.png" alt="Login — Patas & Passeios" width="280">
+
 </div>
 
-Objective: Create a demo project with simple CRUD operations using dapper, so I can learn dapper in the process.
+Identifiers, comments and docs are English; the UI is Brazilian Portuguese.
 
-The project will consist of an application to keep track of a pet sitting service business.
+---
 
-# Entities
+## What it is
 
-1. **PetSitter:** 
-    - Properties:
-        - `PetSitterID` (INT, Primary Key, Identity/Auto-increment)
-        - `Email` (VARCHAR, Unique)
-        - `Password` (VARCHAR)
-        - `Name` (VARCHAR)
-        - `Birth Date` (DATETIME)
+**Patas & Passeios** helps a dog sitter run the day-to-day of the business:
 
-2. **PetSitterClient:** _**(Junction Table)**_
-    - Properties:
-        - `(PetSitterID, ClientID)` Primary Key
-        - `PetSitterID` (INT, Foreign Key referencing PetSitter.PetSitterID)
-        - ``ClientID`` (INT, Foreign Key referencing Client.ClientID)
-        - Description: Represents the Client Petsitter relation.
+| Area | What you can do |
+| --- | --- |
+| **Agenda** | Browse walks, sitting, hotel and day-care by day / week / month, filter by type, open a booking |
+| **Cães / Tutores** | Register dogs and tutors, photos, breed, address, phone |
+| **Novo serviço** | Book passeio, pet sitting, hotel (with optional extra charge) or day-care |
+| **Pagamentos** | Record payments on the tutor screen — the ledger settles services and banks leftover as credit |
+| **Perfil** | Income by month/type, Pix key, password, PNG month summary, backup export/import |
+| **Extras** | Mark work as done, export a booking to Google Calendar, hide money figures |
 
-3. **Client:**
-    - Properties:
-        - `ClientID` (INT, Primary Key, Identity/Auto-increment)
-        - `ClientName` (VARCHAR)
-        - `ClientTelephone` (INT)
-        - `NeightborHood` (VARCHAR)
-    - Description: Stores the client information.
+Payment is **not** toggled on the agenda. Paid/unpaid tags there are display-only; money is entered from the tutor detail screen.
 
-4. **Dog:**
-    - Properties:
-        - `DogID` (INT, Primary Key, Identity/Auto-increment)
-        - `DogName` (VARCHAR)
-        - `ClientID` (INT, Foreign Key referencing Client.ClientID)
-        - `DogDescription` (VARCHAR)
-    - Description: Stores the name and category of a purchased product.
+Seeded demo login: `test@test.com` / `8998`.
 
-5. **WalkingService:**
-    - Properties:
-        - `WalkingServiceID` (INT, Primary Key, Identity/Auto-increment)
-        - `PetSitterID` (INT, Foreign Key referencing PetSitter.PetSitterID)
-        - `DogID` (INT, Foreign Key referencing Dog.DogID)
-        - `DateAndTime` (DATETIME)
-        - `Price` (FLOAT)
-        - `Paid` (BOOL)
-    - Description: Records walking service details.
+---
 
-6. **PetSittingService:**
-    - Properties:
-        - `PetSittingServiceID` (INT, Primary Key, Identity/Auto-increment)
-        - `PetSitterID` (INT, Foreign Key referencing PetSitter.PetSitterID)
-        - `DogID` (INT, Foreign Key referencing Dog.DogID)
-        - `DateAndTime` (DATETIME)
-        - `Price` (FLOAT)
-        - `Paid` (BOOL)
-    - Description: Records pet sitting service details.
+## Screens
 
-7. **PetHotelService:**
-    - Properties:
-        - `PetHotelServiceID` (INT, Primary Key, Identity/Auto-increment)
-        - `PetSitterID` (INT, Foreign Key referencing PetSitter.PetSitterID)
-        - `DogID` (INT, Foreign Key referencing Dog.DogID)
-        - `RequiresWalkingService` (BOOL)
-        - `InitialDateAndTime` (DATETIME)
-        - `FinalDateAndTime` (DATETIME)
-        - `PricePerDay` (FLOAT)
-        - `Paid` (BOOL)
-    - Description: Records pet hotel service details.
+<p align="center">
+  <img src="images/tabs/agenda.png" height="40" alt="">
+  <img src="images/tabs/dogs.png" height="40" alt="">
+  <img src="images/tabs/tutors.png" height="40" alt="">
+  <img src="images/tabs/services.png" height="40" alt="">
+  <img src="images/tabs/perfil.png" height="40" alt="">
+</p>
 
-## **Relationships:**
+<p align="center">
+  <img src="images/screenshots/agenda.png" width="160" alt="Agenda">
+  &nbsp;
+  <img src="images/screenshots/dogs.png" width="160" alt="Cachorros">
+  &nbsp;
+  <img src="images/screenshots/tutors.png" width="160" alt="Tutores">
+</p>
+<p align="center">
+  <em>Agenda · Cães · Tutores</em>
+</p>
 
-- **PetSitter**:
-    - Can be associated with multiple **WalkingService**, **PetSittingService**, and **PetHotelService** entries (one-to-many).
-    - Can have relationships with multiple clients via the **PetSitterClient** junction table (many-to-many).
+<p align="center">
+  <img src="images/screenshots/services.png" width="160" alt="Novo serviço">
+  &nbsp;
+  <img src="images/screenshots/perfil.png" width="160" alt="Perfil">
+</p>
+<p align="center">
+  <em>Novo serviço · Perfil / faturamento</em>
+</p>
 
-- **Client**:
-    - Can have multiple **Dog** entries (one-to-many).
-    - Can be linked to multiple **PetSitter** entities through the **PetSitterClient** junction table (many-to-many).
+### Tabs
 
-- **PetSitterClient** (junction table):
-    - Links **PetSitter** and **Client** (many-to-many relationship).
+1. **Cães** — dog list; open a dog for photo, tutor, description and bookings.
+2. **Tutores** — tutor list; open a tutor for contact details, dogs, unpaid bill, payment history and “registrar pagamento”.
+3. **Agenda** — upcoming (and optionally past) services, grouped by dog, with paid/done status tags.
+4. **Novo** — create a service for a dog (passeio, pet sitting, hotel, day-care).
+5. **Perfil** — account, password, monthly income breakdown, reports and backup.
 
-- **Dog**:
-    - Belongs to one **Client** (many-to-one).
-    - Can be associated with multiple services:
-        - **WalkingService**
-        - **PetSittingService**
-        - **PetHotelService**
+Login / sign-up and restore-from-backup sit outside the tab shell.
 
-- **Services (WalkingService, PetSittingService, PetHotelService)**:
-    - Each service is linked to:
-        - One **PetSitter** (who provides the service)
-        - One **Dog** (which receives the service)
+---
 
-# Next Steps:
+## Tech stack
 
-1. **Database Implementation:** Translate this entity diagram into actual database tables using your chosen database system (SQL Server, PostgreSQL, MySQL, etc.). Define appropriate data types, constraints (e.g., NOT NULL), and indexes.
-2. **C# Classes:** Create C# classes that correspond to these entities. These classes will be used by Dapper to map data between your database and your application.
-3. **Dapper Queries:** Write Dapper queries to perform CRUD (Create, Read, Update, Delete) operations on these entities.
-4. **UI Design:** Design the user interface for your application, including forms for user registration, adding bank accounts, recording expenses and income, and displaying reports.
+- **.NET 10** (`net10.0`) · **Avalonia 12.1.1** UI
+- **Dapper** + **SQLite** (local DB per install)
+- Custom DI / MVP navigation from the **AvaloniaFramework** git submodule
+- Heads: **Desktop** (Windows/Linux), **MacOS**, **iOS**, **Android** over the same View
 
-# References
+```
+Repository.Dapper  →  Viewmodel  →  View  →  Infrastructure  →  Desktop / Mac / iOS / Android
+                              ↑
+                   AvaloniaFramework (submodule)
+```
 
-Repository:
-- https://github.com/DapperLib/Dapper/tree/main
-- https://github.com/DapperLib/Dapper/tree/main/tests/Dapper.Tests
+---
 
-Chat GPT:
-- https://chat.chatbotapp.ai/chats/-OcLlKIx4ti-bolurpIB?model=gemini
+## Domain model (as implemented)
 
-Tutorials:
-- https://dappertutorial.net/online-examples
-- https://www.learndapper.com/non-query
+Schema names win over older “Client” wording — the code uses **Tutors** / **PetSitterTutors**.
 
-# Views
+```
+PetSitter ──┬── PetSitterTutors ── Tutors ── Dogs
+            │                         │
+            ├── WalkingService ───────┤
+            ├── PetSittingService ────┤
+            ├── PetHotelService ──────┤  (+ ExtraCharge, RequiresWalking)
+            ├── DayCareService ───────┤  (+ RequiresWalking)
+            │                         │
+            └── TutorPayments ────────┘
+                    └── TutorPaymentAllocations  (Kind + ServiceId)
+```
 
-- LoginView: email, password, checkbox login automatically
-- SignupView: email, password, name, birth date
-- MainView: Bottom navigation tabs like instagram (Home, Dogs, Tutors, Services, User)
+Each service row carries independent **`ServiceDone`** (work happened) and **`ServicePaid`** (money settled) flags, plus settlement columns (`AmountSettled`, `CreditApplied`). Hotel total = nights × daily rate + extra charge. Tutor **credit** is spent automatically when new bookings are created.
 
-- Dogs tab: Shows dog list, and you can tap on them for more info.
-	- Dog Info view: Dog name, photo, owner, description, future services
+---
 
-- Tutors tab: Shows a Tutor list, and you can tab on them for more info.
-	- Tutor Info view: Shows information of the Tutor. Name, telephone, neighborhood, dogs, future services
+## Getting started
 
-- Services tab: From this view you can create a new service
-	- Create Service View: Creates a new services whether walking, pet sitting or hotel. 
-	        - `DogName`
-	        - `RequiresWalkingService` Only on hotel
-	        - `DateAndTime` or `InitialDateAndTime` on hotel
-	        - `FinalDateAndTime` Only on hotel
-	        - `Price` or `PricePerDay` on hotel
+```bash
+git clone --recursive git@github.com:sebasortiz1989/DapperDemo.git
+cd DapperDemo
 
-- User tab: Requires authentication.
-	- Shows name
-	- Password and option to change it.
-	- Income for the month, divided by the services.
+# if the clone was not recursive:
+git submodule update --init --recursive
 
-- Home tab (Shows upcoming services information including today, 1 week), filters, and basically from there Shows a lists of services with filters, you can tab on them to show info. The list can be filtered by date, as well as (Show paid boolean) by default always shows unpaid.
-- Service Info View: Shows information
-    - Service Type
-    - Dog Name
-    - Tutor Name
-    - Date
-    - Price or Price per day 
-    - Paid
+cd DapperDemo
+dotnet build app/DapperDemo.Desktop/DapperDemo.Desktop.csproj
+dotnet run --project app/DapperDemo.Desktop/DapperDemo.Desktop.csproj
+dotnet test tests/Tests.Dapper/Tests.Dapper.csproj
+```
+
+Prefer building the **Desktop** head on Linux/CI: the iOS/Android/MacOS projects need mobile workloads a plain SDK image does not have. Stop a running head before rebuilding — it locks `bin/` (`MSB3027` / `MSB3021`).
+
+---
+
+## Repository layout
+
+```
+<repo>/
+  README.md                 ← this file
+  CLAUDE.md / .cursor/      ← agent guidance (skills + rules)
+  images/                   ← logo, tab icons, README screenshots
+  external/AvaloniaFramework/   ← git submodule
+  DapperDemo/
+    src/Repository.Dapper/  ← SQLite schema, DTOs, repositories, backup
+    app/DapperDemo.Viewmodel/
+    app/DapperDemo.View/    ← .axaml screens (pt-BR)
+    app/DapperDemo.Infrastructure/
+    app/DapperDemo.Desktop|MacOS|iOS|Android/
+    tests/Tests.Dapper/     ← data-layer tests
+```
+
+Deep topic notes live under `.claude/skills/` (and mirrored Cursor rules): navigation, schema, money/payments, backup, styling canvas, Avalonia docs connector.
+
+---
+
+## References
+
+- [Dapper](https://github.com/DapperLib/Dapper)
+- [Avalonia](https://avaloniaui.net/)
+- [Dapper tutorial](https://dappertutorial.net/online-examples) · [learndapper.com](https://www.learndapper.com/non-query)
