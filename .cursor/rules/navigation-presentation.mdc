@@ -1,0 +1,53 @@
+---
+description: How screen navigation, the CurrentView back stack, and passing "which record am I opening" work in DapperDemo. Use when adding a new screen, changing how a screen is shown or returned to, or wiring commands on a row/list.
+globs: DapperDemo/app/DapperDemo.Viewmodel/Viewmodels/**/*.cs,DapperDemo/app/DapperDemo.View/Views/**/*.axaml.cs
+alwaysApply: false
+---
+
+# Navigation & presentation wiring
+
+Full write-up (read before non-trivial changes): `.claude/skills/navigation-presentation/SKILL.md`.
+
+View models derive from `PresentationModelBase<TInput, TResult>` and are
+`[AddINotifyPropertyChangedInterface]`. Views derive from
+`PresenterUserControl<TViewModel, TInput, TResult>`; the constructor calls
+`InitializeComponent()` and nothing else.
+
+## Two navigation mechanisms — know which you are in
+
+1. **`NavigationController.PushAsync`** (framework) — only the outer flow:
+   `App.OnFrameworkInitializationCompleted` installs `ShellWindow`/`ShellView`
+   and pushes `LoginViewModel`; login pushes `MainViewModel`.
+2. **`CurrentView`** (`Viewmodels/Session/CurrentView.cs`) — everything inside
+   the shell. `MainView` binds a `TransitioningContentControl` to
+   `CurrentView.ViewShown`; tabs and detail screens are swapped by assigning it.
+
+`CurrentView` keeps a **back stack**: `ViewShown = x` pushes+shows (drill-in);
+`ShowRoot(x)` clears the stack (the five tabs); `GoBack()` pops (so a service
+opened from a tutor returns to that tutor, while the tutor's own Back reaches the
+tutors list).
+
+## The gotcha
+
+A screen shown through `CurrentView` is **never `RunAsync`'d**, so
+`OnRunStarting`/`OnRunFinishing` never fire. Those view models expose a public
+`ReloadAsync()` and the view calls it from `OnLoaded` in code-behind — the one
+sanctioned exception to "code-behind is initialization only". Follow it for any
+new screen reached this way.
+
+## Passing "which record am I opening"
+
+`Factory.Create()` takes no runtime args, so the selection is set on
+`AppSession` immediately before the assignment (`SelectedDogId`,
+`SelectedTutorId`, `SelectedServiceId`, `SelectedServiceKind`). **Keep the
+set-then-show pair adjacent** so it stays greppable. `AppSession` also carries
+the signed-in sitter, the `DataChanged`/`LogoutRequested` events, and the shared
+formatters (`TypeLabel`, `Money`, `DateTimeLabel`, `TimeLabel`, `Initials`).
+
+Commands are `SynchronizedCommand(..., SynchronizationBehavior.Discard, true)`.
+Rows that own commands (`ServiceRow`, `FutureServiceRow`, `TutorFutureServiceRow`)
+are `IDisposable`; the owning list disposes them on rebuild — follow that rather
+than leaking a command per row per refresh.
+
+Related: `styling-design-canvas` (screens shown via `CurrentView` must not add
+their own `DesignCanvas`).

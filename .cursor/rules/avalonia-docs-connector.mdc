@@ -1,0 +1,35 @@
+---
+description: How to use the Avalonia MCP docs connector correctly for this project (Avalonia 12.1.1). Use before writing or editing any .axaml, custom control, style selector, or binding.
+globs: DapperDemo/app/DapperDemo.View/**/*.axaml,DapperDemo/app/DapperDemo.View/**/*.axaml.cs
+alwaysApply: false
+---
+
+# Using the Avalonia docs connector
+
+Full write-up: `.claude/skills/avalonia-docs-connector/SKILL.md`.
+
+An Avalonia MCP connector is configured. Before writing or editing any `.axaml`,
+custom control, style selector or binding, call `get_avalonia_expert_rules` once
+per session, then `search_avalonia_docs` for the topic. (If the connector is not
+available in your Cursor session, fall back to the reference assemblies and the
+submodule sources below.)
+
+This project is on **Avalonia 12.1.1** — verify anything version-sensitive
+rather than assuming 11.x. The Android lifetime change (see `project-overview`
+known gaps) is exactly that mistake, and `AvaloniaMainActivity` went from generic
+to non-generic in 12.
+
+- `search_avalonia_docs` is more reliable than `lookup_avalonia_api`, which has
+  gaps (no entry for `InputPane`, which `PresenterUserControl` relies on).
+- The docs cover **stock Avalonia only**. `AvaloniaFramework` types
+  (`VTextBoxWithLabel`, `PresenterBase`, `NavigationController`,
+  `SynchronizedCommand`) are absent — read `external/AvaloniaFramework` or that
+  repo's `README.md`.
+- Some API details are faster to confirm against the reference assemblies at
+  `~/.nuget/packages/avalonia/12.1.1/ref/net10.0/` than through the docs.
+- The migration tools (`analyze_wpf_project`, `migrate_to_avalonia`,
+  `migrate_to_xpf`, `lookup_wpf_to_avalonia_mapping`) are for WPF ports and are
+  not relevant here.
+
+Related: `styling-design-canvas` (the theme tokens, canvas and controls you will
+be authoring against).
