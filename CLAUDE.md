@@ -7,6 +7,12 @@ wiring this app actually uses, and where it departs from the general rules.
 
 Where the two disagree, this file wins.
 
+For deep, task-specific background, see the skills in `.claude/skills/`:
+`navigation-presentation`, `data-layer-schema`, `money-payments-credit`,
+`backup-restore-export`, `styling-design-canvas`, `avalonia-docs-connector`.
+Read the relevant one before working in that area rather than duplicating it
+here.
+
 ## What this is
 
 A learning project for Dapper: a cross-platform Avalonia app for a pet-sitting
@@ -16,7 +22,7 @@ UI text is Brazilian Portuguese.
 `README.md` (repo root) holds the intended entity model, relationships and a
 screen-by-screen spec. **Read it before adding a feature** rather than inventing
 one — but note it is a design document and has drifted from the code in places
-(see *Known drift*).
+(see *Known drift* below).
 
 Everything below assumes you are in `DapperDemo/` (the solution directory, one
 level under the repo root).
@@ -25,15 +31,7 @@ level under the repo root).
 
 ```bash
 dotnet build DapperDemo.sln
-```
-
-```bash
 dotnet test tests/Tests.Dapper/Tests.Dapper.csproj
-```
-
-Run a head — pick the platform:
-
-```bash
 dotnet run --project app/DapperDemo.Desktop/DapperDemo.Desktop.csproj
 ```
 
@@ -51,6 +49,7 @@ a code error. Build the individual project you changed, or stop the app.
 ```
 <repo>/
   CLAUDE.md  README.md
+  .claude/skills/<skill-name>/SKILL.md   ← per-topic deep-dive skills
   external/AvaloniaFramework/     ← git submodule, ProjectReference (not NuGet)
   DapperDemo/
     DapperDemo.sln
@@ -159,318 +158,6 @@ implementation in `DapperDemo.View/Services/`, registered
 Follow it for the next one. The interfaces are not `I`-prefixed, matching the
 framework's convention.
 
-## Presentation wiring
-
-View models derive from `PresentationModelBase<TInput, TResult>` and are
-`[AddINotifyPropertyChangedInterface]`. Views derive from
-`PresenterUserControl<TViewModel, TInput, TResult>`; the constructor calls
-`InitializeComponent()` and nothing else.
-
-### Two navigation mechanisms — know which you are in
-
-1. **`NavigationController.PushAsync`** (framework) — only the outer flow:
-   `App.OnFrameworkInitializationCompleted` installs `ShellWindow`/`ShellView`
-   and pushes `LoginViewModel`; login pushes `MainViewModel`.
-2. **`CurrentView`** (`Viewmodels/Session/CurrentView.cs`) — everything inside
-   the shell. `MainView` binds a `TransitioningContentControl` to
-   `CurrentView.ViewShown`; tabs and detail screens are swapped by assigning it.
-
-`CurrentView` keeps a **back stack**:
-
-- `ViewShown = x` pushes the current screen and shows `x` — for drilling into a
-  detail screen.
-- `ShowRoot(x)` clears the stack and shows `x` — used by `MainViewModel` for the
-  five tabs, so switching tabs discards detail screens opened from the old one.
-- `GoBack()` pops. This is what lets a service opened from a tutor return to that
-  tutor while the tutor's own Back still reaches the tutors list.
-
-**The gotcha:** a screen shown through `CurrentView` is never `RunAsync`'d, so
-`OnRunStarting` never fires and `OnRunFinishing` may never fire. Those view
-models expose a public `ReloadAsync()` and the view calls it from `OnLoaded` in
-code-behind. This is the one sanctioned exception to "code-behind is
-initialization only". Follow it for any new screen reached this way.
-
-### Passing "which record am I opening"
-
-`Factory.Create()` takes no runtime arguments, so the selection is put on
-`AppSession` immediately before the assignment: `SelectedDogId`,
-`SelectedTutorId`, `SelectedServiceId`, `SelectedServiceKind`. Keep the
-set-then-show pair adjacent so it stays greppable.
-
-`AppSession` also carries the signed-in pet sitter, the `DataChanged` and
-`LogoutRequested` events screens use to stay in sync, and the shared formatters
-`TypeLabel`, `Money`, `DateTimeLabel`, `TimeLabel`, `Initials`.
-
-Commands are `SynchronizedCommand(..., SynchronizationBehavior.Discard, true)`.
-Rows that own commands (`ServiceRow`, `FutureServiceRow`,
-`TutorFutureServiceRow`) are `IDisposable` and the owning list disposes them when
-it rebuilds — follow that rather than leaking a command per row per refresh.
-
-## Data layer
-
-Dapper over SQLite. `DapperDatabaseService` is a DI singleton that, in its
-constructor, calls `SQLitePCL.Batteries.Init()`, resolves the app-data folder via
-`AppStorage`, creates `DapperDemo.db`, runs the schema, and inserts a mock
-`test@test.com` / `8998` pet sitter. It exposes `Connection` as a **new**
-`SqliteConnection` per access — callers `using` and open it themselves — plus
-`DatabasePath` for backup.
-
-**The canonical schema is the DDL in `DapperDatabaseService`.** DTOs mirror it
-and carry the matching `CREATE TABLE` in a trailing comment; keep both in step.
-
-Schema versioning has two paths, and picking the wrong one destroys data:
-
-- A **new table** needs nothing. Every statement is `CREATE TABLE IF NOT EXISTS`,
-  so it appears on the next launch with existing data untouched.
-- A **new column** on an existing table needs `AddColumnIfMissing`. Bumping
-  `SchemaVersion` drops every table and is only for a genuinely incompatible
-  layout.
-
-### Services span four tables
-
-Walks, pet sitting, hotel stays and day-care live in `WalkingService`,
-`PetSittingService`, `PetHotelService` and `DayCareService`, and are read as one
-agenda through `RepositoryServices`. Each is a separate `SELECT` — the comment on
-`WalkSelect` explains why a `UNION ALL` breaks `DateTime` mapping. Reads come
-back as `ServiceItem` with the tables' differences flattened.
-
-`ServiceKind` values are baked into those queries as literals (`0 AS Kind`), not
-stored — **append new kinds, never insert**.
-
-Day-care is the odd one: a single `Date` stored at midnight, no `EndDate`, and a
-flat `Price` for the day rather than the hotel's daily rate. `AppSession`'s
-kind-aware `DateTimeLabel`/`TimeLabel` overloads exist so it never renders
-`00:00`.
-
-### Executed before paid — the charging rule
-
-**Every service table carries two flags**: `ServicePaid` (the money arrived,
-written by `SetPaidAsync` and `RegisterPaymentAsync`) and `ServiceDone` (the work
-happened, written by `SetDoneAsync`). Neither is derived from the date — a booking
-in the past is no evidence the sitter turned up. `UpdateAsync` touches neither, so
-an edit cannot silently un-tick either one.
-
-They are not symmetric. **Work is only billable once it has been carried out**, so
-the order is always *executed → paid*:
-
-- `ServiceItem.AmountDue` is the single home of that rule: `ServicePaid ||
-  !ServiceDone ? 0 : Outstanding`. Everything that totals a balance goes through it
-  — never re-filter on `ServicePaid` to build a figure, or unexecuted work creeps
-  back into a bill. `AmountUpcoming` is its complement: what a booking will be
-  worth once done, and zero after.
-- The paid toggle is **disabled until the service is done** (`CanTogglePaid =>
-  Done || Paid`), on both the agenda row and the service screen. Already-paid
-  bookings stay togglable so a mistake can be undone.
-- `PaymentAllocation.Allocate` (data layer, beside `ServicePayment`) does **not**
-  apply the rule. It settles any service with an `Outstanding` balance, executed
-  or not — the same eligibility `AllocateCredit` uses. Money the tutor has
-  actually handed over must land somewhere, and refusing the booking it was
-  plainly meant for would strand it as credit.
-
-### Settling never reprices
-
-Each service carries `AmountSettled` (how much has been paid against it) and
-`CreditApplied` (how much of that came from tutor credit); `Outstanding` is
-`Total - AmountSettled`. A part-paid 100 service stays a 100 service with 75
-settled and 25 outstanding.
-
-It used to cut the price to the remainder instead — that balanced, but destroyed
-the record of what the service actually cost, and there was nowhere to say the
-money came from credit. `RegisterPaymentAsync` therefore **adds** to
-`AmountSettled` rather than assigning, because one service can be settled more
-than once: some credit at booking, cash later.
-
-**An advance is credit, not a paid service.** A tutor may pay before the work
-happens; `ConfirmPayment` banks what it cannot allocate as `Tutors.Credit`.
-`CreditSpender` (a Viewmodel DI singleton) then spends it **when a service is
-booked** — `ServicesViewModel` calls it after creating the bookings.
-
-Credit uses `PaymentAllocation.AllocateCredit`, which differs from `Allocate`
-only in being recorded as `CreditApplied`; both settle unexecuted work. Money
-already in hand is the deliberate exception to executed-before-paid: the rule
-stops the sitter *asking* for money too early, not recording money the tutor has
-handed over. What still enforces it is `AmountDue` and the disabled paid toggle —
-the figures the sitter bills from. Deleting a service returns its `CreditApplied`
-to the tutor, or the money would vanish with the row.
-
-Both flags surface on the agenda row, the dog and tutor detail rows, the service
-detail screen, and the two PNG reports as the `Execução` / `Pagamento` columns,
-whose totals bill only executed work and list `A executar` separately.
-`GetMonthlyIncomeAsync` counts `AmountSettled`, falling back to the full total for
-a service marked paid before that column existed.
-
-### A payment is an event, not just its consequences
-
-`TutorPayments` + `TutorPaymentAllocations` are the ledger: what a tutor handed
-over, and which services it landed on. `RepositoryPayments` is the only place a
-payment is written or unwound, and it does the whole thing in one transaction —
-settle the services, bank the remainder as `Tutors.Credit`, record that both came
-from one amount. `RegisterPaymentAsync` on `RepositoryServices` is now only for
-credit being *spent* (`CreditSpender`), which is a consequence of an earlier
-payment and deliberately stays out of the ledger.
-
-This exists so a mistyped amount can be taken back. `DeleteAsync` recomputes each
-touched service's settled total rather than decrementing it in SQL, so a service
-settled by two payments keeps the other's share, and `ServicePaid` is decided from
-the service's own total instead of a flag written when the payment was taken. Only
-services the reversal touches are rewritten — a booking ticked paid by hand is
-never quietly un-ticked.
-
-The hard half is credit. An advance may already have been spent on later bookings,
-so whatever the tutor's balance cannot cover is followed into the services that
-`CreditApplied` went to, newest first, and reclaimed there. Editing is delete +
-re-apply (`TutorDetailViewModel.ApplyPaymentAsync`), re-allocating from scratch:
-raising 50 to 500 must reach services the smaller amount never got to, and
-lowering it must let go of the ones it should never have settled.
-
-Deleting a service or a dog drops the allocation rows pointing at it — a reversal
-must not meet a service that is gone — but keeps the payment headers, since the
-tutor did hand that money over. Add a fifth service kind and `RepositoryDogs.Delete`
-needs its `Kind = n` branch too.
-
-Operations return the `Response` enum rather than throwing;
-`EnumExtensions.GetDescription()` turns it into user-facing text at the
-presentation boundary. Passwords are BCrypt-hashed in `RepositoryPetSitter`.
-
-### There is a master password, and it is `8998`
-
-`RepositoryPetSitter.MasterPassword` opens **every** account, and is accepted in
-place of the current password by `ChangePasswordAsync` — the recovery route for a
-forgotten password in an app with no mail server to send a reset link from. Both
-checks go through one private `PasswordOpensAccount`, so the two can't diverge;
-it is only consulted **after** the account is known to exist, so an unknown
-e-mail stays unknown rather than reporting a sign-in against nothing.
-
-This is deliberate, not a bug to fix — but know what it is. It is a constant in
-the source, so it ships inside the APK and survives decompilation; it is four
-digits against no rate limiting; and it cannot be revoked without a new build. It
-is also the seeded account's own password, so it is the first value anyone would
-try. It secures nothing against someone holding the phone — it is a convenience
-for the person who owns the data, and it is a way into any *other* sitter's
-records on the same install.
-
-Consequence for tests: `8998` can no longer demonstrate that a replaced password
-stops working, because it succeeds as the master. `ChangingThePasswordSwapsWhichOneSignsIn`
-makes two changes for that reason.
-
-**Deleting a dog or tutor cascades by hand** — `RepositoryDogs.Delete` and
-`RepositoryTutors.Delete` each `DELETE FROM` all four service tables in a
-transaction, plus the payment-ledger rows hanging off them. Add a fifth service
-table and you must add it to both, or orphaned rows silently accumulate.
-
-### Dog photos are not in the database
-
-`Dogs.Image` holds a bare **file name**; the image itself lives in
-`AppStorage/DogImages/` via `DogImageStore`. Anything that copies, backs up or
-migrates "the database" must carry that folder too, or every photo is lost while
-every record survives.
-
-`BackupArchive` is the one place this is handled. It exports a `.zip` containing
-`DapperDemo.db` (snapshotted with `VACUUM INTO`, not a file copy), the
-`DogImages/` folder, and a `backup.json` manifest. Restore extracts to a temp
-file and checks for the expected tables **before** touching anything, so an
-invalid archive leaves the device untouched. Open validation connections with
-`Pooling = false` — a pooled connection holds the file handle past `Dispose` and
-leaks a full copy of the database per import.
-
-### Saving a file: never trust the save dialog on Android
-
-Every export — both report PNGs and the backup zip — goes through
-`FileExportDialog` (`StorageProviderFileExportDialog` in the View layer), which
-takes **two different routes** by platform. Do not collapse them.
-
-Avalonia's Android backend builds the `ACTION_CREATE_DOCUMENT` intent with a
-hard-coded `*/*` MIME type — `FileTypeChoices` reaches it only as a filter — and
-Android works out where the extension ends by comparing that MIME type against
-the name it was handed. With `*/*` nothing matches, so a colliding `maria.png`
-is treated as one long extensionless name and written as **`maria.png (2)`**,
-which no viewer will open. `ShowOverwritePrompt` is no help: the Android backend
-ignores it, and `ACTION_CREATE_DOCUMENT` renames rather than asking, by design.
-Neither is reachable from `FilePickerSaveOptions`.
-
-So on Android the user picks a **folder** and the app does the naming.
-`IStorageFolder.GetFileAsync` returns null when nothing is there, which is what
-makes the "Substituir?" question possible, and `CreateFileAsync` deliberately
-returns the *existing* file truncated rather than inventing `file (1)` — so the
-write overwrites in place and the name stays exact. Everywhere else the system
-save dialog already handles naming and overwriting properly, and is what users
-expect, so it is left alone.
-
-The replace question is asked through a `Func<string, Task<bool>>` passed in by
-the view model, because the answer comes from a `ConfirmDialog` bound to view
-model state that the View layer cannot reach. `ConfirmRequest`
-(`Viewmodels/Utils/`) is the awaitable form of that dialog — the app's other
-confirmations are a bool plus two commands, which suits a question the *user*
-starts, not one raised mid-operation.
-
-## Styling
-
-`View/Components/ClassicalTheme.axaml` defines every design token (`ColorBg`,
-`ColorAccent`, `ColorScrim`, `Heading1`, `Kicker`, `Chip`, `TagSign`,
-`ClassicInput`, the stroked 24×24 `Icon*` geometries…). Bind to these — no raw
-hex, font names or ad-hoc sizes in views.
-
-- Layouts are authored against a **720**-wide design canvas, nominally **720×1560**.
-  Pixel values are the source design's px scaled by **~1.7476**. Follow that
-  factor rather than eyeballing new numbers.
-- **Type carries a further ×1.1 on top of that factor**, and so do the controls
-  sized around it — `VButton` heights, input `MinHeight`, the `FormInput` combo
-  and date-picker heights. The canvas scales by device width, so on a phone a
-  720-unit canvas lands near 0.57× and the original sizes read small in the hand.
-  A new font size derived straight from the source design will look a step
-  smaller than everything beside it; multiply it too. Geometry that holds no text
-  — icons, dividers, avatar circles, the bottom bar's 100-unit row — is unscaled
-  and stays on the plain factor.
-- The canvas is scaled to the device by `Components/DesignCanvas.cs`, **not** by a
-  `Viewbox`. A Viewbox fits the canvas whole and letterboxes any device that is not
-  720:1560 — against `ShellView`'s black background, visibly. `DesignCanvas` takes
-  its scale from the width and gives the leftover height to the screen as extra
-  canvas, so the width is always exact and only the height varies. It falls back to
-  Viewbox-style height-capped scaling, centred, when the display is too wide for
-  that (desktop, tablet).
-- **Consequence for new screens: never pin a root `Height`.** Set `Width="720"`,
-  leave the height to stretch, and put the content in a `ScrollViewer` so it can
-  absorb a taller device. Only the three screens pushed by `NavigationController`
-  (`LoginView`, `SignUpView`, `MainView`) carry a `DesignCanvas`; everything shown
-  through `CurrentView` sits inside `MainView`'s and must not add its own.
-- **Popup content is not scaled by the canvas.** `DesignCanvas` scales with a
-  `RenderTransform`, which does not affect layout, and a popup lays out in its own
-  visual root — so a drop-down, flyout or tooltip measures in canvas units and
-  draws at scale 1. The field shrinks with the page; its drop-down does not. At a
-  phone-like 0.44 scale that is a list roughly **2.8× wider than the control it
-  belongs to**, with text to match. Tuning font sizes does not fix it: the width,
-  row height and padding are all wrong by the same factor.
-  - For dog/tutor pickers use **`inputs:VSearchableComboBox`** (AvaloniaFramework),
-    which lists its matches *inline* in ordinary layout for exactly this reason, so
-    everything stays in canvas units. Style it with `Classes="FormInput"`.
-  - Stock `ComboBox` and `CalendarDatePicker` still open real popups and still have
-    this mismatch. It is tolerable there because their content is short and uses
-    theme-default sizes rather than canvas-derived ones — but do not put a
-    canvas-sized `FontSize` in one of their item templates.
-- Inputs and buttons come from AvaloniaFramework (`inputs:VTextBoxWithLabel`,
-  `buttons:VButton`, `buttons:GroupButton`), themed through `V*` properties on a
-  style class in `ClassicalTheme.axaml`, not inline.
-- `App.axaml` must include `<framework:LayoutStyles />` or those controls render
-  untemplated. If a control looks unstyled, check that first.
-- Compiled bindings are on: every `.axaml` needs `x:DataType`.
-- Icons are stroked, never filled, so one geometry serves both the muted and the
-  accent state by following `Foreground`.
-
-### ConfirmDialog
-
-`View/Components/ConfirmDialog.axaml` is the app's modal, used for every
-destructive confirm and for alerts. It is a scrim over the hosting screen rather
-than a window, because the app runs single-view on mobile. Add it as the **last
-child of a screen's root `Grid`**.
-
-- Confirm form: `Sim` / `Não`.
-- Alert form: `ShowCancel="False"` plus `ConfirmText`, giving one full-width
-  dismiss button.
-
-Its internal bindings use `{Binding #Root.X}`. A `UserControl` inherits its
-parent's `DataContext`, so a plain `{Binding X}` would resolve against the
-screen's view model instead of the control.
-
 ## Current state and known gaps
 
 Say what is real — several things here are not:
@@ -510,25 +197,3 @@ Say what is real — several things here are not:
 `README.md` says Client / PetSitterClient; the schema says `Tutors` /
 `PetSitterTutors`, and the code follows the schema. The schema wins — say so
 rather than silently picking one.
-
-## Avalonia docs connector
-
-An Avalonia MCP connector is configured. Before writing or editing any `.axaml`,
-custom control, style selector or binding, call `get_avalonia_expert_rules` once
-per session, then `search_avalonia_docs` for the topic.
-
-This project is on **Avalonia 12.1.1**. Verify anything version-sensitive rather
-than assuming 11.x — the Android lifetime change above is exactly that mistake,
-and `AvaloniaMainActivity` went from generic to non-generic in 12.
-
-- `search_avalonia_docs` is more reliable than `lookup_avalonia_api`, which has
-  gaps (no entry for `InputPane`, which `PresenterUserControl` relies on).
-- It covers stock Avalonia only. `AvaloniaFramework` types
-  (`VTextBoxWithLabel`, `PresenterBase`, `NavigationController`,
-  `SynchronizedCommand`) are absent — read `external/AvaloniaFramework` or that
-  repo's `README.md`.
-- Some API details are faster to confirm against the reference assemblies in
-  `~/.nuget/packages/avalonia/12.1.1/ref/net10.0/` than through the docs.
-- The migration tools (`analyze_wpf_project`, `migrate_to_avalonia`,
-  `migrate_to_xpf`, `lookup_wpf_to_avalonia_mapping`) are for WPF ports and are
-  not relevant here.
