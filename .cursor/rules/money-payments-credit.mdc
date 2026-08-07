@@ -22,8 +22,8 @@ Work is billable only once carried out — order is always **executed → paid**
   balance goes through it — **never re-filter on `ServicePaid`** to build a
   figure, or unexecuted work creeps back into a bill. `AmountUpcoming` is its
   complement.
-- The paid toggle is **disabled until done** (`CanTogglePaid => Done || Paid`);
-  already-paid bookings stay togglable so a mistake can be undone.
+- **Payment is recorded only from the tutor screen** (ledger via
+  `RepositoryPayments`). Agenda/service-detail paid tags are display-only.
 - `PaymentAllocation.Allocate`/`AllocateCredit` deliberately **do not** apply the
   rule — money in hand must land somewhere, so they settle any service with an
   `Outstanding` balance, executed or not.

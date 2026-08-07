@@ -21,9 +21,10 @@ the order is always *executed → paid*:
   — never re-filter on `ServicePaid` to build a figure, or unexecuted work creeps
   back into a bill. `AmountUpcoming` is its complement: what a booking will be
   worth once done, and zero after.
-- The paid toggle is **disabled until the service is done** (`CanTogglePaid =>
-  Done || Paid`), on both the agenda row and the service screen. Already-paid
-  bookings stay togglable so a mistake can be undone.
+- **Payment is recorded only from the tutor screen** (`TutorDetailViewModel` →
+  `RepositoryPayments`), which allocates the amount across outstanding services
+  and marks them paid as the ledger settles them. Agenda and service-detail paid
+  tags are display-only — there is no row/detail paid toggle.
 - `PaymentAllocation.Allocate` (data layer, beside `ServicePayment`) does **not**
   apply the rule. It settles any service with an `Outstanding` balance, executed
   or not — the same eligibility `AllocateCredit` uses. Money the tutor has
@@ -52,9 +53,9 @@ Credit uses `PaymentAllocation.AllocateCredit`, which differs from `Allocate`
 only in being recorded as `CreditApplied`; both settle unexecuted work. Money
 already in hand is the deliberate exception to executed-before-paid: the rule
 stops the sitter *asking* for money too early, not recording money the tutor has
-handed over. What still enforces it is `AmountDue` and the disabled paid toggle —
-the figures the sitter bills from. Deleting a service returns its `CreditApplied`
-to the tutor, or the money would vanish with the row.
+handed over. What still enforces it is `AmountDue` — the figure the sitter bills
+from — while payment itself is entered on the tutor screen. Deleting a service
+returns its `CreditApplied` to the tutor, or the money would vanish with the row.
 
 Both flags surface on the agenda row, the dog and tutor detail rows, the service
 detail screen, and the two PNG reports as the `Execução` / `Pagamento` columns,

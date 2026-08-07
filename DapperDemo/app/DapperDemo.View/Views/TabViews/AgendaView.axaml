@@ -14,8 +14,9 @@
     <UserControl.Resources>
         <!--
             One agenda row, shared by the flat list and by the rows inside an expanded dog. Defined
-            once so a grouped row cannot drift from a flat one — same tags, same commands, same
-            tap-through to the service screen.
+            once so a grouped row cannot drift from a flat one — same tags, same tap-through to the
+            service screen. Paid and done are borders (display-only); payment is recorded from the
+            tutor screen.
         -->
         <DataTemplate DataType="utils:ServiceRow" x:Key="ServiceRowTemplate">
             <Button Classes="RowButton" Command="{Binding OpenCommand}">

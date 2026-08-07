@@ -3,10 +3,23 @@ using System.Windows.Input;
 namespace DapperDemo.Viewmodel.Viewmodels.Utils;
 
 /// <summary>
-/// One row of the agenda. Owns its three commands, so the list can dispose them when the
-/// filters rebuild it rather than leaking a set per row on every filter change.
+/// One row of the agenda. Owns its open command, so the list can dispose it when the filters
+/// rebuild rather than leaking a command per row on every filter change. Paid and done are
+/// display-only here — payment is recorded from the tutor screen, and execution is toggled on the
+/// service detail screen.
 /// </summary>
-public sealed class ServiceRow(string dayNum, string monthShort, string dogName, string typeLabel, string timeLabel, string priceLabel, bool paid, string paidLabel, bool done, string doneLabel, ICommand openCommand, ICommand toggleCommand, ICommand toggleDoneCommand) : IDisposable
+public sealed class ServiceRow(
+    string dayNum,
+    string monthShort,
+    string dogName,
+    string typeLabel,
+    string timeLabel,
+    string priceLabel,
+    bool paid,
+    string paidLabel,
+    bool done,
+    string doneLabel,
+    ICommand openCommand) : IDisposable
 {
     public string DayNum { get; } = dayNum;
 
@@ -31,16 +44,5 @@ public sealed class ServiceRow(string dayNum, string monthShort, string dogName,
 
     public ICommand OpenCommand { get; } = openCommand;
 
-    /// <summary>Gets marks the service paid or pending from the row itself, without opening it.</summary>
-    public ICommand ToggleCommand { get; } = toggleCommand;
-
-    /// <summary>Gets marks the work carried out or not, the other half of the pair of tags.</summary>
-    public ICommand ToggleDoneCommand { get; } = toggleDoneCommand;
-
-    public void Dispose()
-    {
-        (OpenCommand as IDisposable)?.Dispose();
-        (ToggleCommand as IDisposable)?.Dispose();
-        (ToggleDoneCommand as IDisposable)?.Dispose();
-    }
+    public void Dispose() => (OpenCommand as IDisposable)?.Dispose();
 }

@@ -31,7 +31,6 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
     private static readonly CultureInfo Brazil = new("pt-BR");
 
     private readonly RepositoryServices repositoryServices;
-    private readonly CreditSpender creditSpender;
     private readonly AppSession session;
     private readonly EventHandler dataChangedHandler;
     private readonly PresenterBase<ServiceDetailViewModel, Unit, Unit> serviceDetailView;
@@ -47,18 +46,17 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
     public AgendaViewModel(
         CurrentView currentView,
         RepositoryServices repositoryServices,
-        CreditSpender creditSpender,
         AppSession session,
         Factory<PresenterBase<ServiceDetailViewModel, Unit, Unit>> serviceDetailFactory)
     {
         this.repositoryServices = repositoryServices;
-        this.creditSpender = creditSpender;
         this.session = session;
         serviceDetailView = serviceDetailFactory.Create();
         this.currentView = currentView;
 
-        // Marking a service paid from the detail screen must show up here on return, and this
-        // view-model outlives a single OnRunStarting (MainViewModel builds all five tabs once).
+        // Settling a payment from the tutor screen, or toggling done on the service screen, must
+        // show up here on return. This view-model outlives a single OnRunStarting (MainViewModel
+        // builds all five tabs once).
         dataChangedHandler = (_, _) => AppSession.FireAndForget(ReloadAsync());
         session.DataChanged += dataChangedHandler;
 
@@ -355,12 +353,10 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
             ? AppSession.Money(sv.Price) + " / dia"
             : AppSession.Money(sv.Price);
 
-        // CA2000: ownership passes to the ServiceRow below, which disposes every command when
-        // this list is rebuilt (see ClearRows).
+        // CA2000: ownership passes to the ServiceRow below, which disposes the command when this
+        // list is rebuilt (see ClearRows). Paid/done tags are display-only on the agenda.
 #pragma warning disable CA2000
         var openCommand = new SynchronizedCommand(() => Open(sv.Kind, sv.ServiceId), SynchronizationBehavior.Discard, true);
-        var toggleCommand = new SynchronizedCommand(() => TogglePaid(sv.Kind, sv.ServiceId, !sv.ServicePaid), SynchronizationBehavior.Discard, true);
-        var toggleDoneCommand = new SynchronizedCommand(() => ToggleDone(sv.Kind, sv.ServiceId, sv.DogId, !sv.ServiceDone), SynchronizationBehavior.Discard, true);
 #pragma warning restore CA2000
 
         return new ServiceRow(
@@ -374,9 +370,7 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
             sv.ServicePaid ? "Pago" : "Sem pagar",
             sv.ServiceDone,
             sv.ServiceDone ? "Feito" : "A fazer",
-            openCommand,
-            toggleCommand,
-            toggleDoneCommand);
+            openCommand);
     }
 
     private void SetRange(HomeRangeFilter range)
@@ -393,38 +387,13 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
 
     private void ClearRows()
     {
-        // Disposing a group disposes the rows inside it, and each row its three commands.
+        // Disposing a group disposes the rows inside it, and each row its open command.
         foreach (var group in DogGroups)
         {
             group.Dispose();
         }
 
         DogGroups.Clear();
-    }
-
-    private async Task TogglePaid(ServiceKind kind, int serviceId, bool paid)
-    {
-        await repositoryServices.SetPaidAsync(kind, serviceId, paid).WithSync();
-        session.NotifyDataChanged();
-    }
-
-    /// <summary>
-    /// Ticks a booking off as carried out, which is the day's work rather than the month's billing.
-    /// </summary>
-    /// <remarks>
-    /// Carrying the work out is what makes it billable, so this is also when any credit the tutor
-    /// is holding gets spent against it — the same rule the service screen follows.
-    /// </remarks>
-    private async Task ToggleDone(ServiceKind kind, int serviceId, int dogId, bool done)
-    {
-        await repositoryServices.SetDoneAsync(kind, serviceId, done).WithSync();
-
-        if (done)
-        {
-            await creditSpender.SpendForDogAsync(session.CurrentPetSitterId, dogId).WithSync();
-        }
-
-        session.NotifyDataChanged();
     }
 
     private Task Open(ServiceKind kind, int serviceId)

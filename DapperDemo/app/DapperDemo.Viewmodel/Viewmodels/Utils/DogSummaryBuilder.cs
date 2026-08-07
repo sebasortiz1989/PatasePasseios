@@ -11,22 +11,10 @@ namespace DapperDemo.Viewmodel.Viewmodels.Utils;
 internal static class DogSummaryBuilder
 {
     /// <summary>
-    /// What a booking is worth. A hotel stay is entered as a daily rate, so its value is that rate
-    /// multiplied by the nights booked; everything else is its price as stored.
+    /// What a booking is worth — the same figure <see cref="ServiceItem.Total"/> uses, so hotel
+    /// stays include nights and any extra charge rather than the daily rate alone.
     /// </summary>
-    public static decimal AmountOf(ServiceItem service)
-    {
-        if (service.Kind != ServiceKind.Hotel)
-        {
-            return service.Price;
-        }
-
-        var nights = service.EndDate is DateTime end
-            ? Math.Max((end.Date - service.Date.Date).Days, 1)
-            : 1;
-
-        return service.Price * nights;
-    }
+    public static decimal AmountOf(ServiceItem service) => service.Total;
 
     /// <summary>
     /// One row per dog, alphabetical, each listing its service types with counts and amounts.

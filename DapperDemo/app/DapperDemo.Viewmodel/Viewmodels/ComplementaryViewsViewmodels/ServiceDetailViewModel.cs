@@ -253,11 +253,11 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
         {
             var nights = NightsBetween(service.Date, service.EndDate);
             details.Append("\nDiárias: ").Append(nights.ToString(CultureInfo.InvariantCulture));
-            details.Append("\nValor: ").Append(AppSession.Money(service.Price * nights));
+            details.Append("\nValor: ").Append(AppSession.Money(service.Total));
         }
         else
         {
-            details.Append("\nValor: ").Append(AppSession.Money(service.Price));
+            details.Append("\nValor: ").Append(AppSession.Money(service.Total));
         }
 
         if (service.Kind is ServiceKind.Hotel or ServiceKind.DayCare)

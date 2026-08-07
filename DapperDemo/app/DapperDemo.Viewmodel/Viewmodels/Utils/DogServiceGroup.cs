@@ -7,12 +7,12 @@ namespace DapperDemo.Viewmodel.Viewmodels.Utils;
 /// <summary>
 /// One dog on the agenda's grouped list, with its services folded away until tapped.
 /// </summary>
-/// <remarks>
-/// Grouping rather than listing flat because widening the agenda to include settled work turns it
-/// into hundreds of rows across every dog. The rows inside are ordinary
-/// <see cref="ServiceRow"/> instances, so an expanded group behaves exactly like the flat list —
-/// same tags, same commands, same tap-through to the service screen.
-/// </remarks>
+    /// <remarks>
+    /// Grouping rather than listing flat because widening the agenda to include settled work turns it
+    /// into hundreds of rows across every dog. The rows inside are ordinary
+    /// <see cref="ServiceRow"/> instances, so an expanded group behaves exactly like the flat list —
+    /// same tags, same tap-through to the service screen.
+    /// </remarks>
 [AddINotifyPropertyChangedInterface]
 public sealed class DogServiceGroup : IDisposable
 {
