@@ -70,3 +70,10 @@ child of a screen's root `Grid`**.
 Its internal bindings use `{Binding #Root.X}`. A `UserControl` inherits its
 parent's `DataContext`, so a plain `{Binding X}` would resolve against the
 screen's view model instead of the control.
+
+---
+
+Related: `avalonia-docs-connector` (verify Avalonia 12.1.1 XAML before editing)
+and `navigation-presentation` (`CurrentView` vs the three canvas-bearing
+screens). Mirrored for Cursor in `.cursor/rules/styling-design-canvas.mdc` — keep
+the two in step.

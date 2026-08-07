@@ -25,3 +25,9 @@ non-generic in 12.
 - The migration tools (`analyze_wpf_project`, `migrate_to_avalonia`,
   `migrate_to_xpf`, `lookup_wpf_to_avalonia_mapping`) are for WPF ports and are
   not relevant here.
+
+---
+
+Related: `styling-design-canvas` (the theme tokens, canvas and controls you author
+against). Mirrored for Cursor in `.cursor/rules/avalonia-docs-connector.mdc` —
+keep the two in step.

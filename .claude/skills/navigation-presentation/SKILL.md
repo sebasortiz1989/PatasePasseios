@@ -49,3 +49,9 @@ Commands are `SynchronizedCommand(..., SynchronizationBehavior.Discard, true)`.
 Rows that own commands (`ServiceRow`, `FutureServiceRow`,
 `TutorFutureServiceRow`) are `IDisposable` and the owning list disposes them when
 it rebuilds — follow that rather than leaking a command per row per refresh.
+
+---
+
+Related: `styling-design-canvas` (screens shown via `CurrentView` must not add
+their own `DesignCanvas`). Mirrored for Cursor in
+`.cursor/rules/navigation-presentation.mdc` — keep the two in step.
