@@ -49,3 +49,9 @@ model state that the View layer cannot reach. `ConfirmRequest`
 (`Viewmodels/Utils/`) is the awaitable form of that dialog — the app's other
 confirmations are a bool plus two commands, which suits a question the *user*
 starts, not one raised mid-operation.
+
+---
+
+Related: `styling-design-canvas` (`ConfirmDialog` placement) and
+`data-layer-schema` (`DapperDatabaseService`/`DatabasePath`). Mirrored for Cursor
+in `.cursor/rules/backup-restore-export.mdc` — keep the two in step.

@@ -115,3 +115,9 @@ records on the same install.
 Consequence for tests: `8998` can no longer demonstrate that a replaced password
 stops working, because it succeeds as the master. `ChangingThePasswordSwapsWhichOneSignsIn`
 makes two changes for that reason.
+
+---
+
+Related: `data-layer-schema` (the four service tables and delete cascades these
+rules settle against). Mirrored for Cursor in
+`.cursor/rules/money-payments-credit.mdc` — keep the two in step.

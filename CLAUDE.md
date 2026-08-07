@@ -13,6 +13,12 @@ For deep, task-specific background, see the skills in `.claude/skills/`:
 Read the relevant one before working in that area rather than duplicating it
 here.
 
+Cursor users get the same guidance from `.cursor/rules/`: an always-on
+`project-overview` rule mirroring this file, plus one auto-attached rule per
+skill (same names) that fires on the relevant files and points back to the
+matching `SKILL.md`. The rule and its skill are kept in step — when you change
+one, change the other.
+
 ## What this is
 
 A learning project for Dapper: a cross-platform Avalonia app for a pet-sitting

@@ -43,3 +43,9 @@ kind-aware `DateTimeLabel`/`TimeLabel` overloads exist so it never renders
 `RepositoryTutors.Delete` each `DELETE FROM` all four service tables in a
 transaction, plus the payment-ledger rows hanging off them. Add a fifth service
 table and you must add it to both, or orphaned rows silently accumulate.
+
+---
+
+Related: `money-payments-credit` (the payment-ledger rows these deletes must also
+clear). Mirrored for Cursor in `.cursor/rules/data-layer-schema.mdc` — keep the
+two in step.
