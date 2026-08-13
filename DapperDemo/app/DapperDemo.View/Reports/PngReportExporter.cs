@@ -33,7 +33,12 @@ public sealed class PngReportExporter(FileExportDialog fileExportDialog) : Repor
     /// Wider than the app's 720 design canvas. This is a document to be shared and zoomed, not a
     /// phone screen, and a six-column table does not fit in 720 without the columns colliding.
     /// </summary>
-    private const double Width = 980;
+    /// <remarks>
+    /// Widened from 980 when hotel rows gained their breakdown lines: the money column grew to fit
+    /// "3 diárias × R$ 120,00", and the slack came out of the one column that gives it up — the
+    /// star one holding the dog's name, which started breaking "Maximiliano" across two lines.
+    /// </remarks>
+    private const double Width = 1120;
 
     private const double Padding = 40;
 
@@ -174,13 +179,13 @@ public sealed class PngReportExporter(FileExportDialog fileExportDialog) : Repor
             var cells = section.Rows[row].Cells;
             for (var column = 0; column < cells.Count && column < section.Columns.Count; column++)
             {
-                var cell = Text(cells[column], 23, Ink);
-                cell.Margin = new Thickness(0, 9, column == last ? 0 : ColumnGap, 9);
+                var cell = BuildCell(
+                    cells[column],
+                    section.Rows[row].DetailAt(column),
+                    IsRightAligned(section, column),
+                    column == 0);
 
-                // Auto columns measure at their unwrapped width, so only the first — the star one
-                // that absorbs the slack — is allowed to wrap.
-                cell.TextWrapping = column == 0 ? TextWrapping.Wrap : TextWrapping.NoWrap;
-                cell.HorizontalAlignment = IsRightAligned(section, column) ? HorizontalAlignment.Right : HorizontalAlignment.Left;
+                cell.Margin = new Thickness(0, 9, column == last ? 0 : ColumnGap, 9);
                 Grid.SetColumn(cell, column);
                 Grid.SetRow(cell, row + 1);
                 grid.Children.Add(cell);
@@ -188,6 +193,46 @@ public sealed class PngReportExporter(FileExportDialog fileExportDialog) : Repor
         }
 
         return grid;
+    }
+
+    /// <summary>
+    /// One cell: its value, and under it the small print the row attached to that column, if any.
+    /// </summary>
+    /// <remarks>
+    /// Stacked text blocks rather than one block with inlines, so the detail can carry its own size
+    /// and colour. A cell with no detail stays a bare <see cref="TextBlock"/> — the table's column
+    /// widths come from measuring these, and an extra panel around every cell would be one more
+    /// thing between the text and the width it asks for.
+    /// </remarks>
+    private static Control BuildCell(string text, string detail, bool rightAligned, bool wraps)
+    {
+        var alignment = rightAligned ? HorizontalAlignment.Right : HorizontalAlignment.Left;
+
+        var main = Text(text, 23, Ink);
+
+        // Auto columns measure at their unwrapped width, so only the first — the star one that
+        // absorbs the slack — is allowed to wrap.
+        main.TextWrapping = wraps ? TextWrapping.Wrap : TextWrapping.NoWrap;
+        main.HorizontalAlignment = alignment;
+
+        if (detail.Length == 0)
+        {
+            return main;
+        }
+
+        var stack = new StackPanel { HorizontalAlignment = alignment };
+        stack.Children.Add(main);
+
+        foreach (var line in detail.Split('\n'))
+        {
+            var note = Text(line, 19, Muted);
+            note.TextWrapping = TextWrapping.NoWrap;
+            note.HorizontalAlignment = alignment;
+            note.Margin = new Thickness(0, 3, 0, 0);
+            stack.Children.Add(note);
+        }
+
+        return stack;
     }
 
     private static bool IsRightAligned(ReportSection section, int index) =>

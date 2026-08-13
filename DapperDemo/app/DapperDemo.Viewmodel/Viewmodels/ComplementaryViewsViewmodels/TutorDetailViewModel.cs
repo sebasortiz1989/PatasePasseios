@@ -854,13 +854,22 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
 
             foreach (var service in month.OrderBy(s => s.Date))
             {
-                section.Rows.Add(new ReportRow(
+                var row = new ReportRow(
                     service.DogName,
                     AppSession.TypeLabel(service.Kind),
                     AppSession.DateTimeLabel(service.Date, service.Kind),
                     AppSession.Money(service.Total),
                     service.ServiceDone ? "Feito" : "A fazer",
-                    service.ServicePaid ? "Pago" : "Sem pagar"));
+                    service.ServicePaid ? "Pago" : "Sem pagar");
+
+                // A stay is the one row whose single date and single figure hide most of what the
+                // tutor is being charged for: it runs to a check-out, and its total is nights times
+                // a daily rate plus whatever was added on top. Both go under the cells they explain
+                // rather than into columns of their own, which every other row would leave empty.
+                row.WithDetail(2, AppSession.StayEndLabel(service));
+                row.WithDetail(3, AppSession.StayPriceBreakdown(service));
+
+                section.Rows.Add(row);
             }
 
             // Only executed work is billable, so the month's headline figure is what may actually

@@ -75,6 +75,49 @@ public class AppSession
         : DateTimeLabel(value);
 
     /// <summary>
+    /// Where a hotel stay ends, phrased as a continuation of where it starts ("até 07/08/2026,
+    /// 10:00"). Empty for every other kind, none of which has a check-out.
+    /// </summary>
+    /// <param name="service">The service being described.</param>
+    /// <returns>The check-out line, or an empty string.</returns>
+    public static string StayEndLabel(ServiceItem service)
+    {
+        ArgumentNullException.ThrowIfNull(service);
+
+        return service.Kind == ServiceKind.Hotel && service.EndDate is DateTime end
+            ? $"até {DateTimeLabel(end)}"
+            : string.Empty;
+    }
+
+    /// <summary>
+    /// How a hotel stay's total is arrived at: the nights it covers times the daily rate, and the
+    /// one-off extra on a second line when there is one.
+    /// </summary>
+    /// <remarks>
+    /// A stay is entered as a daily rate, so its total is a figure nobody typed — printed on its
+    /// own it invites the tutor to ask where it came from. Empty for every other kind, whose price
+    /// is already the whole story.
+    /// </remarks>
+    /// <param name="service">The service being described.</param>
+    /// <returns>The breakdown lines separated by <c>\n</c>, or an empty string.</returns>
+    public static string StayPriceBreakdown(ServiceItem service)
+    {
+        ArgumentNullException.ThrowIfNull(service);
+
+        if (service.Kind != ServiceKind.Hotel)
+        {
+            return string.Empty;
+        }
+
+        var nights = service.Nights;
+        var rate = $"{nights.ToString(CultureInfo.InvariantCulture)} {(nights == 1 ? "diária" : "diárias")} × {Money(service.Price)}";
+
+        return service.ExtraCharge > 0m
+            ? $"{rate}\n+ {Money(service.ExtraCharge)} adicional"
+            : rate;
+    }
+
+    /// <summary>
     /// What the agenda prints in its time column. Day-care occupies the whole day rather than a
     /// slot, so it says so instead of showing midnight.
     /// </summary>
