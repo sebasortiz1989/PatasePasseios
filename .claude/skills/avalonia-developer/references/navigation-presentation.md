@@ -1,8 +1,3 @@
----
-name: navigation-presentation
-description: How screen navigation, the CurrentView back stack, and passing "which record am I opening" work in DapperDemo. Use when adding a new screen, changing how a screen is shown or returned to, or wiring commands on a row/list.
----
-
 # Navigation & presentation wiring
 
 View models derive from `PresentationModelBase<TInput, TResult>` and are
@@ -52,6 +47,5 @@ it rebuilds — follow that rather than leaking a command per row per refresh.
 
 ---
 
-Related: `styling-design-canvas` (screens shown via `CurrentView` must not add
-their own `DesignCanvas`). Mirrored for Cursor in
-`.cursor/rules/navigation-presentation.mdc` — keep the two in step.
+Related: `references/styling-design-canvas.md` (screens shown via `CurrentView` must not add
+their own `DesignCanvas`).

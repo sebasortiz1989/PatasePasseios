@@ -1,8 +1,3 @@
----
-name: money-payments-credit
-description: The executed-before-paid billing rule, settlement math, tutor credit, the payment ledger, and the master password. Use when touching billing, payments, ServicePaid/ServiceDone flags, AmountDue/Outstanding, credit allocation, or password recovery.
----
-
 # Money, payments & credit rules
 
 ## Executed before paid — the charging rule
@@ -119,6 +114,5 @@ makes two changes for that reason.
 
 ---
 
-Related: `data-layer-schema` (the four service tables and delete cascades these
-rules settle against). Mirrored for Cursor in
-`.cursor/rules/money-payments-credit.mdc` — keep the two in step.
+Related: `references/data-layer-schema.md` (the four service tables and delete cascades these
+rules settle against).

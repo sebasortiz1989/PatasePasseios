@@ -1,5 +1,0 @@
-{
-  "name": "DapperDemo",
-  "install": "bash .cursor/install.sh",
-  "repositoryDependencies": ["github.com/sebasortiz1989/AvaloniaFramework"]
-}

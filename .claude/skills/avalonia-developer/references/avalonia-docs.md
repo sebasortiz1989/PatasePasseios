@@ -1,8 +1,3 @@
----
-name: avalonia-docs-connector
-description: How to use the Avalonia MCP docs connector correctly for this project (Avalonia 12.1.1). Use before writing or editing any .axaml, custom control, style selector, or binding.
----
-
 # Using the Avalonia docs connector
 
 An Avalonia MCP connector is configured. Before writing or editing any `.axaml`,
@@ -28,6 +23,5 @@ non-generic in 12.
 
 ---
 
-Related: `styling-design-canvas` (the theme tokens, canvas and controls you author
-against). Mirrored for Cursor in `.cursor/rules/avalonia-docs-connector.mdc` —
-keep the two in step.
+Related: `references/styling-design-canvas.md` (the theme tokens, canvas and controls you author
+against).

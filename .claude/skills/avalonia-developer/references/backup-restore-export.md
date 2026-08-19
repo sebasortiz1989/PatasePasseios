@@ -1,8 +1,3 @@
----
-name: backup-restore-export
-description: How backup/restore (BackupArchive, dog photos) and file export/save dialogs work, including the Android save-dialog naming quirk. Use when touching export/import, "the database" as a whole, or any FileExportDialog/save-dialog code.
----
-
 # Backup, restore & dog photos
 
 ## Dog photos are not in the database
@@ -52,6 +47,6 @@ starts, not one raised mid-operation.
 
 ---
 
-Related: `styling-design-canvas` (`ConfirmDialog` placement) and
-`data-layer-schema` (`DapperDatabaseService`/`DatabasePath`). Mirrored for Cursor
+Related: `references/styling-design-canvas.md` (`ConfirmDialog` placement) and
+`references/data-layer-schema.md` (`DapperDatabaseService`/`DatabasePath`). Mirrored for Cursor
 in `.cursor/rules/backup-restore-export.mdc` — keep the two in step.

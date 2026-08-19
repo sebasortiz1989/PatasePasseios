@@ -1,8 +1,3 @@
----
-name: data-layer-schema
-description: How the Dapper/SQLite schema, DapperDatabaseService, and the four service tables (Walking/PetSitting/PetHotel/DayCare) work. Use when adding or changing a table, column, DTO, or repository query, or when deleting dogs/tutors and their cascades.
----
-
 # Data layer & schema changes
 
 Dapper over SQLite. `DapperDatabaseService` is a DI singleton that, in its
@@ -46,6 +41,5 @@ table and you must add it to both, or orphaned rows silently accumulate.
 
 ---
 
-Related: `money-payments-credit` (the payment-ledger rows these deletes must also
-clear). Mirrored for Cursor in `.cursor/rules/data-layer-schema.mdc` — keep the
-two in step.
+Related: `references/money-payments-credit.md` (the payment-ledger rows these deletes must also
+clear).

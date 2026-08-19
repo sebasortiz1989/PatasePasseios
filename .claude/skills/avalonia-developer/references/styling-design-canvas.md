@@ -1,8 +1,3 @@
----
-name: styling-design-canvas
-description: The 720-wide design canvas, its scale factors, DesignCanvas.cs, popup-scaling mismatch, and ConfirmDialog. Use when building or adjusting any .axaml screen, control, font size, or dimension.
----
-
 # Styling & the design canvas
 
 `View/Components/ClassicalTheme.axaml` defines every design token (`ColorBg`,
@@ -73,7 +68,6 @@ screen's view model instead of the control.
 
 ---
 
-Related: `avalonia-docs-connector` (verify Avalonia 12.1.1 XAML before editing)
-and `navigation-presentation` (`CurrentView` vs the three canvas-bearing
-screens). Mirrored for Cursor in `.cursor/rules/styling-design-canvas.mdc` — keep
-the two in step.
+Related: `references/avalonia-docs.md` (verify Avalonia 12.1.1 XAML before editing)
+and `references/navigation-presentation.md` (`CurrentView` vs the three canvas-bearing
+screens).

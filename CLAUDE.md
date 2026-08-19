@@ -7,17 +7,17 @@ wiring this app actually uses, and where it departs from the general rules.
 
 Where the two disagree, this file wins.
 
-For deep, task-specific background, see the skills in `.claude/skills/`:
-`navigation-presentation`, `data-layer-schema`, `money-payments-credit`,
-`backup-restore-export`, `styling-design-canvas`, `avalonia-docs-connector`.
-Read the relevant one before working in that area rather than duplicating it
-here.
+The developer role for this repo is the **`avalonia-developer`** skill
+(`.claude/skills/avalonia-developer/SKILL.md`) — load it for any work here. It
+carries the language policy (English code, Brazilian Portuguese UI text), the
+layering/async/DI rules, and the AvaloniaFramework submodule workflow. Deep
+per-topic material lives in its `references/` folder (navigation, schema,
+money, backup, styling, the docs connector, the framework) — read the one that
+matches the task rather than duplicating it here. The former six standalone
+skills were consolidated into those references on 2026-08-19.
 
-Cursor users get the same guidance from `.cursor/rules/`: an always-on
-`project-overview` rule mirroring this file, plus one auto-attached rule per
-skill (same names) that fires on the relevant files and points back to the
-matching `SKILL.md`. The rule and its skill are kept in step — when you change
-one, change the other.
+Cursor was retired from this repo on 2026-08-19; `.cursor/` is deleted and
+there is no rules mirror to keep in step. The skill above is the single copy.
 
 ## What this is
 
