@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&amp;family=Lora:ital,wght@0,400;0,600;1,400&amp;display=swap">
+<link rel="stylesheet" href="_ds/classical-71001d4f-21e2-4398-9c3b-7b402d15cb91/styles.css">
+<script src="_ds/classical-71001d4f-21e2-4398-9c3b-7b402d15cb91/_ds_bundle.js"></script>
+<meta name="design_doc_mode" content="canvas">
+<style>
+body { margin: 0; background: #F3F2F2; }
+a { color: #7D5411; }
+a:hover { color: #5A3B0A; }
+</style>
+</helmet>
+
+<svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true">
+  <symbol id="ic-agenda" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="15" rx="2"></rect><path d="M8 3v4M16 3v4M3.5 10.5h17"></path></symbol>
+  <symbol id="ic-dogs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.6 4.4 8.4 8"></path><path d="M19.4 4.4 15.6 8"></path><path d="M4.6 4.4v6.2c0 4.1 3.3 7.4 7.4 7.4s7.4-3.3 7.4-7.4V4.4"></path><path d="M9.6 11.2h.01M14.4 11.2h.01"></path><path d="M10.4 14.6h3.2"></path></symbol>
+  <symbol id="ic-serv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.8" cy="15" r="4.8"></circle><path d="M8.8 10.2V6.4a2.6 2.6 0 0 1 5.2 0v1"></path><path d="M18.6 4v5M16.1 6.5h5"></path></symbol>
+  <symbol id="ic-tutors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.4" cy="8" r="3.3"></circle><path d="M3.4 19.6c0-3.4 2.7-5.6 6-5.6s6 2.2 6 5.6"></path><path d="M15.9 5.3a3.3 3.3 0 0 1 0 5.4"></path><path d="M17.4 14.5c1.9.7 3.2 2.4 3.2 5.1"></path></symbol>
+  <symbol id="ic-perfil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"></circle><circle cx="12" cy="9.9" r="2.7"></circle><path d="M6.9 18.7c.9-2.2 2.9-3.5 5.1-3.5s4.2 1.3 5.1 3.5"></path></symbol>
+  <symbol id="ic-chev-r" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 5.5l7 6.5-7 6.5"></path></symbol>
+  <symbol id="ic-chev-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5l-7 6.5 7 6.5"></path></symbol>
+  <symbol id="ic-chev-d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 9.5l6.5 7 6.5-7"></path></symbol>
+  <symbol id="ic-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.6 12S6.2 6.6 12 6.6 21.4 12 21.4 12 17.8 17.4 12 17.4 2.6 12 2.6 12z"></path><circle cx="12" cy="12" r="3"></circle></symbol>
+  <symbol id="ic-status" viewBox="0 0 46 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="1" fill="currentColor"></rect><rect x="5" y="5" width="3" height="7" rx="1" fill="currentColor"></rect><rect x="10" y="3" width="3" height="9" rx="1" fill="currentColor"></rect><rect x="15" y="1" width="3" height="11" rx="1" fill="currentColor"></rect><rect x="24.5" y="2.5" width="17" height="8" rx="2.5" stroke="currentColor" stroke-width="1"></rect><rect x="26.5" y="4.5" width="11" height="4" rx="1" fill="currentColor"></rect><rect x="43" y="4.8" width="2" height="3.4" rx="1" fill="currentColor"></rect></symbol>
+</svg>
+
+<div style="padding:64px 60px 40px;box-sizing:border-box;min-width:2052px;font-family:Lora,Georgia,'Times New Roman',serif;color:#201F1D">
+  <div style="max-width:2600px;margin:0 auto">
+    <div style="display:grid;grid-template-columns:minmax(440px,1.1fr) 1px minmax(0,1fr) minmax(0,1fr);gap:0 44px;align-items:start;border-bottom:1px solid #D1D0D0;padding-bottom:40px">
+      <div>
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235">Refresh estrutural · 21 ago 2026</div>
+        <div style="font:400 76px/1 'Cormorant Garamond',Georgia,serif;letter-spacing:-0.01em;margin-top:14px">DapperDemo</div>
+        <div style="font:400 30px/34px 'Cormorant Garamond',Georgia,serif;color:#5F5E5D;margin-top:4px">Patas &amp; Passeios</div>
+        <div style="width:64px;height:1px;background:#B68235;margin:24px 0 14px"></div>
+        <div style="font:600 11px/16px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D">23 artboards · 412&nbsp;px · claro e escuro</div>
+      </div>
+      <div style="background:#D1D0D0;align-self:stretch"></div>
+      <div style="font:400 15px/26px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;padding-top:8px">As regras do Nib, não a pele do Nib. O aplicativo mantém a paleta, o tipo serifado, a arquitetura de informação e o comportamento. O que muda é como as superfícies, os controles, os grupos e os degraus de tipo estão organizados — e a mudança que carrega a reforma é o <b style="font-weight:600;color:#201F1D">grupo</b>: hoje o aplicativo é uma página de linhas de ponta a ponta sobre fios de cabelo; a partir daqui toda lista é um objeto recuado 20 sobre superfície elevada, raio 12.</div>
+      <div style="font:400 15px/26px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;padding-top:8px">O ouro <b style="font-weight:600;color:#201F1D">#B68235</b> mede 2,68:1 sobre superfície elevada e 2,37:1 sobre um controle — abaixo até de 3:1. Por isso existe uma regra única, obedecida em toda parte: onde o acento cairia sobre uma superfície elevada ou de controle, ele é <b style="font-weight:600;color:#201F1D">accent.strong</b>. Os cinzentos apagados caem de seis degraus para dois, mais um que não é texto. As seis folhas de apoio — ficha de construção, decisões, tabela de contraste, mapeamento de tipo, regra do fio e mapeamento de tinta — acompanham este arquivo.</div>
+    </div>
+  </div>
+</div>
+
+
+<div style="padding:0 60px 96px;box-sizing:border-box;min-width:2052px;font-family:Lora,Georgia,'Times New Roman',serif;color:#201F1D">
+  <div style="max-width:2600px;margin:0 auto">
+    <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin-bottom:8px">Papéis de cor · quatro são novos</div>
+    <div style="font:400 34px/38px 'Cormorant Garamond',Georgia,serif;margin-bottom:20px">Os mesmos hexadecimais, com nomes que dizem onde vivem</div>
+    <div style="display:flex;gap:36px;align-items:flex-start;flex-wrap:nowrap">
+
+      <div style="width:412px;flex:none;background:#F3F2F2;border:1px solid #BBBABA;border-radius:12px;padding:20px;box-sizing:border-box">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin-bottom:14px">Claro · autoritativo</div>
+        <div style="display:flex;flex-direction:column;gap:0">
+          <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid #D1D0D0"><span style="width:26px;height:26px;border-radius:6px;background:#F3F2F2;border:1px solid #BBBABA;flex:none"></span><span style="font:400 13px/20px Lora,Georgia,serif;flex:1">surface.primary</span><span style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">#F3F2F2</span></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid #D1D0D0"><span style="width:26px;height:26px;border-radius:6px;background:#E6E5E5;border:1px solid #BBBABA;flex:none"></span><span style="font:400 13px/20px Lora,Georgia,serif;flex:1">surface.raised <span style="color:#B68235">era #EAE9E9</span></span><span style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">#E6E5E5</span></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid #D1D0D0"><span style="width:26px;height:26px;border-radius:6px;background:#D9D8D8;border:1px solid #BBBABA;flex:none"></span><span style="font:400 13px/20px Lora,Georgia,serif;flex:1">surface.control <span style="color:#B68235">novo</span></span><span style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">#D9D8D8</span></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid #D1D0D0"><span style="width:26px;height:26px;border-radius:6px;background:#C6C5C5;flex:none"></span><span style="font:400 13px/20px Lora,Georgia,serif;flex:1">stroke.raised <span style="color:#B68235">novo</span></span><span style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">#C6C5C5</span></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid #D1D0D0"><span style="width:26px;height:26px;border-radius:6px;background:#BBBABA;flex:none"></span><span style="font:400 13px/20px Lora,Georgia,serif;flex:1">stroke.control <span style="color:#B68235">novo</span></span><span style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">#BBBABA</span></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid #D1D0D0"><span style="width:26px;height:26px;border-radius:6px;background:#201F1D;flex:none"></span><span style="font:400 13px/20px Lora,Georgia,serif;flex:1">ink.primary</span><span style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">#201F1D</span></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid #D1D0D0"><span style="width:26px;height:26px;border-radius:6px;background:#5F5E5D;flex:none"></span><span style="font:400 13px/20px Lora,Georgia,serif;flex:1">ink.secondary <span style="color:#B68235">70%, era 55%</span></span><span style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">#5F5E5D</span></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid #D1D0D0"><span style="width:26px;height:26px;border-radius:6px;background:#949392;flex:none"></span><span style="font:400 13px/20px Lora,Georgia,serif;flex:1">ink.disabled <span style="color:#B68235">não é texto</span></span><span style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">#949392</span></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid #D1D0D0"><span style="width:26px;height:26px;border-radius:6px;background:#B68235;flex:none"></span><span style="font:400 13px/20px Lora,Georgia,serif;flex:1">accent</span><span style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">#B68235</span></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid #D1D0D0"><span style="width:26px;height:26px;border-radius:6px;background:#7D5411;flex:none"></span><span style="font:400 13px/20px Lora,Georgia,serif;flex:1">accent.strong</span><span style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">#7D5411</span></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid #D1D0D0"><span style="width:26px;height:26px;border-radius:6px;background:#5A3B0A;flex:none"></span><span style="font:400 13px/20px Lora,Georgia,serif;flex:1">accent.deep</span><span style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">#5A3B0A</span></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:7px 0"><span style="width:26px;height:26px;border-radius:6px;background:#ECE5DB;border:1px solid #BBBABA;flex:none"></span><span style="font:400 13px/20px Lora,Georgia,serif;flex:1">accent.tint</span><span style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">#ECE5DB</span></div>
+        </div>
+      </div>
+
+      <div style="width:412px;flex:none;background:#1B1A18;border:1px solid #4C4945;border-radius:12px;padding:20px;box-sizing:border-box">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#A5A09A;margin-bottom:14px">Escuro · derivado nesta passagem</div>
+        <div style="display:flex;flex-direction:column;gap:0">
+          <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid #34322F"><span style="width:26px;height:26px;border-radius:6px;background:#1B1A18;border:1px solid #4C4945;flex:none"></span><span style="font:400 13px/20px Lora,Georgia,serif;flex:1;color:#EDEBE7">surface.primary</span><span style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">#1B1A18</span></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid #34322F"><span style="width:26px;height:26px;border-radius:6px;background:#262523;border:1px solid #4C4945;flex:none"></span><span style="font:400 13px/20px Lora,Georgia,serif;flex:1;color:#EDEBE7">surface.raised</span><span style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">#262523</span></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid #34322F"><span style="width:26px;height:26px;border-radius:6px;background:#302E2B;border:1px solid #4C4945;flex:none"></span><span style="font:400 13px/20px Lora,Georgia,serif;flex:1;color:#EDEBE7">surface.control</span><span style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">#302E2B</span></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid #34322F"><span style="width:26px;height:26px;border-radius:6px;background:#3C3A36;flex:none"></span><span style="font:400 13px/20px Lora,Georgia,serif;flex:1;color:#EDEBE7">stroke.raised</span><span style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">#3C3A36</span></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid #34322F"><span style="width:26px;height:26px;border-radius:6px;background:#4C4945;flex:none"></span><span style="font:400 13px/20px Lora,Georgia,serif;flex:1;color:#EDEBE7">stroke.control</span><span style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">#4C4945</span></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid #34322F"><span style="width:26px;height:26px;border-radius:6px;background:#EDEBE7;flex:none"></span><span style="font:400 13px/20px Lora,Georgia,serif;flex:1;color:#EDEBE7">ink.primary</span><span style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">#EDEBE7</span></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid #34322F"><span style="width:26px;height:26px;border-radius:6px;background:#A5A09A;flex:none"></span><span style="font:400 13px/20px Lora,Georgia,serif;flex:1;color:#EDEBE7">ink.secondary</span><span style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">#A5A09A</span></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid #34322F"><span style="width:26px;height:26px;border-radius:6px;background:#6F6B66;flex:none"></span><span style="font:400 13px/20px Lora,Georgia,serif;flex:1;color:#EDEBE7">ink.disabled</span><span style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">#6F6B66</span></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid #34322F"><span style="width:26px;height:26px;border-radius:6px;background:#D9A857;flex:none"></span><span style="font:400 13px/20px Lora,Georgia,serif;flex:1;color:#EDEBE7">accent <span style="color:#D9A857">novo</span></span><span style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">#D9A857</span></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid #34322F"><span style="width:26px;height:26px;border-radius:6px;background:#EFCE93;flex:none"></span><span style="font:400 13px/20px Lora,Georgia,serif;flex:1;color:#EDEBE7">accent.strong</span><span style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">#EFCE93</span></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid #34322F"><span style="width:26px;height:26px;border-radius:6px;background:#F7E4BE;flex:none"></span><span style="font:400 13px/20px Lora,Georgia,serif;flex:1;color:#EDEBE7">accent.deep</span><span style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">#F7E4BE</span></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:7px 0"><span style="width:26px;height:26px;border-radius:6px;background:#3C3529;border:1px solid #4C4945;flex:none"></span><span style="font:400 13px/20px Lora,Georgia,serif;flex:1;color:#EDEBE7">accent.tint</span><span style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">#3C3529</span></div>
+        </div>
+      </div>
+
+      <div style="width:320px;flex:none;padding-top:2px">
+        <div style="font:400 18px/28px 'Cormorant Garamond',Georgia,serif;color:#201F1D;font-size:22px;line-height:28px">Valores explícitos, não alfas rebaseados</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:10px">Todo cinzento apagado do modo claro é um alfa de <span style="color:#201F1D">#201F1D</span>. Virando o fundo, o mesmo alfa compõe contra três superfícies diferentes e produz três cores — seis números para guardar em vez de dois. E o alfa perde o calor: <span style="color:#201F1D">#201F1D</span> tem vermelho três pontos acima do azul, e uma tinta clara sobre um fundo escuro tende ao neutro. Os cinzentos esfriariam, que é a única coisa que um aplicativo de cinza quente e ouro não pode pagar.</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:14px">O degrau escuro é mais largo que o claro: elevado está 11 pontos acima da página, não 9, porque uma inversão aritmética de <span style="color:#201F1D">#E6E5E5</span> daria <span style="color:#201F1D">#242321</span> — invisível num painel OLED com brilho baixo.</div>
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin-top:22px">A superfície elevada não é a do conjunto</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:8px">O conjunto de tokens traz <span style="color:#201F1D">#EAE9E9</span> e este desenho não o usa. Contra <span style="color:#201F1D">#F3F2F2</span> ele está a <b style="font-weight:600;color:#201F1D">ΔL* 3,14</b>; o degrau página→elevada do próprio Nib, que é o que se está a portar, é <b style="font-weight:600;color:#201F1D">ΔL* 4,48</b> — e num fundo mais claro, onde qualquer degrau se lê melhor. A ΔL* 3 uma área plana grande está no limiar do perceptível: visível num ecrã calibrado num quarto escuro, marginal num telemóvel à luz do dia, e ausente sob um filtro noturno. Como o <b style="font-weight:600;color:#201F1D">grupo</b> é a mudança desta passagem, um grupo que só às vezes se lê como grupo não vale a pena.</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:14px"><span style="color:#201F1D">#E6E5E5</span> está a ΔL* 4,54 — o degrau do Nib, no matiz do DapperDemo, mantendo o ponto de vermelho sobre azul da família. <span style="color:#201F1D">#D9D8D8</span> desce um degrau igual. É de graça: <span style="color:#201F1D">ColorSurface</span> tem 2 usos num ficheiro, então nada dependia do valor antigo — é uma escolha, não uma herança.</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:14px">E arrastou a tinta consigo. Sobre a superfície mais escura o degrau de 65% mede <b style="font-weight:600;color:#201F1D">4,36:1</b> e falha. O de <b style="font-weight:600;color:#201F1D">70%</b> — a tinta apagada mais usada do aplicativo, 33 usos — passa nas três superfícies (5,79 · 5,15 · 4,55) e <b style="font-weight:600;color:#201F1D">apaga a exceção</b>: rótulos sobre um controle já não precisam de caso especial no modo claro.</div>
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin-top:22px">Duas espessuras</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:8px">400 e 600. Cormorant Garamond é <b style="font-weight:400;color:#201F1D">sempre 400</b> — tamanhos de display tomam o corte normal. 600 é só Lora e aparece em cinco lugares: rótulos <span style="color:#201F1D">type.micro</span>, o rótulo da aba ativa, a linha <span style="color:#201F1D">Total</span>, o botão <span style="color:#201F1D">Sim</span> e a célula selecionada do seletor de tipo de serviço. Em nenhum outro.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div style="padding:0 60px 96px;box-sizing:border-box;min-width:2052px;font-family:Lora,Georgia,'Times New Roman',serif;color:#201F1D">
+  <div style="max-width:2600px;margin:0 auto">
+    <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin-bottom:8px">Entrada · 01–02 · claro</div>
+    <div style="font:400 34px/38px 'Cormorant Garamond',Georgia,serif;margin-bottom:8px">Um grupo de campos, um controle, e um link que não finge ser botão</div>
+    <div style="height:1px;background:#D1D0D0;max-width:1000px;margin-bottom:26px"></div>
+    <div style="display:flex;gap:36px;align-items:flex-start;flex-wrap:nowrap">
+
+      <div style="width:412px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:0 0 8px 2px">01 · Login</div>
+        <div style="width:412px;height:892px;background:#F3F2F2;border:1px solid #BBBABA;border-radius:20px;overflow:hidden;position:relative;box-sizing:border-box">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;color:#5F5E5D"><span style="font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums">9:41</span><svg width="46" height="12"><use href="#ic-status"></use></svg></div>
+          <div style="padding:72px 20px 0">
+            <div style="font:400 30px/34px 'Cormorant Garamond',Georgia,serif;letter-spacing:-0.005em">Patas &amp; Passeios</div>
+            <div style="font:400 15px/22px Lora,Georgia,serif;color:#5F5E5D;margin-top:4px">Entre para ver a agenda de hoje.</div>
+          </div>
+          <div style="margin:32px 20px 0;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px"><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">E-mail</div><div style="font:400 18px/28px Lora,Georgia,serif">ana.ferreira@email.com</div></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px"><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Senha</div><div style="font:400 18px/28px Lora,Georgia,serif;letter-spacing:0.18em">••••••••</div></div>
+          </div>
+          <div style="margin:20px 20px 0;height:52px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;display:flex;align-items:center;justify-content:center"><span style="font:400 18px/28px Lora,Georgia,serif">Entrar</span></div>
+          <div style="margin:26px 20px 0"><span style="font:400 15px/22px Lora,Georgia,serif;color:#7D5411;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px">Criar uma conta</span></div>
+        </div>
+      </div>
+
+      <div style="width:412px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:0 0 8px 2px">02 · Cadastro</div>
+        <div style="width:412px;height:892px;background:#F3F2F2;border:1px solid #BBBABA;border-radius:20px;overflow:hidden;position:relative;box-sizing:border-box">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;color:#5F5E5D"><span style="font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums">9:41</span><svg width="46" height="12"><use href="#ic-status"></use></svg></div>
+          <div style="padding:0 20px">
+            <div style="display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 12px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;box-sizing:border-box;color:#201F1D"><svg width="20" height="20"><use href="#ic-chev-l"></use></svg><span style="font:400 15px/22px Lora,Georgia,serif">Login</span></div>
+          </div>
+          <div style="padding:24px 20px 0"><div style="font:400 30px/34px 'Cormorant Garamond',Georgia,serif;letter-spacing:-0.005em">Criar conta</div></div>
+          <div style="margin:20px 20px 0;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px"><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Nome</div><div style="font:400 18px/28px Lora,Georgia,serif">Ana Ferreira</div></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px"><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">E-mail</div><div style="font:400 18px/28px Lora,Georgia,serif">ana.ferreira@email.com</div></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px"><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Senha</div><div style="font:400 18px/28px Lora,Georgia,serif;letter-spacing:0.18em">••••••••</div></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px"><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Data de nascimento</div><div style="font:400 18px/28px Lora,Georgia,serif;font-variant-numeric:tabular-nums">14/03/1992</div></div>
+          </div>
+          <div style="margin:20px 20px 0;height:52px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;display:flex;align-items:center;justify-content:center"><span style="font:400 18px/28px Lora,Georgia,serif">Criar conta</span></div>
+          <div style="margin:26px 20px 0"><span style="font:400 15px/22px Lora,Georgia,serif;color:#7D5411;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px">Já tenho conta</span></div>
+        </div>
+      </div>
+
+      <div style="width:320px;flex:none;padding-top:2px">
+        <div style="font:400 22px/28px 'Cormorant Garamond',Georgia,serif">O campo virou linha de grupo</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:10px">Sem caixa, sem borda, sem <i>placeholder</i> flutuante. O rótulo é <span style="color:#201F1D">type.caption</span> em cima, o valor é <span style="color:#201F1D">type.body</span> embaixo, e o separador entre campos é o mesmo fio de 1px recuado a 16 que separa qualquer par de linhas no aplicativo. Um formulário passa a ser uma lista, o que é o que ele sempre foi.</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:14px">O envio é um <span style="color:#201F1D">controle</span> de medida cheia: preenchimento <span style="color:#201F1D">surface.control</span>, aresta de 1px e o anel de 3px da cor da página. O mesmo objeto que a barra de abas, o passo do mês e o <span style="color:#201F1D">+ Novo</span> — sete componentes dividem esse papel, e é por isso que ele existe.</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:14px">A rota secundária é uma linha sublinhada em <span style="color:#7D5411">accent.strong</span>, não um segundo botão. Duas caixas idênticas lado a lado obrigam a ler as duas para descobrir qual é a saída principal.</div>
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin-top:22px">Sem barra de abas</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:8px">Nenhuma das duas telas de entrada tem a barra: não há para onde ir ainda. O voltar do cadastro é um controle rotulado — <span style="color:#201F1D">‹ Login</span> — porque um chevron sozinho não diz para onde volta.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div style="padding:0 60px 96px;box-sizing:border-box;min-width:2052px;font-family:Lora,Georgia,'Times New Roman',serif;color:#201F1D">
+  <div style="max-width:2600px;margin:0 auto">
+    <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin-bottom:8px">O casco · 03–05 · claro + escuro</div>
+    <div style="font:400 34px/38px 'Cormorant Garamond',Georgia,serif;margin-bottom:8px">A barra de abas solta do fundo, e a página passa por baixo</div>
+    <div style="height:1px;background:#D1D0D0;max-width:1000px;margin-bottom:26px"></div>
+    <div style="display:flex;gap:36px;align-items:flex-start;flex-wrap:nowrap">
+
+      <div style="width:412px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:0 0 8px 2px">03 · Agenda · claro</div>
+        <div style="width:412px;height:892px;background:#F3F2F2;border:1px solid #BBBABA;border-radius:20px;overflow:hidden;position:relative;box-sizing:border-box">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;color:#5F5E5D"><span style="font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums">9:41</span><svg width="46" height="12"><use href="#ic-status"></use></svg></div>
+          <div style="padding:8px 20px 0"><div style="font:400 30px/34px 'Cormorant Garamond',Georgia,serif;letter-spacing:-0.005em">Agenda</div></div>
+          <div style="margin:16px 20px 0;height:44px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;display:flex;align-items:center;justify-content:space-between;padding:0 12px;box-sizing:border-box"><svg width="20" height="20" style="color:#201F1D"><use href="#ic-chev-l"></use></svg><span style="font:400 18px/28px Lora,Georgia,serif">Agosto de 2026</span><svg width="20" height="20" style="color:#201F1D"><use href="#ic-chev-r"></use></svg></div>
+
+          <div style="margin:24px 20px 0;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:12px"><div style="flex:1"><div style="font:400 18px/28px Lora,Georgia,serif">Toby</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">3 serviços · R$&nbsp;150,00</div></div><svg width="20" height="20" style="color:#5F5E5D;flex:none"><use href="#ic-chev-d"></use></svg></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px"><div style="font:400 18px/28px Lora,Georgia,serif">Passeio · 21/08/2026, 09:00</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">R$&nbsp;40,00 · A executar · <span style="color:#7D5411">Sem pagar</span></div></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px"><div style="font:400 18px/28px Lora,Georgia,serif">Creche · 25/08/2026, 08:00</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">R$&nbsp;70,00 · A executar · <span style="color:#7D5411">Sem pagar</span></div></div>
+          </div>
+
+          <div style="margin:20px 20px 0;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:12px"><div style="flex:1"><div style="font:400 18px/28px Lora,Georgia,serif">Bento</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">2 serviços · R$&nbsp;237,50</div></div><svg width="20" height="20" style="color:#5F5E5D;flex:none"><use href="#ic-chev-d"></use></svg></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px"><div style="font:400 18px/28px Lora,Georgia,serif">Hospedagem · 28/08 → 31/08</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">R$&nbsp;202,50 · A executar · <span style="color:#7D5411">Sem pagar</span></div></div>
+          </div>
+
+          <div style="margin:20px 20px 0;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:12px"><div style="flex:1"><div style="font:400 18px/28px Lora,Georgia,serif">Nina</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">1 serviço · R$&nbsp;80,00</div></div><svg width="20" height="20" style="color:#5F5E5D;flex:none"><use href="#ic-chev-r"></use></svg></div>
+          </div>
+
+          <div style="margin:20px 20px 0;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:12px"><div style="flex:1"><div style="font:400 18px/28px Lora,Georgia,serif">Mel</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">2 serviços · R$&nbsp;130,00</div></div><svg width="20" height="20" style="color:#5F5E5D;flex:none"><use href="#ic-chev-r"></use></svg></div>
+          </div>
+
+          <div style="position:absolute;left:20px;right:20px;bottom:20px;height:56px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;display:grid;grid-template-columns:repeat(5,1fr);box-sizing:border-box">
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#7D5411"><svg width="24" height="24"><use href="#ic-agenda"></use></svg><span style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Agenda</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-dogs"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Cachorros</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-serv"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Serviços</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-tutors"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Tutores</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-perfil"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Perfil</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:412px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:0 0 8px 2px">04 · Agenda · escuro</div>
+        <div style="width:412px;height:892px;background:#1B1A18;border:1px solid #4C4945;border-radius:20px;overflow:hidden;position:relative;box-sizing:border-box;color:#EDEBE7">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;color:#A5A09A"><span style="font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums">9:41</span><svg width="46" height="12"><use href="#ic-status"></use></svg></div>
+          <div style="padding:8px 20px 0"><div style="font:400 30px/34px 'Cormorant Garamond',Georgia,serif;letter-spacing:-0.005em">Agenda</div></div>
+          <div style="margin:16px 20px 0;height:44px;background:#302E2B;border:1px solid #4C4945;border-radius:12px;box-shadow:0 0 0 3px #1B1A18;display:flex;align-items:center;justify-content:space-between;padding:0 12px;box-sizing:border-box"><svg width="20" height="20" style="color:#EDEBE7"><use href="#ic-chev-l"></use></svg><span style="font:400 18px/28px Lora,Georgia,serif">Agosto de 2026</span><svg width="20" height="20" style="color:#EDEBE7"><use href="#ic-chev-r"></use></svg></div>
+
+          <div style="margin:24px 20px 0;background:#262523;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:12px"><div style="flex:1"><div style="font:400 18px/28px Lora,Georgia,serif">Toby</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">3 serviços · R$&nbsp;150,00</div></div><svg width="20" height="20" style="color:#A5A09A;flex:none"><use href="#ic-chev-d"></use></svg></div>
+            <div style="height:1px;background:#3C3A36;margin-left:16px"></div>
+            <div style="padding:12px 16px"><div style="font:400 18px/28px Lora,Georgia,serif">Passeio · 21/08/2026, 09:00</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">R$&nbsp;40,00 · A executar · <span style="color:#EFCE93">Sem pagar</span></div></div>
+            <div style="height:1px;background:#3C3A36;margin-left:16px"></div>
+            <div style="padding:12px 16px"><div style="font:400 18px/28px Lora,Georgia,serif">Creche · 25/08/2026, 08:00</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">R$&nbsp;70,00 · A executar · <span style="color:#EFCE93">Sem pagar</span></div></div>
+          </div>
+
+          <div style="margin:20px 20px 0;background:#262523;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:12px"><div style="flex:1"><div style="font:400 18px/28px Lora,Georgia,serif">Bento</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">2 serviços · R$&nbsp;237,50</div></div><svg width="20" height="20" style="color:#A5A09A;flex:none"><use href="#ic-chev-d"></use></svg></div>
+            <div style="height:1px;background:#3C3A36;margin-left:16px"></div>
+            <div style="padding:12px 16px"><div style="font:400 18px/28px Lora,Georgia,serif">Hospedagem · 28/08 → 31/08</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">R$&nbsp;202,50 · A executar · <span style="color:#EFCE93">Sem pagar</span></div></div>
+          </div>
+
+          <div style="margin:20px 20px 0;background:#262523;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:12px"><div style="flex:1"><div style="font:400 18px/28px Lora,Georgia,serif">Nina</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">1 serviço · R$&nbsp;80,00</div></div><svg width="20" height="20" style="color:#A5A09A;flex:none"><use href="#ic-chev-r"></use></svg></div>
+          </div>
+
+          <div style="margin:20px 20px 0;background:#262523;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:12px"><div style="flex:1"><div style="font:400 18px/28px Lora,Georgia,serif">Mel</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">2 serviços · R$&nbsp;130,00</div></div><svg width="20" height="20" style="color:#A5A09A;flex:none"><use href="#ic-chev-r"></use></svg></div>
+          </div>
+
+          <div style="position:absolute;left:20px;right:20px;bottom:20px;height:56px;background:#302E2B;border:1px solid #4C4945;border-radius:12px;box-shadow:0 0 0 3px #1B1A18;display:grid;grid-template-columns:repeat(5,1fr);box-sizing:border-box">
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#D9A857"><svg width="24" height="24"><use href="#ic-agenda"></use></svg><span style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Agenda</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#EDEBE7;background:linear-gradient(#4C4945,#4C4945) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-dogs"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Cachorros</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#EDEBE7;background:linear-gradient(#4C4945,#4C4945) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-serv"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Serviços</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#EDEBE7;background:linear-gradient(#4C4945,#4C4945) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-tutors"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Tutores</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#EDEBE7;background:linear-gradient(#4C4945,#4C4945) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-perfil"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Perfil</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:412px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:0 0 8px 2px">05 · Agenda vazia · claro</div>
+        <div style="width:412px;height:892px;background:#F3F2F2;border:1px solid #BBBABA;border-radius:20px;overflow:hidden;position:relative;box-sizing:border-box">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;color:#5F5E5D"><span style="font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums">9:41</span><svg width="46" height="12"><use href="#ic-status"></use></svg></div>
+          <div style="padding:8px 20px 0"><div style="font:400 30px/34px 'Cormorant Garamond',Georgia,serif;letter-spacing:-0.005em">Agenda</div></div>
+          <div style="margin:16px 20px 0;height:44px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;display:flex;align-items:center;justify-content:space-between;padding:0 12px;box-sizing:border-box"><svg width="20" height="20" style="color:#201F1D"><use href="#ic-chev-l"></use></svg><span style="font:400 18px/28px Lora,Georgia,serif">Fevereiro de 2026</span><svg width="20" height="20" style="color:#201F1D"><use href="#ic-chev-r"></use></svg></div>
+          <div style="margin:20px 20px 0"><span style="font:400 15px/22px Lora,Georgia,serif;color:#5F5E5D">Nenhum serviço neste filtro.</span></div>
+
+          <div style="position:absolute;left:20px;right:20px;bottom:20px;height:56px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;display:grid;grid-template-columns:repeat(5,1fr);box-sizing:border-box">
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#7D5411"><svg width="24" height="24"><use href="#ic-agenda"></use></svg><span style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Agenda</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-dogs"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Cachorros</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-serv"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Serviços</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-tutors"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Tutores</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-perfil"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Perfil</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:320px;flex:none;padding-top:2px">
+        <div style="font:400 22px/28px 'Cormorant Garamond',Georgia,serif">A barra é um objeto, não uma borda</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:10px">372 × 56, recuada 20 dos lados e 20 acima da área segura, raio 12, <span style="color:#201F1D">surface.control</span> com aresta de 1px e o anel de 3px da cor da página. Cinco células de 74, divisores de 1px recuados 10 acima e abaixo. O conteúdo passa por baixo dela; ela nunca esconde, encolhe nem se move ao rolar.</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:14px">O argumento é curto: depois desta passagem, toda lista de toda tela é um objeto recuado com raio 12. Uma barra soldada às duas arestas de baixo seria o único elemento que ainda toca a borda da tela, e seria a primeira coisa que qualquer um notaria. Soltá-la também devolve a faixa morta de 100 unidades que uma barra opaca cobra de todas as telas.</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:14px">Aba ativa: glifo e rótulo em <span style="color:#7D5411">accent.strong</span>, rótulo em 600. Não <span style="color:#B68235">accent</span> — sobre um controle ele mede 2,37:1. Sem preenchimento atrás, sem barra indicadora, sem <i>badge</i>: cor e espessura, que é o mesmo sinal que o resto do desenho usa.</div>
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin-top:22px">Uma regra quebrada de propósito</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:8px">«Cromo separa por fio e espaço, nunca por preenchimento.» Um controle que flutua sobre uma lista tem de ser opaco. O preenchimento fica a um valor da página e a fronteira é o anel mais o fio — não um cinza, não translucidez, não elevação.</div>
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin-top:22px">Um desvio registrado</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:8px">Os rótulos das abas usam o tamanho e a espessura de <span style="color:#201F1D">type.micro</span> mas em caixa de sentença e com apenas +0,02em: «CACHORROS» em maiúsculas com +0,14em mede 72px numa célula de 74.</div>
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin-top:22px">O mês não é um popup</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:8px">Popups não escalam com a tela de desenho do aplicativo, então o mês é passado no lugar. Vazio é uma frase na margem do texto — sem ilustração, sem botão centralizado.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div style="padding:0 60px 96px;box-sizing:border-box;min-width:2052px;font-family:Lora,Georgia,'Times New Roman',serif;color:#201F1D">
+  <div style="max-width:2600px;margin:0 auto">
+    <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin-bottom:8px">Listas · 06–08 · claro + escuro</div>
+    <div style="font:400 34px/38px 'Cormorant Garamond',Georgia,serif;margin-bottom:8px">Uma linha existe para decidir se é esta a que eu quero</div>
+    <div style="height:1px;background:#D1D0D0;max-width:1000px;margin-bottom:26px"></div>
+    <div style="display:flex;gap:36px;align-items:flex-start;flex-wrap:nowrap">
+
+      <div style="width:412px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:0 0 8px 2px">06 · Cachorros · claro</div>
+        <div style="width:412px;height:892px;background:#F3F2F2;border:1px solid #BBBABA;border-radius:20px;overflow:hidden;position:relative;box-sizing:border-box">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;color:#5F5E5D"><span style="font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums">9:41</span><svg width="46" height="12"><use href="#ic-status"></use></svg></div>
+          <div style="padding:8px 20px 0;display:flex;align-items:center;justify-content:space-between;gap:12px">
+            <div style="font:400 30px/34px 'Cormorant Garamond',Georgia,serif;letter-spacing:-0.005em">Cachorros</div>
+            <div style="height:44px;padding:0 16px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;display:flex;align-items:center;box-sizing:border-box;flex:none"><span style="font:400 15px/22px Lora,Georgia,serif">+ Novo</span></div>
+          </div>
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:24px 0 8px 20px">5 cadastrados</div>
+          <div style="margin:0 20px;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:14px"><span style="width:40px;height:40px;border-radius:20px;background:#D9D8D8;border:1px solid #C6C5C5;flex:none"></span><div style="flex:1;min-width:0"><div style="font:400 18px/28px Lora,Georgia,serif">Toby</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Golden Retriever · Marina Alves</div></div><svg width="20" height="20" style="color:#5F5E5D;flex:none"><use href="#ic-chev-r"></use></svg></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:14px"><span style="width:40px;height:40px;border-radius:20px;background:#D9D8D8;border:1px solid #C6C5C5;flex:none"></span><div style="flex:1;min-width:0"><div style="font:400 18px/28px Lora,Georgia,serif">Nina</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Vira-lata · Marina Alves</div></div><svg width="20" height="20" style="color:#5F5E5D;flex:none"><use href="#ic-chev-r"></use></svg></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:14px"><span style="width:40px;height:40px;border-radius:20px;background:#D9D8D8;border:1px solid #C6C5C5;flex:none"></span><div style="flex:1;min-width:0"><div style="font:400 18px/28px Lora,Georgia,serif">Bento</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Beagle · Rafael Souza</div></div><svg width="20" height="20" style="color:#5F5E5D;flex:none"><use href="#ic-chev-r"></use></svg></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:14px"><span style="width:40px;height:40px;border-radius:20px;background:#D9D8D8;border:1px solid #C6C5C5;flex:none"></span><div style="flex:1;min-width:0"><div style="font:400 18px/28px Lora,Georgia,serif">Mel</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Poodle · Beatriz Lima</div></div><svg width="20" height="20" style="color:#5F5E5D;flex:none"><use href="#ic-chev-r"></use></svg></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:14px"><span style="width:40px;height:40px;border-radius:20px;background:#D9D8D8;border:1px solid #C6C5C5;flex:none"></span><div style="flex:1;min-width:0"><div style="font:400 18px/28px Lora,Georgia,serif">Zeca</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Labrador · João Pedro</div></div><svg width="20" height="20" style="color:#5F5E5D;flex:none"><use href="#ic-chev-r"></use></svg></div>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:20px;height:56px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;display:grid;grid-template-columns:repeat(5,1fr);box-sizing:border-box">
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D"><svg width="24" height="24"><use href="#ic-agenda"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Agenda</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#7D5411;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-dogs"></use></svg><span style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Cachorros</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-serv"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Serviços</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-tutors"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Tutores</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-perfil"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Perfil</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:412px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:0 0 8px 2px">07 · Cachorros · escuro</div>
+        <div style="width:412px;height:892px;background:#1B1A18;border:1px solid #4C4945;border-radius:20px;overflow:hidden;position:relative;box-sizing:border-box;color:#EDEBE7">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;color:#A5A09A"><span style="font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums">9:41</span><svg width="46" height="12"><use href="#ic-status"></use></svg></div>
+          <div style="padding:8px 20px 0;display:flex;align-items:center;justify-content:space-between;gap:12px">
+            <div style="font:400 30px/34px 'Cormorant Garamond',Georgia,serif;letter-spacing:-0.005em">Cachorros</div>
+            <div style="height:44px;padding:0 16px;background:#302E2B;border:1px solid #4C4945;border-radius:12px;box-shadow:0 0 0 3px #1B1A18;display:flex;align-items:center;box-sizing:border-box;flex:none"><span style="font:400 15px/22px Lora,Georgia,serif">+ Novo</span></div>
+          </div>
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#A5A09A;margin:24px 0 8px 20px">5 cadastrados</div>
+          <div style="margin:0 20px;background:#262523;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:14px"><span style="width:40px;height:40px;border-radius:20px;background:#302E2B;border:1px solid #3C3A36;flex:none"></span><div style="flex:1;min-width:0"><div style="font:400 18px/28px Lora,Georgia,serif">Toby</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A">Golden Retriever · Marina Alves</div></div><svg width="20" height="20" style="color:#A5A09A;flex:none"><use href="#ic-chev-r"></use></svg></div>
+            <div style="height:1px;background:#3C3A36;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:14px"><span style="width:40px;height:40px;border-radius:20px;background:#302E2B;border:1px solid #3C3A36;flex:none"></span><div style="flex:1;min-width:0"><div style="font:400 18px/28px Lora,Georgia,serif">Nina</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A">Vira-lata · Marina Alves</div></div><svg width="20" height="20" style="color:#A5A09A;flex:none"><use href="#ic-chev-r"></use></svg></div>
+            <div style="height:1px;background:#3C3A36;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:14px"><span style="width:40px;height:40px;border-radius:20px;background:#302E2B;border:1px solid #3C3A36;flex:none"></span><div style="flex:1;min-width:0"><div style="font:400 18px/28px Lora,Georgia,serif">Bento</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A">Beagle · Rafael Souza</div></div><svg width="20" height="20" style="color:#A5A09A;flex:none"><use href="#ic-chev-r"></use></svg></div>
+            <div style="height:1px;background:#3C3A36;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:14px"><span style="width:40px;height:40px;border-radius:20px;background:#302E2B;border:1px solid #3C3A36;flex:none"></span><div style="flex:1;min-width:0"><div style="font:400 18px/28px Lora,Georgia,serif">Mel</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A">Poodle · Beatriz Lima</div></div><svg width="20" height="20" style="color:#A5A09A;flex:none"><use href="#ic-chev-r"></use></svg></div>
+            <div style="height:1px;background:#3C3A36;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:14px"><span style="width:40px;height:40px;border-radius:20px;background:#302E2B;border:1px solid #3C3A36;flex:none"></span><div style="flex:1;min-width:0"><div style="font:400 18px/28px Lora,Georgia,serif">Zeca</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A">Labrador · João Pedro</div></div><svg width="20" height="20" style="color:#A5A09A;flex:none"><use href="#ic-chev-r"></use></svg></div>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:20px;height:56px;background:#302E2B;border:1px solid #4C4945;border-radius:12px;box-shadow:0 0 0 3px #1B1A18;display:grid;grid-template-columns:repeat(5,1fr);box-sizing:border-box">
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#EDEBE7"><svg width="24" height="24"><use href="#ic-agenda"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Agenda</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#D9A857;background:linear-gradient(#4C4945,#4C4945) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-dogs"></use></svg><span style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Cachorros</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#EDEBE7;background:linear-gradient(#4C4945,#4C4945) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-serv"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Serviços</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#EDEBE7;background:linear-gradient(#4C4945,#4C4945) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-tutors"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Tutores</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#EDEBE7;background:linear-gradient(#4C4945,#4C4945) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-perfil"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Perfil</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:412px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:0 0 8px 2px">08 · Tutores · claro</div>
+        <div style="width:412px;height:892px;background:#F3F2F2;border:1px solid #BBBABA;border-radius:20px;overflow:hidden;position:relative;box-sizing:border-box">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;color:#5F5E5D"><span style="font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums">9:41</span><svg width="46" height="12"><use href="#ic-status"></use></svg></div>
+          <div style="padding:8px 20px 0;display:flex;align-items:center;justify-content:space-between;gap:12px">
+            <div style="font:400 30px/34px 'Cormorant Garamond',Georgia,serif;letter-spacing:-0.005em">Tutores</div>
+            <div style="height:44px;padding:0 16px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;display:flex;align-items:center;box-sizing:border-box;flex:none"><span style="font:400 15px/22px Lora,Georgia,serif">+ Novo</span></div>
+          </div>
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:24px 0 8px 20px">4 cadastrados</div>
+          <div style="margin:0 20px;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:14px"><div style="flex:1;min-width:0"><div style="font:400 18px/28px Lora,Georgia,serif">Marina Alves</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Vila Madalena · 2 cachorros</div></div><svg width="20" height="20" style="color:#5F5E5D;flex:none"><use href="#ic-chev-r"></use></svg></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:14px"><div style="flex:1;min-width:0"><div style="font:400 18px/28px Lora,Georgia,serif">Rafael Souza</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Pinheiros · 1 cachorro</div></div><svg width="20" height="20" style="color:#5F5E5D;flex:none"><use href="#ic-chev-r"></use></svg></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:14px"><div style="flex:1;min-width:0"><div style="font:400 18px/28px Lora,Georgia,serif">Beatriz Lima</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Itaim Bibi · 1 cachorro</div></div><svg width="20" height="20" style="color:#5F5E5D;flex:none"><use href="#ic-chev-r"></use></svg></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:14px"><div style="flex:1;min-width:0"><div style="font:400 18px/28px Lora,Georgia,serif">João Pedro</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Moema · 1 cachorro</div></div><svg width="20" height="20" style="color:#5F5E5D;flex:none"><use href="#ic-chev-r"></use></svg></div>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:20px;height:56px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;display:grid;grid-template-columns:repeat(5,1fr);box-sizing:border-box">
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D"><svg width="24" height="24"><use href="#ic-agenda"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Agenda</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-dogs"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Cachorros</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-serv"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Serviços</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#7D5411;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-tutors"></use></svg><span style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Tutores</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-perfil"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Perfil</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:320px;flex:none;padding-top:2px">
+        <div style="font:400 22px/28px 'Cormorant Garamond',Georgia,serif">O que cada linha parou de mostrar</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:10px">A linha do cachorro era nome, foto, tutor, raça, um trecho da descrição e o próximo serviço. Agora é nome, raça, tutor, foto. A descrição é por que você entra, não como você escolhe; o próximo serviço é respondido melhor pela Agenda, que fica a uma aba de distância e já está ordenada para isso.</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:14px">A linha do tutor perdeu o telefone e o endereço. Um número de nove dígitos lido numa lista que se percorre por nome é ruído, e é a primeira coisa na ficha.</div>
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin-top:22px">O rótulo fica fora do grupo</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:8px"><span style="color:#201F1D">5 CADASTRADOS</span> é <span style="color:#201F1D">type.micro</span> sobre <span style="color:#201F1D">surface.primary</span>, na margem de 20, 8 acima do grupo. O grupo contém linhas e nada mais — nenhum cabeçalho dentro dele, nenhuma primeira linha que é na verdade um título.</div>
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin-top:22px">A foto vazia não tem glifo</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:8px">40 de diâmetro, preenchimento de controle, fio de 1px, vazia. Sem câmera, sem <span style="color:#201F1D">+</span>, sem inicial do nome: uma inicial desenhada é um dado inventado, e o aplicativo não inventa.</div>
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin-top:22px">Tutores contra Perfil</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:8px">Duas pessoas contra uma pessoa a 24px é cara ou coroa. O anel em volta da figura do Perfil é o que separa «eu» de «eles», e é o único anel do conjunto.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div style="padding:0 60px 96px;box-sizing:border-box;min-width:2052px;font-family:Lora,Georgia,'Times New Roman',serif;color:#201F1D">
+  <div style="max-width:2600px;margin:0 auto">
+    <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin-bottom:8px">O formulário · 09–10 · claro</div>
+    <div style="font:400 34px/38px 'Cormorant Garamond',Georgia,serif;margin-bottom:8px">Quatro tipos, três modos de data, e nenhum popup</div>
+    <div style="height:1px;background:#D1D0D0;max-width:1000px;margin-bottom:26px"></div>
+    <div style="display:flex;gap:36px;align-items:flex-start;flex-wrap:nowrap">
+
+      <div style="width:412px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:0 0 8px 2px">09 · Serviços · passeio, vários dias</div>
+        <div style="width:412px;height:892px;background:#F3F2F2;border:1px solid #BBBABA;border-radius:20px;overflow:hidden;position:relative;box-sizing:border-box">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;color:#5F5E5D"><span style="font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums">9:41</span><svg width="46" height="12"><use href="#ic-status"></use></svg></div>
+          <div style="padding:8px 20px 0"><div style="font:400 30px/34px 'Cormorant Garamond',Georgia,serif;letter-spacing:-0.005em">Novo serviço</div></div>
+
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:20px 0 8px 20px">Tipo</div>
+          <div style="margin:0 20px;height:44px;background:#E6E5E5;border-radius:12px;display:grid;grid-template-columns:repeat(4,1fr);overflow:hidden">
+            <div style="display:flex;align-items:center;justify-content:center;background:#ECE5DB"><span style="font:600 13px/20px Lora,Georgia,serif;color:#7D5411">Passeio</span></div>
+            <div style="display:flex;align-items:center;justify-content:center;background:linear-gradient(#C6C5C5,#C6C5C5) left center/1px 24px no-repeat"><span style="font:400 13px/20px Lora,Georgia,serif">Pet sitting</span></div>
+            <div style="display:flex;align-items:center;justify-content:center;background:linear-gradient(#C6C5C5,#C6C5C5) left center/1px 24px no-repeat"><span style="font:400 13px/20px Lora,Georgia,serif">Creche</span></div>
+            <div style="display:flex;align-items:center;justify-content:center;background:linear-gradient(#C6C5C5,#C6C5C5) left center/1px 24px no-repeat"><span style="font:400 13px/20px Lora,Georgia,serif">Hospedagem</span></div>
+          </div>
+
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:20px 0 8px 20px">Cachorro</div>
+          <div style="margin:0 20px;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:14px"><span style="width:40px;height:40px;border-radius:20px;background:#D9D8D8;border:1px solid #C6C5C5;flex:none"></span><div style="flex:1"><div style="font:400 18px/28px Lora,Georgia,serif">Toby</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Marina Alves</div></div><svg width="20" height="20" style="color:#5F5E5D;flex:none"><use href="#ic-chev-d"></use></svg></div>
+          </div>
+
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:20px 0 8px 20px">Datas</div>
+          <div style="margin:0 20px 8px;height:44px;background:#E6E5E5;border-radius:12px;display:grid;grid-template-columns:repeat(3,1fr);overflow:hidden">
+            <div style="display:flex;align-items:center;justify-content:center"><span style="font:400 13px/20px Lora,Georgia,serif">Único</span></div>
+            <div style="display:flex;align-items:center;justify-content:center;background:linear-gradient(#C6C5C5,#C6C5C5) left center/1px 24px no-repeat"><span style="font:400 13px/20px Lora,Georgia,serif">Período</span></div>
+            <div style="display:flex;align-items:center;justify-content:center;background:#ECE5DB"><span style="font:600 13px/20px Lora,Georgia,serif;color:#7D5411">Vários dias</span></div>
+          </div>
+          <div style="margin:0 20px;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;font:400 18px/28px Lora,Georgia,serif;font-variant-numeric:tabular-nums">21/08/2026</div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;font:400 18px/28px Lora,Georgia,serif;font-variant-numeric:tabular-nums">22/08/2026</div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;font:400 18px/28px Lora,Georgia,serif;color:#7D5411">+ Adicionar data</div>
+          </div>
+
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:20px 0 8px 20px">Horários</div>
+          <div style="margin:0 20px;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;font:400 18px/28px Lora,Georgia,serif;font-variant-numeric:tabular-nums">09:00</div>
+          </div>
+
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:20px 0 8px 20px">Valores</div>
+          <div style="margin:0 20px;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 18px/28px Lora,Georgia,serif">Preço</span><span style="font:400 18px/28px Lora,Georgia,serif;font-variant-numeric:tabular-nums">R$&nbsp;40,00</span></div>
+          </div>
+          <div style="margin:14px 20px 0"><span style="font:400 15px/22px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">2 serviços serão criados.</span></div>
+          <div style="position:absolute;left:20px;right:20px;bottom:20px;height:56px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;display:grid;grid-template-columns:repeat(5,1fr);box-sizing:border-box"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;"><svg width="24" height="24"><use href="#ic-agenda"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Agenda</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-dogs"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Cachorros</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#7D5411;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-serv"></use></svg><span style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Serviços</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-tutors"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Tutores</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-perfil"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Perfil</span></div></div>
+        </div>
+      </div>
+
+      <div style="width:412px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:0 0 8px 2px">10 · Serviços · hospedagem</div>
+        <div style="width:412px;height:892px;background:#F3F2F2;border:1px solid #BBBABA;border-radius:20px;overflow:hidden;position:relative;box-sizing:border-box">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;color:#5F5E5D"><span style="font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums">9:41</span><svg width="46" height="12"><use href="#ic-status"></use></svg></div>
+          <div style="padding:8px 20px 0"><div style="font:400 30px/34px 'Cormorant Garamond',Georgia,serif;letter-spacing:-0.005em">Novo serviço</div></div>
+
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:20px 0 8px 20px">Tipo</div>
+          <div style="margin:0 20px;height:44px;background:#E6E5E5;border-radius:12px;display:grid;grid-template-columns:repeat(4,1fr);overflow:hidden">
+            <div style="display:flex;align-items:center;justify-content:center"><span style="font:400 13px/20px Lora,Georgia,serif">Passeio</span></div>
+            <div style="display:flex;align-items:center;justify-content:center;background:linear-gradient(#C6C5C5,#C6C5C5) left center/1px 24px no-repeat"><span style="font:400 13px/20px Lora,Georgia,serif">Pet sitting</span></div>
+            <div style="display:flex;align-items:center;justify-content:center;background:linear-gradient(#C6C5C5,#C6C5C5) left center/1px 24px no-repeat"><span style="font:400 13px/20px Lora,Georgia,serif">Creche</span></div>
+            <div style="display:flex;align-items:center;justify-content:center;background:#ECE5DB"><span style="font:600 13px/20px Lora,Georgia,serif;color:#7D5411">Hospedagem</span></div>
+          </div>
+
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:20px 0 8px 20px">Cachorro</div>
+          <div style="margin:0 20px;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:14px"><span style="width:40px;height:40px;border-radius:20px;background:#D9D8D8;border:1px solid #C6C5C5;flex:none"></span><div style="flex:1"><div style="font:400 18px/28px Lora,Georgia,serif">Bento</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Rafael Souza</div></div><svg width="20" height="20" style="color:#5F5E5D;flex:none"><use href="#ic-chev-d"></use></svg></div>
+          </div>
+
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:20px 0 8px 20px">Período</div>
+          <div style="margin:0 20px;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 18px/28px Lora,Georgia,serif">Entrada</span><span style="font:400 18px/28px Lora,Georgia,serif;font-variant-numeric:tabular-nums">28/08/2026, 09:00</span></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 18px/28px Lora,Georgia,serif">Saída</span><span style="font:400 18px/28px Lora,Georgia,serif;font-variant-numeric:tabular-nums">31/08/2026, 18:00</span></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px"><span style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">3 noites</span></div>
+          </div>
+
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:20px 0 8px 20px">Valores</div>
+          <div style="margin:0 20px;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 18px/28px Lora,Georgia,serif">Diária</span><span style="font:400 18px/28px Lora,Georgia,serif;font-variant-numeric:tabular-nums">R$&nbsp;60,00</span></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 18px/28px Lora,Georgia,serif">Extra · banho</span><span style="font:400 18px/28px Lora,Georgia,serif;font-variant-numeric:tabular-nums">R$&nbsp;45,00</span></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 18px/28px Lora,Georgia,serif">Desconto</span><span style="font:400 18px/28px Lora,Georgia,serif;font-variant-numeric:tabular-nums">10%</span></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:600 18px/28px Lora,Georgia,serif;color:#7D5411">Total</span><span style="font:600 18px/28px Lora,Georgia,serif;color:#7D5411;font-variant-numeric:tabular-nums">R$&nbsp;202,50</span></div>
+          </div>
+          <div style="margin:16px 20px 0"><span style="font:400 15px/22px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">1 serviço será criado.</span></div>
+          <div style="position:absolute;left:20px;right:20px;bottom:20px;height:56px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;display:grid;grid-template-columns:repeat(5,1fr);box-sizing:border-box"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;"><svg width="24" height="24"><use href="#ic-agenda"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Agenda</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-dogs"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Cachorros</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#7D5411;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-serv"></use></svg><span style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Serviços</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-tutors"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Tutores</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-perfil"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Perfil</span></div></div>
+        </div>
+      </div>
+
+      <div style="width:320px;flex:none;padding-top:2px">
+        <div style="font:400 22px/28px 'Cormorant Garamond',Georgia,serif">Expansão em linha, nunca um popup</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:10px">Popups não escalam com a tela de desenho do aplicativo, então nada que dependa de um tamanho derivado dela pode viver dentro de um. O seletor de cachorro é uma linha com chevron para baixo que abre a lista <b style="font-weight:600;color:#201F1D">no lugar</b>; as datas de «Vários dias» são linhas de um grupo com <span style="color:#7D5411">+ Adicionar data</span> como última linha; os horários seguem o mesmo padrão.</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:14px">A linha de resumo é literal: <span style="color:#201F1D">3 serviços serão criados</span> conta três datas × um horário. Com dois horários leria seis. O número nunca é uma estimativa.</div>
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin-top:22px">Um bloco de dinheiro, quatro tipos</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:8px">Preço → subtotal → desconto → total, sempre nessa ordem. A hospedagem acrescenta <span style="color:#201F1D">Diária</span> e <span style="color:#201F1D">Extra</span>; os outros três omitem essas duas linhas e nunca omitem <span style="color:#201F1D">Total</span>, então o bloco tem a mesma forma em todos os casos. <span style="color:#7D5411">Total</span> é a terceira das cinco aparições de 600.</div>
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin-top:22px">Um desvio registrado</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:8px">Os rótulos dos seletores são <span style="color:#201F1D">type.caption</span>, não <span style="color:#201F1D">type.ui</span>: «Hospedagem» a 15px mede 83px numa célula de 93 e encosta nas duas paredes. Quatro células de tamanho igual são mais importantes que um degrau de tipo.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div style="padding:0 60px 96px;box-sizing:border-box;min-width:2052px;font-family:Lora,Georgia,'Times New Roman',serif;color:#201F1D">
+  <div style="max-width:2600px;margin:0 auto">
+    <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin-bottom:8px">Fichas · 11–14 · claro + escuro</div>
+    <div style="font:400 34px/38px 'Cormorant Garamond',Georgia,serif;margin-bottom:8px">O voltar diz para onde volta, e o dinheiro tem sempre a mesma forma</div>
+    <div style="height:1px;background:#D1D0D0;max-width:1000px;margin-bottom:26px"></div>
+    <div style="display:flex;gap:36px;align-items:flex-start;flex-wrap:nowrap">
+
+      <div style="width:412px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:0 0 8px 2px">11 · Ficha do cachorro</div>
+        <div style="width:412px;height:892px;background:#F3F2F2;border:1px solid #BBBABA;border-radius:20px;overflow:hidden;position:relative;box-sizing:border-box">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;color:#5F5E5D"><span style="font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums">9:41</span><svg width="46" height="12"><use href="#ic-status"></use></svg></div>
+          <div style="padding:0 20px"><div style="display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 12px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;box-sizing:border-box"><svg width="20" height="20"><use href="#ic-chev-l"></use></svg><span style="font:400 15px/22px Lora,Georgia,serif">Cachorros</span></div></div>
+          <div style="padding:24px 20px 0"><span style="display:block;width:96px;height:96px;border-radius:48px;background:#D9D8D8;border:1px solid #C6C5C5"></span>
+            <div style="font:400 30px/34px 'Cormorant Garamond',Georgia,serif;letter-spacing:-0.005em;margin-top:14px">Toby</div>
+            <div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Golden Retriever</div>
+          </div>
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:20px 0 8px 20px">Tutor</div>
+          <div style="margin:0 20px;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:14px"><div style="flex:1"><div style="font:400 18px/28px Lora,Georgia,serif">Marina Alves</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Vila Madalena</div></div><svg width="20" height="20" style="color:#5F5E5D;flex:none"><use href="#ic-chev-r"></use></svg></div>
+          </div>
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:20px 0 8px 20px">Descrição</div>
+          <div style="margin:0 20px;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;font:400 18px/28px Lora,Georgia,serif;text-align:justify;hyphens:auto">Muito brincalhão, adora bola e convive bem com outros cachorros. Puxa a guia no começo do passeio.</div>
+          </div>
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:20px 0 8px 20px">Serviços</div>
+          <div style="margin:0 20px;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px"><div style="font:400 18px/28px Lora,Georgia,serif">Passeio · 21/08/2026, 09:00</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">R$&nbsp;40,00 · A executar · <span style="color:#7D5411">Sem pagar</span></div></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px"><div style="font:400 18px/28px Lora,Georgia,serif">Creche · 25/08/2026, 08:00</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">R$&nbsp;70,00 · A executar · <span style="color:#7D5411">Sem pagar</span></div></div>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:20px;height:56px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;display:grid;grid-template-columns:repeat(5,1fr);box-sizing:border-box">
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D"><svg width="24" height="24"><use href="#ic-agenda"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Agenda</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#7D5411;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-dogs"></use></svg><span style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Cachorros</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-serv"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Serviços</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-tutors"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Tutores</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-perfil"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Perfil</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:412px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:0 0 8px 2px">12 · Ficha do tutor</div>
+        <div style="width:412px;height:892px;background:#F3F2F2;border:1px solid #BBBABA;border-radius:20px;overflow:hidden;position:relative;box-sizing:border-box">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;color:#5F5E5D"><span style="font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums">9:41</span><svg width="46" height="12"><use href="#ic-status"></use></svg></div>
+          <div style="padding:0 20px"><div style="display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 12px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;box-sizing:border-box"><svg width="20" height="20"><use href="#ic-chev-l"></use></svg><span style="font:400 15px/22px Lora,Georgia,serif">Tutores</span></div></div>
+          <div style="padding:24px 20px 0"><div style="font:400 30px/34px 'Cormorant Garamond',Georgia,serif;letter-spacing:-0.005em">Marina Alves</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Vila Madalena</div></div>
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:20px 0 8px 20px">Contato</div>
+          <div style="margin:0 20px;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 18px/28px Lora,Georgia,serif">Telefone</span><span style="font:400 18px/28px Lora,Georgia,serif;font-variant-numeric:tabular-nums">(11) 98221-4432</span></div>
+            </div>
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:20px 0 8px 20px">Cachorros</div>
+          <div style="margin:0 20px;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:14px"><span style="width:40px;height:40px;border-radius:20px;background:#D9D8D8;border:1px solid #C6C5C5;flex:none"></span><div style="flex:1"><div style="font:400 18px/28px Lora,Georgia,serif">Toby</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Golden Retriever</div></div><svg width="20" height="20" style="color:#5F5E5D;flex:none"><use href="#ic-chev-r"></use></svg></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:14px"><span style="width:40px;height:40px;border-radius:20px;background:#D9D8D8;border:1px solid #C6C5C5;flex:none"></span><div style="flex:1"><div style="font:400 18px/28px Lora,Georgia,serif">Nina</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Vira-lata</div></div><svg width="20" height="20" style="color:#5F5E5D;flex:none"><use href="#ic-chev-r"></use></svg></div>
+          </div>
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:20px 0 8px 20px">Conta</div>
+          <div style="margin:0 20px;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 18px/28px Lora,Georgia,serif">Agosto de 2026</span><span style="font:400 18px/28px Lora,Georgia,serif;color:#7D5411;font-variant-numeric:tabular-nums">R$&nbsp;230,00</span></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 18px/28px Lora,Georgia,serif">Julho de 2026</span><span style="font:400 18px/28px Lora,Georgia,serif;font-variant-numeric:tabular-nums">R$&nbsp;0,00</span></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 18px/28px Lora,Georgia,serif">Crédito</span><span style="font:400 18px/28px Lora,Georgia,serif;font-variant-numeric:tabular-nums">R$&nbsp;15,00</span></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:14px"><span style="flex:1;font:400 18px/28px Lora,Georgia,serif">Registrar pagamento</span><svg width="20" height="20" style="color:#5F5E5D;flex:none"><use href="#ic-chev-r"></use></svg></div>
+          </div>
+          <div style="margin:20px 20px 0;height:52px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;display:flex;align-items:center;justify-content:center"><span style="font:400 18px/28px Lora,Georgia,serif">Exportar resumo (PNG)</span></div>
+          <div style="position:absolute;left:20px;right:20px;bottom:20px;height:56px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;display:grid;grid-template-columns:repeat(5,1fr);box-sizing:border-box">
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D"><svg width="24" height="24"><use href="#ic-agenda"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Agenda</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-dogs"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Cachorros</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-serv"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Serviços</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#7D5411;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-tutors"></use></svg><span style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Tutores</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-perfil"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Perfil</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:412px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:0 0 8px 2px">13 · Ficha do serviço · claro</div>
+        <div style="width:412px;height:892px;background:#F3F2F2;border:1px solid #BBBABA;border-radius:20px;overflow:hidden;position:relative;box-sizing:border-box">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;color:#5F5E5D"><span style="font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums">9:41</span><svg width="46" height="12"><use href="#ic-status"></use></svg></div>
+          <div style="padding:0 20px"><div style="display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 12px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;box-sizing:border-box"><svg width="20" height="20"><use href="#ic-chev-l"></use></svg><span style="font:400 15px/22px Lora,Georgia,serif">Agenda</span></div></div>
+          <div style="padding:24px 20px 0"><div style="font:400 30px/34px 'Cormorant Garamond',Georgia,serif;letter-spacing:-0.005em">Bento</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Hospedagem · Rafael Souza</div></div>
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:20px 0 8px 20px">Quando</div>
+          <div style="margin:0 20px;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px"><div style="font:400 18px/28px Lora,Georgia,serif;font-variant-numeric:tabular-nums">28/08, 09:00 → 31/08, 18:00</div></div>
+          </div>
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:20px 0 8px 20px">Valores</div>
+          <div style="margin:0 20px;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px 0"><span style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">Diária R$&nbsp;60,00 × 3 noites · extra R$&nbsp;45,00</span></div>
+            <div style="padding:2px 16px 12px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 18px/28px Lora,Georgia,serif">Hospedagem</span><span style="font:400 18px/28px Lora,Georgia,serif;font-variant-numeric:tabular-nums">R$&nbsp;225,00</span></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 18px/28px Lora,Georgia,serif">Subtotal</span><span style="font:400 18px/28px Lora,Georgia,serif;font-variant-numeric:tabular-nums">R$&nbsp;225,00</span></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 18px/28px Lora,Georgia,serif;color:#5F5E5D">Desconto 10%</span><span style="font:400 18px/28px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">−R$&nbsp;22,50</span></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:600 18px/28px Lora,Georgia,serif;color:#7D5411">Total</span><span style="font:600 18px/28px Lora,Georgia,serif;color:#7D5411;font-variant-numeric:tabular-nums">R$&nbsp;202,50</span></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px"><span style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">Pago R$&nbsp;100,00 · <span style="color:#7D5411">Em aberto R$&nbsp;102,50</span></span></div>
+          </div>
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:20px 0 8px 20px">Situação</div>
+          <div style="margin:0 20px;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:12px"><span style="flex:1;font:400 18px/28px Lora,Georgia,serif">Execução</span><span style="font:400 15px/22px Lora,Georgia,serif;color:#5F5E5D">A executar</span><svg width="20" height="20" style="color:#5F5E5D;flex:none"><use href="#ic-chev-r"></use></svg></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:12px"><span style="flex:1;font:400 18px/28px Lora,Georgia,serif">Pagamento</span><span style="font:400 15px/22px Lora,Georgia,serif;color:#7D5411">Sem pagar</span><svg width="20" height="20" style="color:#5F5E5D;flex:none"><use href="#ic-chev-r"></use></svg></div>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:20px;height:56px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;display:grid;grid-template-columns:repeat(5,1fr);box-sizing:border-box">
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#7D5411"><svg width="24" height="24"><use href="#ic-agenda"></use></svg><span style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Agenda</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-dogs"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Cachorros</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-serv"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Serviços</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-tutors"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Tutores</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-perfil"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Perfil</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:412px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:0 0 8px 2px">14 · Ficha do serviço · escuro</div>
+        <div style="width:412px;height:892px;background:#1B1A18;border:1px solid #4C4945;border-radius:20px;overflow:hidden;position:relative;box-sizing:border-box;color:#EDEBE7">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;color:#A5A09A"><span style="font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums">9:41</span><svg width="46" height="12"><use href="#ic-status"></use></svg></div>
+          <div style="padding:0 20px"><div style="display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 12px;background:#302E2B;border:1px solid #4C4945;border-radius:12px;box-shadow:0 0 0 3px #1B1A18;box-sizing:border-box"><svg width="20" height="20"><use href="#ic-chev-l"></use></svg><span style="font:400 15px/22px Lora,Georgia,serif">Agenda</span></div></div>
+          <div style="padding:24px 20px 0"><div style="font:400 30px/34px 'Cormorant Garamond',Georgia,serif;letter-spacing:-0.005em">Bento</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A">Hospedagem · Rafael Souza</div></div>
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#A5A09A;margin:20px 0 8px 20px">Quando</div>
+          <div style="margin:0 20px;background:#262523;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px"><div style="font:400 18px/28px Lora,Georgia,serif;font-variant-numeric:tabular-nums">28/08, 09:00 → 31/08, 18:00</div></div>
+          </div>
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#A5A09A;margin:20px 0 8px 20px">Valores</div>
+          <div style="margin:0 20px;background:#262523;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px 0"><span style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">Diária R$&nbsp;60,00 × 3 noites · extra R$&nbsp;45,00</span></div>
+            <div style="padding:2px 16px 12px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 18px/28px Lora,Georgia,serif">Hospedagem</span><span style="font:400 18px/28px Lora,Georgia,serif;font-variant-numeric:tabular-nums">R$&nbsp;225,00</span></div>
+            <div style="height:1px;background:#3C3A36;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 18px/28px Lora,Georgia,serif">Subtotal</span><span style="font:400 18px/28px Lora,Georgia,serif;font-variant-numeric:tabular-nums">R$&nbsp;225,00</span></div>
+            <div style="height:1px;background:#3C3A36;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 18px/28px Lora,Georgia,serif;color:#A5A09A">Desconto 10%</span><span style="font:400 18px/28px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">−R$&nbsp;22,50</span></div>
+            <div style="height:1px;background:#3C3A36;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:600 18px/28px Lora,Georgia,serif;color:#EFCE93">Total</span><span style="font:600 18px/28px Lora,Georgia,serif;color:#EFCE93;font-variant-numeric:tabular-nums">R$&nbsp;202,50</span></div>
+            <div style="height:1px;background:#3C3A36;margin-left:16px"></div>
+            <div style="padding:12px 16px"><span style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">Pago R$&nbsp;100,00 · <span style="color:#EFCE93">Em aberto R$&nbsp;102,50</span></span></div>
+          </div>
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#A5A09A;margin:20px 0 8px 20px">Situação</div>
+          <div style="margin:0 20px;background:#262523;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:12px"><span style="flex:1;font:400 18px/28px Lora,Georgia,serif">Execução</span><span style="font:400 15px/22px Lora,Georgia,serif;color:#A5A09A">A executar</span><svg width="20" height="20" style="color:#A5A09A;flex:none"><use href="#ic-chev-r"></use></svg></div>
+            <div style="height:1px;background:#3C3A36;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:12px"><span style="flex:1;font:400 18px/28px Lora,Georgia,serif">Pagamento</span><span style="font:400 15px/22px Lora,Georgia,serif;color:#EFCE93">Sem pagar</span><svg width="20" height="20" style="color:#A5A09A;flex:none"><use href="#ic-chev-r"></use></svg></div>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:20px;height:56px;background:#302E2B;border:1px solid #4C4945;border-radius:12px;box-shadow:0 0 0 3px #1B1A18;display:grid;grid-template-columns:repeat(5,1fr);box-sizing:border-box">
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#D9A857"><svg width="24" height="24"><use href="#ic-agenda"></use></svg><span style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Agenda</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#EDEBE7;background:linear-gradient(#4C4945,#4C4945) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-dogs"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Cachorros</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#EDEBE7;background:linear-gradient(#4C4945,#4C4945) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-serv"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Serviços</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#EDEBE7;background:linear-gradient(#4C4945,#4C4945) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-tutors"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Tutores</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#EDEBE7;background:linear-gradient(#4C4945,#4C4945) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-perfil"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Perfil</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:320px;flex:none;padding-top:2px">
+        <div style="font:400 22px/28px 'Cormorant Garamond',Georgia,serif">Um voltar que nomeia o destino</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:10px">44 de altura, canto superior esquerdo, preenchimento de controle com aresta e anel, chevron mais o nome de onde volta, largura máxima 200 com elipse na cauda. Nunca só o ícone, nunca a palavra «Voltar» sozinha: numa pilha de três telas «Voltar» não diz nada e o rótulo diz tudo.</div>
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin-top:22px">Desenhado no topo do rolamento</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:8px">Estas telas são mais altas que uma vista. O artboard mostra o topo, e o grupo final — <span style="color:#201F1D">Editar</span> e <span style="color:#7D5411">Excluir</span> — fica abaixo da dobra em 11, 13 e 14. Nenhum conteúdo é desenhado por baixo da barra: o último grupo visível termina acima dela, e é aí que a folga de 96 da ficha de construção se aplica.</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:14px">As fichas mantêm a barra de abas. Uma tela empurrada num aplicativo de abas não deixa de estar dentro de uma aba, e esconder a barra transformaria cada entrada numa saída da navegação.</div>
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin-top:22px">Uma palavra recebe cor</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:8px">Quatro estados em dois eixos por linha. <span style="color:#7D5411">Sem pagar</span> e <span style="color:#7D5411">Em aberto</span> são <span style="color:#201F1D">accent.strong</span>; <span style="color:#201F1D">A executar</span>, <span style="color:#201F1D">Feito</span> e <span style="color:#201F1D">Pago</span> são cinzentos. Dinheiro devido é o motivo pelo qual a cuidadora abre o aplicativo, então é o único estado em que algo é exigido de alguém.</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:14px">Nenhum deles é uma pílula. Uma pílula em tamanho de legenda tem 24 de altura numa linha de 52; duas por linha e o grupo vira uma tabela de crachás.</div>
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin-top:22px">Excluir sem vermelho</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:8px">Esta paleta não tem <span style="color:#201F1D">danger</span> e inventar um seria uma decisão de cor que a instrução não pediu. Quem impede o acidente é o diálogo de confirmação, não a cor da linha.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div style="padding:0 60px 96px;box-sizing:border-box;min-width:2052px;font-family:Lora,Georgia,'Times New Roman',serif;color:#201F1D">
+  <div style="max-width:2600px;margin:0 auto">
+    <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin-bottom:8px">Cadastros e o diálogo · 15–18 · claro</div>
+    <div style="font:400 34px/38px 'Cormorant Garamond',Georgia,serif;margin-bottom:8px">O seletor abre no lugar, e o diálogo é um véu sobre a tela</div>
+    <div style="height:1px;background:#D1D0D0;max-width:1000px;margin-bottom:26px"></div>
+    <div style="display:flex;gap:36px;align-items:flex-start;flex-wrap:nowrap">
+
+      <div style="width:412px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:0 0 8px 2px">15 · Novo cachorro</div>
+        <div style="width:412px;height:892px;background:#F3F2F2;border:1px solid #BBBABA;border-radius:20px;overflow:hidden;position:relative;box-sizing:border-box">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;color:#5F5E5D"><span style="font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums">9:41</span><svg width="46" height="12"><use href="#ic-status"></use></svg></div>
+          <div style="padding:0 20px"><div style="display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 12px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;box-sizing:border-box"><svg width="20" height="20"><use href="#ic-chev-l"></use></svg><span style="font:400 15px/22px Lora,Georgia,serif">Cachorros</span></div></div>
+          <div style="padding:24px 20px 0"><div style="font:400 30px/34px 'Cormorant Garamond',Georgia,serif;letter-spacing:-0.005em">Novo cachorro</div></div>
+          <div style="margin:20px 20px 0;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px"><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Nome</div><div style="font:400 18px/28px Lora,Georgia,serif">Pipoca</div></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px"><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Raça</div><div style="font:400 18px/28px Lora,Georgia,serif">Shih-tzu</div></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px"><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Descrição</div><div style="font:400 18px/28px Lora,Georgia,serif;color:#5F5E5D">Opcional</div></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:14px"><div style="flex:1"><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Foto</div><div style="font:400 18px/28px Lora,Georgia,serif;color:#5F5E5D">Nenhuma</div></div><span style="width:40px;height:40px;border-radius:8px;border:1px solid #C6C5C5;flex:none"></span></div>
+          </div>
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:20px 0 8px 20px">Tutor</div>
+          <div style="margin:0 20px;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:12px"><span style="flex:1;font:400 18px/28px Lora,Georgia,serif;color:#5F5E5D">Selecionar tutor</span><svg width="20" height="20" style="color:#5F5E5D;flex:none"><use href="#ic-chev-d"></use></svg></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;background:#ECE5DB"><div style="font:600 18px/28px Lora,Georgia,serif;color:#7D5411">Marina Alves</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#7D5411">Vila Madalena · 2 cachorros</div></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px"><div style="font:400 18px/28px Lora,Georgia,serif">Rafael Souza</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Pinheiros · 1 cachorro</div></div>
+            </div>
+          <div style="margin:20px 20px 0;height:52px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;display:flex;align-items:center;justify-content:center"><span style="font:400 18px/28px Lora,Georgia,serif">Salvar</span></div>
+          <div style="position:absolute;left:20px;right:20px;bottom:20px;height:56px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;display:grid;grid-template-columns:repeat(5,1fr);box-sizing:border-box"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;"><svg width="24" height="24"><use href="#ic-agenda"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Agenda</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#7D5411;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-dogs"></use></svg><span style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Cachorros</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-serv"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Serviços</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-tutors"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Tutores</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-perfil"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Perfil</span></div></div>
+        </div>
+      </div>
+
+      <div style="width:412px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:0 0 8px 2px">16 · Novo tutor</div>
+        <div style="width:412px;height:892px;background:#F3F2F2;border:1px solid #BBBABA;border-radius:20px;overflow:hidden;position:relative;box-sizing:border-box">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;color:#5F5E5D"><span style="font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums">9:41</span><svg width="46" height="12"><use href="#ic-status"></use></svg></div>
+          <div style="padding:0 20px"><div style="display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 12px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;box-sizing:border-box"><svg width="20" height="20"><use href="#ic-chev-l"></use></svg><span style="font:400 15px/22px Lora,Georgia,serif">Tutores</span></div></div>
+          <div style="padding:24px 20px 0"><div style="font:400 30px/34px 'Cormorant Garamond',Georgia,serif;letter-spacing:-0.005em">Novo tutor</div></div>
+          <div style="margin:20px 20px 0;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px"><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Nome</div><div style="font:400 18px/28px Lora,Georgia,serif">Carla Nunes</div></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px"><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Telefone</div><div style="font:400 18px/28px Lora,Georgia,serif;font-variant-numeric:tabular-nums">(11) 95512-8890</div></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px"><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Endereço</div><div style="font:400 18px/28px Lora,Georgia,serif">Rua Girassol, 88</div></div>
+          </div>
+          <div style="margin:20px 20px 0;height:52px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;display:flex;align-items:center;justify-content:center"><span style="font:400 18px/28px Lora,Georgia,serif">Salvar</span></div>
+          <div style="margin:20px 20px 0"><span style="font:400 15px/22px Lora,Georgia,serif;color:#5F5E5D">O bairro é lido do endereço e aparece nas listas.</span></div>
+          <div style="position:absolute;left:20px;right:20px;bottom:20px;height:56px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;display:grid;grid-template-columns:repeat(5,1fr);box-sizing:border-box"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;"><svg width="24" height="24"><use href="#ic-agenda"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Agenda</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-dogs"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Cachorros</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-serv"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Serviços</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#7D5411;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-tutors"></use></svg><span style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Tutores</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-perfil"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Perfil</span></div></div>
+        </div>
+      </div>
+
+      <div style="width:412px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:0 0 8px 2px">17 · ConfirmDialog · confirmar</div>
+        <div style="width:412px;height:892px;background:#F3F2F2;border:1px solid #BBBABA;border-radius:20px;overflow:hidden;position:relative;box-sizing:border-box">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;color:#5F5E5D"><span style="font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums">9:41</span><svg width="46" height="12"><use href="#ic-status"></use></svg></div>
+          <div style="padding:0 20px"><div style="display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 12px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-sizing:border-box"><svg width="20" height="20"><use href="#ic-chev-l"></use></svg><span style="font:400 15px/22px Lora,Georgia,serif">Cachorros</span></div></div>
+          <div style="padding:24px 20px 0"><span style="display:block;width:96px;height:96px;border-radius:48px;background:#D9D8D8;border:1px solid #C6C5C5"></span><div style="font:400 30px/34px 'Cormorant Garamond',Georgia,serif;margin-top:14px">Toby</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Golden Retriever</div></div>
+          <div style="margin:20px 20px 0;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;font:400 18px/28px Lora,Georgia,serif">Editar</div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;font:400 18px/28px Lora,Georgia,serif;color:#7D5411">Excluir</div>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:20px;height:56px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;display:grid;grid-template-columns:repeat(5,1fr);box-sizing:border-box"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;"><svg width="24" height="24"><use href="#ic-agenda"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Agenda</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#7D5411;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-dogs"></use></svg><span style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Cachorros</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-serv"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Serviços</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-tutors"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Tutores</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-perfil"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Perfil</span></div></div>
+          <div style="position:absolute;inset:0;background:rgba(32,31,29,0.6);display:flex;align-items:center;justify-content:center">
+            <div style="width:340px;background:#E6E5E5;border:1px solid #BBBABA;border-radius:12px;overflow:hidden">
+              <div style="padding:20px 20px 18px">
+                <div style="font:400 18px/28px Lora,Georgia,serif;color:#201F1D">Excluir Toby?</div>
+                <div style="font:400 15px/22px Lora,Georgia,serif;color:#5F5E5D;margin-top:6px;text-align:justify;hyphens:auto">As 6 fichas de serviço deste cachorro também serão excluídas. Não é possível desfazer.</div>
+              </div>
+              <div style="height:1px;background:#C6C5C5"></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr">
+                <div style="height:48px;display:flex;align-items:center;justify-content:center"><span style="font:400 18px/28px Lora,Georgia,serif;color:#201F1D">Não</span></div>
+                <div style="height:48px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#C6C5C5,#C6C5C5) left center/1px 28px no-repeat"><span style="font:600 18px/28px Lora,Georgia,serif;color:#7D5411">Sim</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:412px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:0 0 8px 2px">18 · ConfirmDialog · aviso</div>
+        <div style="width:412px;height:892px;background:#F3F2F2;border:1px solid #BBBABA;border-radius:20px;overflow:hidden;position:relative;box-sizing:border-box">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;color:#5F5E5D"><span style="font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums">9:41</span><svg width="46" height="12"><use href="#ic-status"></use></svg></div>
+          <div style="padding:8px 20px 0"><div style="font:400 30px/34px 'Cormorant Garamond',Georgia,serif;letter-spacing:-0.005em">Ana Ferreira</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Perfil</div></div>
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:24px 0 8px 20px">Backup</div>
+          <div style="margin:0 20px;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;font:400 18px/28px Lora,Georgia,serif">Exportar dados</div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;font:400 18px/28px Lora,Georgia,serif">Importar dados</div>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:20px;height:56px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;display:grid;grid-template-columns:repeat(5,1fr);box-sizing:border-box"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;"><svg width="24" height="24"><use href="#ic-agenda"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Agenda</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-dogs"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Cachorros</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-serv"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Serviços</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-tutors"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Tutores</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#7D5411;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-perfil"></use></svg><span style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Perfil</span></div></div>
+          <div style="position:absolute;inset:0;background:rgba(32,31,29,0.6);display:flex;align-items:center;justify-content:center">
+            <div style="width:340px;background:#E6E5E5;border:1px solid #BBBABA;border-radius:12px;overflow:hidden">
+              <div style="padding:20px 20px 18px">
+                <div style="font:400 18px/28px Lora,Georgia,serif;color:#201F1D">Substituir o arquivo existente?</div>
+                <div style="font:400 15px/22px Lora,Georgia,serif;color:#5F5E5D;margin-top:6px;text-align:justify;hyphens:auto">Já existe um backup de 19/08/2026 nesta pasta.</div>
+              </div>
+              <div style="height:1px;background:#C6C5C5"></div>
+              <div style="height:48px;display:flex;align-items:center;justify-content:center"><span style="font:400 18px/28px Lora,Georgia,serif;color:#201F1D">Entendi</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:320px;flex:none;padding-top:2px">
+        <div style="font:400 22px/28px 'Cormorant Garamond',Georgia,serif">O único lugar sem o anel de 3px</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:10px">O diálogo é 340 de largura, raio 12, <span style="color:#201F1D">surface.raised</span> com aresta de <span style="color:#201F1D">stroke.control</span> — e <b style="font-weight:600;color:#201F1D">sem</b> o anel. Sobre um véu não existe cor de página para formar anel, e o véu já está separando. É a única exceção à regra do controle flutuante, e está registrada como exceção.</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:14px">Não é uma janela: o aplicativo roda em vista única no telemóvel. Duas células de 48 divididas por um fio, <span style="color:#201F1D">Não</span> à esquerda em 400 e <span style="color:#7D5411">Sim</span> à direita em 600 — a quarta das cinco aparições de 600. A forma de aviso é uma célula de largura cheia.</div>
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin-top:22px">O seletor de tutor</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:8px">Abre <b style="font-weight:600;color:#201F1D">no lugar</b>, como mais linhas do mesmo grupo, com a escolhida em <span style="color:#7D5411">accent.tint</span> e 600. Um <i>flyout</i> herdaria um tamanho de fonte derivado da tela de desenho e sairia errado — o problema que a restrição dos popups descreve.</div>
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin-top:22px">A foto vazia é um quadrado</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:8px">40 de lado, raio 8, fio de 1px, nada dentro. O círculo é reservado a uma foto que existe; um quadrado vazio na aresta de fuga da linha é um lugar, não um botão fingindo ser imagem.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div style="padding:0 60px 96px;box-sizing:border-box;min-width:2052px;font-family:Lora,Georgia,'Times New Roman',serif;color:#201F1D">
+  <div style="max-width:2600px;margin:0 auto">
+    <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin-bottom:8px">Perfil e ajustes · 19–21 · claro + escuro</div>
+    <div style="font:400 34px/38px 'Cormorant Garamond',Georgia,serif;margin-bottom:8px">A tela nova mora na última linha do último grupo</div>
+    <div style="height:1px;background:#D1D0D0;max-width:1000px;margin-bottom:26px"></div>
+    <div style="display:flex;gap:36px;align-items:flex-start;flex-wrap:nowrap">
+
+      <div style="width:412px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:0 0 8px 2px">19 · Perfil</div>
+        <div style="width:412px;height:892px;background:#F3F2F2;border:1px solid #BBBABA;border-radius:20px;overflow:hidden;position:relative;box-sizing:border-box">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;color:#5F5E5D"><span style="font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums">9:41</span><svg width="46" height="12"><use href="#ic-status"></use></svg></div>
+          <div style="padding:8px 20px 0;display:flex;align-items:center;gap:16px"><span style="width:72px;height:72px;border-radius:36px;background:#D9D8D8;border:1px solid #C6C5C5;flex:none"></span><div><div style="font:400 30px/34px 'Cormorant Garamond',Georgia,serif;letter-spacing:-0.005em">Ana Ferreira</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">Nascimento 14/03/1992</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">Pix ana.ferreira@email.com</div></div></div>
+
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:24px 0 8px 20px">Agosto de 2026</div>
+          <div style="margin:0 20px;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:12px"><span style="flex:1;font:400 30px/34px 'Cormorant Garamond',Georgia,serif;color:#5A3B0A;font-variant-numeric:tabular-nums">R$&nbsp;647,50</span><span style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#201F1D;flex:none"><svg width="24" height="24"><use href="#ic-eye"></use></svg></span></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 18px/28px Lora,Georgia,serif">Bento</span><span style="font:400 18px/28px Lora,Georgia,serif;font-variant-numeric:tabular-nums">R$&nbsp;237,50</span></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:baseline"><span style="font:400 18px/28px Lora,Georgia,serif">Toby</span><span style="font:400 18px/28px Lora,Georgia,serif;font-variant-numeric:tabular-nums">R$&nbsp;150,00</span></div>
+            </div>
+          <div style="margin:8px 20px 0"><span style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">5 cachorros · 4 tutores · 9 serviços em agosto</span></div>
+
+                    <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:20px 0 8px 20px">Dados e aplicativo</div>
+          <div style="margin:0 20px;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px;font:400 18px/28px Lora,Georgia,serif">Exportar dados</div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;font:400 18px/28px Lora,Georgia,serif">Importar dados</div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px"><div style="font:400 18px/28px Lora,Georgia,serif">Backup automático</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">Desligado · último em 19/08/2026</div></div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:12px"><span style="flex:1;font:400 18px/28px Lora,Georgia,serif">Ajustes</span><svg width="20" height="20" style="color:#5F5E5D;flex:none"><use href="#ic-chev-r"></use></svg></div>
+          </div>
+          <div style="margin:20px 20px 0"><span style="font:400 15px/22px Lora,Georgia,serif;color:#7D5411;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px">Sair da conta</span></div>
+          <div style="margin:8px 20px 0"><span style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">versão 1.4.2</span></div>
+
+          <div style="position:absolute;left:20px;right:20px;bottom:20px;height:56px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;display:grid;grid-template-columns:repeat(5,1fr);box-sizing:border-box">
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D"><svg width="24" height="24"><use href="#ic-agenda"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Agenda</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-dogs"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Cachorros</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-serv"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Serviços</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-tutors"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Tutores</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#7D5411;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat"><svg width="24" height="24"><use href="#ic-perfil"></use></svg><span style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Perfil</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:412px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:0 0 8px 2px">20 · Ajustes · claro · controle vivo</div>
+        <div style="width:412px;height:892px;background:#F3F2F2;border:1px solid #BBBABA;border-radius:20px;overflow:hidden;position:relative;box-sizing:border-box">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;color:#5F5E5D"><span style="font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums">9:41</span><svg width="46" height="12"><use href="#ic-status"></use></svg></div>
+          <div style="padding:0 20px"><div style="display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 12px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;box-sizing:border-box"><svg width="20" height="20"><use href="#ic-chev-l"></use></svg><span style="font:400 15px/22px Lora,Georgia,serif">Perfil</span></div></div>
+          <div style="padding:24px 20px 0"><div style="font:400 30px/34px 'Cormorant Garamond',Georgia,serif;letter-spacing:-0.005em">Ajustes</div></div>
+
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:20px 0 8px 20px">Aparência</div>
+          <div style="margin:0 20px;height:44px;background:#E6E5E5;border-radius:12px;display:grid;grid-template-columns:repeat(3,1fr);overflow:hidden">
+            <div style="display:flex;align-items:center;justify-content:center;background:#ECE5DB"><span style="font:600 13px/20px Lora,Georgia,serif;color:#7D5411">Claro</span></div>
+            <div style="display:flex;align-items:center;justify-content:center;background:linear-gradient(#C6C5C5,#C6C5C5) left center/1px 24px no-repeat"><span style="font:400 13px/20px Lora,Georgia,serif">Escuro</span></div>
+            <div style="display:flex;align-items:center;justify-content:center;background:linear-gradient(#C6C5C5,#C6C5C5) left center/1px 24px no-repeat"><span style="font:400 13px/20px Lora,Georgia,serif">Seguir o sistema</span></div>
+          </div>
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:16px 0 8px 20px">Prévia</div>
+          <div style="margin:0 20px;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px"><div style="font:400 22px/28px 'Cormorant Garamond',Georgia,serif">Passeio · 21/08/2026</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">R$&nbsp;40,00 · A executar · <span style="color:#7D5411">Sem pagar</span></div></div>
+          </div>
+
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:20px 0 8px 20px">Tamanho do texto</div>
+          <div style="margin:0 20px;background:#E6E5E5;border-radius:12px;overflow:hidden">
+            <div style="padding:14px 16px 16px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;padding:0 2px 10px"><span style="font:400 12px/14px Lora,Georgia,serif;color:#5F5E5D">A</span><span style="font:400 14px/16px Lora,Georgia,serif;color:#5F5E5D">A</span><span style="font:400 16px/18px Lora,Georgia,serif;color:#201F1D">A</span><span style="font:400 18px/20px Lora,Georgia,serif;color:#5F5E5D">A</span><span style="font:400 20px/22px Lora,Georgia,serif;color:#5F5E5D">A</span><span style="font:400 23px/25px Lora,Georgia,serif;color:#5F5E5D">A</span></div>
+              <div style="position:relative;height:24px"><div style="position:absolute;left:0;right:0;top:11px;height:2px;background:#C6C5C5"></div><div style="position:absolute;left:0;width:40%;top:11px;height:2px;background:#B68235"></div><div style="position:absolute;left:calc(40% - 12px);top:0;width:24px;height:24px;border-radius:12px;background:#D9D8D8;border:1px solid #BBBABA"></div></div>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:8px"><span style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">Grande — corpo 20px</span><span style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">3 de 6</span></div>
+            </div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:12px">
+              <div style="flex:1"><div style="font:400 18px/28px Lora,Georgia,serif">Seguir o tamanho do sistema</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Usar o tamanho definido no sistema</div></div>
+              <span style="width:44px;height:26px;border-radius:13px;background:#C6C5C5;flex:none;position:relative"><span style="position:absolute;left:2px;top:2px;width:22px;height:22px;border-radius:11px;background:#D9D8D8;border:1px solid #BBBABA"></span></span>
+            </div>
+            <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+            <div style="padding:12px 16px"><div style="font:400 20px/31px Lora,Georgia,serif;text-align:justify;hyphens:auto">A cuidadora lê a agenda de manhã, de pé, com uma guia na outra mão.</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;margin-top:4px">Prévia no tamanho atual</div></div>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:20px;height:56px;background:#D9D8D8;border:1px solid #BBBABA;border-radius:12px;box-shadow:0 0 0 3px #F3F2F2;display:grid;grid-template-columns:repeat(5,1fr);box-sizing:border-box"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;"><svg width="24" height="24"><use href="#ic-agenda"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Agenda</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-dogs"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Cachorros</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-serv"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Serviços</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#201F1D;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-tutors"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Tutores</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#7D5411;background:linear-gradient(#BBBABA,#BBBABA) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-perfil"></use></svg><span style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Perfil</span></div></div>
+        </div>
+      </div>
+
+      <div style="width:412px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:0 0 8px 2px">21 · Ajustes · escuro · controle inerte</div>
+        <div style="width:412px;height:892px;background:#1B1A18;border:1px solid #4C4945;border-radius:20px;overflow:hidden;position:relative;box-sizing:border-box;color:#EDEBE7">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;color:#A5A09A"><span style="font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums">9:41</span><svg width="46" height="12"><use href="#ic-status"></use></svg></div>
+          <div style="padding:0 20px"><div style="display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 12px;background:#302E2B;border:1px solid #4C4945;border-radius:12px;box-shadow:0 0 0 3px #1B1A18;box-sizing:border-box"><svg width="20" height="20"><use href="#ic-chev-l"></use></svg><span style="font:400 15px/22px Lora,Georgia,serif">Perfil</span></div></div>
+          <div style="padding:24px 20px 0"><div style="font:400 30px/34px 'Cormorant Garamond',Georgia,serif;letter-spacing:-0.005em">Ajustes</div></div>
+
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#A5A09A;margin:20px 0 8px 20px">Aparência</div>
+          <div style="margin:0 20px;height:44px;background:#262523;border-radius:12px;display:grid;grid-template-columns:repeat(3,1fr);overflow:hidden">
+            <div style="display:flex;align-items:center;justify-content:center"><span style="font:400 13px/20px Lora,Georgia,serif">Claro</span></div>
+            <div style="display:flex;align-items:center;justify-content:center;background:#3C3529"><span style="font:600 13px/20px Lora,Georgia,serif;color:#D9A857">Escuro</span></div>
+            <div style="display:flex;align-items:center;justify-content:center;background:linear-gradient(#3C3A36,#3C3A36) left center/1px 24px no-repeat"><span style="font:400 13px/20px Lora,Georgia,serif">Seguir o sistema</span></div>
+          </div>
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#A5A09A;margin:16px 0 8px 20px">Prévia</div>
+          <div style="margin:0 20px;background:#262523;border-radius:12px;overflow:hidden">
+            <div style="padding:12px 16px"><div style="font:400 22px/28px 'Cormorant Garamond',Georgia,serif">Passeio · 21/08/2026</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">R$&nbsp;40,00 · A executar · <span style="color:#EFCE93">Sem pagar</span></div></div>
+          </div>
+
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#A5A09A;margin:20px 0 8px 20px">Tamanho do texto</div>
+          <div style="margin:0 20px;background:#262523;border-radius:12px;overflow:hidden">
+            <div style="padding:14px 16px 16px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;padding:0 2px 10px"><span style="font:400 12px/14px Lora,Georgia,serif;color:#6F6B66">A</span><span style="font:400 14px/16px Lora,Georgia,serif;color:#6F6B66">A</span><span style="font:400 16px/18px Lora,Georgia,serif;color:#6F6B66">A</span><span style="font:400 18px/20px Lora,Georgia,serif;color:#A5A09A">A</span><span style="font:400 20px/22px Lora,Georgia,serif;color:#6F6B66">A</span><span style="font:400 23px/25px Lora,Georgia,serif;color:#6F6B66">A</span></div>
+              <div style="position:relative;height:24px"><div style="position:absolute;left:0;right:0;top:11px;height:2px;background:#3C3A36"></div><div style="position:absolute;left:0;width:60%;top:11px;height:2px;background:#6F6B66"></div><div style="position:absolute;left:calc(60% - 12px);top:0;width:24px;height:24px;border-radius:12px;background:#302E2B;border:1px solid #3C3A36"></div></div>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:8px"><span style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">Seguindo o sistema — corpo 23px</span><span style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">4 de 6</span></div>
+            </div>
+            <div style="height:1px;background:#3C3A36;margin-left:16px"></div>
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:12px">
+              <div style="flex:1"><div style="font:400 18px/28px Lora,Georgia,serif">Seguir o tamanho do sistema</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A">Usar o tamanho definido no sistema</div></div>
+              <span style="width:44px;height:26px;border-radius:13px;background:#D9A857;flex:none;position:relative"><span style="position:absolute;right:2px;top:2px;width:22px;height:22px;border-radius:11px;background:#302E2B;border:1px solid #4C4945"></span></span>
+            </div>
+            <div style="height:1px;background:#3C3A36;margin-left:16px"></div>
+            <div style="padding:12px 16px"><div style="font:400 23px/36px Lora,Georgia,serif;text-align:justify;hyphens:auto">A cuidadora lê a agenda de manhã, de pé, com uma guia na outra mão.</div><div style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;margin-top:4px">Prévia no tamanho atual</div></div>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:20px;height:56px;background:#302E2B;border:1px solid #4C4945;border-radius:12px;box-shadow:0 0 0 3px #1B1A18;display:grid;grid-template-columns:repeat(5,1fr);box-sizing:border-box"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#EDEBE7;"><svg width="24" height="24"><use href="#ic-agenda"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Agenda</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#EDEBE7;background:linear-gradient(#4C4945,#4C4945) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-dogs"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Cachorros</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#EDEBE7;background:linear-gradient(#4C4945,#4C4945) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-serv"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Serviços</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#EDEBE7;background:linear-gradient(#4C4945,#4C4945) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-tutors"></use></svg><span style="font:400 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Tutores</span></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#D9A857;background:linear-gradient(#4C4945,#4C4945) left center/1px 36px no-repeat;"><svg width="24" height="24"><use href="#ic-perfil"></use></svg><span style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.02em">Perfil</span></div></div>
+        </div>
+      </div>
+
+      <div style="width:320px;flex:none;padding-top:2px">
+        <div style="font:400 22px/28px 'Cormorant Garamond',Georgia,serif">Um segmentado para o tema, um interruptor para o tamanho</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:10px">Os dois controles diferem porque os dois ajustes diferem. O tema tem <b style="font-weight:600;color:#201F1D">três estados pares</b> e exatamente um é verdadeiro — é o que um segmentado significa. Um interruptor «seguir o sistema» mais um controle claro/escuro que apaga codifica os mesmos três estados em dois controles e obriga a decidir qual manda antes de responder a uma pergunta de um toque.</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:14px">O tamanho fica com o interruptor e o cursor apagado, e a diferença é o argumento: ali o valor do sistema é um <b style="font-weight:600;color:#201F1D">número num contínuo</b> que o aplicativo pode mostrar dentro do próprio controle. O cursor apagado não é um controle dependente, é uma <b style="font-weight:600;color:#201F1D">leitura</b> — mostra onde o sistema pôs a rampa. O tema não tem nada para ler: «o sistema diz escuro» é uma palavra, e a palavra cabe numa célula.</div>
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin-top:22px">O único uso de ink.disabled</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:8px">Com o interruptor ligado, trilha, preenchimento, espécimes e punho caem para <span style="color:#201F1D">ink.disabled</span> e <span style="color:#201F1D">stroke.raised</span> — sem acento. Mede 2,63:1 no escuro e falha 4,5:1, e é correto que falhe: apagar <b style="font-weight:600;color:#201F1D">é</b> o sinal de inerte, e escurecer apagaria o único sinal de que o controle não responde. Controles desativados são isentos.</div>
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin-top:22px">px, escrito</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:8px">A linha de valor lê <span style="color:#201F1D">corpo 20px</span>, com a unidade escrita. Nenhum valor deste desenho é pt. Margens de 20, alvos de 44 e o tamanho dos controles <b style="font-weight:600;color:#201F1D">não</b> escalam com a rampa: a medida estreita conforme o texto cresce, que é para isso que existe texto grande.</div>
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin-top:22px">Onde Ajustes vive</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:8px">Última linha do último grupo do Perfil, acima de <span style="color:#7D5411">Sair da conta</span>. Não uma sexta aba, não um controle flutuante permanente em cinco telas para um ecrã que se abre duas vezes. O Perfil já é o aplicativo a falar de si: chave Pix, backup, versão.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div style="padding:0 60px 96px;box-sizing:border-box;min-width:2052px;font-family:Lora,Georgia,'Times New Roman',serif;color:#201F1D">
+  <div style="max-width:2600px;margin:0 auto">
+    <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin-bottom:8px">O relatório exportado · 22–23 · claro + escuro</div>
+    <div style="font:400 34px/38px 'Cormorant Garamond',Georgia,serif;margin-bottom:8px">Um documento, e por isso o único lugar sem grupos</div>
+    <div style="height:1px;background:#D1D0D0;max-width:1000px;margin-bottom:26px"></div>
+    <div style="display:flex;gap:36px;align-items:flex-start;flex-wrap:nowrap">
+
+      <div style="width:412px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:0 0 8px 2px">22 · Resumo em PNG · claro</div>
+        <div style="width:412px;background:#F3F2F2;border:1px solid #BBBABA;box-sizing:border-box;padding:28px 20px 24px">
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235">Resumo de serviços</div>
+          <div style="font:400 30px/34px 'Cormorant Garamond',Georgia,serif;letter-spacing:-0.005em;margin-top:6px">Marina Alves</div>
+          <div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Agosto de 2026</div>
+          <div style="height:1px;background:#D1D0D0;margin:16px 0 12px"></div>
+          <div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">(11) 98221-4432 · Vila Madalena</div>
+          <div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Toby · Nina</div>
+
+          <div style="display:grid;grid-template-columns:72px 1fr 46px 70px 66px;gap:0 6px;margin-top:22px;font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.1em;text-transform:uppercase;color:#5F5E5D">
+            <span>Cachorro</span><span>Tipo</span><span>Data</span><span style="text-align:right">Valor</span><span style="text-align:right">Situação</span>
+          </div>
+          <div style="height:1px;background:#D1D0D0;margin:8px 0 0"></div>
+
+          <div style="display:grid;grid-template-columns:72px 1fr 46px 70px 66px;gap:0 6px;padding:10px 0;font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums;border-bottom:1px solid #D1D0D0">
+            <span>Toby</span><span>Passeio</span><span>21/08</span><span style="text-align:right">R$&nbsp;40,00</span><span style="text-align:right;color:#5F5E5D">A executar<br><span style="color:#7D5411">Sem pagar</span></span>
+          </div>
+          <div style="display:grid;grid-template-columns:72px 1fr 46px 70px 66px;gap:0 6px;padding:10px 0;font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums;border-bottom:1px solid #D1D0D0">
+            <span>Toby</span><span>Passeio</span><span>22/08</span><span style="text-align:right">R$&nbsp;40,00</span><span style="text-align:right;color:#5F5E5D">A executar<br><span style="color:#7D5411">Sem pagar</span></span>
+          </div>
+          <div style="display:grid;grid-template-columns:72px 1fr 46px 70px 66px;gap:0 6px;padding:10px 0;font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums;border-bottom:1px solid #D1D0D0">
+            <span>Toby</span><span>Creche</span><span>25/08</span><span style="text-align:right">R$&nbsp;70,00</span><span style="text-align:right;color:#5F5E5D">A executar<br><span style="color:#7D5411">Sem pagar</span></span>
+          </div>
+          <div style="display:grid;grid-template-columns:72px 1fr 46px 70px 66px;gap:0 6px;padding:10px 0 2px;font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums">
+            <span>Nina</span><span>Pet sitting</span><span>19/08</span><span style="text-align:right">R$&nbsp;80,00</span><span style="text-align:right;color:#5F5E5D">Feito<br>Pago</span>
+          </div>
+          <div style="padding:0 0 10px;border-bottom:1px solid #D1D0D0"><span style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums">R$&nbsp;88,89 · desconto 10%</span></div>
+
+          <div style="display:flex;justify-content:space-between;align-items:baseline;padding:12px 0 0"><span style="font:600 18px/28px Lora,Georgia,serif;color:#7D5411">Total de agosto</span><span style="font:600 18px/28px Lora,Georgia,serif;color:#7D5411;font-variant-numeric:tabular-nums">R$&nbsp;230,00</span></div>
+          <div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums;margin-top:2px">Pago R$&nbsp;80,00 · crédito R$&nbsp;15,00 · <span style="color:#7D5411">em aberto R$&nbsp;135,00</span></div>
+
+          <div style="height:1px;background:#D1D0D0;margin:20px 0 12px"></div>
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235">Pagamento</div>
+          <div style="font:400 18px/28px Lora,Georgia,serif;font-variant-numeric:tabular-nums;margin-top:4px">ana.ferreira@email.com</div>
+          <div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D">Chave Pix de Ana Ferreira</div>
+          <div style="font:400 13px/20px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums;margin-top:18px">Gerado em 21/08/2026</div>
+        </div>
+      </div>
+
+      <div style="width:412px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin:0 0 8px 2px">23 · Resumo em PNG · escuro</div>
+        <div style="width:412px;background:#1B1A18;border:1px solid #4C4945;box-sizing:border-box;padding:28px 20px 24px;color:#EDEBE7">
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#D9A857">Resumo de serviços</div>
+          <div style="font:400 30px/34px 'Cormorant Garamond',Georgia,serif;letter-spacing:-0.005em;margin-top:6px">Marina Alves</div>
+          <div style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A">Agosto de 2026</div>
+          <div style="height:1px;background:#34322F;margin:16px 0 12px"></div>
+          <div style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">(11) 98221-4432 · Vila Madalena</div>
+          <div style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A">Toby · Nina</div>
+
+          <div style="display:grid;grid-template-columns:72px 1fr 46px 70px 66px;gap:0 6px;margin-top:22px;font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.1em;text-transform:uppercase;color:#A5A09A">
+            <span>Cachorro</span><span>Tipo</span><span>Data</span><span style="text-align:right">Valor</span><span style="text-align:right">Situação</span>
+          </div>
+          <div style="height:1px;background:#34322F;margin:8px 0 0"></div>
+
+          <div style="display:grid;grid-template-columns:72px 1fr 46px 70px 66px;gap:0 6px;padding:10px 0;font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums;border-bottom:1px solid #34322F">
+            <span>Toby</span><span>Passeio</span><span>21/08</span><span style="text-align:right">R$&nbsp;40,00</span><span style="text-align:right;color:#A5A09A">A executar<br><span style="color:#EFCE93">Sem pagar</span></span>
+          </div>
+          <div style="display:grid;grid-template-columns:72px 1fr 46px 70px 66px;gap:0 6px;padding:10px 0;font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums;border-bottom:1px solid #34322F">
+            <span>Toby</span><span>Passeio</span><span>22/08</span><span style="text-align:right">R$&nbsp;40,00</span><span style="text-align:right;color:#A5A09A">A executar<br><span style="color:#EFCE93">Sem pagar</span></span>
+          </div>
+          <div style="display:grid;grid-template-columns:72px 1fr 46px 70px 66px;gap:0 6px;padding:10px 0;font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums;border-bottom:1px solid #34322F">
+            <span>Toby</span><span>Creche</span><span>25/08</span><span style="text-align:right">R$&nbsp;70,00</span><span style="text-align:right;color:#A5A09A">A executar<br><span style="color:#EFCE93">Sem pagar</span></span>
+          </div>
+          <div style="display:grid;grid-template-columns:72px 1fr 46px 70px 66px;gap:0 6px;padding:10px 0 2px;font:400 13px/20px Lora,Georgia,serif;font-variant-numeric:tabular-nums">
+            <span>Nina</span><span>Pet sitting</span><span>19/08</span><span style="text-align:right">R$&nbsp;80,00</span><span style="text-align:right;color:#A5A09A">Feito<br>Pago</span>
+          </div>
+          <div style="padding:0 0 10px;border-bottom:1px solid #34322F"><span style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums">R$&nbsp;88,89 · desconto 10%</span></div>
+
+          <div style="display:flex;justify-content:space-between;align-items:baseline;padding:12px 0 0"><span style="font:600 18px/28px Lora,Georgia,serif;color:#EFCE93">Total de agosto</span><span style="font:600 18px/28px Lora,Georgia,serif;color:#EFCE93;font-variant-numeric:tabular-nums">R$&nbsp;230,00</span></div>
+          <div style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums;margin-top:2px">Pago R$&nbsp;80,00 · crédito R$&nbsp;15,00 · <span style="color:#EFCE93">em aberto R$&nbsp;135,00</span></div>
+
+          <div style="height:1px;background:#34322F;margin:20px 0 12px"></div>
+          <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#D9A857">Pagamento</div>
+          <div style="font:400 18px/28px Lora,Georgia,serif;font-variant-numeric:tabular-nums;margin-top:4px">ana.ferreira@email.com</div>
+          <div style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A">Chave Pix de Ana Ferreira</div>
+          <div style="font:400 13px/20px Lora,Georgia,serif;color:#A5A09A;font-variant-numeric:tabular-nums;margin-top:18px">Gerado em 21/08/2026</div>
+        </div>
+      </div>
+
+      <div style="width:320px;flex:none;padding-top:2px">
+        <div style="font:400 22px/28px 'Cormorant Garamond',Georgia,serif">Uma regra quebrada de propósito</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:10px">Toda lista deste desenho é um grupo preenchido. O relatório não tem nenhum. Um cartão com aresta dentro de um PNG que o tutor recebe por mensagem lê-se como <b style="font-weight:600;color:#201F1D">a captura de ecrã de um aplicativo</b>; um extrato de conta deve ler-se como um documento. Fios, espaço e algarismos tabulares carregam a estrutura, e os cantos são retos porque uma imagem exportada não tem raio.</div>
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin-top:22px">Cinco colunas, seis fatos</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:8px">Seis colunas não caibem em 412: «A executar» a 13px mede 62px numa coluna de 56. <span style="color:#201F1D">Execução</span> e <span style="color:#201F1D">Pagamento</span> partilham a coluna <span style="color:#201F1D">Situação</span>, empilhadas — dois factos, uma coluna, nenhum perdido. Registado como desvio, não como simplificação.</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:14px">A letra pequena por baixo de uma linha leva as noites de uma hospedagem e qualquer desconto — aqui, <span style="color:#201F1D">R$&nbsp;88,89 · desconto 10%</span>, que é como se lê um valor cheio antes do abatimento.</div>
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin-top:22px">Ainda em aberto</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:8px">Se um PNG exportado deve seguir o tema do aplicativo. Está desenhado nos dois modos, mas quem recebe não escolheu o modo escuro. Não há argumento em nenhuma direção ainda — está na lista de pontos abertos, não resolvido por omissão.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div style="padding:0 60px 110px;box-sizing:border-box;min-width:2052px;font-family:Lora,Georgia,'Times New Roman',serif;color:#201F1D">
+  <div style="max-width:2600px;margin:0 auto">
+    <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#5F5E5D;margin-bottom:8px">A rampa, o conjunto e as contas</div>
+    <div style="font:400 34px/38px 'Cormorant Garamond',Georgia,serif;margin-bottom:8px">Uma base, seis degraus, e o que não escala</div>
+    <div style="height:1px;background:#D1D0D0;max-width:1000px;margin-bottom:26px"></div>
+    <div style="display:flex;gap:36px;align-items:flex-start;flex-wrap:nowrap">
+
+      <div style="width:600px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin-bottom:12px">Seis degraus · o controle define o corpo</div>
+        <div style="display:grid;grid-template-columns:1.4fr 0.75fr 0.75fr 0.75fr 0.75fr 0.7fr 0.8fr 0.7fr 0.9fr;gap:0 8px;font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.1em;text-transform:uppercase;color:#5F5E5D;padding-bottom:8px;border-bottom:1px solid #D1D0D0">
+          <span>Degrau</span><span style="text-align:right">Display</span><span style="text-align:right">Título</span><span style="text-align:right">Seção</span><span style="text-align:right">Corpo</span><span style="text-align:right">UI</span><span style="text-align:right">Legenda</span><span style="text-align:right">Micro</span><span style="text-align:right">Alt. linha</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1.4fr 0.75fr 0.75fr 0.75fr 0.75fr 0.7fr 0.8fr 0.7fr 0.9fr;gap:0 8px;font:400 15px/22px Lora,Georgia,serif;font-variant-numeric:tabular-nums;padding:9px 0;border-bottom:1px solid #D1D0D0"><span>1 · Pequeno</span><span style="text-align:right">38</span><span style="text-align:right">26</span><span style="text-align:right">20</span><span style="text-align:right">16</span><span style="text-align:right">14</span><span style="text-align:right">12</span><span style="text-align:right">10</span><span style="text-align:right">49</span></div>
+        <div style="display:grid;grid-template-columns:1.4fr 0.75fr 0.75fr 0.75fr 0.75fr 0.7fr 0.8fr 0.7fr 0.9fr;gap:0 8px;font:400 15px/22px Lora,Georgia,serif;font-variant-numeric:tabular-nums;padding:9px 0;border-bottom:1px solid #D1D0D0;background:#E6E5E5"><span style="font-weight:600">2 · Padrão</span><span style="text-align:right;font-weight:600">42</span><span style="text-align:right;font-weight:600">30</span><span style="text-align:right;font-weight:600">22</span><span style="text-align:right;font-weight:600">18</span><span style="text-align:right;font-weight:600">15</span><span style="text-align:right;font-weight:600">13</span><span style="text-align:right;font-weight:600">11</span><span style="text-align:right;font-weight:600">52</span></div>
+        <div style="display:grid;grid-template-columns:1.4fr 0.75fr 0.75fr 0.75fr 0.75fr 0.7fr 0.8fr 0.7fr 0.9fr;gap:0 8px;font:400 15px/22px Lora,Georgia,serif;font-variant-numeric:tabular-nums;padding:9px 0;border-bottom:1px solid #D1D0D0"><span>3 · Grande</span><span style="text-align:right">47</span><span style="text-align:right">33</span><span style="text-align:right">24</span><span style="text-align:right">20</span><span style="text-align:right">17</span><span style="text-align:right">15</span><span style="text-align:right">12</span><span style="text-align:right">55</span></div>
+        <div style="display:grid;grid-template-columns:1.4fr 0.75fr 0.75fr 0.75fr 0.75fr 0.7fr 0.8fr 0.7fr 0.9fr;gap:0 8px;font:400 15px/22px Lora,Georgia,serif;font-variant-numeric:tabular-nums;padding:9px 0;border-bottom:1px solid #D1D0D0"><span>4 · Maior</span><span style="text-align:right">54</span><span style="text-align:right">38</span><span style="text-align:right">28</span><span style="text-align:right">23</span><span style="text-align:right">20</span><span style="text-align:right">17</span><span style="text-align:right">14</span><span style="text-align:right">60</span></div>
+        <div style="display:grid;grid-template-columns:1.4fr 0.75fr 0.75fr 0.75fr 0.75fr 0.7fr 0.8fr 0.7fr 0.9fr;gap:0 8px;font:400 15px/22px Lora,Georgia,serif;font-variant-numeric:tabular-nums;padding:9px 0;border-bottom:1px solid #D1D0D0"><span>5 · Muito maior</span><span style="text-align:right">61</span><span style="text-align:right">43</span><span style="text-align:right">32</span><span style="text-align:right">26</span><span style="text-align:right">22</span><span style="text-align:right">19</span><span style="text-align:right">16</span><span style="text-align:right">64</span></div>
+        <div style="display:grid;grid-template-columns:1.4fr 0.75fr 0.75fr 0.75fr 0.75fr 0.7fr 0.8fr 0.7fr 0.9fr;gap:0 8px;font:400 15px/22px Lora,Georgia,serif;font-variant-numeric:tabular-nums;padding:9px 0;border-bottom:1px solid #D1D0D0"><span>6 · Máximo</span><span style="text-align:right">68</span><span style="text-align:right">48</span><span style="text-align:right">35</span><span style="text-align:right">29</span><span style="text-align:right">25</span><span style="text-align:right">21</span><span style="text-align:right">18</span><span style="text-align:right">69</span></div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;margin-top:12px;text-align:justify;hyphens:auto">Display = corpo × 2,35 · título = × 1,65 · seção = × 1,22 · UI = × 0,85 · legenda = × 0,74 · micro = × 0,62 · entrelinha = tamanho × 1,55, exceto o título a × 1,13. Altura de linha = arredondar(corpo × 1,55) + 24. <b style="font-weight:600;color:#201F1D">Margens de 20, alvos de 44, raio 12 e a barra de 56 não escalam.</b></div>
+
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin:32px 0 12px">O conjunto de ícones · 24 × 24 · traço 1,5</div>
+        <div style="display:flex;gap:0;background:#E6E5E5;border-radius:12px;overflow:hidden">
+          <div style="flex:1;padding:16px 0;display:flex;flex-direction:column;align-items:center;gap:8px;color:#201F1D"><svg width="24" height="24"><use href="#ic-agenda"></use></svg><span style="font:400 13px/20px Lora,Georgia,serif">Agenda</span></div>
+          <div style="flex:1;padding:16px 0;display:flex;flex-direction:column;align-items:center;gap:8px;color:#201F1D;background:linear-gradient(#C6C5C5,#C6C5C5) left center/1px 48px no-repeat"><svg width="24" height="24"><use href="#ic-dogs"></use></svg><span style="font:400 13px/20px Lora,Georgia,serif">Cachorros</span></div>
+          <div style="flex:1;padding:16px 0;display:flex;flex-direction:column;align-items:center;gap:8px;color:#201F1D;background:linear-gradient(#C6C5C5,#C6C5C5) left center/1px 48px no-repeat"><svg width="24" height="24"><use href="#ic-serv"></use></svg><span style="font:400 13px/20px Lora,Georgia,serif">Serviços</span></div>
+          <div style="flex:1;padding:16px 0;display:flex;flex-direction:column;align-items:center;gap:8px;color:#201F1D;background:linear-gradient(#C6C5C5,#C6C5C5) left center/1px 48px no-repeat"><svg width="24" height="24"><use href="#ic-tutors"></use></svg><span style="font:400 13px/20px Lora,Georgia,serif">Tutores</span></div>
+          <div style="flex:1;padding:16px 0;display:flex;flex-direction:column;align-items:center;gap:8px;color:#7D5411;background:linear-gradient(#C6C5C5,#C6C5C5) left center/1px 48px no-repeat"><svg width="24" height="24"><use href="#ic-perfil"></use></svg><span style="font:600 13px/20px Lora,Georgia,serif">Perfil</span></div>
+        </div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;margin-top:12px;text-align:justify;hyphens:auto">Traçados, nunca preenchidos, uma geometria por significado, e a cor segue o primeiro plano. À direita, a aba ativa: <span style="color:#7D5411">accent.strong</span> e 600 — a segunda das cinco aparições de 600.</div>
+      </div>
+
+      <div style="width:412px;flex:none">
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin-bottom:12px">Regras quebradas de propósito</div>
+        <div style="background:#E6E5E5;border-radius:12px;overflow:hidden">
+          <div style="padding:14px 16px"><div style="font:400 18px/28px Lora,Georgia,serif">Cromo sem preenchimento</div><div style="font:400 14px/22px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:2px">Um controle que flutua sobre uma lista tem de ser opaco. Fica a um valor da página e a fronteira é o anel de 3px mais o fio.</div></div>
+          <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+          <div style="padding:14px 16px"><div style="font:400 18px/28px Lora,Georgia,serif">Todo grupo tem preenchimento</div><div style="font:400 14px/22px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:2px">O relatório exportado não tem nenhum. Um documento não é uma tela.</div></div>
+          <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+          <div style="padding:14px 16px"><div style="font:400 18px/28px Lora,Georgia,serif">Anel em todo controle</div><div style="font:400 14px/22px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:2px">O diálogo não tem anel: sobre um véu não existe cor de página para formar um.</div></div>
+          <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+          <div style="padding:14px 16px"><div style="font:400 18px/28px Lora,Georgia,serif">Excluir em <span style="color:#7D5411">accent.strong</span></div><div style="font:400 14px/22px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:2px">A paleta não tem <span style="color:#201F1D">danger</span>. Quem impede o acidente é o diálogo.</div></div>
+          <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+          <div style="padding:14px 16px"><div style="font:400 18px/28px Lora,Georgia,serif">Rótulos de aba em maiúsculas</div><div style="font:400 14px/22px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:2px">Caixa de sentença e +0,02em: «CACHORROS» com +0,14em mede 72px numa célula de 74.</div></div>
+        </div>
+
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin:28px 0 12px">Onde este desenho fica abaixo do piso</div>
+        <div style="background:#E6E5E5;border-radius:12px;overflow:hidden">
+          <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:baseline;gap:10px"><span style="font:400 15px/22px Lora,Georgia,serif"><span style="color:#B68235">accent</span> na página clara</span><span style="font:400 15px/22px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums;flex:none">3,02:1</span></div>
+          <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+          <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:baseline;gap:10px"><span style="font:400 15px/22px Lora,Georgia,serif">ink.disabled, claro</span><span style="font:400 15px/22px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums;flex:none">2,74:1</span></div>
+          <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+          <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:baseline;gap:10px"><span style="font:400 15px/22px Lora,Georgia,serif">ink.disabled, escuro</span><span style="font:400 15px/22px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums;flex:none">2,63:1</span></div>
+          <div style="height:1px;background:#C6C5C5;margin-left:16px"></div>
+          <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:baseline;gap:10px"><span style="font:400 15px/22px Lora,Georgia,serif">controle contra a página</span><span style="font:400 15px/22px Lora,Georgia,serif;color:#5F5E5D;font-variant-numeric:tabular-nums;flex:none">1,27:1</span></div>
+        </div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;margin-top:12px;text-align:justify;hyphens:auto">O acento a 3,02:1 é permitido só no título de 30px, nos glifos de 24px e nos fios; texto de corpo em acento é <span style="color:#7D5411">accent.strong</span> a 5,97:1. <span style="color:#201F1D">ink.disabled</span> aparece num único controle e é isento. O preenchimento do controle não precisa de 3:1 porque a fronteira é o anel, não o valor. <b style="font-weight:600;color:#201F1D">Nenhum par de texto deste desenho fica abaixo do seu piso.</b></div>
+      </div>
+
+      <div style="width:320px;flex:none;padding-top:2px">
+        <div style="font:400 22px/28px 'Cormorant Garamond',Georgia,serif">Contradições na instrução</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:10px"><b style="font-weight:600;color:#201F1D">Ordem das abas.</b> A §3 dá a barra como Agenda · Cachorros · Serviços · Tutores · Perfil. A §4 lista as telas na ordem Agenda, Cachorros, Tutores, Serviços, Perfil. Lido como: a §3 descreve a barra, a §4 descreve um documento — a barra segue a §3. Se a ordem viva for a da §4, é um <i>array</i>.</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:14px"><b style="font-weight:600;color:#201F1D">«Mantenha a paleta» contra «4,5:1».</b> Dois valores claros falham. Lido como: os <b style="font-weight:600;color:#201F1D">hexadecimais</b> estão trancados, os <b style="font-weight:600;color:#201F1D">degraus de alfa</b> não — a própria §2 convida a consolidá-los. Nenhum hexadecimal da tabela foi alterado; <span style="color:#201F1D">ink.secondary</span> mudou de qual degrau nomeia.</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:14px"><b style="font-weight:600;color:#201F1D">O acento escuro.</b> A instrução previu que <span style="color:#201F1D">#B68235</span> falharia 4,5:1 na página escura. Não falha — mede 5,16:1. Falha a 3,99:1 sobre <span style="color:#201F1D">surface.control</span>, que é a barra de abas, que é o acento mais frequente do aplicativo. A conclusão é a mesma e o motivo não, e o motivo está registado.</div>
+        <div style="font:600 11px/14px Lora,Georgia,serif;letter-spacing:0.14em;text-transform:uppercase;color:#B68235;margin-top:22px">Ainda em aberto</div>
+        <div style="font:400 14px/24px Lora,Georgia,serif;color:#5F5E5D;text-align:justify;hyphens:auto;margin-top:8px">A forma do preço da <span style="color:#201F1D">Creche</span> se um dia for cobrada por período · a grade de calendário que «Vários dias» merece e que esta passagem não deve inventar · o tamanho de papel do relatório se ele for impresso · se um PNG exportado deve seguir o tema.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

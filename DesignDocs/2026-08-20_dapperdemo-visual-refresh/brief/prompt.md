@@ -247,7 +247,75 @@ say why in the decisions file.
 
 ---
 
-## 7. What to hand back
+## 7. The type inventory you are replacing
+
+This is the single biggest cost of the change, so it gets its own section.
+
+The app has **200 hardcoded `FontSize` declarations across 26 distinct values**, spread over
+13 `.axaml` files. A user-settable size ramp means not one of them can stay a literal — they
+all become a resource that changes at runtime. So the 26 have to collapse into a handful of
+named roles first.
+
+**The clustering is already visible, and it is not deliberate.** Five values between 28 and
+34 account for **119 of the 200 uses** — that is one body role that drifted apart by a pixel
+at a time, not five intentional steps. The same is true at the top: 97, 87, 78, 74, 66 and 62
+are almost all one-offs on a single screen each.
+
+Here is every value, how often it is used, and what it is used on. `FontHeading` is the serif
+display face, `FontBody` the serif text face; `ColorTextMuted45`–`75` are alpha steps of the
+ink.
+
+| px | uses | element | font | colour | style | seen in |
+|---:|---:|---|---|---|---|---|
+| 97 | 1 | TextBlock | FontHeading | ColorText | — | UsersView |
+| 87 | 1 | TextBlock | — | — | Normal | LoginView |
+| 78 | 3 | TextBlock | FontHeading | ColorAccentDark700, ColorTextMuted70 | — | UsersView, DogDetailView, TutorDetailView |
+| 74 | 3 | TextBlock | — | — | — | DogDetailView, TutorDetailView, SignUpView |
+| 68 | 8 | TextBlock | — | — | — | ServicesView, UsersView, TutorsView |
+| 66 | 1 | TextBlock | FontHeading | ColorAccentDark700 | — | SignUpView |
+| 62 | 1 | TextBlock | FontHeading | ColorAccentDark700 | — | ServiceDetailView |
+| 53 | 1 | TextBlock | FontHeading | ColorAccentDark700 | — | ServiceDetailView |
+| 51 | 5 | TextBlock | FontHeading | ColorText, ColorAccentDark700 | — | UsersView, AgendaView |
+| 45 | 4 | TextBlock | FontHeading | ColorAccentDark700, ColorText | — | ServiceDetailView, TutorDetailView |
+| 44 | 3 | TextBlock | FontHeading | ColorText | Medium | TutorsView, DogsView, AgendaView |
+| 41 | 3 | TextBlock | FontHeading | ColorText | Medium | UsersView, AgendaView |
+| 40 | 4 | TextBlock | FontHeading | ColorText | Medium | UsersView |
+| 38 | 2 | TextBlock | FontHeading | ColorTextMuted70, ColorAccent | — | TutorDetailView |
+| 37 | 6 | TextBlock | FontHeading | ColorAccentDark800, ColorAccent, ColorTextMuted70 | — | UsersView, TutorsView, DogsView |
+| 36 | 3 | TextBlock | FontHeading | ColorText, ColorAccentDark700 | Medium | TutorDetailView, DogDetailView |
+| 34 | 21 | TextBlock, TextBox | FontBody | ColorText, ColorAccent | — | ServiceDetailView, ServicesView, NewDogView |
+| 32 | 31 | TextBlock, CalendarDatePicker | FontBody | ColorText, ColorTextMuted45, ColorTextMuted70 | Italic | UsersView, ServicesView, ServiceDetailView |
+| 31 | 13 | TextBlock, CheckBox | FontBody | ColorTextMuted65, ColorAccentDark800, ColorTextMuted55 | Italic | UsersView, ServiceDetailView, ServicesView |
+| 30 | 15 | TextBlock, CheckBox | FontBody | ColorTextMuted65, ColorText, ColorTextMuted45 | Italic | DogDetailView, TutorDetailView, UsersView |
+| 29 | 10 | TextBlock | FontBody | ColorTextMuted65, ColorTextMuted55, ColorTextMuted70 | Italic | UsersView, TutorDetailView, ServiceDetailView |
+| 28 | 39 | TextBlock | FontBody | ColorTextMuted70, ColorTextMuted55, ColorTextMuted50 | — | ServiceDetailView, ServicesView, NewDogView |
+| 26 | 6 | TextBlock | FontBody | ColorTextMuted55, ColorTextMuted70, ColorAccentDark700 | Italic | TutorDetailView, UsersView, DogDetailView |
+| 25 | 14 | TextBlock | FontBody | ColorTextMuted45, ColorAccent | Italic | UsersView, ServiceDetailView, TutorDetailView |
+| 22 | 1 | TextBlock | FontBody | ColorTextMuted50 | — | AgendaView |
+| 19 | 1 | TextBlock | FontBody | — | — | ClassicalTheme |
+
+Sizes are on the app's 720-wide canvas, so divide by **1.7476** for the source design's px,
+and by a further **1.1** for anything text-sized — a `34` here is roughly `18px` in your
+units, and a `28` roughly `15px`.
+
+### What I want back
+
+An explicit **mapping table, every one of the 26 → its new role**, at the default step:
+
+| Current px | Uses | New role | New px (default step) |
+|---:|---:|---|---:|
+| 34 | 21 | `type.body` | 17 |
+| 28 | 39 | `type.ui` | 15 |
+| … | | | |
+
+Every row accounted for — no "and the rest map sensibly". Where two current values collapse
+into one role, say so explicitly; where one current value has to split into two roles because
+it is doing two jobs, say that too and name which screens take which.
+
+This table is what turns 200 edits from a judgment call into a mechanical find-and-replace,
+so it is worth more to me than any single artboard.
+
+## 8. What to hand back
 
 Match the shape of the Nib output, which worked well:
 
@@ -260,6 +328,7 @@ Match the shape of the Nib output, which worked well:
    dark palette derivation, the accent's dark counterpart, what the tab bar becomes,
    where Settings lives, and which of DapperDemo's six muted-ink steps survive.
 4. **A contrast table** for both modes.
+5. **The type mapping table** from §7 — all 26 current sizes, each assigned a role.
 
 Where a Nib rule genuinely does not fit a tab-based, serif, gold-accented app, break it —
 and record that you did, the way the Nib spec records its own broken rules.

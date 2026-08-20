@@ -1,43 +1,61 @@
-# DapperDemo visual refresh — Claude Design bundle
+# DapperDemo visual refresh
 
-20 Aug 2026. Everything needed to brief Claude Design on restyling DapperDemo to the
-structural discipline of the Nib browsing surface, keeping DapperDemo's own palette.
+20–21 Aug 2026. Restyling DapperDemo to the structural discipline of the Nib browsing
+surface — grouped surfaces, floating controls, one type ramp, a real dark mode — while
+keeping DapperDemo's own warm-grey palette, gold accent and serif type.
 
-## How to use it
+Two halves: what was asked for, and what came back.
 
-1. Open `prompt.md`, copy the whole thing, paste it into Claude Design.
-2. Attach the four files in `attach/`. Nothing else.
+```
+brief/       the request, and the Nib material it was based on
+delivery/    Claude Design's output, 21 Aug
+```
 
-## What is in `attach/`, and why
+## brief/
 
-| File | What it is |
+| File | What |
 |---|---|
-| `1-nib-v3-spec.md` | The Nib v3 build sheet — token values, every geometry table, the six-step text ramp, the contrast maths. The authoritative reference. |
-| `2-nib-decisions.md` | Why Nib is shaped the way it is, and what was rejected. This is where the *tone* lives; the spec only carries the numbers. |
-| `3-nib-canvas.png` | The whole v3 canvas rendered, 3270 × 8700 — every screen, light and dark. |
-| `4-nib-settings-detail.png` | Just the Settings artboards, both modes. Pulled out because DapperDemo is gaining a Settings screen and this is the pattern to follow. |
+| `prompt.md` | The full brief. §7 is the type inventory counted out of the app. |
+| `prompt-as-sent.md` | What was **actually** sent first — this predates §7. |
+| `prompt-2-inventories.md` | Follow-up: the type inventory and the colour inventory, with the mapping tables they ask for. Sent as a second message. |
+| `attach/` | The Nib reference given alongside: v3 spec, decisions, canvas PNG, Settings crop. |
 
-Both PNGs were rendered from `2026-08-19_nib-browsing-surface-v3.dc.html` with headless
-Chrome at 1× on 20 Aug 2026. If the Nib canvas changes, re-render rather than editing them.
+`prompt-as-sent.md` is kept because it explains the sequence — the type inventory reached
+Claude Design through the follow-up, not the first message. `prompt.md` is the version to
+reuse if this is ever run again from scratch.
 
-## What was deliberately left out
+## delivery/
 
-From `NibHub/DesignDocs/ClaudeDesign/2026-08-19_nib-browsing-surface/`:
+| File | What |
+|---|---|
+| `build-sheet.md` | Geometry tables — the file to implement from. |
+| `decisions.md` | What was rejected and why. The file to argue with. |
+| `contrast-table.md` | Every text pair, both modes, against 4.5:1. |
+| `type-mapping.md` | All 26 font sizes → roles. The ramp grew from five roles to seven; the reasoning is in §1. |
+| `hairline-rule.md` | How to tell a group separator from a page hairline while porting — the rule for the 87 `ColorDivider` uses. |
+| `ink-mapping.md` | Six muted steps → **three** roles, only two of which carry text. |
+| `canvas.png` | The whole canvas rendered, 2172 × 11996. |
+| `canvas/` | The live canvas and everything it loads. |
 
-- **`support.js`, `image-slot.js`, `ios-frame.jsx`** — Claude Design's canvas runtime and
-  the phone bezel component. Over 3,000 lines carrying no design intent.
-- **`…-v2.dc.html` and `…dc.html` (v1)** — superseded, and not harmlessly: v3 exists
-  because v1 and v2 failed a contrast check (`ink.secondary` on `surface.control`, 3.98:1).
-  Supplying all three invites averaging across versions, including the broken ones.
-- **`spec.md`** — the v1 spec, superseded by the v3 one.
-- **`…-state-paste.md`, `…-update-body.md`** — session process notes describing how the
-  artifact was updated. Not design content.
-- **`uploads/`** — reference photos that were inputs to the Nib session. Unrelated to
-  DapperDemo.
+### canvas/
 
-## Why no `.dc.html` is attached
+`DapperDemo Refresh.dc.html` is the design; `Todas as Telas.dc.html` is the walkable
+prototype at Android resolution. Both load `./support.js` and
+`_ds/classical-<id>/{styles.css,_ds_bundle.js}` **by relative path**, so those four files
+have to stay siblings — moving a `.dc.html` on its own gives you an unstyled page.
 
-A `.dc.html` is a **canvas file, not a reference document**. Handing one to Claude Design
-risks it treating the file as a canvas to re-seed or edit — so it would work on Nib rather
-than building something new for DapperDemo. The rendered PNGs say the same thing with no
-ambiguity.
+`_ds/classical-<id>/styles.css` is the token source of truth: the palette, both tonal
+ramps, the type scale and the spacing scale as CSS custom properties. It is the most
+useful single file here when porting to `ClassicalTheme.axaml`.
+
+`android-frame.jsx` is loaded by neither page. Kept anyway — it is part of the canvas
+bundle and the editor may want it if the canvas is ever reopened.
+
+`canvas.png` was rendered from the HTML with headless Chrome at 1× on 20 Aug. If the
+canvas changes, re-render rather than editing the PNG.
+
+## Removed from the delivered folder
+
+- **`uploads/`** — the prompts, already in `brief/`, plus eight screenshots from 1 Aug of
+  a placeholder-era build ("Home View", emoji tab icons). Neither is the current app.
+- **`.thumbnail`** — a small WebP preview, superseded by `canvas.png`.
