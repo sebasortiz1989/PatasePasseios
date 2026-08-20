@@ -76,6 +76,12 @@ public class LoginViewModel : PresentationModelBase<Unit, Unit>
     /// <summary>Gets a value indicating whether the "not a valid backup" popup is showing.</summary>
     public bool ShowInvalidBackupAlert { get; private set; }
 
+    /// <summary>Gets the title of the alert shown when a backup could not be imported.</summary>
+    public string InvalidBackupTitle { get; private set; } = string.Empty;
+
+    /// <summary>Gets the body of that alert, which differs by why the import was refused.</summary>
+    public string InvalidBackupMessage { get; private set; } = string.Empty;
+
     /// <summary>Gets the outcome of the last import, shown under the buttons.</summary>
     public string BackupMsg { get; private set; } = string.Empty;
 
@@ -153,7 +159,7 @@ public class LoginViewModel : PresentationModelBase<Unit, Unit>
         {
             // The popup carries the whole message; a second copy under the button would read as a
             // failure that had not gone away.
-            ShowInvalidBackupAlert = true;
+            RejectBackup(result);
             return;
         }
 
@@ -166,4 +172,25 @@ public class LoginViewModel : PresentationModelBase<Unit, Unit>
     }
 
     private async Task SignUpCommandFunction() => await navigationController.PushAsync(signUpViewFactory.Create()).WithSync();
+
+    /// <summary>
+    /// Puts up the alert explaining why an import was refused.
+    /// </summary>
+    /// <remarks>
+    /// A version mismatch is told apart from an unrelated file on purpose. It <i>is</i> the user's
+    /// backup, written by this app, and telling them it is not risks them deleting the only copy
+    /// they have. What it needs is a build that understands it, so that is what the message asks
+    /// for.
+    /// </remarks>
+    private void RejectBackup(Response result)
+    {
+        var incompatible = result == Response.IncompatibleVersion;
+
+        InvalidBackupTitle = incompatible ? "Backup de outra versão" : "Backup inválido";
+        InvalidBackupMessage = incompatible
+            ? "Este backup foi criado por outra versão do Patas & Passeios e não pode ser restaurado aqui. Atualize o aplicativo e tente de novo. Nada foi alterado neste aparelho."
+            : "Este arquivo não é um backup do Patas & Passeios. Escolha um .zip exportado por este aplicativo. Nada foi alterado neste aparelho.";
+
+        ShowInvalidBackupAlert = true;
+    }
 }

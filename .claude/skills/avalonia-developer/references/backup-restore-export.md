@@ -15,6 +15,46 @@ invalid archive leaves the device untouched. Open validation connections with
 `Pooling = false` — a pooled connection holds the file handle past `Dispose` and
 leaks a full copy of the database per import.
 
+## Restoring replaces the file under a service that already migrated
+
+`DapperDatabaseService` runs its migration **in the constructor**, at launch. A restore
+copies a different database over `DatabasePath` at runtime, so an archive written before
+an additive column shipped arrives without it — and this build's queries name it. Every
+agenda read then fails with `no such column`, on the screen the user lands on immediately,
+because the restore signs them out and tells them to sign in again. A relaunch fixes it,
+which is exactly the kind of bug that reads as "the backup was corrupt".
+
+`RestoreFromAsync` therefore calls `DapperDatabaseService.ApplyMissingColumns()` after the
+copy. It re-runs the **additive** steps only. The stale-schema drop stays in the
+constructor: there, wiping tables is recovery from a file that predates the layout; run
+after a restore it would destroy what the user just restored and report success.
+
+Covered by `BackupCompatibilityTests`, which builds a database the way an older build left
+it, restores it, and checks a booking from before discounts existed comes back at full
+price rather than free.
+
+## Restore refuses a schema it does not match
+
+`InspectDatabaseAsync` (was `IsUsableDatabaseAsync`) now answers two questions with two
+different failures. Missing tables → `Response.Failed`, an unrelated or truncated zip. A
+`PRAGMA user_version` that is not this build's `SchemaVersion` → `Response.IncompatibleVersion`.
+
+Both directions are refused. **Lower** means the file predates a layout change that the
+launch-time check handles by dropping every table — accepting it would report success and
+then destroy the restored data on the next start, with nothing left to retry from.
+**Higher** means an archive from a newer build, whose tables these queries were never
+written against.
+
+The version is read from **the database, not from `backup.json`**: it is the same value
+the launch-time check compares, so the two cannot disagree, and it is present even in an
+archive written before the manifest existed. The manifest keeps its copy for anyone
+reading the zip by hand.
+
+The two failures get different alerts (`RejectBackup` in `UsersViewModel` and
+`LoginViewModel`, with `InvalidBackupTitle` / `InvalidBackupMessage` bound into the shared
+`ConfirmDialog`). A version mismatch **is** the user's own backup, so telling them it is
+not one risks them deleting the only copy they have; it says to update the app instead.
+
 ## Saving a file: never trust the save dialog on Android
 
 Every export — both report PNGs and the backup zip — goes through

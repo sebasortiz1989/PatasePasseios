@@ -19,6 +19,9 @@ public enum Response : byte
     [Description("Incorrect password.")]
     WrongPassword = 4,
 
+    [Description("The backup was written by an incompatible version of the app.")]
+    IncompatibleVersion = 5,
+
     [Description("An unexpected response occurred.")]
     Unknown = 99,
 }

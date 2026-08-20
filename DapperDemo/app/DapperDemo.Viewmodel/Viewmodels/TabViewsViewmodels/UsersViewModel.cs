@@ -176,6 +176,12 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     /// </summary>
     public bool ShowInvalidBackupAlert { get; private set; }
 
+    /// <summary>Gets the title of the alert shown when a backup could not be imported.</summary>
+    public string InvalidBackupTitle { get; private set; } = string.Empty;
+
+    /// <summary>Gets the body of that alert, which differs by why the import was refused.</summary>
+    public string InvalidBackupMessage { get; private set; } = string.Empty;
+
     /// <summary>Gets the confirmation left after a summary image is written, or empty.</summary>
     public string SummaryMsg { get; private set; } = string.Empty;
 
@@ -704,7 +710,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         {
             // The inline message is left blank: the popup is the whole story, and a second copy of
             // it sitting under the buttons afterwards reads like a lingering failure.
-            ShowInvalidBackupAlert = true;
+            RejectBackup(result);
             return;
         }
 
@@ -883,5 +889,26 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         PwMsgIsError = false;
         PwMsg = "Senha alterada.";
         ShowPasswordForm = false;
+    }
+
+    /// <summary>
+    /// Puts up the alert explaining why an import was refused.
+    /// </summary>
+    /// <remarks>
+    /// A version mismatch is told apart from an unrelated file on purpose. It <i>is</i> the user's
+    /// backup, written by this app, and telling them it is not risks them deleting the only copy
+    /// they have. What it needs is a build that understands it, so that is what the message asks
+    /// for.
+    /// </remarks>
+    private void RejectBackup(Response result)
+    {
+        var incompatible = result == Response.IncompatibleVersion;
+
+        InvalidBackupTitle = incompatible ? "Backup de outra versão" : "Backup inválido";
+        InvalidBackupMessage = incompatible
+            ? "Este backup foi criado por outra versão do Patas & Passeios e não pode ser restaurado aqui. Atualize o aplicativo e tente de novo. Nada foi alterado neste aparelho."
+            : "Este arquivo não é um backup do Patas & Passeios. Escolha um .zip exportado por este aplicativo. Nada foi alterado neste aparelho.";
+
+        ShowInvalidBackupAlert = true;
     }
 }

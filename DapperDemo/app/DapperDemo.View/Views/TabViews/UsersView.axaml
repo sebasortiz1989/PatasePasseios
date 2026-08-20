@@ -711,9 +711,9 @@
             ConfirmCommand="{Binding DismissInvalidBackupCommand}"
             ConfirmText="Entendi"
             IsOpen="{Binding ShowInvalidBackupAlert}"
-            Message="Este arquivo não é um backup do Patas &amp; Passeios. Escolha um .zip exportado por este aplicativo. Nada foi alterado neste aparelho."
+            Message="{Binding InvalidBackupMessage}"
             ShowCancel="False"
-            Title="Backup inválido" />
+            Title="{Binding InvalidBackupTitle}" />
 
         <!--
             Asked from inside an export, on the platforms where the app names the file itself.

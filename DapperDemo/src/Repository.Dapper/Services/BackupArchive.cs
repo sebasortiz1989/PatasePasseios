@@ -93,7 +93,11 @@ public sealed class BackupArchive(DapperDatabaseService database)
     /// discarded, which is the point: a restore is "make this device look like that backup".
     /// </summary>
     /// <param name="source">The archive. Copied to a temp file first, so a non-seekable stream is fine.</param>
-    /// <returns>Successful, or Failed when the file is not a usable backup — in which case nothing was touched.</returns>
+    /// <returns>
+    /// Successful; IncompatibleVersion when the archive's schema does not match this build's; or
+    /// Failed when the file is not one of this app's backups. In either failing case nothing on
+    /// the device was touched.
+    /// </returns>
     public async Task<Response> RestoreFromAsync(Stream source)
     {
         ArgumentNullException.ThrowIfNull(source);
@@ -129,9 +133,15 @@ public sealed class BackupArchive(DapperDatabaseService database)
                 return true;
             }).ConfigureAwait(false);
 
-            if (!extracted || !await IsUsableDatabaseAsync(candidate).ConfigureAwait(false))
+            if (!extracted)
             {
                 return Response.Failed;
+            }
+
+            var usable = await InspectDatabaseAsync(candidate).ConfigureAwait(false);
+            if (usable != Response.Successful)
+            {
+                return usable;
             }
 
             // Only now is the archive known good, so this is the first thing that touches the
@@ -139,6 +149,12 @@ public sealed class BackupArchive(DapperDatabaseService database)
             await Task.Run(() =>
             {
                 File.Copy(candidate, Database.DatabasePath, overwrite: true);
+
+                // The database this service was initialised against has just been replaced. An
+                // archive written before an additive column shipped does not carry it, and the
+                // queries name it — so the migration runs again here rather than waiting for the
+                // next launch, which is well after the user is back on the agenda.
+                Database.ApplyMissingColumns();
 
                 using var zip = ZipFile.OpenRead(localCopy);
                 RestoreImages(zip);
@@ -159,10 +175,34 @@ public sealed class BackupArchive(DapperDatabaseService database)
     }
 
     /// <summary>
-    /// Opens the extracted file and checks it carries the tables this app expects, so a restore
-    /// cannot overwrite good data with an unrelated or truncated zip.
+    /// Opens the extracted file and decides whether it may replace the user's data.
     /// </summary>
-    private static async Task<bool> IsUsableDatabaseAsync(string path)
+    /// <remarks>
+    /// <para>
+    /// Two questions, and they fail differently. Are the tables this app expects present — if not
+    /// it is an unrelated or truncated zip. And does its <c>PRAGMA user_version</c> match this
+    /// build's schema — if not, restoring it is worse than refusing it.
+    /// </para>
+    /// <para>
+    /// A <b>lower</b> version means the file predates a layout change that
+    /// <see cref="DapperDatabaseService"/> handles by dropping every table. Accepting it would
+    /// report success, then destroy the restored data on the next launch, with nothing left to
+    /// try again from. A <b>higher</b> version means an archive from a newer build, whose tables
+    /// this build's queries were not written against.
+    /// </para>
+    /// <para>
+    /// The version is read from the database rather than from <c>backup.json</c> on purpose: it is
+    /// the same value the launch-time check compares, so the two can never disagree, and it is
+    /// present even in an archive written before the manifest existed. The manifest keeps its copy
+    /// for anyone reading the zip by hand.
+    /// </para>
+    /// </remarks>
+    /// <param name="path">The extracted database.</param>
+    /// <returns>
+    /// Successful, IncompatibleVersion when the schema does not match, or Failed when the file is
+    /// not one of this app's backups.
+    /// </returns>
+    private static async Task<Response> InspectDatabaseAsync(string path)
     {
         // Pooling off: a pooled connection keeps the file handle open past Dispose, and the temp
         // file this validates then cannot be deleted — one leaked copy of the database per import.
@@ -181,12 +221,21 @@ public sealed class BackupArchive(DapperDatabaseService database)
                 "SELECT name FROM sqlite_master WHERE type = 'table'").ConfigureAwait(false);
 
             var present = tables.ToHashSet(StringComparer.OrdinalIgnoreCase);
-            return present.Contains("PetSitter") && present.Contains("Dogs") && present.Contains("Tutors");
+            if (!present.Contains("PetSitter") || !present.Contains("Dogs") || !present.Contains("Tutors"))
+            {
+                return Response.Failed;
+            }
+
+            var version = await connection.ExecuteScalarAsync<int>("PRAGMA user_version").ConfigureAwait(false);
+
+            return version == DapperDatabaseService.CurrentSchemaVersion
+                ? Response.Successful
+                : Response.IncompatibleVersion;
         }
         catch (SqliteException e)
         {
             Console.WriteLine(e);
-            return false;
+            return Response.Failed;
         }
     }
 

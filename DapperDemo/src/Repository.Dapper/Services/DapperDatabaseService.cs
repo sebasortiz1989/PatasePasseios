@@ -45,6 +45,29 @@ public sealed class DapperDatabaseService
     public string DatabasePath { get; private set; } = string.Empty;
 
     /// <summary>
+    /// Brings the file at <see cref="DatabasePath"/> up to this build's schema.
+    /// </summary>
+    /// <remarks>
+    /// For after a restore, which replaces the database underneath a service whose constructor
+    /// already ran. The archive may have been written before a column this build's queries name —
+    /// <c>Discount</c>, <c>AmountSettled</c>, <c>ServiceDone</c> — and nothing else runs a
+    /// migration before the user is back on the agenda, so without this every read fails with
+    /// "no such column" until the app is restarted.
+    /// <para>
+    /// Additive steps only. The stale-schema drop stays in the constructor, where wiping tables is
+    /// recovery from a file that predates the layout; running it here would destroy the very data
+    /// the user just restored, and report success while doing it.
+    /// </para>
+    /// </remarks>
+    public void ApplyMissingColumns()
+    {
+        using var connection = Connection;
+        connection.Open();
+        CreatePetSitterTableIfNotExists(connection);
+        AddMissingColumns(connection);
+    }
+
+    /// <summary>
     /// Drops every table when the file on disk was built by an older schema, so the CREATE TABLE
     /// IF NOT EXISTS statements below can lay it out again correctly. Runs at most once per
     /// schema version — see <see cref="SchemaVersion"/>.
