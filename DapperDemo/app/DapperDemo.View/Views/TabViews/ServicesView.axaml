@@ -399,6 +399,40 @@
                         </StackPanel>
                     </StackPanel>
 
+                    <!--
+                        Outside both kind panels above: a discount applies to every kind, and a
+                        repeat applies it to every occurrence it creates — a standing discount for
+                        a regular tutor is agreed once, not per visit.
+                    -->
+                    <StackPanel Spacing="10">
+                        <TextBlock
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="28"
+                            Foreground="{StaticResource ColorTextMuted70}"
+                            Text="Desconto (%)" />
+                        <TextBox
+                            Background="Transparent"
+                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderThickness="2"
+                            CaretBrush="{StaticResource ColorAccent}"
+                            CornerRadius="7"
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="34"
+                            Foreground="{StaticResource ColorText}"
+                            MinHeight="74"
+                            Padding="18,0"
+                            PlaceholderText="ex.: 10 para 10% de desconto"
+                            Text="{Binding SvcDiscount}"
+                            VerticalContentAlignment="Center" />
+                        <TextBlock
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="25"
+                            FontStyle="Italic"
+                            Foreground="{StaticResource ColorTextMuted45}"
+                            Text="Deixe em branco para cobrar o preço cheio."
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+
                     <TextBlock
                         Classes="FormMsg"
                         Classes.Error="{Binding SvcMsgIsError}"

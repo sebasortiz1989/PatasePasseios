@@ -16,6 +16,12 @@ namespace DapperDemo.Viewmodel.Viewmodels.TabViewsViewmodels;
 [AddINotifyPropertyChangedInterface]
 public class ServicesViewModel : PresentationModelBase<Unit, Unit>
 {
+    /// <summary>The time a booking's first visit opens at, and what an empty form starts on.</summary>
+    private static readonly TimeSpan FirstTimeOfDay = TimeSpan.FromHours(9);
+
+    /// <summary>The latest a visit may be scheduled. Later would spill into the following day.</summary>
+    private static readonly TimeSpan LastTimeOfDay = TimeSpan.FromHours(23);
+
     private readonly RepositoryDogs repositoryDogs;
     private readonly RepositoryTutors repositoryTutors;
     private readonly RepositoryServices repositoryServices;
@@ -50,9 +56,9 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
         AddDateCommand = new SynchronizedCommand(AddDate, SynchronizationBehavior.Discard, true);
 
         SvcDatePart = DateTime.Now.Date.AddDays(1);
-        SvcTimePart = TimeSpan.FromHours(9);
+        SvcTimePart = FirstTimeOfDay;
         SvcRepeatUntilPart = DateTime.Now.Date.AddDays(7);
-        AddTimeSlot(TimeSpan.FromHours(9));
+        AddTimeSlot(FirstTimeOfDay);
         SvcRangeFromPart = DateTime.Now.Date.AddDays(1);
         AddDateSlot(DateTime.Now.Date.AddDays(1));
         SvcEndDatePart = DateTime.Now.Date.AddDays(3);
@@ -173,6 +179,15 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
 
     public string SvcPricePerDay { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Gets or sets the percentage off the booking. Blank means full price.
+    /// </summary>
+    /// <remarks>
+    /// Applies to every occurrence a repeat creates, which is the point: a standing discount for a
+    /// regular tutor is agreed once, not per visit.
+    /// </remarks>
+    public string SvcDiscount { get; set; } = string.Empty;
+
     public bool SvcRequiresWalking { get; set; }
 
     public string SvcMsg { get; set; } = string.Empty;
@@ -245,6 +260,16 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
             return;
         }
 
+        // Parsed before either branch: the field applies to every kind, and a bad rate should be
+        // rejected before anything is written rather than per occurrence inside the loop.
+        var discount = 0m;
+        if (!string.IsNullOrWhiteSpace(SvcDiscount)
+            && (!TryParsePrice(SvcDiscount, out discount) || discount < 0m || discount > 100m))
+        {
+            Fail("Informe um desconto entre 0 e 100%.");
+            return;
+        }
+
         Response result;
 
         if (SvcType == ServiceKind.Hotel)
@@ -268,6 +293,7 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
                 StartDate = SvcDate,
                 EndDate = SvcEndDate,
                 PricePerDay = pricePerDay,
+                Discount = discount,
                 RequiresWalking = SvcRequiresWalking,
                 ServicePaid = false,
                 ServiceDone = false,
@@ -301,6 +327,7 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
                         PetSitterId = session.CurrentPetSitterId,
                         Date = occurrence,
                         Price = price,
+                        Discount = discount,
                         ServicePaid = false,
                         ServiceDone = false,
                     }).WithSync(),
@@ -312,6 +339,7 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
                         PetSitterId = session.CurrentPetSitterId,
                         Date = occurrence.Date,
                         Price = price,
+                        Discount = discount,
                         RequiresWalking = SvcRequiresWalking,
                         ServicePaid = false,
                         ServiceDone = false,
@@ -323,6 +351,7 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
                         PetSitterId = session.CurrentPetSitterId,
                         Date = occurrence,
                         Price = price,
+                        Discount = discount,
                         ServicePaid = false,
                         ServiceDone = false,
                     }).WithSync(),
@@ -452,7 +481,24 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
         SvcDates.Clear();
     }
 
-    private void AddTime() => AddTimeSlot(TimeSpan.FromHours(18));
+    /// <summary>
+    /// Adds another time of day, an hour after the row above it.
+    /// </summary>
+    /// <remarks>
+    /// Every added row used to arrive at 18:00, so entering a four-visit day meant retyping three
+    /// of them. Consecutive hours are what a multi-visit booking usually looks like, and a row
+    /// that starts close to right is quicker to correct than one that never is. Capped at 23:00
+    /// rather than wrapping: a slot past midnight belongs to the next day, which this form has no
+    /// way to express.
+    /// </remarks>
+    private void AddTime()
+    {
+        var next = SvcTimes.Count == 0
+            ? FirstTimeOfDay
+            : SvcTimes[^1].Time + TimeSpan.FromHours(1);
+
+        AddTimeSlot(next > LastTimeOfDay ? LastTimeOfDay : next);
+    }
 
     private void AddTimeSlot(TimeSpan time)
     {
@@ -496,6 +542,7 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
     {
         SvcPrice = string.Empty;
         SvcPricePerDay = string.Empty;
+        SvcDiscount = string.Empty;
         SvcRequiresWalking = false;
         SelectedDog = null;
         SvcUseDateRange = false;
@@ -505,7 +552,7 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
         ClearDateSlots();
         AddDateSlot(DateTime.Now.Date.AddDays(1));
         SvcEndDatePart = DateTime.Now.Date.AddDays(3);
-        SvcTimePart = TimeSpan.FromHours(9);
+        SvcTimePart = FirstTimeOfDay;
         SvcEndTimePart = TimeSpan.FromHours(18);
 
         foreach (var slot in SvcTimes)
@@ -514,7 +561,7 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
         }
 
         SvcTimes.Clear();
-        AddTimeSlot(TimeSpan.FromHours(9));
+        AddTimeSlot(FirstTimeOfDay);
     }
 
     private void Fail(string message)

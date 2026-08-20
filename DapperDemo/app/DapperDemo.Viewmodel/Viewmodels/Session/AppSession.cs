@@ -90,31 +90,43 @@ public class AppSession
     }
 
     /// <summary>
-    /// How a hotel stay's total is arrived at: the nights it covers times the daily rate, and the
-    /// one-off extra on a second line when there is one.
+    /// How a service's total is arrived at: for a stay the nights it covers times the daily rate
+    /// and any one-off extra, and for anything discounted the amount the discount took off.
     /// </summary>
     /// <remarks>
-    /// A stay is entered as a daily rate, so its total is a figure nobody typed — printed on its
-    /// own it invites the tutor to ask where it came from. Empty for every other kind, whose price
-    /// is already the whole story.
+    /// Both are figures nobody typed — a stay is entered as a daily rate, and a discount is
+    /// entered as a percentage — so printed on their own they invite the tutor to ask where the
+    /// number came from. Empty for an undiscounted service of any other kind, whose price is
+    /// already the whole story.
     /// </remarks>
     /// <param name="service">The service being described.</param>
     /// <returns>The breakdown lines separated by <c>\n</c>, or an empty string.</returns>
-    public static string StayPriceBreakdown(ServiceItem service)
+    public static string PriceBreakdown(ServiceItem service)
     {
         ArgumentNullException.ThrowIfNull(service);
 
-        if (service.Kind != ServiceKind.Hotel)
+        var lines = new List<string>();
+
+        if (service.Kind == ServiceKind.Hotel)
         {
-            return string.Empty;
+            var nights = service.Nights;
+            lines.Add($"{nights.ToString(CultureInfo.InvariantCulture)} {(nights == 1 ? "diária" : "diárias")} × {Money(service.Price)}");
+
+            if (service.ExtraCharge > 0m)
+            {
+                lines.Add($"+ {Money(service.ExtraCharge)} adicional");
+            }
         }
 
-        var nights = service.Nights;
-        var rate = $"{nights.ToString(CultureInfo.InvariantCulture)} {(nights == 1 ? "diária" : "diárias")} × {Money(service.Price)}";
+        // Last, so it reads as the final step of the sum it is: the lines above build up to the
+        // subtotal and this one takes the discount back off.
+        if (service.Discount > 0m)
+        {
+            var rate = service.Discount.ToString("0.##", CultureInfo.InvariantCulture).Replace('.', ',');
+            lines.Add($"− {Money(service.DiscountAmount)} ({rate}% de desconto)");
+        }
 
-        return service.ExtraCharge > 0m
-            ? $"{rate}\n+ {Money(service.ExtraCharge)} adicional"
-            : rate;
+        return string.Join('\n', lines);
     }
 
     /// <summary>

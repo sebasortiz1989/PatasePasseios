@@ -37,7 +37,7 @@ public sealed class DogServiceGroup : IDisposable
     /// <summary>Gets how many services this dog has under the current filters, e.g. "6 serviços".</summary>
     public string CountLabel { get; }
 
-    /// <summary>Gets a value indicating whether the dog's services are showing.</summary>
+    /// <summary>Gets or sets a value indicating whether the dog's services are showing.</summary>
     public bool IsExpanded { get; set; }
 
     public ObservableCollection<ServiceRow> Services { get; }

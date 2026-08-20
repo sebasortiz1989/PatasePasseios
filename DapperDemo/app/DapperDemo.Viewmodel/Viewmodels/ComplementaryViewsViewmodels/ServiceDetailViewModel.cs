@@ -143,7 +143,33 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
     /// <summary>Gets how many nights the stay covers, e.g. "3 diárias". Hotel stays only.</summary>
     public string DaysLabel { get; private set; } = string.Empty;
 
-    /// <summary>Gets the daily rate times the nights, plus any extra. Hotel stays only.</summary>
+    /// <summary>Gets what the booking comes to before any discount.</summary>
+    public string SubtotalLabel { get; private set; } = string.Empty;
+
+    /// <summary>Gets the discount row's caption, carrying the rate — e.g. "DESCONTO (10%)".</summary>
+    public string DiscountFieldLabel { get; private set; } = string.Empty;
+
+    /// <summary>Gets what the discount takes off, as a negative amount.</summary>
+    public string DiscountAmountLabel { get; private set; } = string.Empty;
+
+    /// <summary>Gets a value indicating whether this booking carries a discount worth showing.</summary>
+    public bool HasDiscount { get; private set; }
+
+    /// <summary>
+    /// Gets a value indicating whether the subtotal line is worth a row of its own. Only on a
+    /// discounted stay, where the price shown above is a daily rate and the arithmetic is
+    /// otherwise invisible — for every other kind the subtotal is the price already on screen.
+    /// </summary>
+    public bool ShowsSubtotal => HasDiscount && IsHotel;
+
+    /// <summary>
+    /// Gets a value indicating whether the total line is shown. A stay always needs one because
+    /// its price is a rate; anything else needs one only once a discount has moved it off the
+    /// price above.
+    /// </summary>
+    public bool ShowsTotal => IsHotel || HasDiscount;
+
+    /// <summary>Gets what is actually owed: the nights and extras, less any discount.</summary>
     public string TotalLabel { get; private set; } = string.Empty;
 
     /// <summary>Gets how much of this service has been settled, however it was funded.</summary>
@@ -203,6 +229,11 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
     /// Gets or sets a one-off amount charged on top of a hotel stay — a late pick-up, say. Blank means none.
     /// </summary>
     public string EditExtraCharge { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the percentage off this booking. Blank means none.
+    /// </summary>
+    public string EditDiscount { get; set; } = string.Empty;
 
     public bool EditRequiresWalking { get; set; }
 
@@ -349,6 +380,9 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
         EditExtraCharge = service.ExtraCharge > 0m
             ? service.ExtraCharge.ToString("0.##", CultureInfo.InvariantCulture)
             : string.Empty;
+        EditDiscount = service.Discount > 0m
+            ? service.Discount.ToString("0.##", CultureInfo.InvariantCulture)
+            : string.Empty;
         EditRequiresWalking = service.RequiresWalking;
         EditError = string.Empty;
         IsEditing = true;
@@ -383,6 +417,16 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
             return;
         }
 
+        // A rate, not an amount: outside 0-100 it stops meaning "a discount" at all, so it is
+        // rejected here rather than being clamped out of sight by ServiceItem.
+        var discount = 0m;
+        if (!string.IsNullOrWhiteSpace(EditDiscount)
+            && (!TryParsePrice(EditDiscount, out discount) || discount < 0m || discount > 100m))
+        {
+            EditError = "Informe um desconto entre 0 e 100%.";
+            return;
+        }
+
         // Day-care is booked for a day, not a moment, so the time picker is not shown for it and
         // its date is stored bare.
         var date = service.Kind == ServiceKind.DayCare
@@ -407,6 +451,7 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
             EndDate = service.Kind == ServiceKind.Hotel ? endDate : null,
             Price = price,
             ExtraCharge = service.Kind == ServiceKind.Hotel ? extraCharge : 0m,
+            Discount = discount,
             RequiresWalking = EditRequiresWalking,
             ServicePaid = service.ServicePaid,
             ServiceDone = service.ServiceDone,
@@ -530,6 +575,13 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
 
         var nights = NightsBetween(service.Date, service.EndDate);
         DaysLabel = nights == 1 ? "1 diária" : $"{nights} diárias";
+
+        // The rate goes in the caption and the money in the value column, so the discount lines up
+        // under the other amounts instead of being a lone percentage in a column of reais.
+        HasDiscount = service.Discount > 0m;
+        DiscountFieldLabel = $"DESCONTO ({service.Discount.ToString("0.##", CultureInfo.InvariantCulture).Replace('.', ',')}%)";
+        DiscountAmountLabel = "− " + AppSession.Money(service.DiscountAmount);
+        SubtotalLabel = AppSession.Money(service.Subtotal);
         TotalLabel = AppSession.Money(service.Total);
 
         SettledLabel = AppSession.Money(service.AmountSettled);

@@ -26,6 +26,9 @@ public class PetHotelService
 
     public bool RequiresWalking { get; init; }
 
+    /// <summary>Gets the percentage taken off this booking's total, 0 to 100. Zero means full price.</summary>
+    public decimal Discount { get; init; }
+
     public bool ServicePaid { get; init; }
 
     /// <summary>Gets a value indicating whether the stay actually happened. Independent of <see cref="ServicePaid"/>.</summary>
@@ -41,6 +44,7 @@ public class PetHotelService
 //     PricePerDay DECIMAL(10, 2) NOT NULL,
 //     ExtraCharge DECIMAL(10, 2) NOT NULL DEFAULT 0,
 //     RequiresWalking BOOLEAN NOT NULL DEFAULT 0,
+//     Discount DECIMAL(5, 2) NOT NULL DEFAULT 0,
 //     ServicePaid BOOLEAN,
 //     ServiceDone BOOLEAN NOT NULL DEFAULT 0,
 // FOREIGN KEY (DogId) REFERENCES Dogs(DogId),

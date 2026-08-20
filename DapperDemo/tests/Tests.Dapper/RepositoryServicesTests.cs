@@ -748,4 +748,94 @@ public class RepositoryServicesTests
         }),
         _ => throw new ArgumentOutOfRangeException(nameof(kind)),
     };
+
+    [Fact]
+    public async Task ADiscountSurvivesTheRoundTripOnEveryKind()
+    {
+        using var db = new TestDatabase();
+        var (petSitterId, _, dogId) = await db.SeedAccountAsync();
+
+        await db.Services.AddWalkAsync(new WalkingService
+        {
+            DogId = dogId, PetSitterId = petSitterId, Date = August1, Price = 40m, Discount = 10m,
+        });
+        await db.Services.AddSittingAsync(new PetSittingService
+        {
+            DogId = dogId, PetSitterId = petSitterId, Date = August1, Price = 100m, Discount = 25m,
+        });
+        await db.Services.AddHotelAsync(new PetHotelService
+        {
+            DogId = dogId,
+            PetSitterId = petSitterId,
+            StartDate = August1,
+            EndDate = August1.AddDays(2),
+            PricePerDay = 80m,
+            Discount = 50m,
+        });
+        await db.Services.AddDayCareAsync(new DayCareService
+        {
+            DogId = dogId, PetSitterId = petSitterId, Date = August1, Price = 60m, Discount = 5m,
+        });
+
+        var services = await db.Services.ListForPetSitterAsync(petSitterId);
+
+        Assert.Equal(10m, services.Single(s => s.Kind == ServiceKind.Walk).Discount);
+        Assert.Equal(25m, services.Single(s => s.Kind == ServiceKind.Sitting).Discount);
+        Assert.Equal(50m, services.Single(s => s.Kind == ServiceKind.Hotel).Discount);
+        Assert.Equal(5m, services.Single(s => s.Kind == ServiceKind.DayCare).Discount);
+
+        // 160 for two nights, halved.
+        Assert.Equal(80m, services.Single(s => s.Kind == ServiceKind.Hotel).Total);
+    }
+
+    [Fact]
+    public async Task EditingAServiceSavesItsDiscount()
+    {
+        using var db = new TestDatabase();
+        var (petSitterId, _, dogId) = await db.SeedAccountAsync();
+
+        await db.Services.AddSittingAsync(new PetSittingService
+        {
+            DogId = dogId, PetSitterId = petSitterId, Date = August1, Price = 100m,
+        });
+
+        var booked = (await db.Services.ListForPetSitterAsync(petSitterId)).Single();
+        Assert.Equal(100m, booked.Total);
+
+        await db.Services.UpdateAsync(new ServiceItem
+        {
+            ServiceId = booked.ServiceId,
+            Kind = booked.Kind,
+            DogId = booked.DogId,
+            DogName = booked.DogName,
+            TutorName = booked.TutorName,
+            Date = booked.Date,
+            Price = booked.Price,
+            Discount = 30m,
+        });
+
+        var edited = (await db.Services.ListForPetSitterAsync(petSitterId)).Single();
+
+        Assert.Equal(30m, edited.Discount);
+        Assert.Equal(70m, edited.Total);
+    }
+
+    [Fact]
+    public async Task ADiscountedBookingIsBilledAtItsDiscountedPrice()
+    {
+        using var db = new TestDatabase();
+        var (petSitterId, _, dogId) = await db.SeedAccountAsync();
+
+        await db.Services.AddSittingAsync(new PetSittingService
+        {
+            DogId = dogId, PetSitterId = petSitterId, Date = August1, Price = 200m, Discount = 25m,
+        });
+
+        var booked = (await db.Services.ListForPetSitterAsync(petSitterId)).Single();
+        await db.Services.SetDoneAsync(booked.Kind, booked.ServiceId, true);
+
+        var done = (await db.Services.ListForPetSitterAsync(petSitterId)).Single();
+
+        Assert.Equal(150m, done.AmountDue);
+    }
 }

@@ -862,12 +862,13 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
                     service.ServiceDone ? "Feito" : "A fazer",
                     service.ServicePaid ? "Pago" : "Sem pagar");
 
-                // A stay is the one row whose single date and single figure hide most of what the
-                // tutor is being charged for: it runs to a check-out, and its total is nights times
-                // a daily rate plus whatever was added on top. Both go under the cells they explain
-                // rather than into columns of their own, which every other row would leave empty.
+                // Valor is the discounted total, so anything that moved it away from the plain
+                // price is spelled out beneath: a stay's nights times its daily rate plus whatever
+                // was added on top, and the discount that came back off. Both go under the cells
+                // they explain rather than into columns of their own, which every other row would
+                // leave empty.
                 row.WithDetail(2, AppSession.StayEndLabel(service));
-                row.WithDetail(3, AppSession.StayPriceBreakdown(service));
+                row.WithDetail(3, AppSession.PriceBreakdown(service));
 
                 section.Rows.Add(row);
             }
@@ -878,6 +879,15 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
             var paid = month.Where(s => s.ServicePaid).Sum(s => s.Total);
             var chargeable = month.Sum(s => s.AmountDue);
             var upcoming = month.Sum(s => s.AmountUpcoming);
+            var discounted = month.Sum(s => s.DiscountAmount);
+
+            // Only when something was actually discounted, so an ordinary month keeps a short
+            // footer. Worth stating outright: it is the one figure the tutor gained that no other
+            // line on the bill mentions.
+            if (discounted > 0m)
+            {
+                section.Totals.Add(new ReportField("Descontos aplicados", "− " + AppSession.Money(discounted)));
+            }
 
             section.Totals.Add(new ReportField("Já pago", AppSession.Money(paid)));
             if (upcoming > 0m)
@@ -898,9 +908,12 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
             });
         }
 
-        // What the tutor is actually being asked for: executed and unpaid, nothing else.
+        // Kept apart rather than summed here so the section can say which of the two it is
+        // reporting. They are mutually exclusive per service — AmountDue needs ServiceDone,
+        // AmountUpcoming needs it unset — so their sum counts nothing twice.
         var chargeableTotal = tutorServices.Sum(s => s.AmountDue);
-        await AddPaymentSectionAsync(report, chargeableTotal).WithSync();
+        var upcomingTotal = tutorServices.Sum(s => s.AmountUpcoming);
+        await AddPaymentSectionAsync(report, chargeableTotal, upcomingTotal).WithSync();
 
         var slug = new string([.. Name.ToLowerInvariant().Select(c => char.IsLetterOrDigit(c) ? c : '-')]).Trim('-');
         var fileName = await reportExporter
@@ -921,20 +934,29 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     /// amount beside them, so the tutor can pay straight from the image.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Read from the account rather than the session, because the session carries only the name —
     /// and a Pix key edited on the profile screen has to reach the next export.
+    /// </para>
+    /// <para>
+    /// This figure deliberately includes work not yet carried out, which is the one place the
+    /// executed-before-paid rule does not hold. The report doubles as a quote: a tutor is often
+    /// sent it before a booked week starts and pays the whole thing up front, and a sheet that
+    /// lists nine walks and then says "nada pendente" gives them nothing to pay. The rule still
+    /// governs everywhere the sitter reads their own balance — the month totals below keep
+    /// "A pagar" and "A executar" apart, and <c>AmountDue</c> is untouched.
+    /// </para>
     /// </remarks>
     /// <param name="report">The report being built.</param>
-    /// <param name="chargeable">
-    /// What may be billed today — executed and unpaid, across every month. Never includes work
-    /// that has not been carried out: the tutor is not asked for money the sitter has not earned.
-    /// </param>
-    private async Task AddPaymentSectionAsync(ReportDocument report, decimal chargeable)
+    /// <param name="chargeable">What has been carried out and not yet paid for, across every month.</param>
+    /// <param name="upcoming">What is booked, unpaid and not yet carried out, across every month.</param>
+    private async Task AddPaymentSectionAsync(ReportDocument report, decimal chargeable, decimal upcoming)
     {
         var petSitter = await repositoryPetSitter.GetAsync(session.CurrentPetSitterId).WithSync();
+        var payable = chargeable + upcoming;
 
         // Nothing to say if there is no key on file and nothing outstanding.
-        if (string.IsNullOrWhiteSpace(petSitter?.Pix) && chargeable <= 0m)
+        if (string.IsNullOrWhiteSpace(petSitter?.Pix) && payable <= 0m)
         {
             return;
         }
@@ -951,10 +973,15 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
             payment.Fields.Add(new ReportField("Chave Pix", petSitter.Pix, true));
         }
 
+        // Said outright when part of the figure is for work that has not happened yet, so a tutor
+        // paying in advance can see that is what they are doing. Left plain when everything in it
+        // has already been carried out, which is the ordinary bill.
+        var label = upcoming > 0m ? "Total a pagar (inclui serviços a executar)" : "Total a pagar";
+
         payment.Fields.Add(new ReportField(
-            "Total a pagar",
-            chargeable > 0m ? AppSession.Money(chargeable) : "Nada pendente. Obrigado!",
-            chargeable > 0m));
+            label,
+            payable > 0m ? AppSession.Money(payable) : "Nada pendente. Obrigado!",
+            payable > 0m));
 
         report.Sections.Add(payment);
     }

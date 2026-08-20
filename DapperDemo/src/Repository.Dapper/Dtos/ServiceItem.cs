@@ -67,6 +67,16 @@ public sealed class ServiceItem
     /// </summary>
     public decimal ExtraCharge { get; init; }
 
+    /// <summary>
+    /// Gets the percentage taken off this booking, 0 to 100. Zero means full price.
+    /// </summary>
+    /// <remarks>
+    /// A rate rather than an amount, so it keeps meaning the same thing when the price is edited
+    /// afterwards — a stay discounted "10%" stays 10% off whatever it now costs, where a stored
+    /// amount would quietly become a different fraction of the bill.
+    /// </remarks>
+    public decimal Discount { get; init; }
+
     public bool RequiresWalking { get; init; }
 
     public bool ServicePaid { get; init; }
@@ -89,10 +99,35 @@ public sealed class ServiceItem
     public int Nights => EndDate is DateTime finish ? Math.Max((finish.Date - Date.Date).Days, 1) : 1;
 
     /// <summary>
-    /// Gets what this service costs in full. A hotel stay's <see cref="Price"/> is a nightly rate
-    /// so it multiplies out; everything else is a one-off fee.
+    /// Gets what this service costs before any discount. A hotel stay's <see cref="Price"/> is a
+    /// nightly rate so it multiplies out; everything else is a one-off fee.
     /// </summary>
-    public decimal Total => Kind == ServiceKind.Hotel ? (Price * Nights) + ExtraCharge : Price;
+    public decimal Subtotal => Kind == ServiceKind.Hotel ? (Price * Nights) + ExtraCharge : Price;
+
+    /// <summary>
+    /// Gets how much <see cref="Discount"/> takes off, in money.
+    /// </summary>
+    /// <remarks>
+    /// Rounded to centavos here rather than left to trickle through the rest of the arithmetic,
+    /// so what the tutor is shown on the service screen is exactly what the bill, the payment
+    /// allocation and the report all work from. The rate is clamped because nothing stops a
+    /// hand-edited database holding 150 or -5, and either would make the total nonsense.
+    /// </remarks>
+    public decimal DiscountAmount => Math.Round(
+        Subtotal * (Math.Clamp(Discount, 0m, 100m) / 100m),
+        2,
+        MidpointRounding.AwayFromZero);
+
+    /// <summary>
+    /// Gets what this service costs in full, with any discount already taken off.
+    /// </summary>
+    /// <remarks>
+    /// The discount lands here rather than anywhere further down because this is what every
+    /// balance, allocation and report is built from — <see cref="Outstanding"/>,
+    /// <see cref="AmountDue"/>, the tutor's bill and the monthly income all read through it, so a
+    /// discounted booking is discounted everywhere without any of them knowing the rate exists.
+    /// </remarks>
+    public decimal Total => Subtotal - DiscountAmount;
 
     /// <summary>
     /// Gets how much of <see cref="Total"/> has already been settled, by cash or by credit.

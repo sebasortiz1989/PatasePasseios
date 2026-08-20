@@ -26,6 +26,36 @@ the order is always *executed → paid*:
   actually handed over must land somewhere, and refusing the booking it was
   plainly meant for would strand it as credit.
 
+## Discount is a rate, and it lands on `Total`
+
+Every service table carries `Discount`: a **percentage**, 0-100, defaulting to 0. A
+rate rather than an amount so it keeps meaning the same thing when the price is
+edited afterwards.
+
+`ServiceItem` splits what used to be one property into three:
+
+- `Subtotal` — what the booking comes to before any discount (the old `Total`:
+  nights × daily rate + `ExtraCharge` for a stay, the plain price otherwise).
+- `DiscountAmount` — `Subtotal × rate`, **rounded to centavos** so the figure on the
+  service screen is exactly the one the bill, the allocation and the report work
+  from. The rate is clamped to 0-100 because nothing stops a hand-edited database
+  holding 150 or -5.
+- `Total` — `Subtotal - DiscountAmount`.
+
+The discount lands on `Total` deliberately, because that is what `Outstanding`,
+`AmountDue`, `AmountUpcoming`, `PaymentAllocation`, the tutor's bill and
+`GetMonthlyIncomeAsync` are all already built from — so a discounted booking is
+discounted everywhere without any of them knowing the rate exists. **Never apply a
+discount a second time further down**; anything reading `Total` has it already.
+
+Surfaced as a `DESCONTO (10%)` row on the service detail screen (with a `SUBTOTAL`
+row too, but only on a discounted stay where the price shown is a daily rate), and
+in the tutor's PNG report as a line under the `Valor` cell via
+`AppSession.PriceBreakdown` plus a `Descontos aplicados` month total. Set either on
+the new-service form — where it sits outside both kind panels, because it applies to
+every kind and to every occurrence a repeat creates — or afterwards on the service
+detail screen.
+
 ## Settling never reprices
 
 Each service carries `AmountSettled` (how much has been paid against it) and
@@ -54,7 +84,18 @@ returns its `CreditApplied` to the tutor, or the money would vanish with the row
 
 Both flags surface on the agenda row, the dog and tutor detail rows, the service
 detail screen, and the two PNG reports as the `Execução` / `Pagamento` columns,
-whose totals bill only executed work and list `A executar` separately.
+whose month totals bill only executed work and list `A executar` separately.
+
+**The tutor report's `Total a pagar` is the one exception**, and it is deliberate.
+It sums `AmountDue + AmountUpcoming` — everything unpaid, carried out or not —
+because the export doubles as a quote: a tutor is often sent it before a booked week
+starts and pays up front, and a sheet listing nine walks that then says "nada
+pendente" gives them nothing to pay. The two properties are mutually exclusive per
+service, so adding them counts nothing twice. The label says so when it matters —
+`Total a pagar (inclui serviços a executar)` whenever unexecuted work is in the
+figure, plain `Total a pagar` when it is an ordinary bill. Everywhere the *sitter*
+reads their own balance still obeys executed-before-paid; only this one printed
+figure does not.
 `GetMonthlyIncomeAsync` counts `AmountSettled`, falling back to the full total for
 a service marked paid before that column existed.
 

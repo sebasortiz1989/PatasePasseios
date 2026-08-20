@@ -22,7 +22,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
     /// </summary>
     private const string WalkSelect = """
         SELECT w.WalkingServiceId AS ServiceId, 0 AS Kind, w.DogId, d.Name AS DogName, d.Image AS DogImage,
-               t.TutorId, t.Name AS TutorName, t.Address AS TutorAddress, w.Date, w.Price, w.ServicePaid, w.ServiceDone, w.AmountSettled, w.CreditApplied
+               t.TutorId, t.Name AS TutorName, t.Address AS TutorAddress, w.Date, w.Price, w.Discount, w.ServicePaid, w.ServiceDone, w.AmountSettled, w.CreditApplied
         FROM WalkingService w
         INNER JOIN Dogs d ON d.DogId = w.DogId
         INNER JOIN Tutors t ON t.TutorId = d.TutorId
@@ -31,7 +31,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
 
     private const string SittingSelect = """
         SELECT s.PetSittingServiceId AS ServiceId, 1 AS Kind, s.DogId, d.Name AS DogName, d.Image AS DogImage,
-               t.TutorId, t.Name AS TutorName, t.Address AS TutorAddress, s.Date, s.Price, s.ServicePaid, s.ServiceDone, s.AmountSettled, s.CreditApplied
+               t.TutorId, t.Name AS TutorName, t.Address AS TutorAddress, s.Date, s.Price, s.Discount, s.ServicePaid, s.ServiceDone, s.AmountSettled, s.CreditApplied
         FROM PetSittingService s
         INNER JOIN Dogs d ON d.DogId = s.DogId
         INNER JOIN Tutors t ON t.TutorId = d.TutorId
@@ -40,7 +40,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
 
     private const string HotelSelect = """
         SELECT h.PetHotelServiceId AS ServiceId, 2 AS Kind, h.DogId, d.Name AS DogName, d.Image AS DogImage,
-               t.TutorId, t.Name AS TutorName, t.Address AS TutorAddress, h.StartDate AS Date, h.EndDate, h.PricePerDay AS Price, h.ExtraCharge, h.RequiresWalking, h.ServicePaid, h.ServiceDone, h.AmountSettled, h.CreditApplied
+               t.TutorId, t.Name AS TutorName, t.Address AS TutorAddress, h.StartDate AS Date, h.EndDate, h.PricePerDay AS Price, h.ExtraCharge, h.Discount, h.RequiresWalking, h.ServicePaid, h.ServiceDone, h.AmountSettled, h.CreditApplied
         FROM PetHotelService h
         INNER JOIN Dogs d ON d.DogId = h.DogId
         INNER JOIN Tutors t ON t.TutorId = d.TutorId
@@ -49,7 +49,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
 
     private const string DayCareSelect = """
         SELECT c.DayCareServiceId AS ServiceId, 3 AS Kind, c.DogId, d.Name AS DogName, d.Image AS DogImage,
-               t.TutorId, t.Name AS TutorName, t.Address AS TutorAddress, c.Date, c.Price, c.RequiresWalking, c.ServicePaid, c.ServiceDone, c.AmountSettled, c.CreditApplied
+               t.TutorId, t.Name AS TutorName, t.Address AS TutorAddress, c.Date, c.Price, c.Discount, c.RequiresWalking, c.ServicePaid, c.ServiceDone, c.AmountSettled, c.CreditApplied
         FROM DayCareService c
         INNER JOIN Dogs d ON d.DogId = c.DogId
         INNER JOIN Tutors t ON t.TutorId = d.TutorId
@@ -101,35 +101,35 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
 
     public Task<Response> AddWalkAsync(WalkingService service) => InsertAsync(
         """
-        INSERT INTO WalkingService (DogId, PetSitterId, Date, Price, ServicePaid, ServiceDone)
-        VALUES (@DogId, @PetSitterId, @Date, @Price, @ServicePaid, @ServiceDone)
+        INSERT INTO WalkingService (DogId, PetSitterId, Date, Price, Discount, ServicePaid, ServiceDone)
+        VALUES (@DogId, @PetSitterId, @Date, @Price, @Discount, @ServicePaid, @ServiceDone)
         """,
-        new { service.DogId, service.PetSitterId, service.Date, service.Price, service.ServicePaid, service.ServiceDone });
+        new { service.DogId, service.PetSitterId, service.Date, service.Price, service.Discount, service.ServicePaid, service.ServiceDone });
 
     public Task<Response> AddSittingAsync(PetSittingService service) => InsertAsync(
         """
-        INSERT INTO PetSittingService (DogId, PetSitterId, Date, Price, ServicePaid, ServiceDone)
-        VALUES (@DogId, @PetSitterId, @Date, @Price, @ServicePaid, @ServiceDone)
+        INSERT INTO PetSittingService (DogId, PetSitterId, Date, Price, Discount, ServicePaid, ServiceDone)
+        VALUES (@DogId, @PetSitterId, @Date, @Price, @Discount, @ServicePaid, @ServiceDone)
         """,
-        new { service.DogId, service.PetSitterId, service.Date, service.Price, service.ServicePaid, service.ServiceDone });
+        new { service.DogId, service.PetSitterId, service.Date, service.Price, service.Discount, service.ServicePaid, service.ServiceDone });
 
     public Task<Response> AddHotelAsync(PetHotelService service) => InsertAsync(
         """
-        INSERT INTO PetHotelService (DogId, PetSitterId, StartDate, EndDate, PricePerDay, ExtraCharge, RequiresWalking, ServicePaid, ServiceDone)
-        VALUES (@DogId, @PetSitterId, @StartDate, @EndDate, @PricePerDay, @ExtraCharge, @RequiresWalking, @ServicePaid, @ServiceDone)
+        INSERT INTO PetHotelService (DogId, PetSitterId, StartDate, EndDate, PricePerDay, ExtraCharge, Discount, RequiresWalking, ServicePaid, ServiceDone)
+        VALUES (@DogId, @PetSitterId, @StartDate, @EndDate, @PricePerDay, @ExtraCharge, @Discount, @RequiresWalking, @ServicePaid, @ServiceDone)
         """,
-        new { service.DogId, service.PetSitterId, service.StartDate, service.EndDate, service.PricePerDay, service.ExtraCharge, service.RequiresWalking, service.ServicePaid, service.ServiceDone });
+        new { service.DogId, service.PetSitterId, service.StartDate, service.EndDate, service.PricePerDay, service.ExtraCharge, service.Discount, service.RequiresWalking, service.ServicePaid, service.ServiceDone });
 
     public Task<Response> AddDayCareAsync(DayCareService service) => InsertAsync(
         """
-        INSERT INTO DayCareService (DogId, PetSitterId, Date, Price, RequiresWalking, ServicePaid, ServiceDone)
-        VALUES (@DogId, @PetSitterId, @Date, @Price, @RequiresWalking, @ServicePaid, @ServiceDone)
+        INSERT INTO DayCareService (DogId, PetSitterId, Date, Price, Discount, RequiresWalking, ServicePaid, ServiceDone)
+        VALUES (@DogId, @PetSitterId, @Date, @Price, @Discount, @RequiresWalking, @ServicePaid, @ServiceDone)
         """,
-        new { service.DogId, service.PetSitterId, service.Date, service.Price, service.RequiresWalking, service.ServicePaid, service.ServiceDone });
+        new { service.DogId, service.PetSitterId, service.Date, service.Price, service.Discount, service.RequiresWalking, service.ServicePaid, service.ServiceDone });
 
     /// <summary>
-    /// Saves an edit to an existing booking: its date, its price, and for a hotel stay the
-    /// check-out date and whether walks are included.
+    /// Saves an edit to an existing booking: its date, its price, its discount, and for a hotel
+    /// stay the check-out date and whether walks are included.
     /// </summary>
     /// <remarks>
     /// The dog and the kind are not editable. Each kind lives in its own table, so changing one
@@ -145,28 +145,28 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
         var (sql, param) = service.Kind switch
         {
             ServiceKind.Walk => (
-                "UPDATE WalkingService SET Date = @Date, Price = @Price WHERE WalkingServiceId = @ServiceId",
-                (object)new { service.Date, service.Price, service.ServiceId }),
+                "UPDATE WalkingService SET Date = @Date, Price = @Price, Discount = @Discount WHERE WalkingServiceId = @ServiceId",
+                (object)new { service.Date, service.Price, service.Discount, service.ServiceId }),
             ServiceKind.Sitting => (
-                "UPDATE PetSittingService SET Date = @Date, Price = @Price WHERE PetSittingServiceId = @ServiceId",
-                new { service.Date, service.Price, service.ServiceId }),
+                "UPDATE PetSittingService SET Date = @Date, Price = @Price, Discount = @Discount WHERE PetSittingServiceId = @ServiceId",
+                new { service.Date, service.Price, service.Discount, service.ServiceId }),
             ServiceKind.Hotel => (
                 """
                 UPDATE PetHotelService
-                SET StartDate = @Date, EndDate = @EndDate, PricePerDay = @Price, ExtraCharge = @ExtraCharge, RequiresWalking = @RequiresWalking
+                SET StartDate = @Date, EndDate = @EndDate, PricePerDay = @Price, ExtraCharge = @ExtraCharge, Discount = @Discount, RequiresWalking = @RequiresWalking
                 WHERE PetHotelServiceId = @ServiceId
                 """,
-                new { service.Date, service.EndDate, service.Price, service.ExtraCharge, service.RequiresWalking, service.ServiceId }),
+                new { service.Date, service.EndDate, service.Price, service.ExtraCharge, service.Discount, service.RequiresWalking, service.ServiceId }),
 
             // Date is normalised to midnight: day-care has no time of day, so an edit must not
             // let one back in through the date picker.
             ServiceKind.DayCare => (
                 """
                 UPDATE DayCareService
-                SET Date = @Date, Price = @Price, RequiresWalking = @RequiresWalking
+                SET Date = @Date, Price = @Price, Discount = @Discount, RequiresWalking = @RequiresWalking
                 WHERE DayCareServiceId = @ServiceId
                 """,
-                new { Date = service.Date.Date, service.Price, service.RequiresWalking, service.ServiceId }),
+                new { Date = service.Date.Date, service.Price, service.Discount, service.RequiresWalking, service.ServiceId }),
             _ => throw new ArgumentOutOfRangeException(nameof(service)),
         };
 
@@ -323,14 +323,6 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
         }
     }
 
-    /// <summary>
-    /// Billing for one month, counting only services already marked paid. Hotel stays contribute
-    /// their daily rate, matching how the price is entered and shown.
-    /// </summary>
-    /// <param name="month">
-    /// The month to scope to, 1-12, or a non-positive value to total the whole <paramref name="year"/>
-    /// instead — the sentinel the month picker's "whole year" entry carries.
-    /// </param>
     public async Task<MonthlyIncome> GetMonthlyIncomeAsync(int petSitterId, int year, int month)
     {
         var services = await ListForPetSitterAsync(petSitterId).ConfigureAwait(false);

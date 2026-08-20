@@ -249,27 +249,83 @@
                                         Text="{Binding ExtraChargeLabel}" />
                                 </Grid>
                             </Border>
-                            <Border
-                                BorderBrush="{StaticResource ColorDivider}"
-                                BorderThickness="0,2,0,0"
-                                Padding="0,20,0,20">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <TextBlock
-                                        FontFamily="{StaticResource FontBody}"
-                                        FontSize="28"
-                                        Foreground="{StaticResource ColorAccentDark700}"
-                                        LetterSpacing="1"
-                                        Text="TOTAL"
-                                        VerticalAlignment="Center" />
-                                    <TextBlock
-                                        FontFamily="{StaticResource FontHeading}"
-                                        FontSize="53"
-                                        Foreground="{StaticResource ColorAccentDark700}"
-                                        Grid.Column="1"
-                                        Text="{Binding TotalLabel}" />
-                                </Grid>
-                            </Border>
                         </StackPanel>
+
+                        <!--
+                            What the booking came to before the discount. Only worth a row on a
+                            discounted stay, where the price above is a daily rate and the
+                            arithmetic would otherwise be invisible — everywhere else the subtotal
+                            is the price already on screen.
+                        -->
+                        <Border
+                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderThickness="0,2,0,0"
+                            IsVisible="{Binding ShowsSubtotal}"
+                            Padding="0,20,0,20">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="28"
+                                    Foreground="{StaticResource ColorTextMuted55}"
+                                    LetterSpacing="1"
+                                    Text="SUBTOTAL" />
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="34"
+                                    Foreground="{StaticResource ColorText}"
+                                    Grid.Column="1"
+                                    Text="{Binding SubtotalLabel}" />
+                            </Grid>
+                        </Border>
+
+                        <!--  The rate rides in the caption so the money stays aligned with the amounts above it.  -->
+                        <Border
+                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderThickness="0,2,0,0"
+                            IsVisible="{Binding HasDiscount}"
+                            Padding="0,20,0,20">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="28"
+                                    Foreground="{StaticResource ColorTextMuted55}"
+                                    LetterSpacing="1"
+                                    Text="{Binding DiscountFieldLabel}"
+                                    VerticalAlignment="Center" />
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="34"
+                                    Foreground="{StaticResource ColorAccent}"
+                                    Grid.Column="1"
+                                    Text="{Binding DiscountAmountLabel}" />
+                            </Grid>
+                        </Border>
+
+                        <!--
+                            A stay always needs this because its price is a rate; anything else
+                            needs it only once a discount has moved the total off the price above.
+                        -->
+                        <Border
+                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderThickness="0,2,0,0"
+                            IsVisible="{Binding ShowsTotal}"
+                            Padding="0,20,0,20">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="28"
+                                    Foreground="{StaticResource ColorAccentDark700}"
+                                    LetterSpacing="1"
+                                    Text="TOTAL"
+                                    VerticalAlignment="Center" />
+                                <TextBlock
+                                    FontFamily="{StaticResource FontHeading}"
+                                    FontSize="53"
+                                    Foreground="{StaticResource ColorAccentDark700}"
+                                    Grid.Column="1"
+                                    Text="{Binding TotalLabel}" />
+                            </Grid>
+                        </Border>
 
                         <!--
                             The settled/outstanding split, shown only while a service is part
@@ -496,6 +552,22 @@
                                 FontStyle="Italic"
                                 Foreground="{StaticResource ColorTextMuted45}"
                                 Text="Cobrado uma vez, somado ao total das diárias."
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <!--  A rate rather than an amount, so it keeps holding if the price is edited later.  -->
+                        <StackPanel Spacing="10">
+                            <TextBlock Classes="FormLabel" Text="Desconto (%)" />
+                            <TextBox
+                                Classes="FormInput"
+                                PlaceholderText="ex.: 10 para 10% de desconto"
+                                Text="{Binding EditDiscount}" />
+                            <TextBlock
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="25"
+                                FontStyle="Italic"
+                                Foreground="{StaticResource ColorTextMuted45}"
+                                Text="Deixe em branco para cobrar o preço cheio."
                                 TextWrapping="Wrap" />
                         </StackPanel>
 

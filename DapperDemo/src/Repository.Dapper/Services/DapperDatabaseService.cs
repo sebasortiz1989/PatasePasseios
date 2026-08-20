@@ -107,6 +107,10 @@ public sealed class DapperDatabaseService
         {
             AddColumnIfMissing(connection, table, "AmountSettled", "DECIMAL(10, 2) NOT NULL DEFAULT 0");
             AddColumnIfMissing(connection, table, "CreditApplied", "DECIMAL(10, 2) NOT NULL DEFAULT 0");
+
+            // A percentage off the booking's total. Additive with a zero default, so every
+            // existing booking keeps costing exactly what it did before this column arrived.
+            AddColumnIfMissing(connection, table, "Discount", "DECIMAL(5, 2) NOT NULL DEFAULT 0");
         }
     }
 
@@ -169,6 +173,9 @@ public sealed class DapperDatabaseService
                      PetSitterId INTEGER NOT NULL,
                      Date DATETIME NOT NULL,
                      Price DECIMAL(10, 2) NOT NULL,
+                     -- A percentage off this booking's total, 0 to 100. Stored as the rate rather
+                     -- than the amount so it keeps meaning the same thing if the price is edited.
+                     Discount DECIMAL(5, 2) NOT NULL DEFAULT 0,
                      ServicePaid BOOLEAN,
                      -- Whether the walk actually happened. Independent of ServicePaid: work is
                      -- often done before it is settled, and sometimes settled before it is done.
@@ -182,6 +189,9 @@ public sealed class DapperDatabaseService
                      PetSitterId INTEGER NOT NULL,
                      Date DATETIME NOT NULL,
                      Price DECIMAL(10, 2) NOT NULL,
+                     -- A percentage off this booking's total, 0 to 100. Stored as the rate rather
+                     -- than the amount so it keeps meaning the same thing if the price is edited.
+                     Discount DECIMAL(5, 2) NOT NULL DEFAULT 0,
                      ServicePaid BOOLEAN,
                      ServiceDone BOOLEAN NOT NULL DEFAULT 0,
                      FOREIGN KEY (DogId) REFERENCES Dogs(DogId),
@@ -198,6 +208,9 @@ public sealed class DapperDatabaseService
                      PricePerDay DECIMAL(10, 2) NOT NULL,
                      -- Anything charged on top of the nightly rate, such as a late pick-up.
                      ExtraCharge DECIMAL(10, 2) NOT NULL DEFAULT 0,
+                     -- A percentage off this booking's total, 0 to 100. Stored as the rate rather
+                     -- than the amount so it keeps meaning the same thing if the price is edited.
+                     Discount DECIMAL(5, 2) NOT NULL DEFAULT 0,
                      RequiresWalking BOOLEAN NOT NULL DEFAULT 0,
                      ServicePaid BOOLEAN,
                      ServiceDone BOOLEAN NOT NULL DEFAULT 0,
@@ -213,6 +226,9 @@ public sealed class DapperDatabaseService
                      Date DATETIME NOT NULL,
                      Price DECIMAL(10, 2) NOT NULL,
                      RequiresWalking BOOLEAN NOT NULL DEFAULT 0,
+                     -- A percentage off this booking's total, 0 to 100. Stored as the rate rather
+                     -- than the amount so it keeps meaning the same thing if the price is edited.
+                     Discount DECIMAL(5, 2) NOT NULL DEFAULT 0,
                      ServicePaid BOOLEAN,
                      ServiceDone BOOLEAN NOT NULL DEFAULT 0,
                      FOREIGN KEY (DogId) REFERENCES Dogs(DogId),

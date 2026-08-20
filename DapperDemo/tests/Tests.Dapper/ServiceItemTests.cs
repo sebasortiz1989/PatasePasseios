@@ -16,7 +16,9 @@ public class ServiceItemTests
         bool paid = false,
         bool done = false,
         decimal settled = 0m,
-        decimal credit = 0m) => new()
+        decimal credit = 0m,
+        decimal discount = 0m,
+        decimal extra = 0m) => new()
         {
             ServiceId = 1,
             Kind = kind,
@@ -26,6 +28,8 @@ public class ServiceItemTests
             Date = new DateTime(2026, 8, 1, 9, 0, 0),
             EndDate = end,
             Price = price,
+            ExtraCharge = extra,
+            Discount = discount,
             ServicePaid = paid,
             ServiceDone = done,
             AmountSettled = settled,
@@ -172,5 +176,92 @@ public class ServiceItemTests
         Assert.Equal(0m, service.Outstanding);
         Assert.Equal(0m, service.AmountDue);
         Assert.Equal(0m, service.AmountUpcoming);
+    }
+
+    [Fact]
+    public void NoDiscountLeavesTheTotalAlone()
+    {
+        var service = Service(ServiceKind.Sitting, 100m);
+
+        Assert.Equal(0m, service.DiscountAmount);
+        Assert.Equal(100m, service.Subtotal);
+        Assert.Equal(100m, service.Total);
+    }
+
+    [Fact]
+    public void ADiscountComesOffTheTotal()
+    {
+        var service = Service(ServiceKind.Sitting, 100m, discount: 10m);
+
+        Assert.Equal(100m, service.Subtotal);
+        Assert.Equal(10m, service.DiscountAmount);
+        Assert.Equal(90m, service.Total);
+    }
+
+    [Fact]
+    public void AStayIsDiscountedOnNightsTimesRatePlusExtras()
+    {
+        // Three nights at 80 plus a 30 late pick-up is 270; 10% off is 27.
+        var service = Service(
+            ServiceKind.Hotel,
+            80m,
+            end: new DateTime(2026, 8, 4, 9, 0, 0),
+            discount: 10m,
+            extra: 30m);
+
+        Assert.Equal(270m, service.Subtotal);
+        Assert.Equal(27m, service.DiscountAmount);
+        Assert.Equal(243m, service.Total);
+    }
+
+    [Fact]
+    public void TheDiscountIsRoundedToCentavos()
+    {
+        // 15% of 33.33 is 4.9995, which must not reach the bill as a third of a centavo.
+        var service = Service(ServiceKind.Sitting, 33.33m, discount: 15m);
+
+        Assert.Equal(5.00m, service.DiscountAmount);
+        Assert.Equal(28.33m, service.Total);
+    }
+
+    [Fact]
+    public void AFullDiscountMakesTheServiceFree()
+    {
+        var service = Service(ServiceKind.Walk, 40m, discount: 100m, done: true);
+
+        Assert.Equal(0m, service.Total);
+        Assert.Equal(0m, service.AmountDue);
+    }
+
+    [Theory]
+    [InlineData(-20)]
+    [InlineData(150)]
+    public void ANonsenseRateCannotPushTheTotalOutOfRange(decimal discount)
+    {
+        // Nothing stops a hand-edited database holding these; the total must stay between free
+        // and full price either way.
+        var service = Service(ServiceKind.Sitting, 100m, discount: discount);
+
+        Assert.InRange(service.Total, 0m, 100m);
+    }
+
+    [Fact]
+    public void WhatIsBilledIsTheDiscountedAmount()
+    {
+        // The point of the whole change: everything downstream reads Total, so an executed and
+        // unpaid discounted booking is owed at its discounted price.
+        var service = Service(ServiceKind.Sitting, 200m, done: true, discount: 25m);
+
+        Assert.Equal(150m, service.Outstanding);
+        Assert.Equal(150m, service.AmountDue);
+    }
+
+    [Fact]
+    public void SettlingADiscountedServiceClearsItAtTheDiscountedPrice()
+    {
+        var service = Service(ServiceKind.Sitting, 200m, done: true, discount: 25m, settled: 150m);
+
+        Assert.Equal(0m, service.Outstanding);
+        Assert.Equal(0m, service.AmountDue);
     }
 }
