@@ -45,8 +45,46 @@ model state that the View layer cannot reach. `ConfirmRequest`
 confirmations are a bool plus two commands, which suits a question the *user*
 starts, not one raised mid-operation.
 
+## The automatic weekly backup
+
+Separate from the manual export above, and one-way by design. `BackupArchive` is a
+whole-database snapshot, so two devices uploading to one destination would be
+last-writer-wins with no possible merge — this pushes copies out, and restore stays
+the deliberate manual act it always was. Never label it "sincronizar" in the UI.
+
+- `CloudBackupSchedule` (data layer) is the pure rule: due when the last upload is
+  over `UploadInterval` (7 days) old **and** the last prompt is over `RetryInterval`
+  (1 day) old, so declining defers by a day rather than a week. A stamp in the future
+  counts as elapsed — otherwise a clock that moved back suspends backups until real
+  time catches up.
+- `CloudBackupState` persists it as JSON beside the database, not as a column on
+  PetSitter: the question is "when did *this device* last upload", which a restore
+  carrying another device's answer would get wrong. Reads are forgiving — missing or
+  corrupt reads as `Empty`, which schedules a backup rather than suppressing one.
+  Parsed with `JsonDocument`, because this assembly is AOT-compiled for the iOS head.
+- `CloudBackupService` (Viewmodel) builds the archive into a temp file and uploads
+  from it — a cloud upload wants a length up front and may have to retry, neither of
+  which a stream being zipped as it goes can offer. The upload stamp only moves on
+  success; the prompt stamp moves either way.
+- `CloudBackupStore` is the destination abstraction. The only implementation today is
+  `LocalFolderBackupStore`, a **stand-in** until there is a Google Drive OAuth client
+  id. It sits in `Infrastructure/Services/` rather than `View/Services/` with the
+  other implementations of Viewmodel abstractions, because it needs `AppStorage` and
+  the View layer deliberately does not reference the data layer. The Drive store will
+  need a TopLevel for the sign-in browser, so that one does belong in View.
+- The prompt lives on **`MainView`**, not Perfil, so it can appear over whichever tab
+  the sitter actually opened; its `ConfirmDialog` carries `Grid.RowSpan="2"` to cover
+  the navigation bar. `MainViewModel.OnRunStarting` fires the check and does not await
+  it. The prompted run reports nothing on success — Perfil is where backup state is on
+  show, and where `SendCloudBackupCommand` runs one by hand and reports properly.
+
+Everything is stored under one name (`patas-backup.zip`) and replaced each run: one
+file that is always the newest, rather than a folder growing by a database and every
+photo every week. The cost is that a corrupted database uploaded over the only copy leaves
+nothing to fall back on — a second "anterior" slot is the cheap mitigation if that
+ever matters.
+
 ---
 
 Related: `references/styling-design-canvas.md` (`ConfirmDialog` placement) and
-`references/data-layer-schema.md` (`DapperDatabaseService`/`DatabasePath`). Mirrored for Cursor
-in `.cursor/rules/backup-restore-export.mdc` — keep the two in step.
+`references/data-layer-schema.md` (`DapperDatabaseService`/`DatabasePath`).

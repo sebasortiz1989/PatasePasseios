@@ -650,6 +650,28 @@
                             Text="Importar substitui tudo o que está neste aparelho e pede um novo login."
                             TextWrapping="Wrap" />
 
+                        <!--
+                            The automatic weekly backup. The prompt itself belongs to MainView, so
+                            it can appear over any tab; this is where its state is on show and
+                            where it can be run without waiting for the next prompt.
+                        -->
+                        <TextBlock
+                            FontFamily="{StaticResource FontBody}"
+                            FontSize="25"
+                            FontStyle="Italic"
+                            Foreground="{StaticResource ColorTextMuted45}"
+                            Margin="0,20,0,0"
+                            Text="{Binding CloudBackupLabel}"
+                            TextWrapping="Wrap" />
+
+                        <buttons:VButton
+                            Classes="BtnSecondary"
+                            Command="{Binding SendCloudBackupCommand}"
+                            Height="88"
+                            HorizontalAlignment="Stretch"
+                            Margin="0,8,0,0"
+                            VText="Enviar backup agora" />
+
                         <TextBlock
                             Classes="FormMsg"
                             Classes.Error="{Binding BackupMsgIsError}"

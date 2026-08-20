@@ -124,6 +124,22 @@
                 </Grid>
             </Border>
 
+            <!--
+                Asked shortly after login when the last backup is over a week old. It lives on this
+                screen rather than on Perfil because it has to be able to appear over whichever tab
+                the sitter actually opened; RowSpan covers the navigation bar so the question cannot
+                be walked away from by tapping another tab.
+            -->
+            <components:ConfirmDialog
+                CancelCommand="{Binding BackupRequest.CancelCommand}"
+                CancelText="Agora não"
+                ConfirmCommand="{Binding BackupRequest.ConfirmCommand}"
+                ConfirmText="Enviar"
+                Grid.RowSpan="2"
+                IsOpen="{Binding BackupRequest.IsOpen}"
+                Message="{Binding BackupRequest.Message}"
+                Title="Backup automático" />
+
         </Grid>
     </components:DesignCanvas>
 

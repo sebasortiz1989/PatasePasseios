@@ -34,6 +34,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     private readonly AppSession session;
     private readonly ImagePicker imagePicker;
     private readonly BackupArchive backupArchive;
+    private readonly CloudBackupService cloudBackup;
     private readonly FileExportDialog fileExportDialog;
     private readonly EventHandler dataChangedHandler;
 
@@ -67,6 +68,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         ReportExporter reportExporter,
         AppSession session,
         BackupArchive backupArchive,
+        CloudBackupService cloudBackup,
         FileExportDialog fileExportDialog,
         ImagePicker imagePicker)
     {
@@ -78,6 +80,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         this.reportExporter = reportExporter;
         this.session = session;
         this.backupArchive = backupArchive;
+        this.cloudBackup = cloudBackup;
         this.fileExportDialog = fileExportDialog;
 
         // Billing totals depend on services marked paid elsewhere (Agenda, service detail).
@@ -97,6 +100,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         ExportSummaryCommand = new SynchronizedCommand(ExportSummary, SynchronizationBehavior.Discard, true);
         ExportBackupCommand = new SynchronizedCommand(ExportBackup, SynchronizationBehavior.Discard, true);
         ImportBackupCommand = new SynchronizedCommand(ImportBackup, SynchronizationBehavior.Discard, true);
+        SendCloudBackupCommand = new SynchronizedCommand(SendCloudBackup, SynchronizationBehavior.Discard, true);
         DismissInvalidBackupCommand = new SynchronizedCommand(() => ShowInvalidBackupAlert = false, SynchronizationBehavior.Discard, true);
 
         // "Ano todo" first, then the twelve months — the same list TutorDetail and DogDetail pick
@@ -155,6 +159,8 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
 
     public ICommand ImportBackupCommand { get; }
 
+    public ICommand SendCloudBackupCommand { get; }
+
     public ICommand DismissInvalidBackupCommand { get; }
 
     /// <summary>
@@ -181,6 +187,9 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     public bool HasBackupMsg => !string.IsNullOrEmpty(BackupMsg);
 
     public bool BackupMsgIsError { get; private set; }
+
+    /// <summary>Gets when the automatic backup last ran, as the sitter reads it.</summary>
+    public string CloudBackupLabel { get; private set; } = string.Empty;
 
     /// <summary>Gets the app version, shown at the foot of the profile screen.</summary>
     public string VersionLabel => AppVersion.Label;
@@ -374,6 +383,8 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
 
             // Chargeable rather than merely unpaid: an unexecuted booking is not money owed.
             PendingCountLabel = services.Count(s => s.AmountDue > 0m).ToString(CultureInfo.InvariantCulture);
+
+            await RefreshCloudBackupLabelAsync().WithSync();
         }
         finally
         {
@@ -634,6 +645,37 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         BackupMsg = result == Response.Successful
             ? "Backup exportado."
             : "Não foi possível exportar o backup.";
+    }
+
+    /// <summary>
+    /// Sends a backup to the automatic destination now, rather than waiting for the weekly prompt.
+    /// </summary>
+    /// <remarks>
+    /// Reports its outcome, unlike the prompted run at login: this one the sitter started, so
+    /// silence would read as nothing having happened.
+    /// </remarks>
+    private async Task SendCloudBackup()
+    {
+        BackupMsgIsError = false;
+        BackupMsg = "Enviando backup…";
+
+        var result = await cloudBackup.RunAsync().WithSync();
+
+        BackupMsgIsError = result != Response.Successful;
+        BackupMsg = result == Response.Successful
+            ? $"Backup enviado para a {cloudBackup.DestinationName}."
+            : "Não foi possível enviar o backup.";
+
+        await RefreshCloudBackupLabelAsync().WithSync();
+    }
+
+    private async Task RefreshCloudBackupLabelAsync()
+    {
+        var last = await cloudBackup.LastUploadAsync().WithSync();
+
+        CloudBackupLabel = last == null
+            ? $"Nenhum backup automático enviado ainda. Destino: {cloudBackup.DestinationName}."
+            : $"Último backup automático: {last.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)}.";
     }
 
     /// <summary>
