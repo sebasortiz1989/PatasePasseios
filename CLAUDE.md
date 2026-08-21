@@ -177,9 +177,18 @@ implementation in `DapperDemo.View/Services/`, registered
 | `UriLauncher` | `AvaloniaUriLauncher` | opening the Google Calendar link |
 | `FileExportDialog` | `StorageProviderFileExportDialog` | report and backup save/open dialogs |
 | `DisplaySettings` | `AvaloniaDisplaySettings` | applying the theme and the text-size ramp |
+| `ShareSheet` | `UnsupportedShareSheet` / `AndroidShareSheet` | sending a rendered report to another app |
 
 Follow it for the next one. The interfaces are not `I`-prefixed, matching the
 framework's convention.
+
+`ShareSheet` is the pattern for a capability **one head has and the others do not**,
+which is different from the rows above. The View layer registers the do-nothing
+implementation so every head resolves something, and `DroidContainerBuilder` yields
+its own builder *after* `DapperDemoInfrastructureContainerBuilder` to replace it —
+the framework's container takes the later registration for a service type. Screens
+ask `CanShare` and hide the button rather than offering one that fails. Put the next
+phone-only capability in `DapperDemo.Android` and register it the same way.
 
 ## Current state and known gaps
 
@@ -210,6 +219,25 @@ Say what is real — several things here are not. Verified 2026-08-21.
   constant string "pasta escolhida", which named nothing. The manual "Salvar backup em
   outro lugar" is a deliberately separate one-off and says so; it does not touch the
   automatic destination.
+- **A screen-covering overlay must tell the navigation bar to hide.** The bar is a
+  child of `MainView`, added *after* the control hosting the tabs, so it paints over
+  everything a tab draws — a tab's own dialogs and full-screen images included.
+  Nothing inside a tab can get above it: `ZIndex` orders siblings within one panel
+  and the bar is in a different parent. Avalonia's `OverlayLayer` would, but it sits
+  on the TopLevel and therefore outside DesignCanvas' scale, which is the same reason
+  this app has no popups. So `ConfirmDialog`, `PhotoViewer` and `ReportPreview` each
+  report their open state to `Components/ScreenOverlay`, and `MainView` hides the bar
+  while anything is covering. A new overlay component has to do the same or it will
+  render with the tab bar sitting on top of it.
+- **A report is shown before it is saved.** Exporting no longer opens a save dialog:
+  `ReportExporter.RenderAsync` writes the PNG to the temporary folder, the
+  `ReportPreview` component puts it on screen, and Compartilhar / Salvar sit beneath
+  it — the order a phone uses for a screenshot. Sharing needs nothing saved, because
+  the file already exists in the cache by the time the sheet opens. The preview
+  deletes its file on close. Render and save are the whole contract — the older
+  one-shot `ExportAsync` is gone. **Untested on Android**: the FileProvider authority, the manifest
+  `<provider>` and `Resources/xml/file_paths.xml` all have to agree, and none of it
+  has run — see the note in `AndroidShareSheet`.
 - **Photos are reduced on save, in the picker.** `PhotoDownscaler.Reduce` caps the
   longest edge at 1280 and re-encodes JPEG at quality 85, and
   `StorageProviderImagePicker` runs it before handing the stream on — so dog photos

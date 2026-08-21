@@ -74,5 +74,24 @@ public partial class PhotoViewer : UserControl
         {
             SetValue(ActivePathProperty, IsOpen ? Path : null);
         }
+
+        if (change.Property == IsOpenProperty)
+        {
+            ScreenOverlay.Current.Set(this, IsOpen);
+        }
+    }
+
+    /// <inheritdoc/>
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        ScreenOverlay.Current.Set(this, IsOpen);
+    }
+
+    /// <inheritdoc/>
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnDetachedFromVisualTree(e);
+        ScreenOverlay.Current.Set(this, false);
     }
 }

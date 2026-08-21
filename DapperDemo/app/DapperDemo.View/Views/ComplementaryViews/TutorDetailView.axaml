@@ -644,6 +644,16 @@
             Message="Os serviços quitados por ele voltam a ficar em aberto e o crédito que ele gerou é devolvido. Os serviços em si não são excluídos."
             Title="Excluir este pagamento?" />
 
+        <components:ReportPreview
+            CanShare="{Binding Preview.CanShare}"
+            CloseCommand="{Binding Preview.CloseCommand}"
+            HasMessage="{Binding Preview.HasMessage}"
+            ImagePath="{Binding Preview.ImagePath}"
+            IsOpen="{Binding Preview.IsOpen}"
+            Message="{Binding Preview.Message}"
+            SaveCommand="{Binding Preview.SaveCommand}"
+            ShareCommand="{Binding Preview.ShareCommand}" />
+
         <components:ConfirmDialog
             CancelCommand="{Binding ReplaceRequest.CancelCommand}"
             ConfirmCommand="{Binding ReplaceRequest.ConfirmCommand}"

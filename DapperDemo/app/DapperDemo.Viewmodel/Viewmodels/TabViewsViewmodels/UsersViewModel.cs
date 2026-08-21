@@ -69,6 +69,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         RepositoryTutors repositoryTutors,
         RepositoryPetSitter repositoryPetSitter,
         ReportExporter reportExporter,
+        ShareSheet shareSheet,
         AppSession session,
         BackupArchive backupArchive,
         CloudBackupService cloudBackup,
@@ -85,6 +86,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         this.repositoryTutors = repositoryTutors;
         this.repositoryPetSitter = repositoryPetSitter;
         this.reportExporter = reportExporter;
+        Preview = new ReportPreview(reportExporter, shareSheet);
         this.session = session;
         this.backupArchive = backupArchive;
         this.cloudBackup = cloudBackup;
@@ -117,6 +119,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         SetUpCloudBackupCommand = new SynchronizedCommand(SetUpCloudBackup, SynchronizationBehavior.Discard, true);
         OpenSettingsCommand = new SynchronizedCommand(() => currentView.Show(settingsView), SynchronizationBehavior.Discard, true);
         DismissInvalidBackupCommand = new SynchronizedCommand(() => ShowInvalidBackupAlert = false, SynchronizationBehavior.Discard, true);
+        DismissBackupDoneCommand = new SynchronizedCommand(() => ShowBackupDoneAlert = false, SynchronizationBehavior.Discard, true);
 
         // "Ano todo" first, then the twelve months — the same list TutorDetail and DogDetail pick
         // their period from, so a sitter learns one convention across every billing screen.
@@ -193,6 +196,9 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
 
     public ICommand DismissInvalidBackupCommand { get; }
 
+    /// <summary>Gets the command closing the "backup saved" confirmation.</summary>
+    public ICommand DismissBackupDoneCommand { get; }
+
     /// <summary>
     /// Gets the "replace the file already there?" question, asked mid-export on the platforms where
     /// the app names the file itself. Bound to its own dialog in the view.
@@ -200,11 +206,22 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     public ConfirmRequest ReplaceRequest { get; } = new();
 
     /// <summary>
+    /// Gets the rendered month summary, held on screen with Compartilhar and Salvar beside it.
+    /// </summary>
+    public ReportPreview Preview { get; }
+
+    /// <summary>
     /// Gets a value indicating whether the "not a valid backup" alert is up. A popup rather than
     /// the inline message for this one case: it is the only outcome where the user picked a file
     /// and nothing happened, so it has to be impossible to miss.
     /// </summary>
     public bool ShowInvalidBackupAlert { get; private set; }
+
+    /// <summary>Gets a value indicating whether the "backup saved" confirmation is up.</summary>
+    public bool ShowBackupDoneAlert { get; private set; }
+
+    /// <summary>Gets where the backup went and when, e.g. "Salvo em "Documents/Patas" em 21/08/2026 às 14:30.".</summary>
+    public string BackupDoneMessage { get; private set; } = string.Empty;
 
     /// <summary>Gets the title of the alert shown when a backup could not be imported.</summary>
     public string InvalidBackupTitle { get; private set; } = string.Empty;
@@ -666,11 +683,14 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         var periodSlug = isWholeYear
             ? year
             : $"{year}-{(SelectedMonth?.Number ?? 1).ToString("00", CultureInfo.InvariantCulture)}";
-        var fileName = await reportExporter
-            .ExportAsync(report, $"faturamento-{periodSlug}", AskReplaceAsync)
+
+        // Shown rather than saved: the preview offers Compartilhar and Salvar side by side, so
+        // sending the month to someone no longer means writing a file first and going to find it.
+        var shown = await Preview
+            .ShowAsync(report, $"faturamento-{periodSlug}", AskReplaceAsync)
             .WithSync();
 
-        SummaryMsg = fileName == null ? string.Empty : $"Resumo salvo: {fileName}";
+        SummaryMsg = shown == Response.Successful ? string.Empty : "Não foi possível gerar o resumo.";
     }
 
     /// <summary>
@@ -698,6 +718,15 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         BackupMsg = result == Response.Successful
             ? $"Backup enviado para \"{destination}\"."
             : "Não foi possível enviar o backup.";
+
+        // A backup is the one action here with nothing on screen to show for it — the row's caption
+        // changes, but a sitter who just tapped it is owed a plain answer that it worked, and when.
+        if (result == Response.Successful)
+        {
+            var stamp = DateTime.Now.ToString("dd/MM/yyyy 'às' HH:mm", CultureInfo.InvariantCulture);
+            BackupDoneMessage = $"Salvo em \"{destination}\" em {stamp}.";
+            ShowBackupDoneAlert = true;
+        }
 
         await RefreshCloudBackupLabelAsync().WithSync();
     }

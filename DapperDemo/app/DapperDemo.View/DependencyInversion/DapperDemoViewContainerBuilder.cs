@@ -58,6 +58,11 @@ namespace DapperDemo.View.DependencyInversion
             // ReportDocument and never see a control.
             yield return CreateSingleton<PngReportExporter>().WithAbstractions();
 
+            // The share sheet the desktop heads get, which is none. The Android head registers a
+            // real one after this builder and the container takes the later registration, so this
+            // is the fallback rather than the answer everywhere.
+            yield return CreateSingleton<UnsupportedShareSheet>().WithAbstractions();
+
             yield return CreateTransient<LoginView>().WithAbstractions();
             yield return CreateTransient<SignUpView>().WithAbstractions();
             yield return CreateTransient<MainView>().WithAbstractions();

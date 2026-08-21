@@ -99,4 +99,32 @@ public partial class ConfirmDialog : UserControl
         get => GetValue(ShowCancelProperty);
         set => SetValue(ShowCancelProperty, value);
     }
+
+    /// <inheritdoc/>
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+
+        if (change.Property == IsOpenProperty)
+        {
+            ScreenOverlay.Current.Set(this, IsOpen);
+        }
+    }
+
+    /// <inheritdoc/>
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        ScreenOverlay.Current.Set(this, IsOpen);
+    }
+
+    /// <inheritdoc/>
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnDetachedFromVisualTree(e);
+
+        // A screen swapped away while its dialog was up takes the dialog with it, so it is no
+        // longer covering anything — without this the bar would stay hidden on the next screen.
+        ScreenOverlay.Current.Set(this, false);
+    }
 }

@@ -6,6 +6,7 @@ using DapperDemo.Repository.Dapper.Aggregates;
 using DapperDemo.Repository.Dapper.Dtos;
 using DapperDemo.Repository.Dapper.Services;
 using DapperDemo.Viewmodel.Reports;
+using DapperDemo.Viewmodel.Services;
 using DapperDemo.Viewmodel.Viewmodels.Session;
 using DapperDemo.Viewmodel.Viewmodels.Utils;
 using PropertyChanged;
@@ -68,6 +69,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         RepositoryPayments repositoryPayments,
         RepositoryPetSitter repositoryPetSitter,
         ReportExporter reportExporter,
+        ShareSheet shareSheet,
         AppSession session,
         Factory<PresenterBase<ServiceDetailViewModel, Unit, Unit>> serviceDetailFactory)
     {
@@ -77,6 +79,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         this.repositoryPayments = repositoryPayments;
         this.repositoryPetSitter = repositoryPetSitter;
         this.reportExporter = reportExporter;
+        Preview = new ReportPreview(reportExporter, shareSheet);
         this.session = session;
         this.currentView = currentView;
         ArgumentNullException.ThrowIfNull(dogDetailFactory);
@@ -263,6 +266,11 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     /// the app names the file itself. Bound to its own dialog in the view.
     /// </summary>
     public ConfirmRequest ReplaceRequest { get; } = new();
+
+    /// <summary>
+    /// Gets the rendered tutor summary, held on screen with Compartilhar and Salvar beside it.
+    /// </summary>
+    public ReportPreview Preview { get; }
 
     /// <summary>Gets the confirmation left after an image is written, or empty.</summary>
     public string ExportMsg { get; private set; } = string.Empty;
@@ -983,11 +991,14 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         await AddPaymentSectionAsync(report, chargeableTotal, upcomingTotal).WithSync();
 
         var slug = new string([.. Name.ToLowerInvariant().Select(c => char.IsLetterOrDigit(c) ? c : '-')]).Trim('-');
-        var fileName = await reportExporter
-            .ExportAsync(report, $"servicos-{slug}", AskReplaceAsync)
+
+        // Shown rather than saved. A tutor's bill is the report most likely to be sent straight to
+        // that tutor, so the share sheet is the point of the screen.
+        var shown = await Preview
+            .ShowAsync(report, $"servicos-{slug}", AskReplaceAsync)
             .WithSync();
 
-        ExportMsg = fileName == null ? string.Empty : $"Resumo salvo: {fileName}";
+        ExportMsg = shown == Response.Successful ? string.Empty : "Não foi possível gerar o resumo.";
     }
 
     /// <summary>

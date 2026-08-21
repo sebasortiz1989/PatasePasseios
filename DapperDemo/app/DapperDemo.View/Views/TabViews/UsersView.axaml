@@ -678,6 +678,15 @@
             IsOpen="{Binding ViewingPhoto}"
             Path="{Binding PhotoPath}" />
 
+        <!--  Alert form: one full-width button that only dismisses.  -->
+        <components:ConfirmDialog
+            ConfirmCommand="{Binding DismissBackupDoneCommand}"
+            ConfirmText="Pronto"
+            IsOpen="{Binding ShowBackupDoneAlert}"
+            Message="{Binding BackupDoneMessage}"
+            ShowCancel="False"
+            Title="Backup salvo" />
+
         <components:ConfirmDialog
             ConfirmCommand="{Binding DismissInvalidBackupCommand}"
             ConfirmText="Entendi"
@@ -685,6 +694,16 @@
             Message="{Binding InvalidBackupMessage}"
             ShowCancel="False"
             Title="{Binding InvalidBackupTitle}" />
+
+        <components:ReportPreview
+            CanShare="{Binding Preview.CanShare}"
+            CloseCommand="{Binding Preview.CloseCommand}"
+            HasMessage="{Binding Preview.HasMessage}"
+            ImagePath="{Binding Preview.ImagePath}"
+            IsOpen="{Binding Preview.IsOpen}"
+            Message="{Binding Preview.Message}"
+            SaveCommand="{Binding Preview.SaveCommand}"
+            ShareCommand="{Binding Preview.ShareCommand}" />
 
         <components:ConfirmDialog
             CancelCommand="{Binding ReplaceRequest.CancelCommand}"

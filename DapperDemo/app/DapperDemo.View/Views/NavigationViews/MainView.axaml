@@ -32,10 +32,16 @@
                 page colour every other floating control carries. Content passes underneath, which
                 is why each screen ends with its own bottom clearance.
             -->
+            <!--
+                Hidden while a screen is covered — see ScreenOverlay. The bar is added after the
+                control hosting the tabs, so it paints over whatever a tab draws; a dialog or a
+                full-screen photo cannot get above it from inside the tab.
+            -->
             <Border
                 Classes="ControlRing"
                 HorizontalAlignment="Center"
                 Margin="0,0,0,30"
+                Name="NavigationBar"
                 VerticalAlignment="Bottom">
                 <Border Classes="FloatingControl" Height="98" Width="650">
                 <Grid ColumnDefinitions="*,*,*,*,*">
