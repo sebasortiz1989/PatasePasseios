@@ -34,6 +34,7 @@ reuse if this is ever run again from scratch.
 | `type-mapping.md` | All 26 font sizes → roles. The ramp grew from five roles to seven; the reasoning is in §1. |
 | `hairline-rule.md` | How to tell a group separator from a page hairline while porting — the rule for the 87 `ColorDivider` uses. |
 | `ink-mapping.md` | Six muted steps → **three** roles, only two of which carry text. |
+| `corrections.md` | Where the delivery disagrees with the app. **The app is right in every case** — read this before following the build sheet on the tab bar, the screen headings or the copy. |
 | `canvas.png` | The whole canvas rendered, 2172 × 11996. |
 | `canvas/` | The live canvas and everything it loads. |
 

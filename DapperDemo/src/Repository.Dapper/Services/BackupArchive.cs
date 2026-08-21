@@ -148,6 +148,12 @@ public sealed class BackupArchive(DapperDatabaseService database)
             // user's own data.
             await Task.Run(() =>
             {
+                // Every connection this process has opened against the old file is dropped before
+                // it is replaced. A pooled connection outlives its using block, and one handed back
+                // out after the copy carries SQLite's page cache for a database that no longer
+                // exists — which reads as data the restore was supposed to bring in being absent.
+                SqliteConnection.ClearAllPools();
+
                 File.Copy(candidate, Database.DatabasePath, overwrite: true);
 
                 // The database this service was initialised against has just been replaced. An
@@ -158,6 +164,10 @@ public sealed class BackupArchive(DapperDatabaseService database)
 
                 using var zip = ZipFile.OpenRead(localCopy);
                 RestoreImages(zip);
+
+                // And again on the way out: the migration above opened its own pooled connection,
+                // against a file that is about to be read by the sign-in the user does next.
+                SqliteConnection.ClearAllPools();
             }).ConfigureAwait(false);
 
             return Response.Successful;

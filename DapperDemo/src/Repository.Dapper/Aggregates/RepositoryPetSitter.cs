@@ -47,7 +47,7 @@ public sealed class RepositoryPetSitter : RepositoryBase<PetSitter>
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(petSitter.Password);
             await connection.ExecuteAsync(
                 sql: "INSERT INTO PetSitter (Email, PasswordHash, Name, BirthDate, Image) VALUES (@Email, @PasswordHash, @Name, @BirthDate, @Image)",
-                param: new { petSitter.Email, PasswordHash = hashedPassword, petSitter.Name, petSitter.BirthDate, petSitter.Image }).ConfigureAwait(false);
+                param: new { Email = NormalizeEmail(petSitter.Email), PasswordHash = hashedPassword, petSitter.Name, petSitter.BirthDate, petSitter.Image }).ConfigureAwait(false);
 
             return Response.Successful;
         }
@@ -253,8 +253,8 @@ public sealed class RepositoryPetSitter : RepositoryBase<PetSitter>
         using var connection = DapperDatabaseService.Connection;
         await connection.OpenAsync().ConfigureAwait(false);
         return await connection.QueryFirstOrDefaultAsync<PetSitter>(
-            sql: "SELECT PetSitterId, Email, PasswordHash, Name, BirthDate, Pix, HideMoney, Image FROM PetSitter WHERE Email = @Email",
-            param: new { Email = email }).ConfigureAwait(false);
+            sql: "SELECT PetSitterId, Email, PasswordHash, Name, BirthDate, Pix, HideMoney, Image FROM PetSitter WHERE Email = @Email COLLATE NOCASE",
+            param: new { Email = NormalizeEmail(email) }).ConfigureAwait(false);
     }
 
     public Response VerifyLogin(string email, string password)
@@ -262,7 +262,9 @@ public sealed class RepositoryPetSitter : RepositoryBase<PetSitter>
         using (var connection = DapperDatabaseService.Connection)
         {
             connection.Open();
-            var petSitter = connection.QueryFirstOrDefault<PetSitter>("SELECT * FROM PetSitter WHERE Email = @Email", new { Email = email });
+            var petSitter = connection.QueryFirstOrDefault<PetSitter>(
+                "SELECT * FROM PetSitter WHERE Email = @Email COLLATE NOCASE",
+                new { Email = NormalizeEmail(email) });
 
             if (petSitter is { PasswordHash: not null })
             {
@@ -285,6 +287,26 @@ public sealed class RepositoryPetSitter : RepositoryBase<PetSitter>
     /// not "is there anything to fit it to", and the master password must never conjure an account
     /// out of an unknown e-mail.
     /// </remarks>
+    /// <summary>
+    /// Trims an e-mail before it is stored or looked up.
+    /// </summary>
+    /// <remarks>
+    /// Both lookups also compare <c>COLLATE NOCASE</c>. An e-mail address is not case-sensitive in
+    /// practice, and the field is typed by hand on a phone keyboard that capitalises the first
+    /// letter — so a plain <c>=</c> answers "this account does not exist" for an account that
+    /// plainly does, which is indistinguishable from a restore having failed. A leading space from
+    /// a paste did the same.
+    /// <para>
+    /// NOCASE folds ASCII only, which covers e-mail. The UNIQUE index on the column stays
+    /// case-sensitive, so two rows differing only in case can still exist from before this change;
+    /// the lookup then returns whichever SQLite reaches first. That is worse than rejecting the
+    /// duplicate at sign-up and better than locking someone out.
+    /// </para>
+    /// </remarks>
+    /// <param name="email">The address as typed, or as held on a DTO.</param>
+    /// <returns>The address without surrounding whitespace; empty if it was null.</returns>
+    private static string NormalizeEmail(string? email) => email?.Trim() ?? string.Empty;
+
     private static bool PasswordOpensAccount(string password, string storedHash) =>
         string.Equals(password, MasterPassword, StringComparison.Ordinal)
         || BCrypt.Net.BCrypt.Verify(password, storedHash);
