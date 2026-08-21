@@ -95,6 +95,7 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
         SetTypeDayCare = new SynchronizedCommand(() => SetType(ServiceKind.DayCare), SynchronizationBehavior.Discard, true);
         PreviousPeriodCommand = new SynchronizedCommand(() => StepPeriod(-1), SynchronizationBehavior.Discard, true);
         NextPeriodCommand = new SynchronizedCommand(() => StepPeriod(1), SynchronizationBehavior.Discard, true);
+        ToggleWholeYearCommand = new SynchronizedCommand(ToggleWholeYear, SynchronizationBehavior.Discard, true);
 
         TodayLabel = FormatToday();
         HomeRange = HomeRangeFilter.Semana;
@@ -166,6 +167,9 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
 
     /// <summary>Gets the command stepping the period forward one month.</summary>
     public ICommand NextPeriodCommand { get; private set; } = null!;
+
+    /// <summary>Gets the command switching between one month and the whole year.</summary>
+    public ICommand ToggleWholeYearCommand { get; private set; } = null!;
 
     public bool IsRangeHoje => HomeRange == HomeRangeFilter.Hoje;
 
@@ -379,6 +383,13 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
     /// state the arrows cannot express.
     /// </remarks>
     /// <param name="delta">−1 or +1.</param>
+    /// <summary>Switches the period between a single month and the whole year.</summary>
+    private void ToggleWholeYear()
+    {
+        var number = ServicePeriod.ToggleWholeYear(SelectedMonth);
+        SelectedMonth = MonthOptions.FirstOrDefault(m => m.Number == number) ?? SelectedMonth;
+    }
+
     private void StepPeriod(int delta)
     {
         var current = SelectedMonth?.Number ?? DateTime.Now.Month;

@@ -48,6 +48,12 @@ namespace DapperDemo.View.DependencyInversion
             // this layer's to touch — the view models take the DisplaySettings abstraction.
             yield return CreateSingleton<AvaloniaDisplaySettings>().WithAbstractions();
 
+            // Picking and remembering a folder needs a TopLevel's storage provider, so the backup
+            // destination lives here rather than in the composition root. The Google Drive store
+            // will replace this one line and belongs in this layer for the same reason — its
+            // sign-in needs a browser.
+            yield return CreateSingleton<UserFolderBackupStore>().WithAbstractions();
+
             // Drawing and the save dialog both need this layer; the view models build a
             // ReportDocument and never see a control.
             yield return CreateSingleton<PngReportExporter>().WithAbstractions();

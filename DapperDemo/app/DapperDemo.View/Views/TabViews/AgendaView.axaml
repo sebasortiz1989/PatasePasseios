@@ -174,12 +174,14 @@
                 IsVisible="{Binding ShowDatePicker}"
                 Margin="30,21,30,0">
             <Border Classes="FloatingControl" Height="77">
-                <Grid ColumnDefinitions="77,*,77">
+                <Grid ColumnDefinitions="Auto,*,Auto" Height="77">
                     <Button
                         Background="Transparent"
                         BorderThickness="0"
                         Command="{Binding PreviousPeriodCommand}"
-                        Grid.Column="0">
+                        Grid.Column="0"
+                        Margin="18,0,0,0"
+                        Width="77">
                         <Path
                             Data="{StaticResource IconChevronLeft}"
                             Height="35"
@@ -187,20 +189,28 @@
                             Stroke="{DynamicResource InkPrimary}"
                             StrokeJoin="Round"
                             StrokeLineCap="Round"
-                            StrokeThickness="1.6"
+                            StrokeThickness="2.4"
                             Width="35" />
                     </Button>
-                    <TextBlock
-                        Classes="TBody"
+                    <!--  The label is the way back to "Ano todo" once the arrows have moved off it.  -->
+                    <Button
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Command="{Binding ToggleWholeYearCommand}"
                         Grid.Column="1"
-                        HorizontalAlignment="Center"
-                        Text="{Binding PeriodLabel}"
-                        VerticalAlignment="Center" />
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        VerticalAlignment="Stretch"
+                        VerticalContentAlignment="Center">
+                        <TextBlock Classes="TBody" Text="{Binding PeriodLabel}" />
+                    </Button>
                     <Button
                         Background="Transparent"
                         BorderThickness="0"
                         Command="{Binding NextPeriodCommand}"
-                        Grid.Column="2">
+                        Grid.Column="2"
+                        Margin="0,0,18,0"
+                        Width="77">
                         <Path
                             Data="{StaticResource IconChevronRight}"
                             Height="35"
@@ -208,7 +218,7 @@
                             Stroke="{DynamicResource InkPrimary}"
                             StrokeJoin="Round"
                             StrokeLineCap="Round"
-                            StrokeThickness="1.6"
+                            StrokeThickness="2.4"
                             Width="35" />
                     </Button>
                 </Grid>

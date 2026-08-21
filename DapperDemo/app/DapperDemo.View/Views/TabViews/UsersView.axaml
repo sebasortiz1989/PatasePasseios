@@ -21,7 +21,10 @@
                 <StackPanel Margin="28,21" Spacing="8">
                     <Grid ColumnDefinitions="*,Auto">
                         <TextBlock Classes="TBody" Text="{Binding DogName}" />
-                        <TextBlock Classes="TBody Muted" Grid.Column="1" Text="{Binding TotalLabel}" />
+                        <TextBlock
+                            Classes="TBody Muted"
+                            Grid.Column="1"
+                            Text="{Binding TotalLabel}" />
                     </Grid>
                     <ItemsControl ItemsSource="{Binding Lines}">
                         <ItemsControl.ItemsPanel>
@@ -37,7 +40,10 @@
                                         <TextBlock Classes="TCaption" Text=" · " />
                                         <TextBlock Classes="TCaption" Text="{Binding CountLabel}" />
                                     </StackPanel>
-                                    <TextBlock Classes="TCaption" Grid.Column="1" Text="{Binding AmountLabel}" />
+                                    <TextBlock
+                                        Classes="TCaption"
+                                        Grid.Column="1"
+                                        Text="{Binding AmountLabel}" />
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -51,7 +57,10 @@
                 <Border Classes="RowRule" />
                 <Grid ColumnDefinitions="*,Auto" Margin="28,21">
                     <TextBlock Classes="TBody" Text="{Binding Label}" />
-                    <TextBlock Classes="TBody Muted" Grid.Column="1" Text="{Binding Amount}" />
+                    <TextBlock
+                        Classes="TBody Muted"
+                        Grid.Column="1"
+                        Text="{Binding Amount}" />
                 </Grid>
             </StackPanel>
         </DataTemplate>
@@ -62,8 +71,14 @@
             <StackPanel>
 
                 <!--  Identity: the sitter, then the two facts that belong to the name.  -->
-                <StackPanel IsVisible="{Binding IsViewingProfile}" Margin="35,14,35,0" Spacing="14">
-                    <Panel Height="168" HorizontalAlignment="Left" Width="168">
+                <StackPanel
+                    IsVisible="{Binding IsViewingProfile}"
+                    Margin="35,14,35,0"
+                    Spacing="14">
+                    <Panel
+                        Height="168"
+                        HorizontalAlignment="Left"
+                        Width="168">
                         <Image
                             IsVisible="{Binding HasPhoto}"
                             Source="{Binding PhotoPath, Converter={StaticResource ImagePathConverter}}"
@@ -85,7 +100,10 @@
                     </Panel>
 
                     <StackPanel Spacing="4">
-                        <TextBlock Classes="TTitle" Text="{Binding CurrentUserName}" TextWrapping="Wrap" />
+                        <TextBlock
+                            Classes="TTitle"
+                            Text="{Binding CurrentUserName}"
+                            TextWrapping="Wrap" />
                         <TextBlock Classes="TCaption" Text="{Binding Email}" />
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Classes="TCaption" Text="Nascimento " />
@@ -98,12 +116,21 @@
 
                 <StackPanel IsVisible="{Binding IsViewingProfile}">
                     <!--  The month, and what it came to. The one heaviest figure in the app.  -->
-                    <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="FATURAMENTO" />
+                    <TextBlock
+                        Classes="TMicro"
+                        Margin="35,42,35,14"
+                        Text="FATURAMENTO" />
 
                     <Border Classes="ControlRing" Margin="30,0,30,21">
                         <Border Classes="FloatingControl">
-                            <Grid ColumnDefinitions="77,*,77" Height="77">
-                                <Button Background="Transparent" BorderThickness="0" Command="{Binding PreviousPeriodCommand}">
+                            <Grid ColumnDefinitions="Auto,*,Auto" Height="77">
+                                <Button
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Command="{Binding PreviousPeriodCommand}"
+                                    Grid.Column="0"
+                                    Margin="18,0,0,0"
+                                    Width="77">
                                     <Path
                                         Data="{StaticResource IconChevronLeft}"
                                         Height="35"
@@ -114,17 +141,25 @@
                                         StrokeThickness="2.4"
                                         Width="35" />
                                 </Button>
-                                <TextBlock
-                                    Classes="TBody"
+                                <!--  The label is the way back to "Ano todo" once the arrows have moved off it.  -->
+                                <Button
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Command="{Binding ToggleWholeYearCommand}"
                                     Grid.Column="1"
-                                    HorizontalAlignment="Center"
-                                    Text="{Binding PeriodLabel}"
-                                    VerticalAlignment="Center" />
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalAlignment="Stretch"
+                                    VerticalContentAlignment="Center">
+                                    <TextBlock Classes="TBody" Text="{Binding PeriodLabel}" />
+                                </Button>
                                 <Button
                                     Background="Transparent"
                                     BorderThickness="0"
                                     Command="{Binding NextPeriodCommand}"
-                                    Grid.Column="2">
+                                    Grid.Column="2"
+                                    Margin="0,0,18,0"
+                                    Width="77">
                                     <Path
                                         Data="{StaticResource IconChevronRight}"
                                         Height="35"
@@ -194,7 +229,10 @@
 
                     <!--  Per dog: what was received, then what is still owed.  -->
                     <StackPanel IsVisible="{Binding ShowMonthDetail}">
-                        <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="POR CACHORRO" />
+                        <TextBlock
+                            Classes="TMicro"
+                            Margin="35,42,35,14"
+                            Text="POR CACHORRO" />
                         <TextBlock
                             Classes="TUi Muted"
                             IsVisible="{Binding HasNothingPaidInMonth}"
@@ -215,8 +253,14 @@
                         </Border>
 
                         <Grid ColumnDefinitions="*,Auto" Margin="35,42,35,14">
-                            <TextBlock Classes="TMicro" Text="{Binding PendingHeading}" VerticalAlignment="Center" />
-                            <TextBlock Classes="TMicro" Grid.Column="1" Text="{Binding PendingTotalLabel}" />
+                            <TextBlock
+                                Classes="TMicro"
+                                Text="{Binding PendingHeading}"
+                                VerticalAlignment="Center" />
+                            <TextBlock
+                                Classes="TMicro"
+                                Grid.Column="1"
+                                Text="{Binding PendingTotalLabel}" />
                         </Grid>
                         <TextBlock
                             Classes="TUi Muted"
@@ -238,27 +282,42 @@
                         </Border>
                     </StackPanel>
 
-                    <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="RESUMO" />
+                    <TextBlock
+                        Classes="TMicro"
+                        Margin="35,42,35,14"
+                        Text="RESUMO" />
                     <Border Classes="Group">
                         <StackPanel>
                             <Grid ColumnDefinitions="*,Auto" Margin="28,21">
                                 <TextBlock Classes="TBody" Text="Cachorros" />
-                                <TextBlock Classes="TBody Muted" Grid.Column="1" Text="{Binding DogCountLabel}" />
+                                <TextBlock
+                                    Classes="TBody Muted"
+                                    Grid.Column="1"
+                                    Text="{Binding DogCountLabel}" />
                             </Grid>
                             <Border Classes="RowRule" />
                             <Grid ColumnDefinitions="*,Auto" Margin="28,21">
                                 <TextBlock Classes="TBody" Text="Tutores" />
-                                <TextBlock Classes="TBody Muted" Grid.Column="1" Text="{Binding TutorCountLabel}" />
+                                <TextBlock
+                                    Classes="TBody Muted"
+                                    Grid.Column="1"
+                                    Text="{Binding TutorCountLabel}" />
                             </Grid>
                             <Border Classes="RowRule" />
                             <Grid ColumnDefinitions="*,Auto" Margin="28,21">
                                 <TextBlock Classes="TBody" Text="{Binding ServiceCountKicker}" />
-                                <TextBlock Classes="TBody Muted" Grid.Column="1" Text="{Binding ServiceCountLabel}" />
+                                <TextBlock
+                                    Classes="TBody Muted"
+                                    Grid.Column="1"
+                                    Text="{Binding ServiceCountLabel}" />
                             </Grid>
                             <Border Classes="RowRule" />
                             <Grid ColumnDefinitions="*,Auto" Margin="28,21">
                                 <TextBlock Classes="TBody" Text="Pendentes" />
-                                <TextBlock Classes="TBody Owed" Grid.Column="1" Text="{Binding PendingCountLabel}" />
+                                <TextBlock
+                                    Classes="TBody Owed"
+                                    Grid.Column="1"
+                                    Text="{Binding PendingCountLabel}" />
                             </Grid>
                         </StackPanel>
                     </Border>
@@ -279,7 +338,10 @@
                         TextWrapping="Wrap" />
 
                     <!--  One .zip carries the database and the dog photos; a bare .db loses every picture.  -->
-                    <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="BACKUP" />
+                    <TextBlock
+                        Classes="TMicro"
+                        Margin="35,42,35,14"
+                        Text="BACKUP" />
                     <Border Classes="Group">
                         <StackPanel>
                             <Button
@@ -289,7 +351,10 @@
                                 HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Stretch"
                                 Padding="0">
-                                <TextBlock Classes="TBody" Margin="28,21" Text="Exportar backup" />
+                                <TextBlock
+                                    Classes="TBody"
+                                    Margin="28,21"
+                                    Text="Exportar backup" />
                             </Button>
                             <Border Classes="RowRule" />
                             <Button
@@ -314,7 +379,10 @@
                                 Padding="0">
                                 <StackPanel Margin="28,21" Spacing="7">
                                     <TextBlock Classes="TBody" Text="Enviar backup agora" />
-                                    <TextBlock Classes="TCaption" Text="{Binding CloudBackupLabel}" TextWrapping="Wrap" />
+                                    <TextBlock
+                                        Classes="TCaption"
+                                        Text="{Binding CloudBackupLabel}"
+                                        TextWrapping="Wrap" />
                                 </StackPanel>
                             </Button>
                         </StackPanel>
@@ -329,7 +397,10 @@
                         TextWrapping="Wrap" />
 
                     <!--  Ajustes is the last row before signing out; the account rows sit above it.  -->
-                    <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="CONTA" />
+                    <TextBlock
+                        Classes="TMicro"
+                        Margin="35,42,35,14"
+                        Text="CONTA" />
                     <Border Classes="Group">
                         <StackPanel>
                             <Button
@@ -339,7 +410,10 @@
                                 HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Stretch"
                                 Padding="0">
-                                <TextBlock Classes="TBody" Margin="28,21" Text="Editar perfil" />
+                                <TextBlock
+                                    Classes="TBody"
+                                    Margin="28,21"
+                                    Text="Editar perfil" />
                             </Button>
                             <Border Classes="RowRule" />
                             <Button
@@ -350,16 +424,31 @@
                                 HorizontalContentAlignment="Stretch"
                                 IsVisible="{Binding ShowPasswordSummary}"
                                 Padding="0">
-                                <TextBlock Classes="TBody" Margin="28,21" Text="Alterar senha" />
+                                <TextBlock
+                                    Classes="TBody"
+                                    Margin="28,21"
+                                    Text="Alterar senha" />
                             </Button>
 
-                            <StackPanel IsVisible="{Binding ShowPasswordForm}" Margin="28,21" Spacing="14">
+                            <StackPanel
+                                IsVisible="{Binding ShowPasswordForm}"
+                                Margin="28,21"
+                                Spacing="14">
                                 <TextBlock Classes="TCaption" Text="Senha atual" />
-                                <TextBox Classes="Field" PasswordChar="•" Text="{Binding CurrentPw}" />
+                                <TextBox
+                                    Classes="Field"
+                                    PasswordChar="•"
+                                    Text="{Binding CurrentPw}" />
                                 <TextBlock Classes="TCaption" Text="Nova senha" />
-                                <TextBox Classes="Field" PasswordChar="•" Text="{Binding NewPw}" />
+                                <TextBox
+                                    Classes="Field"
+                                    PasswordChar="•"
+                                    Text="{Binding NewPw}" />
                                 <TextBlock Classes="TCaption" Text="Confirmar nova senha" />
-                                <TextBox Classes="Field" PasswordChar="•" Text="{Binding ConfirmPw}" />
+                                <TextBox
+                                    Classes="Field"
+                                    PasswordChar="•"
+                                    Text="{Binding ConfirmPw}" />
                                 <TextBlock
                                     Classes="TCaption"
                                     Classes.Owed="{Binding PwMsgIsError}"
@@ -367,8 +456,14 @@
                                     Text="{Binding PwMsg}"
                                     TextWrapping="Wrap" />
                                 <StackPanel Orientation="Horizontal" Spacing="28">
-                                    <Button Classes="TextLink" Command="{Binding SavePasswordCommand}" Content="Salvar" />
-                                    <Button Classes="TextLink" Command="{Binding CancelPasswordFormCommand}" Content="Cancelar" />
+                                    <Button
+                                        Classes="TextLink"
+                                        Command="{Binding SavePasswordCommand}"
+                                        Content="Salvar" />
+                                    <Button
+                                        Classes="TextLink"
+                                        Command="{Binding CancelPasswordFormCommand}"
+                                        Content="Cancelar" />
                                 </StackPanel>
                             </StackPanel>
 
@@ -381,7 +476,10 @@
                                 HorizontalContentAlignment="Stretch"
                                 Padding="0">
                                 <Grid ColumnDefinitions="*,Auto" Margin="28,21">
-                                    <TextBlock Classes="TBody" Text="Ajustes" VerticalAlignment="Center" />
+                                    <TextBlock
+                                        Classes="TBody"
+                                        Text="Ajustes"
+                                        VerticalAlignment="Center" />
                                     <Path
                                         Data="{StaticResource IconChevronRight}"
                                         Grid.Column="1"
@@ -415,8 +513,14 @@
 
                 <!--  Editing the profile  -->
                 <StackPanel IsVisible="{Binding IsEditingProfile}">
-                    <TextBlock Classes="TTitle" Margin="35,14,35,0" Text="Editar perfil" />
-                    <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="DADOS" />
+                    <TextBlock
+                        Classes="TTitle"
+                        Margin="35,14,35,0"
+                        Text="Editar perfil" />
+                    <TextBlock
+                        Classes="TMicro"
+                        Margin="35,42,35,14"
+                        Text="DADOS" />
                     <Border Classes="Group">
                         <StackPanel>
                             <StackPanel Margin="28,21" Spacing="7">

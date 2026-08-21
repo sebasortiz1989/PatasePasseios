@@ -4,6 +4,7 @@ using AvaloniaFramework.Threading;
 using DapperDemo.Repository.Dapper;
 using DapperDemo.Repository.Dapper.Aggregates;
 using DapperDemo.Repository.Dapper.Dtos;
+using DapperDemo.Repository.Dapper.Services;
 using DapperDemo.Viewmodel.Reports;
 using DapperDemo.Viewmodel.Viewmodels.Session;
 using DapperDemo.Viewmodel.Viewmodels.Utils;
@@ -27,6 +28,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     private readonly ReportExporter reportExporter;
     private readonly AppSession session;
     private readonly CurrentView currentView;
+    private readonly PresenterBase<DogDetailViewModel, Unit, Unit> dogDetailView;
 
     private readonly PresenterBase<ServiceDetailViewModel, Unit, Unit> serviceDetailView;
 
@@ -59,6 +61,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
 
     public TutorDetailViewModel(
         CurrentView currentView,
+        Factory<PresenterBase<DogDetailViewModel, Unit, Unit>> dogDetailFactory,
         RepositoryTutors repositoryTutors,
         RepositoryDogs repositoryDogs,
         RepositoryServices repositoryServices,
@@ -76,10 +79,13 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         this.reportExporter = reportExporter;
         this.session = session;
         this.currentView = currentView;
+        ArgumentNullException.ThrowIfNull(dogDetailFactory);
+        dogDetailView = dogDetailFactory.Create();
         serviceDetailView = serviceDetailFactory.Create();
         BackCommand = new SynchronizedCommand(currentView.GoBack, SynchronizationBehavior.Discard, true);
         PreviousPeriodCommand = new SynchronizedCommand(() => StepPeriod(-1), SynchronizationBehavior.Discard, true);
         NextPeriodCommand = new SynchronizedCommand(() => StepPeriod(1), SynchronizationBehavior.Discard, true);
+        ToggleWholeYearCommand = new SynchronizedCommand(ToggleWholeYear, SynchronizationBehavior.Discard, true);
         AskDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = true, SynchronizationBehavior.Discard, true);
         CancelDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = false, SynchronizationBehavior.Discard, true);
         ConfirmDeleteCommand = new SynchronizedCommand(Delete, SynchronizationBehavior.Discard, true);
@@ -170,6 +176,18 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     public bool HasEditError => !string.IsNullOrEmpty(EditError);
 
     public string DogNames { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Gets this tutor's dogs, each row opening that dog's ficha.
+    /// </summary>
+    /// <remarks>
+    /// The dog screen links to its tutor, so the tutor screen links back. Reaching a dog from here
+    /// otherwise meant going out to the Cachorros tab and finding it by name.
+    /// </remarks>
+    public ObservableCollection<DogRow> Dogs { get; } = [];
+
+    /// <summary>Gets a value indicating whether this tutor has no dogs to list.</summary>
+    public bool NoDogs { get; private set; } = true;
 
     /// <summary>
     /// Gets what may be billed today: work already carried out and not yet paid for, across every
@@ -272,6 +290,9 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     /// <summary>Gets the command stepping the period forward one month.</summary>
     public ICommand NextPeriodCommand { get; private set; } = null!;
 
+    /// <summary>Gets the command switching between one month and the whole year.</summary>
+    public ICommand ToggleWholeYearCommand { get; private set; } = null!;
+
     public ObservableCollection<ServiceTypeGroup> PendingServices { get; } = [];
 
     /// <summary>
@@ -327,7 +348,30 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         Phone = tutor.Telephone;
 
         var dogs = await repositoryDogs.ListForTutorAsync(tutorId).WithSync();
+
+        // Still built as a string for the exported report, which has no rows to tap.
         DogNames = dogs.Length == 0 ? "Nenhum cachorro cadastrado." : string.Join(", ", dogs.Select(d => d.Name));
+
+        foreach (var row in Dogs)
+        {
+            row.Dispose();
+        }
+
+        Dogs.Clear();
+
+        foreach (var dog in dogs)
+        {
+            var dogId = dog.DogId;
+            var open = new SynchronizedCommand(() => OpenDog(dogId), SynchronizationBehavior.Discard, true);
+            Dogs.Add(new DogRow(
+                AppSession.Initials(dog.Name),
+                dog.Name,
+                string.IsNullOrWhiteSpace(dog.Breed) ? "Sem raça informada" : dog.Breed,
+                DogImageStore.ResolvePath(dog.Image),
+                open));
+        }
+
+        NoDogs = Dogs.Count == 0;
 
         await ReloadServicesAsync(tutorId).WithSync();
         tutorPayments = await repositoryPayments.ListForTutorAsync(tutorId).WithSync();
@@ -1077,6 +1121,21 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     /// keeps the whole interaction inside ordinary layout.
     /// </remarks>
     /// <param name="delta">−1 or +1.</param>
+    /// <summary>Opens one of this tutor's dogs, the same way the Cachorros tab does.</summary>
+    /// <param name="dogId">Which dog to show.</param>
+    private void OpenDog(int dogId)
+    {
+        session.SelectedDogId = dogId;
+        currentView.ViewShown = dogDetailView;
+    }
+
+    /// <summary>Switches the period between a single month and the whole year.</summary>
+    private void ToggleWholeYear()
+    {
+        var number = ServicePeriod.ToggleWholeYear(SelectedMonth);
+        SelectedMonth = MonthOptions.FirstOrDefault(m => m.Number == number) ?? SelectedMonth;
+    }
+
     private void StepPeriod(int delta)
     {
         var (month, year) = ServicePeriod.Step(SelectedMonth, SelectedYear, delta);

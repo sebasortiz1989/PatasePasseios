@@ -7,6 +7,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:complementaryViewsViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:components="using:DapperDemo.View.Components"
+    xmlns:converters="using:DapperDemo.View.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:utils="clr-namespace:DapperDemo.Viewmodel.Viewmodels.Utils;assembly=DapperDemo.Viewmodel"
@@ -26,8 +27,14 @@
                     <StackPanel Margin="28,21" Spacing="7">
                         <TextBlock Classes="TBody" Text="{Binding DateLabel}" />
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Classes="TCaption" IsVisible="{Binding ShowsDogName}" Text="{Binding DogName}" />
-                            <TextBlock Classes="TCaption" IsVisible="{Binding ShowsDogName}" Text=" · " />
+                            <TextBlock
+                                Classes="TCaption"
+                                IsVisible="{Binding ShowsDogName}"
+                                Text="{Binding DogName}" />
+                            <TextBlock
+                                Classes="TCaption"
+                                IsVisible="{Binding ShowsDogName}"
+                                Text=" · " />
                             <TextBlock Classes="TCaption" Text="{Binding DoneLabel}" />
                             <TextBlock Classes="TCaption" Text=" · " />
                             <TextBlock
@@ -95,6 +102,61 @@
             </Border>
         </DataTemplate>
 
+        <DataTemplate DataType="utils:DogRow" x:Key="TutorDogRowTemplate">
+            <StackPanel>
+                <Border Classes="RowRule" />
+                <Button
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Command="{Binding OpenCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    Padding="0">
+                    <Grid ColumnDefinitions="Auto,*,Auto" Margin="28,21">
+                        <Panel Height="70" Width="70">
+                            <Image
+                                IsVisible="{Binding HasImage}"
+                                Source="{Binding ImagePath, Converter={StaticResource ImagePathConverter}, ConverterParameter=192}"
+                                Stretch="UniformToFill">
+                                <Image.Clip>
+                                    <EllipseGeometry Rect="0,0,70,70" />
+                                </Image.Clip>
+                            </Image>
+                            <Border
+                                Background="{DynamicResource SurfaceControl}"
+                                CornerRadius="35"
+                                IsVisible="{Binding NoImage}">
+                                <TextBlock
+                                    Classes="TCaption"
+                                    HorizontalAlignment="Center"
+                                    Text="{Binding Initials}"
+                                    VerticalAlignment="Center" />
+                            </Border>
+                        </Panel>
+                        <StackPanel
+                            Grid.Column="1"
+                            Margin="21,0,14,0"
+                            Spacing="7"
+                            VerticalAlignment="Center">
+                            <TextBlock Classes="TBody" Text="{Binding Name}" />
+                            <TextBlock Classes="TCaption" Text="{Binding Subtitle}" />
+                        </StackPanel>
+                        <Path
+                            Data="{StaticResource IconChevronRight}"
+                            Grid.Column="2"
+                            Height="30"
+                            Stretch="Uniform"
+                            Stroke="{DynamicResource InkSecondary}"
+                            StrokeJoin="Round"
+                            StrokeLineCap="Round"
+                            StrokeThickness="2.4"
+                            VerticalAlignment="Center"
+                            Width="30" />
+                    </Grid>
+                </Button>
+            </StackPanel>
+        </DataTemplate>
+
         <DataTemplate DataType="utils:TutorPaymentRow" x:Key="PaymentRowTemplate">
             <StackPanel>
                 <Border Classes="RowRule" />
@@ -103,8 +165,14 @@
                         <TextBlock Classes="TBody" Text="{Binding AmountLabel}" />
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Classes="TCaption" Text="{Binding DateLabel}" />
-                            <TextBlock Classes="TCaption" IsVisible="{Binding HasCredit}" Text=" · " />
-                            <TextBlock Classes="TCaption" IsVisible="{Binding HasCredit}" Text="{Binding CreditLabel}" />
+                            <TextBlock
+                                Classes="TCaption"
+                                IsVisible="{Binding HasCredit}"
+                                Text=" · " />
+                            <TextBlock
+                                Classes="TCaption"
+                                IsVisible="{Binding HasCredit}"
+                                Text="{Binding CreditLabel}" />
                         </StackPanel>
                     </StackPanel>
                     <Button
@@ -149,32 +217,60 @@
                                 VerticalAlignment="Center" />
                         </Border>
                         <StackPanel Spacing="4">
-                            <TextBlock Classes="TTitle" Text="{Binding Name}" TextWrapping="Wrap" />
+                            <TextBlock
+                                Classes="TTitle"
+                                Text="{Binding Name}"
+                                TextWrapping="Wrap" />
                             <TextBlock Classes="TCaption" Text="{Binding Neighborhood}" />
                         </StackPanel>
                     </StackPanel>
 
-                    <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="CONTATO" />
+                    <TextBlock
+                        Classes="TMicro"
+                        Margin="35,42,35,14"
+                        Text="CONTATO" />
                     <Border Classes="Group">
                         <StackPanel>
                             <Grid ColumnDefinitions="*,Auto" Margin="28,21">
                                 <TextBlock Classes="TBody" Text="Telefone" />
-                                <TextBlock Classes="TBody Muted" Grid.Column="1" Text="{Binding Phone}" />
-                            </Grid>
-                            <Border Classes="RowRule" />
-                            <Grid ColumnDefinitions="*,Auto" Margin="28,21">
-                                <TextBlock Classes="TBody" Text="Cachorros" />
                                 <TextBlock
                                     Classes="TBody Muted"
                                     Grid.Column="1"
-                                    MaxWidth="380"
-                                    Text="{Binding DogNames}"
-                                    TextWrapping="Wrap" />
+                                    Text="{Binding Phone}" />
                             </Grid>
                         </StackPanel>
                     </Border>
 
-                    <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="CONTA" />
+                    <!--  The dog screen links to its tutor, so this links back.  -->
+                    <TextBlock
+                        Classes="TMicro"
+                        Margin="35,42,35,14"
+                        Text="CACHORROS" />
+
+                    <TextBlock
+                        Classes="TUi Muted"
+                        IsVisible="{Binding NoDogs}"
+                        Margin="35,0"
+                        Text="Nenhum cachorro cadastrado."
+                        TextWrapping="Wrap" />
+
+                    <Border Classes="Group" IsVisible="{Binding !NoDogs}">
+                        <ItemsControl
+                            Classes="RowGroup"
+                            ItemTemplate="{StaticResource TutorDogRowTemplate}"
+                            ItemsSource="{Binding Dogs}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </Border>
+
+                    <TextBlock
+                        Classes="TMicro"
+                        Margin="35,42,35,14"
+                        Text="CONTA" />
                     <Border Classes="Group">
                         <StackPanel>
                             <Grid ColumnDefinitions="*,Auto" Margin="28,21">
@@ -187,15 +283,27 @@
                             </Grid>
 
                             <Border Classes="RowRule" IsVisible="{Binding HasUpcoming}" />
-                            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding HasUpcoming}" Margin="28,21">
+                            <Grid
+                                ColumnDefinitions="*,Auto"
+                                IsVisible="{Binding HasUpcoming}"
+                                Margin="28,21">
                                 <TextBlock Classes="TBody" Text="A executar" />
-                                <TextBlock Classes="TBody Muted" Grid.Column="1" Text="{Binding UpcomingTotalLabel}" />
+                                <TextBlock
+                                    Classes="TBody Muted"
+                                    Grid.Column="1"
+                                    Text="{Binding UpcomingTotalLabel}" />
                             </Grid>
 
                             <Border Classes="RowRule" IsVisible="{Binding HasCredit}" />
-                            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding HasCredit}" Margin="28,21">
+                            <Grid
+                                ColumnDefinitions="*,Auto"
+                                IsVisible="{Binding HasCredit}"
+                                Margin="28,21">
                                 <TextBlock Classes="TBody" Text="Crédito" />
-                                <TextBlock Classes="TBody Muted" Grid.Column="1" Text="{Binding CreditLabel}" />
+                                <TextBlock
+                                    Classes="TBody Muted"
+                                    Grid.Column="1"
+                                    Text="{Binding CreditLabel}" />
                             </Grid>
 
                             <Border Classes="RowRule" />
@@ -207,12 +315,21 @@
                                 HorizontalContentAlignment="Stretch"
                                 IsVisible="{Binding !IsRegisteringPayment}"
                                 Padding="0">
-                                <TextBlock Classes="TBody" Margin="28,21" Text="Registrar pagamento" />
+                                <TextBlock
+                                    Classes="TBody"
+                                    Margin="28,21"
+                                    Text="Registrar pagamento" />
                             </Button>
 
-                            <StackPanel IsVisible="{Binding IsRegisteringPayment}" Margin="28,21" Spacing="14">
+                            <StackPanel
+                                IsVisible="{Binding IsRegisteringPayment}"
+                                Margin="28,21"
+                                Spacing="14">
                                 <TextBlock Classes="TCaption" Text="Valor recebido" />
-                                <TextBox Classes="Field" Text="{Binding PaymentAmount}" PlaceholderText="0,00" />
+                                <TextBox
+                                    Classes="Field"
+                                    PlaceholderText="0,00"
+                                    Text="{Binding PaymentAmount}" />
                                 <TextBlock
                                     Classes="TCaption"
                                     IsVisible="{Binding HasPaymentPreview}"
@@ -224,8 +341,14 @@
                                     Text="{Binding PaymentError}"
                                     TextWrapping="Wrap" />
                                 <StackPanel Orientation="Horizontal" Spacing="28">
-                                    <Button Classes="TextLink" Command="{Binding ConfirmPaymentCommand}" Content="Confirmar" />
-                                    <Button Classes="TextLink" Command="{Binding CancelPaymentCommand}" Content="Cancelar" />
+                                    <Button
+                                        Classes="TextLink"
+                                        Command="{Binding ConfirmPaymentCommand}"
+                                        Content="Confirmar" />
+                                    <Button
+                                        Classes="TextLink"
+                                        Command="{Binding CancelPaymentCommand}"
+                                        Content="Cancelar" />
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
@@ -238,7 +361,10 @@
                         Text="{Binding PaymentMsg}"
                         TextWrapping="Wrap" />
 
-                    <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="EM ABERTO" />
+                    <TextBlock
+                        Classes="TMicro"
+                        Margin="35,42,35,14"
+                        Text="EM ABERTO" />
 
                     <!--
                         The period this list is scoped to. Stepped rather than picked from a
@@ -246,11 +372,14 @@
                     -->
                     <Border Classes="ControlRing" Margin="30,0,30,21">
                         <Border Classes="FloatingControl">
-                            <Grid ColumnDefinitions="77,*,77" Height="77">
+                            <Grid ColumnDefinitions="Auto,*,Auto" Height="77">
                                 <Button
                                     Background="Transparent"
                                     BorderThickness="0"
-                                    Command="{Binding PreviousPeriodCommand}">
+                                    Command="{Binding PreviousPeriodCommand}"
+                                    Grid.Column="0"
+                                    Margin="18,0,0,0"
+                                    Width="77">
                                     <Path
                                         Data="{StaticResource IconChevronLeft}"
                                         Height="35"
@@ -261,17 +390,25 @@
                                         StrokeThickness="2.4"
                                         Width="35" />
                                 </Button>
-                                <TextBlock
-                                    Classes="TBody"
+                                <!--  The label is the way back to "Ano todo" once the arrows have moved off it.  -->
+                                <Button
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Command="{Binding ToggleWholeYearCommand}"
                                     Grid.Column="1"
-                                    HorizontalAlignment="Center"
-                                    Text="{Binding PeriodLabel}"
-                                    VerticalAlignment="Center" />
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalAlignment="Stretch"
+                                    VerticalContentAlignment="Center">
+                                    <TextBlock Classes="TBody" Text="{Binding PeriodLabel}" />
+                                </Button>
                                 <Button
                                     Background="Transparent"
                                     BorderThickness="0"
                                     Command="{Binding NextPeriodCommand}"
-                                    Grid.Column="2">
+                                    Grid.Column="2"
+                                    Margin="0,0,18,0"
+                                    Width="77">
                                     <Path
                                         Data="{StaticResource IconChevronRight}"
                                         Height="35"
@@ -288,7 +425,10 @@
 
                     <Border Classes="Group" Margin="35,0,35,35">
                         <Grid ColumnDefinitions="*,Auto" Margin="28,14">
-                            <TextBlock Classes="TUi" Text="Mostrar serviços já pagos" VerticalAlignment="Center" />
+                            <TextBlock
+                                Classes="TUi"
+                                Text="Mostrar serviços já pagos"
+                                VerticalAlignment="Center" />
                             <ToggleSwitch
                                 Grid.Column="1"
                                 IsChecked="{Binding ShowPaidServices}"
@@ -313,24 +453,39 @@
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>
 
-                    <TextBlock Classes="TMicro" Margin="35,0,35,14" Text="HISTÓRICO" />
+                    <TextBlock
+                        Classes="TMicro"
+                        Margin="35,0,35,14"
+                        Text="HISTÓRICO" />
 
                     <!--
                         Correcting a mistyped amount. Editing is delete + re-apply underneath, so
                         the whole allocation is worked out again rather than nudged.
                     -->
-                    <Border Classes="Group" IsVisible="{Binding IsEditingPayment}" Margin="35,0,35,21">
+                    <Border
+                        Classes="Group"
+                        IsVisible="{Binding IsEditingPayment}"
+                        Margin="35,0,35,21">
                         <StackPanel Margin="28,21" Spacing="14">
                             <TextBlock Classes="TCaption" Text="Novo valor do pagamento" />
-                            <TextBox Classes="Field" Text="{Binding EditPaymentAmount}" PlaceholderText="0,00" />
+                            <TextBox
+                                Classes="Field"
+                                PlaceholderText="0,00"
+                                Text="{Binding EditPaymentAmount}" />
                             <TextBlock
                                 Classes="TCaption Owed"
                                 IsVisible="{Binding HasEditPaymentError}"
                                 Text="{Binding EditPaymentError}"
                                 TextWrapping="Wrap" />
                             <StackPanel Orientation="Horizontal" Spacing="28">
-                                <Button Classes="TextLink" Command="{Binding SavePaymentEditCommand}" Content="Salvar" />
-                                <Button Classes="TextLink" Command="{Binding CancelPaymentEditCommand}" Content="Cancelar" />
+                                <Button
+                                    Classes="TextLink"
+                                    Command="{Binding SavePaymentEditCommand}"
+                                    Content="Salvar" />
+                                <Button
+                                    Classes="TextLink"
+                                    Command="{Binding CancelPaymentEditCommand}"
+                                    Content="Cancelar" />
                             </StackPanel>
                         </StackPanel>
                     </Border>
@@ -380,7 +535,10 @@
                                 HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Stretch"
                                 Padding="0">
-                                <TextBlock Classes="TBody" Margin="28,21" Text="Editar" />
+                                <TextBlock
+                                    Classes="TBody"
+                                    Margin="28,21"
+                                    Text="Editar" />
                             </Button>
                             <Border Classes="RowRule" />
                             <Button
@@ -390,7 +548,10 @@
                                 HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Stretch"
                                 Padding="0">
-                                <TextBlock Classes="TBody Owed" Margin="28,21" Text="Excluir" />
+                                <TextBlock
+                                    Classes="TBody Owed"
+                                    Margin="28,21"
+                                    Text="Excluir" />
                             </Button>
                         </StackPanel>
                     </Border>
@@ -398,8 +559,14 @@
 
                 <!--  Editing state  -->
                 <StackPanel IsVisible="{Binding IsEditing}">
-                    <TextBlock Classes="TTitle" Margin="35,28,35,0" Text="Editar tutor" />
-                    <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="DADOS" />
+                    <TextBlock
+                        Classes="TTitle"
+                        Margin="35,28,35,0"
+                        Text="Editar tutor" />
+                    <TextBlock
+                        Classes="TMicro"
+                        Margin="35,42,35,14"
+                        Text="DADOS" />
                     <Border Classes="Group">
                         <StackPanel>
                             <StackPanel Margin="28,21" Spacing="7">

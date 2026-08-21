@@ -5,7 +5,13 @@ namespace DapperDemo.Repository.Dapper.Services;
 /// </summary>
 /// <param name="LastUploadUtc">When an upload last succeeded, or null if one never has.</param>
 /// <param name="LastPromptUtc">When the user was last asked, or null if they never have been.</param>
-public sealed record CloudBackupSchedule(DateTime? LastUploadUtc, DateTime? LastPromptUtc)
+/// <param name="Destination">
+/// The folder the user chose, as a storage bookmark, or null if they have not chosen one. Opaque
+/// here on purpose: the data layer stores the string and the View layer is the only thing that
+/// knows it is an Avalonia bookmark. On Android it also carries the SAF permission grant, which is
+/// what lets a later launch write to that folder without asking again.
+/// </param>
+public sealed record CloudBackupSchedule(DateTime? LastUploadUtc, DateTime? LastPromptUtc, string? Destination = null)
 {
     /// <summary>How long a backup stays fresh before another one is wanted.</summary>
     public static readonly TimeSpan UploadInterval = TimeSpan.FromDays(7);
@@ -21,7 +27,10 @@ public sealed record CloudBackupSchedule(DateTime? LastUploadUtc, DateTime? Last
     public static readonly TimeSpan RetryInterval = TimeSpan.FromDays(1);
 
     /// <summary>Gets the state of a device that has never uploaded and never asked.</summary>
-    public static CloudBackupSchedule Empty { get; } = new(null, null);
+    public static CloudBackupSchedule Empty { get; } = new(null, null, null);
+
+    /// <summary>Gets a value indicating whether a destination has been chosen.</summary>
+    public bool HasDestination => !string.IsNullOrWhiteSpace(Destination);
 
     /// <summary>
     /// Gets a value indicating whether the user should be asked to back up now.

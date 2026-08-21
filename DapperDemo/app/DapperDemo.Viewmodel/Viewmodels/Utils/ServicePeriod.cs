@@ -46,10 +46,16 @@ internal static class ServicePeriod
     /// Moves a period by whole months, carrying into the next or previous year at the ends.
     /// </summary>
     /// <remarks>
-    /// Shared by the three screens that scope a list to a period, so stepping cannot mean one
-    /// thing on the agenda and another on a ficha. "Ano todo" is a peer of the twelve rather than
-    /// a thirteenth step, so stepping off it lands on a real month — January going forward,
-    /// December going back — instead of cycling through a state the arrows cannot express.
+    /// Shared by the four screens that scope a list to a period, so stepping cannot mean one thing
+    /// on the agenda and another on a ficha.
+    /// <para>
+    /// The arrows do one of two things depending on where they are. On a month they move by a
+    /// month and carry into the next or previous year at the ends. On <c>Ano todo</c> they move by
+    /// a <b>year</b> — because there is no month to step, and a whole-year view of 2025 is the
+    /// thing next to a whole-year view of 2026. Together with <see cref="ToggleWholeYear"/> that
+    /// reaches every month of every year and every year as a whole, which is what the two
+    /// drop-downs this replaced could do.
+    /// </para>
     /// </remarks>
     /// <param name="month">The month now shown, or null.</param>
     /// <param name="year">The year now shown.</param>
@@ -58,9 +64,11 @@ internal static class ServicePeriod
     public static (int Month, int Year) Step(MonthOption? month, int year, int delta)
     {
         var current = month?.Number ?? DateTime.Now.Month;
+
+        // Nothing to step within a whole year, so the arrows change which year it is.
         if (current == WholeYear)
         {
-            current = delta > 0 ? 0 : 13;
+            return (WholeYear, year + delta);
         }
 
         var next = current + delta;
@@ -72,6 +80,19 @@ internal static class ServicePeriod
 
         return next > 12 ? (1, year + 1) : (next, year);
     }
+
+    /// <summary>
+    /// Switches between a single month and the whole year, staying in the same year.
+    /// </summary>
+    /// <remarks>
+    /// The way back to <c>Ano todo</c> once the arrows have moved off it. Leaving it lands on the
+    /// current calendar month rather than January, because "this month" is what the screen opens
+    /// on and what the sitter is usually after.
+    /// </remarks>
+    /// <param name="month">The month now shown, or null.</param>
+    /// <returns>The month number to move to.</returns>
+    public static int ToggleWholeYear(MonthOption? month) =>
+        month is { Number: not WholeYear } ? WholeYear : DateTime.Now.Month;
 
     /// <summary>
     /// The years worth offering: every year these services touch, plus the current one so a dog

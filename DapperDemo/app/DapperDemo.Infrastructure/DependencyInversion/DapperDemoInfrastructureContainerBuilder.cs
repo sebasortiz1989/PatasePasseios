@@ -1,5 +1,4 @@
 ﻿using AvaloniaFramework.DependencyInjection;
-using DapperDemo.Infrastructure.Services;
 using DapperDemo.Repository.Dapper.Aggregates;
 using DapperDemo.Repository.Dapper.Services;
 using DapperDemo.View.DependencyInversion;
@@ -32,10 +31,6 @@ public class DapperDemoInfrastructureContainerBuilder : ImmutableContainerBuilde
         yield return CreateSingleton<CloudBackupState>();
         yield return CreateSingleton<DisplayPreferencesStore>();
 
-        // The stand-in destination until there is a Google Drive client id to sign in against.
-        // Swapping in the real store is this one line — everything above and around it is already
-        // written against the CloudBackupStore abstraction.
-        yield return CreateSingleton<LocalFolderBackupStore>().WithAbstractions();
         yield return CreateSingleton<CloudBackupService>();
     }
 }

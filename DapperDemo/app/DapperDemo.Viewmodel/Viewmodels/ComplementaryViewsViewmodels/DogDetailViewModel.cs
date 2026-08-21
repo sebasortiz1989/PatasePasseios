@@ -72,6 +72,7 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
         BackCommand = new SynchronizedCommand(currentView.GoBack, SynchronizationBehavior.Discard, true);
         PreviousPeriodCommand = new SynchronizedCommand(() => StepPeriod(-1), SynchronizationBehavior.Discard, true);
         NextPeriodCommand = new SynchronizedCommand(() => StepPeriod(1), SynchronizationBehavior.Discard, true);
+        ToggleWholeYearCommand = new SynchronizedCommand(ToggleWholeYear, SynchronizationBehavior.Discard, true);
         OpenTutorCommand = new SynchronizedCommand(OpenTutor, SynchronizationBehavior.Discard, true);
         AskDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = true, SynchronizationBehavior.Discard, true);
         CancelDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = false, SynchronizationBehavior.Discard, true);
@@ -188,6 +189,9 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
 
     /// <summary>Gets the command stepping the period forward one month.</summary>
     public ICommand NextPeriodCommand { get; private set; } = null!;
+
+    /// <summary>Gets the command switching between one month and the whole year.</summary>
+    public ICommand ToggleWholeYearCommand { get; private set; } = null!;
 
     public ObservableCollection<ServiceTypeGroup> FutureServices { get; } = [];
 
@@ -533,6 +537,13 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
     /// keeps the whole interaction inside ordinary layout.
     /// </remarks>
     /// <param name="delta">−1 or +1.</param>
+    /// <summary>Switches the period between a single month and the whole year.</summary>
+    private void ToggleWholeYear()
+    {
+        var number = ServicePeriod.ToggleWholeYear(SelectedMonth);
+        SelectedMonth = MonthOptions.FirstOrDefault(m => m.Number == number) ?? SelectedMonth;
+    }
+
     private void StepPeriod(int delta)
     {
         var (month, year) = ServicePeriod.Step(SelectedMonth, SelectedYear, delta);
