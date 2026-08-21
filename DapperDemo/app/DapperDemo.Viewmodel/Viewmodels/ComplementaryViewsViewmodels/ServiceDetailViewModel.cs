@@ -76,6 +76,13 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
 
     public ICommand BackCommand { get; }
 
+    /// <summary>
+    /// Gets the navigator, so the back control can name the tab it returns to. Not a constant in
+    /// the markup: this screen opens from more than one tab, and a literal is wrong in all but one
+    /// of them.
+    /// </summary>
+    public CurrentView Navigation => currentView;
+
     /// <summary>Gets opens the tutor this service's dog belongs to.</summary>
     public ICommand OpenTutorCommand { get; }
 
@@ -499,7 +506,7 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
 
         session.SelectedTutorId = id;
         tutorDetailView ??= tutorDetailFactory.Create();
-        currentView.ViewShown = tutorDetailView;
+        currentView.Show(tutorDetailView);
         return Task.CompletedTask;
     }
 

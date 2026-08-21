@@ -15,7 +15,7 @@ using System.Windows.Input;
 namespace DapperDemo.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;
 
 [AddINotifyPropertyChangedInterface]
-public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
+public class DogDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
 {
     private readonly RepositoryDogs repositoryDogs;
     private readonly RepositoryTutors repositoryTutors;
@@ -70,6 +70,10 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
         this.tutorDetailFactory = tutorDetailFactory;
         serviceDetailView = serviceDetailFactory.Create();
         BackCommand = new SynchronizedCommand(currentView.GoBack, SynchronizationBehavior.Discard, true);
+        PreviousPeriodCommand = new SynchronizedCommand(() => StepPeriod(-1), SynchronizationBehavior.Discard, true);
+        NextPeriodCommand = new SynchronizedCommand(() => StepPeriod(1), SynchronizationBehavior.Discard, true);
+        ToggleWholeYearCommand = new SynchronizedCommand(ToggleWholeYear, SynchronizationBehavior.Discard, true);
+        Picker = new PeriodPicker(this);
         OpenTutorCommand = new SynchronizedCommand(OpenTutor, SynchronizationBehavior.Discard, true);
         AskDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = true, SynchronizationBehavior.Discard, true);
         CancelDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = false, SynchronizationBehavior.Discard, true);
@@ -79,6 +83,8 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
         SaveEditCommand = new SynchronizedCommand(SaveEdit, SynchronizationBehavior.Discard, true);
         ChoosePhotoCommand = new SynchronizedCommand(ChoosePhoto, SynchronizationBehavior.Discard, true);
         RemovePhotoCommand = new SynchronizedCommand(RemovePhoto, SynchronizationBehavior.Discard, true);
+        OpenPhotoCommand = new SynchronizedCommand(() => ViewingPhoto = HasPhoto, SynchronizationBehavior.Discard, true);
+        ClosePhotoCommand = new SynchronizedCommand(() => ViewingPhoto = false, SynchronizationBehavior.Discard, true);
 
         foreach (var month in ServicePeriod.Months())
         {
@@ -92,6 +98,13 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
     }
 
     public ICommand BackCommand { get; }
+
+    /// <summary>
+    /// Gets the navigator, so the back control can name the tab it returns to. Not a constant in
+    /// the markup: this screen opens from more than one tab, and a literal is wrong in all but one
+    /// of them.
+    /// </summary>
+    public CurrentView Navigation => currentView;
 
     /// <summary>Gets opens the tutor this dog belongs to.</summary>
     public ICommand OpenTutorCommand { get; }
@@ -112,8 +125,23 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
 
     public ICommand RemovePhotoCommand { get; }
 
+    /// <summary>Gets shows the photo full screen, at the resolution it was stored at.</summary>
+    public ICommand OpenPhotoCommand { get; }
+
+    public ICommand ClosePhotoCommand { get; }
+
     /// <summary>Gets a value indicating whether deleting takes two taps: the button swaps for a confirm/cancel pair.</summary>
     public bool ConfirmingDelete { get; private set; }
+
+    /// <summary>
+    /// Gets a value indicating whether the photo is open full screen.
+    /// </summary>
+    /// <remarks>
+    /// The viewer decodes the file at its stored size, which is the one place in the app that does.
+    /// Everywhere else decodes down to the size it draws at, so this staying false is what keeps
+    /// the screen cheap.
+    /// </remarks>
+    public bool ViewingPhoto { get; private set; }
 
     /// <summary>
     /// Gets a value indicating whether the screen is in edit mode. The same fields are shown
@@ -178,6 +206,21 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
     /// <summary>Gets the years this dog has services in, plus the current one.</summary>
     public ObservableCollection<int> YearOptions { get; } = [];
 
+    /// <summary>Gets the period as one line, e.g. "Agosto 2026".</summary>
+    public string PeriodLabel => ServicePeriod.Label(SelectedMonth, SelectedYear);
+
+    /// <summary>Gets the command stepping the period back one month.</summary>
+    public ICommand PreviousPeriodCommand { get; private set; } = null!;
+
+    /// <summary>Gets the command stepping the period forward one month.</summary>
+    public ICommand NextPeriodCommand { get; private set; } = null!;
+
+    /// <summary>Gets the command switching between one month and the whole year.</summary>
+    public ICommand ToggleWholeYearCommand { get; private set; } = null!;
+
+    /// <summary>Gets the inline period picker: a year row over a grid of months.</summary>
+    public PeriodPicker Picker { get; }
+
     public ObservableCollection<ServiceTypeGroup> FutureServices { get; } = [];
 
     /// <summary>
@@ -195,6 +238,7 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
         IsEditing = false;
         EditError = string.Empty;
         ConfirmingDelete = false;
+        ViewingPhoto = false;
 
         if (session.SelectedDogId is not int dogId)
         {
@@ -277,6 +321,10 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
 
     private void ReloadIfIdle()
     {
+        // Unguarded: the picker's highlight and its whole-year label must follow the period even
+        // while the option lists are being rebuilt.
+        Picker?.Refresh();
+
         if (!rebuildingOptions)
         {
             AppSession.FireAndForget(ReloadAsync());
@@ -289,7 +337,7 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
     /// </summary>
     private void RefreshYearOptions(ServiceItem[] services)
     {
-        var years = ServicePeriod.Years(services);
+        var years = ServicePeriod.Years(services, null, SelectedYear);
         if (YearOptions.SequenceEqual(years))
         {
             return;
@@ -327,7 +375,7 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
     {
         session.SelectedTutorId = storedTutorId;
         tutorDetailView ??= tutorDetailFactory.Create();
-        currentView.ViewShown = tutorDetailView;
+        currentView.Show(tutorDetailView);
         return Task.CompletedTask;
     }
 
@@ -335,7 +383,7 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
     {
         session.SelectedServiceKind = kind;
         session.SelectedServiceId = serviceId;
-        currentView.ViewShown = serviceDetailView;
+        currentView.Show(serviceDetailView);
         return Task.CompletedTask;
     }
 
@@ -343,7 +391,7 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
     /// Folds the services into one group per kind, collapsed until tapped.
     /// </summary>
     /// <remarks>
-    /// Kinds come out in the enum's own order — Passeio, Pet sitting, Hotel, Creche — the order
+    /// Kinds come out in the enum's own order — Passeio, Pet sitting, Hotel, Day Care — the order
     /// they appear in everywhere else. The dog's name is left off the rows: this is that dog's own
     /// screen, so repeating it would refill the space the grouping just freed for the date.
     /// </remarks>
@@ -408,6 +456,10 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
         PhotoFileName = storedPhotoFileName;
         EditError = string.Empty;
         IsEditing = true;
+
+        // The viewer is opened from the reading state's photo, which the editor replaces. Leaving
+        // it open would strand a full-screen photo over a form the user can no longer reach.
+        ViewingPhoto = false;
         return Task.CompletedTask;
     }
 
@@ -511,5 +563,34 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
         session.SelectedDogId = null;
         session.NotifyDataChanged();
         BackCommand.Execute(null);
+    }
+
+    /// <summary>
+    /// Moves the period, replacing the two drop-downs this screen used to carry.
+    /// </summary>
+    /// <remarks>
+    /// A popup lays out in its own visual root and so ignores the design canvas' scale — at phone
+    /// size the month list came out several times wider than the field that opened it. Stepping
+    /// keeps the whole interaction inside ordinary layout.
+    /// </remarks>
+    /// <param name="delta">−1 or +1.</param>
+    /// <summary>Switches the period between a single month and the whole year.</summary>
+    private void ToggleWholeYear()
+    {
+        var number = ServicePeriod.ToggleWholeYear(SelectedMonth);
+        SelectedMonth = MonthOptions.FirstOrDefault(m => m.Number == number) ?? SelectedMonth;
+    }
+
+    private void StepPeriod(int delta)
+    {
+        var (month, year) = ServicePeriod.Step(SelectedMonth, SelectedYear, delta);
+
+        if (!YearOptions.Contains(year))
+        {
+            YearOptions.Add(year);
+        }
+
+        SelectedYear = year;
+        SelectedMonth = MonthOptions.FirstOrDefault(m => m.Number == month) ?? SelectedMonth;
     }
 }

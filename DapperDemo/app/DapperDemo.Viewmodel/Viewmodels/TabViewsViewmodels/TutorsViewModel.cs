@@ -102,13 +102,13 @@ public class TutorsViewModel : PresentationModelBase<Unit, Unit>
     private Task Open(int tutorId)
     {
         session.SelectedTutorId = tutorId;
-        currentView.ViewShown = tutorDetailView;
+        currentView.Show(tutorDetailView);
         return Task.CompletedTask;
     }
 
     private Task OpenNewTutor()
     {
-        currentView.ViewShown = newTutorView;
+        currentView.Show(newTutorView);
         return Task.CompletedTask;
     }
 }

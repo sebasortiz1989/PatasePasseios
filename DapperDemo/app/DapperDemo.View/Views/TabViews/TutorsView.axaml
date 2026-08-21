@@ -5,109 +5,117 @@
     x:Class="DapperDemo.View.Views.TabViews.TutorsView"
     x:DataType="tabViewsViewmodels:TutorsViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:tabViewsViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.TabViewsViewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:utils="clr-namespace:DapperDemo.Viewmodel.Viewmodels.Utils;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Background="{StaticResource ColorBg}" Width="720">
-        <ScrollViewer>
-            <StackPanel Spacing="0">
-                <Grid ColumnDefinitions="*,Auto" Margin="32,32,32,16">
-                    <StackPanel Spacing="2">
-                        <TextBlock
-                            Classes="Heading1"
-                            FontSize="68"
-                            Text="Tutores" />
-                        <TextBlock Classes="Kicker" Text="{Binding TutorCountLabel}" />
-                    </StackPanel>
-                    <buttons:VButton
-                        Classes="BtnPrimary"
-                        Command="{Binding AddTutorCommand}"
-                        Grid.Column="1"
-                        Height="79"
-                        VText="+ Novo"
-                        VerticalAlignment="Center"
-                        Width="180" />
-                </Grid>
+    <UserControl.Resources>
+        <!--
+            One tutor. No photo — a tutor has no picture in this app, so the initials carry the
+            recognition. The phone number is the first thing on the detail screen and reads as
+            noise in a list scanned by name.
+        -->
+        <DataTemplate DataType="utils:TutorRow" x:Key="TutorRowTemplate">
+            <StackPanel>
+                <Border Classes="RowRule" />
+                <Button
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Command="{Binding OpenCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    Padding="0">
+                    <Grid ColumnDefinitions="Auto,*,Auto" Margin="28,21">
+                        <Border
+                            Background="{DynamicResource SurfaceControl}"
+                            CornerRadius="35"
+                            Height="70"
+                            Width="70">
+                            <TextBlock
+                                Classes="TCaption"
+                                HorizontalAlignment="Center"
+                                Text="{Binding Initials}"
+                                VerticalAlignment="Center" />
+                        </Border>
 
-                <Border
-                    BorderBrush="{StaticResource ColorDivider}"
-                    BorderThickness="0,2,0,0"
-                    IsVisible="{Binding IsEmpty}"
-                    Margin="32,0,32,0"
-                    Padding="32,64">
-                    <TextBlock
-                        FontFamily="{StaticResource FontBody}"
-                        FontSize="32"
-                        FontStyle="Italic"
-                        Foreground="{StaticResource ColorTextMuted45}"
-                        HorizontalAlignment="Center"
-                        Text="Nenhum tutor cadastrado ainda."
-                        TextAlignment="Center"
-                        TextWrapping="Wrap" />
-                </Border>
+                        <StackPanel
+                            Grid.Column="1"
+                            Margin="21,0,14,0"
+                            Spacing="7"
+                            VerticalAlignment="Center">
+                            <TextBlock Classes="TBody" Text="{Binding Name}" />
+                            <TextBlock Classes="TCaption" Text="{Binding Subtitle}" />
+                        </StackPanel>
 
-                <ItemsControl ItemsSource="{Binding TutorsCollection}" Margin="32,0,32,32">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="utils:TutorRow">
-                            <Button Classes="RowButton" Command="{Binding OpenCommand}">
-                                <Border
-                                    BorderBrush="{StaticResource ColorDivider}"
-                                    BorderThickness="0,2,0,0"
-                                    HorizontalAlignment="Stretch"
-                                    Padding="0,24"
-                                    VerticalAlignment="Center">
-                                    <Grid ColumnDefinitions="Auto,*,Auto">
-                                        <Border
-                                            BorderBrush="{StaticResource ColorDivider}"
-                                            BorderThickness="2"
-                                            CornerRadius="40"
-                                            Grid.Column="0"
-                                            Height="80"
-                                            Margin="25,0,0,0"
-                                            Width="80">
-                                            <TextBlock
-                                                FontFamily="{StaticResource FontHeading}"
-                                                FontSize="37"
-                                                Foreground="{StaticResource ColorTextMuted70}"
-                                                HorizontalAlignment="Center"
-                                                Text="{Binding Initials}"
-                                                VerticalAlignment="Center" />
-                                        </Border>
-                                        <StackPanel
-                                            Grid.Column="1"
-                                            Margin="24,0,0,0"
-                                            VerticalAlignment="Center">
-                                            <TextBlock
-                                                FontFamily="{StaticResource FontHeading}"
-                                                FontSize="44"
-                                                FontWeight="Medium"
-                                                Foreground="{StaticResource ColorText}"
-                                                Text="{Binding Name}" />
-                                            <TextBlock
-                                                FontFamily="{StaticResource FontBody}"
-                                                FontSize="28"
-                                                Foreground="{StaticResource ColorTextMuted55}"
-                                                Text="{Binding Subtitle}" />
-                                        </StackPanel>
-                                        <TextBlock
-                                            FontSize="37"
-                                            Foreground="{StaticResource ColorAccent}"
-                                            Grid.Column="2"
-                                            HorizontalAlignment="Right"
-                                            Margin="0,0,25,0"
-                                            Text="→"
-                                            VerticalAlignment="Center" />
-                                    </Grid>
-                                </Border>
-                            </Button>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                        <Path
+                            Data="{StaticResource IconChevronRight}"
+                            Grid.Column="2"
+                            Height="30"
+                            Stretch="Uniform"
+                            Stroke="{DynamicResource InkSecondary}"
+                            StrokeJoin="Round"
+                            StrokeLineCap="Round"
+                            StrokeThickness="2.4"
+                            VerticalAlignment="Center"
+                            Width="30" />
+                    </Grid>
+                </Button>
             </StackPanel>
-        </ScrollViewer>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid Background="{DynamicResource SurfacePrimary}" RowDefinitions="Auto,Auto,*">
+
+        <Grid ColumnDefinitions="*,Auto" Grid.Row="0" Margin="35,14,30,0">
+            <TextBlock Classes="TTitle" Text="Tutores" VerticalAlignment="Center" />
+            <Border Classes="ControlRing" Grid.Column="1" VerticalAlignment="Center">
+                <Border Classes="FloatingControl">
+                    <Button
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Command="{Binding AddTutorCommand}"
+                        Height="77"
+                        Padding="28,0">
+                        <TextBlock Classes="TUi" Text="+ Novo" VerticalAlignment="Center" />
+                    </Button>
+                </Border>
+            </Border>
+        </Grid>
+
+        <TextBlock
+            Classes="TMicro"
+            Grid.Row="1"
+            IsVisible="{Binding !IsEmpty}"
+            Margin="35,28,35,14"
+            Text="{Binding TutorCountLabel}" />
+
+        <TextBlock
+            Classes="TUi Muted"
+            Grid.Row="1"
+            IsVisible="{Binding IsEmpty}"
+            Margin="35,28,35,0"
+            Text="Nenhum tutor cadastrado ainda."
+            TextWrapping="Wrap" />
+
+        <!--  Same bounded viewport as Cachorros, so a long tutor list virtualizes too.  -->
+        <Border
+            Classes="Group"
+            Grid.Row="2"
+            IsVisible="{Binding !IsEmpty}">
+            <ScrollViewer Padding="0,0,0,168">
+                <ItemsControl
+                    Classes="RowGroup"
+                    ItemTemplate="{StaticResource TutorRowTemplate}"
+                    ItemsSource="{Binding TutorsCollection}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </ScrollViewer>
+        </Border>
     </Grid>
 </UserControl>

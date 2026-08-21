@@ -23,5 +23,29 @@
 		circular variant; both resolve to the same adaptive icon on API 26+, and to the plain
 		bitmaps in mipmap-*dpi on the older versions this app still supports.
 	-->
-	<application android:label="@string/app_name" android:icon="@mipmap/appicon" android:roundIcon="@mipmap/appicon_round" />
+	<application android:label="@string/app_name" android:icon="@mipmap/appicon" android:roundIcon="@mipmap/appicon_round">
+		<!--
+			Lets a rendered report be handed to another app as a content:// URI. Since API 24 an
+			intent carrying a file:// path throws FileUriExposedException, so sharing the PNG at
+			all requires a provider.
+
+			exported="false" plus grantUriPermissions="true" is the pair that matters: nothing can
+			address the provider on its own, and the only access anyone gets is the temporary,
+			read-only grant that rides along with the share intent. What it may address is one
+			folder inside the app's cache — see Resources/xml/file_paths.xml.
+
+			${applicationId} is substituted at build time, so the authority follows the csproj's
+			ApplicationId rather than the package attribute above; AndroidShareSheet builds the
+			same string from the running package name so the two cannot drift.
+		-->
+		<provider
+			android:name="androidx.core.content.FileProvider"
+			android:authorities="${applicationId}.fileprovider"
+			android:exported="false"
+			android:grantUriPermissions="true">
+			<meta-data
+				android:name="android.support.FILE_PROVIDER_PATHS"
+				android:resource="@xml/file_paths" />
+		</provider>
+	</application>
 </manifest>

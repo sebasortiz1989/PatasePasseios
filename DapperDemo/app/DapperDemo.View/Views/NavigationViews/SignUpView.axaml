@@ -5,182 +5,139 @@
     x:Class="DapperDemo.View.Views.NavigationViews.SignUpView"
     x:DataType="navigationViewsViewmodels:SignUpViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
     xmlns:components="using:DapperDemo.View.Components"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:inputs="using:AvaloniaFramework.Controls.Inputs"
+    xmlns:imaging="using:DapperDemo.View.Imaging"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:navigationViewsViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.NavigationViewsViewmodels;assembly=DapperDemo.Viewmodel"
-    xmlns:viewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!--
-        The drop-down button used to be retemplated here, with its own copy of a calendar glyph.
-        ClassicalTheme now does it for every date field in the app, so this screen inherits the
-        shared icon and divider instead of drifting from them.
-    -->
-    <UserControl.Styles>
-        <Style Selector="CalendarDatePicker:pressed /template/ Border#Background">
-            <Setter Property="Background" Value="{StaticResource ColorBg}" />
-        </Style>
-
-        <Style Selector="CalendarDatePicker:pointover /template/ Border#Background">
-            <Setter Property="Background" Value="{StaticResource ColorBg}" />
-        </Style>
-    </UserControl.Styles>
-
     <components:DesignCanvas DesignHeight="1560" DesignWidth="720">
-        <Grid Background="{StaticResource ColorBg}" Width="720">
-            <StackPanel
-                HorizontalAlignment="Center"
-                Spacing="24"
-                VerticalAlignment="Center"
-                Width="560">
-                <StackPanel
-                    HorizontalAlignment="Center"
-                    Margin="0,0,0,8"
-                    Spacing="8">
-                    <TextBlock
-                        Classes="Heading1"
-                        FontSize="74"
-                        HorizontalAlignment="Center"
-                        Text="Criar Conta" />
-                    <Border
-                        Background="{StaticResource ColorAccent}"
-                        Height="2"
-                        HorizontalAlignment="Center"
-                        Margin="0,8,0,0"
-                        Width="63" />
-                </StackPanel>
-
-                <!--  Optional: an account without a photo falls back to the accent circle.  -->
-                <Panel
-                    Height="168"
-                    HorizontalAlignment="Center"
-                    Width="168">
-                    <Image
-                        IsVisible="{Binding HasPhoto}"
-                        Source="{Binding PhotoPath, Converter={StaticResource ImagePathConverter}}"
-                        Stretch="UniformToFill">
-                        <Image.Clip>
-                            <EllipseGeometry Rect="0,0,168,168" />
-                        </Image.Clip>
-                    </Image>
-                    <Border
-                        BorderBrush="{StaticResource ColorAccent}"
-                        BorderThickness="2"
-                        CornerRadius="84">
-                        <TextBlock
-                            FontFamily="{StaticResource FontHeading}"
-                            FontSize="66"
-                            Foreground="{StaticResource ColorAccentDark700}"
-                            HorizontalAlignment="Center"
-                            IsVisible="{Binding NoPhoto}"
-                            Text="Foto"
-                            VerticalAlignment="Center" />
-                    </Border>
-                </Panel>
-
-                <StackPanel
-                    HorizontalAlignment="Center"
-                    Orientation="Horizontal"
-                    Spacing="12">
-                    <buttons:VButton
-                        Classes="BtnSecondary"
-                        Command="{Binding ChoosePhotoCommand}"
-                        Height="70"
-                        VText="Escolher foto"
-                        Width="240" />
-                    <buttons:VButton
-                        Classes="BtnGhost"
-                        Command="{Binding RemovePhotoCommand}"
-                        Height="70"
-                        IsVisible="{Binding HasPhoto}"
-                        VText="Remover"
-                        Width="180" />
-                </StackPanel>
-
-                <inputs:VTextBoxWithLabel
-                    Classes="ClassicInput"
-                    VDescriptionText="Nome completo"
-                    VHeight="77"
-                    VText="{Binding Name}"
-                    VTextWatermark="Ana Ferreira"
-                    VWidth="560" />
-
-                <inputs:VTextBoxWithLabel
-                    Classes="ClassicInput"
-                    VDescriptionText="Email"
-                    VHeight="77"
-                    VText="{Binding Email}"
-                    VTextWatermark="email@exemplo.com"
-                    VWidth="560" />
-
-                <inputs:VTextBoxWithLabel
-                    Classes="ClassicInput"
-                    VDescriptionText="Senha"
-                    VHeight="77"
-                    VPasswordChar="•"
-                    VText="{Binding Password}"
-                    VTextWatermark="••••••••"
-                    VWidth="560" />
-
-                <Grid Margin="0,8,0,0">
-                    <CalendarDatePicker
-                        Background="{StaticResource ColorBg}"
-                        BorderBrush="{StaticResource ColorDivider}"
-                        BorderThickness="2"
-                        CornerRadius="7"
-                        DisplayDateStart="{Binding MinimumDate}"
-                        FontFamily="{StaticResource FontBody}"
-                        FontSize="34"
-                        Foreground="{StaticResource ColorText}"
-                        Height="77"
-                        HorizontalAlignment="Stretch"
-                        Padding="18,0,0,0"
-                        SelectedDate="{Binding BirthDate}"
-                        VerticalAlignment="Center" />
-
-                    <Border
-                        Background="{StaticResource ColorBg}"
-                        HorizontalAlignment="Left"
-                        Margin="18,-13,0,0"
-                        VerticalAlignment="Top">
-                        <TextBlock
-                            Background="Transparent"
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="28"
-                            Foreground="{StaticResource ColorTextMuted70}"
-                            Margin="3,0,3,0"
-                            Text="Data de nascimento" />
-                    </Border>
-                </Grid>
-
-                <TextBlock
-                    FontFamily="{StaticResource FontBody}"
-                    FontSize="31"
-                    FontStyle="Italic"
-                    Foreground="{StaticResource ColorAccentDark800}"
-                    HorizontalAlignment="Center"
-                    IsVisible="{Binding HasSignupError}"
-                    Text="{Binding SignupError}"
-                    TextAlignment="Center" />
-
-                <Grid ColumnDefinitions="*,16,*" Margin="0,8,0,0">
-                    <buttons:VButton
-                        Classes="BtnSecondary"
+        <Grid Background="{DynamicResource SurfacePrimary}" Width="720">
+            <ScrollViewer>
+                <StackPanel Margin="0,0,0,70">
+                    <Button
                         Command="{Binding BackCommand}"
-                        Height="88"
-                        VText="Voltar" />
-                    <buttons:VButton
-                        Classes="BtnPrimary"
-                        Command="{Binding RegisterCommand}"
-                        Grid.Column="2"
-                        Height="88"
-                        VText="Criar" />
-                </Grid>
-            </StackPanel>
+                        Margin="30,30,0,0"
+                        Tag="Entrar"
+                        Theme="{StaticResource BackControl}" />
+
+                    <TextBlock Classes="TTitle" Margin="35,28,35,0" Text="Criar conta" HorizontalAlignment="Center" />
+
+                    <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="SEUS DADOS" />
+
+                    <Border Classes="Group">
+                        <StackPanel>
+                            <StackPanel Margin="28,21" Spacing="7">
+                                <TextBlock Classes="TCaption" Text="Nome" />
+                                <TextBox Classes="Field" Text="{Binding Name}" PlaceholderText="Larissa Lopes" />
+                            </StackPanel>
+
+                            <Border Classes="RowRule" />
+
+                            <StackPanel Margin="28,21" Spacing="7">
+                                <TextBlock Classes="TCaption" Text="E-mail" />
+                                <TextBox Classes="Field" Text="{Binding Email}" PlaceholderText="voce@exemplo.com" />
+                            </StackPanel>
+
+                            <Border Classes="RowRule" />
+
+                            <StackPanel Margin="28,21" Spacing="7">
+                                <TextBlock Classes="TCaption" Text="Senha" />
+                                <TextBox Classes="Field" PasswordChar="•" Text="{Binding Password}" />
+                            </StackPanel>
+
+                            <Border Classes="RowRule" />
+
+                            <!--
+                                The one popup left on this screen. Tolerated because a calendar's
+                                content is short and uses theme-default sizes rather than
+                                canvas-derived ones — see the styling reference.
+                            -->
+                            <StackPanel Margin="28,21" Spacing="7">
+                                <TextBlock Classes="TCaption" Text="Data de nascimento" />
+                                <CalendarDatePicker
+                                    Classes="Field"
+                                    DisplayDateStart="{Binding MinimumDate}"
+                                    SelectedDate="{Binding BirthDate}" />
+                            </StackPanel>
+
+                            <Border Classes="RowRule" />
+
+                            <!--  The whole row is the tap target, not the 70px thumbnail alone.  -->
+                            <Button
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Command="{Binding ChoosePhotoCommand}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                Padding="0">
+                                <Grid ColumnDefinitions="*,Auto" Margin="28,21">
+                                    <StackPanel Spacing="7" VerticalAlignment="Center">
+                                        <TextBlock Classes="TBody" Text="Foto" />
+                                        <TextBlock
+                                            Classes="TCaption"
+                                            IsVisible="{Binding NoPhoto}"
+                                            Text="Nenhuma escolhida. Toque para escolher." />
+                                        <TextBlock
+                                            Classes="TCaption"
+                                            IsVisible="{Binding HasPhoto}"
+                                            Text="Toque para trocar." />
+                                    </StackPanel>
+                                    <Border
+                                        BorderBrush="{DynamicResource StrokeRaised}"
+                                        BorderThickness="1"
+                                        ClipToBounds="True"
+                                        CornerRadius="14"
+                                        Grid.Column="1"
+                                        Height="70"
+                                        Width="70">
+                                        <Image
+                                            imaging:ImageLoader.DecodeWidth="192"
+                                            imaging:ImageLoader.Path="{Binding PhotoPath}"
+                                            IsVisible="{Binding HasPhoto}"
+                                            Stretch="UniformToFill" />
+                                    </Border>
+                                </Grid>
+                            </Button>
+
+                            <!--
+                                Remover is its own row: nesting a button inside the row-wide tap
+                                target above would make one of the two unreachable.
+                            -->
+                            <Border Classes="RowRule" IsVisible="{Binding HasPhoto}" />
+                            <Button
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Command="{Binding RemovePhotoCommand}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                IsVisible="{Binding HasPhoto}"
+                                Padding="0">
+                                <TextBlock
+                                    Classes="TBody Owed"
+                                    Margin="28,21"
+                                    Text="Remover foto" />
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <TextBlock
+                        Classes="TCaption Owed"
+                        IsVisible="{Binding HasSignupError}"
+                        Margin="35,14,35,0"
+                        Text="{Binding SignupError}"
+                        TextWrapping="Wrap" />
+
+                    <Border Classes="ControlRing" Margin="30,28,30,0">
+                        <Border Classes="FloatingControl">
+                            <Button Classes="Submit" Command="{Binding RegisterCommand}">
+                                <TextBlock Classes="TBody" Text="Criar conta" />
+                            </Button>
+                        </Border>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
         </Grid>
     </components:DesignCanvas>
-
 </UserControl>

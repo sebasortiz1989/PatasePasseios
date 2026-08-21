@@ -4,7 +4,9 @@ using AvaloniaFramework.Threading;
 using DapperDemo.Repository.Dapper;
 using DapperDemo.Repository.Dapper.Aggregates;
 using DapperDemo.Repository.Dapper.Dtos;
+using DapperDemo.Repository.Dapper.Services;
 using DapperDemo.Viewmodel.Reports;
+using DapperDemo.Viewmodel.Services;
 using DapperDemo.Viewmodel.Viewmodels.Session;
 using DapperDemo.Viewmodel.Viewmodels.Utils;
 using PropertyChanged;
@@ -15,7 +17,7 @@ using System.Windows.Input;
 namespace DapperDemo.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;
 
 [AddINotifyPropertyChangedInterface]
-public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
+public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
 {
     private static readonly CultureInfo Brazil = new("pt-BR");
 
@@ -27,6 +29,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     private readonly ReportExporter reportExporter;
     private readonly AppSession session;
     private readonly CurrentView currentView;
+    private readonly PresenterBase<DogDetailViewModel, Unit, Unit> dogDetailView;
 
     private readonly PresenterBase<ServiceDetailViewModel, Unit, Unit> serviceDetailView;
 
@@ -59,12 +62,14 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
 
     public TutorDetailViewModel(
         CurrentView currentView,
+        Factory<PresenterBase<DogDetailViewModel, Unit, Unit>> dogDetailFactory,
         RepositoryTutors repositoryTutors,
         RepositoryDogs repositoryDogs,
         RepositoryServices repositoryServices,
         RepositoryPayments repositoryPayments,
         RepositoryPetSitter repositoryPetSitter,
         ReportExporter reportExporter,
+        ShareSheet shareSheet,
         AppSession session,
         Factory<PresenterBase<ServiceDetailViewModel, Unit, Unit>> serviceDetailFactory)
     {
@@ -74,10 +79,17 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         this.repositoryPayments = repositoryPayments;
         this.repositoryPetSitter = repositoryPetSitter;
         this.reportExporter = reportExporter;
+        Preview = new ReportPreview(reportExporter, shareSheet);
         this.session = session;
         this.currentView = currentView;
+        ArgumentNullException.ThrowIfNull(dogDetailFactory);
+        dogDetailView = dogDetailFactory.Create();
         serviceDetailView = serviceDetailFactory.Create();
         BackCommand = new SynchronizedCommand(currentView.GoBack, SynchronizationBehavior.Discard, true);
+        PreviousPeriodCommand = new SynchronizedCommand(() => StepPeriod(-1), SynchronizationBehavior.Discard, true);
+        NextPeriodCommand = new SynchronizedCommand(() => StepPeriod(1), SynchronizationBehavior.Discard, true);
+        ToggleWholeYearCommand = new SynchronizedCommand(ToggleWholeYear, SynchronizationBehavior.Discard, true);
+        Picker = new PeriodPicker(this);
         AskDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = true, SynchronizationBehavior.Discard, true);
         CancelDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = false, SynchronizationBehavior.Discard, true);
         ConfirmDeleteCommand = new SynchronizedCommand(Delete, SynchronizationBehavior.Discard, true);
@@ -105,6 +117,13 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     }
 
     public ICommand BackCommand { get; }
+
+    /// <summary>
+    /// Gets the navigator, so the back control can name the tab it returns to. Not a constant in
+    /// the markup: this screen opens from more than one tab, and a literal is wrong in all but one
+    /// of them.
+    /// </summary>
+    public CurrentView Navigation => currentView;
 
     public ICommand AskDeleteCommand { get; }
 
@@ -168,6 +187,18 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     public bool HasEditError => !string.IsNullOrEmpty(EditError);
 
     public string DogNames { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Gets this tutor's dogs, each row opening that dog's ficha.
+    /// </summary>
+    /// <remarks>
+    /// The dog screen links to its tutor, so the tutor screen links back. Reaching a dog from here
+    /// otherwise meant going out to the Cachorros tab and finding it by name.
+    /// </remarks>
+    public ObservableCollection<DogRow> Dogs { get; } = [];
+
+    /// <summary>Gets a value indicating whether this tutor has no dogs to list.</summary>
+    public bool NoDogs { get; private set; } = true;
 
     /// <summary>
     /// Gets what may be billed today: work already carried out and not yet paid for, across every
@@ -237,6 +268,11 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     /// </summary>
     public ConfirmRequest ReplaceRequest { get; } = new();
 
+    /// <summary>
+    /// Gets the rendered tutor summary, held on screen with Compartilhar and Salvar beside it.
+    /// </summary>
+    public ReportPreview Preview { get; }
+
     /// <summary>Gets the confirmation left after an image is written, or empty.</summary>
     public string ExportMsg { get; private set; } = string.Empty;
 
@@ -260,6 +296,21 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
 
     /// <summary>Gets the years this tutor has services in, plus the current one.</summary>
     public ObservableCollection<int> YearOptions { get; } = [];
+
+    /// <summary>Gets the period as one line, e.g. "Agosto 2026".</summary>
+    public string PeriodLabel => ServicePeriod.Label(SelectedMonth, SelectedYear);
+
+    /// <summary>Gets the command stepping the period back one month.</summary>
+    public ICommand PreviousPeriodCommand { get; private set; } = null!;
+
+    /// <summary>Gets the command stepping the period forward one month.</summary>
+    public ICommand NextPeriodCommand { get; private set; } = null!;
+
+    /// <summary>Gets the command switching between one month and the whole year.</summary>
+    public ICommand ToggleWholeYearCommand { get; private set; } = null!;
+
+    /// <summary>Gets the inline period picker: a year row over a grid of months.</summary>
+    public PeriodPicker Picker { get; }
 
     public ObservableCollection<ServiceTypeGroup> PendingServices { get; } = [];
 
@@ -316,7 +367,35 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         Phone = tutor.Telephone;
 
         var dogs = await repositoryDogs.ListForTutorAsync(tutorId).WithSync();
+
+        // Still built as a string for the exported report, which has no rows to tap.
         DogNames = dogs.Length == 0 ? "Nenhum cachorro cadastrado." : string.Join(", ", dogs.Select(d => d.Name));
+
+        foreach (var row in Dogs)
+        {
+            row.Dispose();
+        }
+
+        Dogs.Clear();
+
+        foreach (var dog in dogs)
+        {
+            var dogId = dog.DogId;
+
+            // CA2000: ownership passes to the DogRow, which disposes the command when the list is
+            // rebuilt — the same arrangement every other row list here uses.
+#pragma warning disable CA2000
+            var open = new SynchronizedCommand(() => OpenDog(dogId), SynchronizationBehavior.Discard, true);
+#pragma warning restore CA2000
+            Dogs.Add(new DogRow(
+                AppSession.Initials(dog.Name),
+                dog.Name,
+                string.IsNullOrWhiteSpace(dog.Breed) ? "Sem raça informada" : dog.Breed,
+                DogImageStore.ResolvePath(dog.Image),
+                open));
+        }
+
+        NoDogs = Dogs.Count == 0;
 
         await ReloadServicesAsync(tutorId).WithSync();
         tutorPayments = await repositoryPayments.ListForTutorAsync(tutorId).WithSync();
@@ -690,12 +769,16 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     {
         session.SelectedServiceKind = kind;
         session.SelectedServiceId = serviceId;
-        currentView.ViewShown = serviceDetailView;
+        currentView.Show(serviceDetailView);
         return Task.CompletedTask;
     }
 
     private void ReloadIfIdle()
     {
+        // Unguarded: the picker's highlight and its whole-year label must follow the period even
+        // while the option lists are being rebuilt.
+        Picker?.Refresh();
+
         if (!rebuildingOptions)
         {
             AppSession.FireAndForget(ReloadAsync());
@@ -708,7 +791,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     /// </summary>
     private void RefreshYearOptions(ServiceItem[] services, IEnumerable<DateTime> paymentDates)
     {
-        var years = ServicePeriod.Years(services, paymentDates);
+        var years = ServicePeriod.Years(services, paymentDates, SelectedYear);
         if (YearOptions.SequenceEqual(years))
         {
             return;
@@ -741,7 +824,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     /// Folds the services into one group per kind, collapsed until tapped.
     /// </summary>
     /// <remarks>
-    /// Kinds come out in the enum's own order — Passeio, Pet sitting, Hotel, Creche — which is the
+    /// Kinds come out in the enum's own order — Passeio, Pet sitting, Hotel, Day Care — which is the
     /// order they appear in everywhere else, rather than alphabetical. Inside a group the list
     /// keeps its newest-first order.
     /// </remarks>
@@ -916,11 +999,14 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         await AddPaymentSectionAsync(report, chargeableTotal, upcomingTotal).WithSync();
 
         var slug = new string([.. Name.ToLowerInvariant().Select(c => char.IsLetterOrDigit(c) ? c : '-')]).Trim('-');
-        var fileName = await reportExporter
-            .ExportAsync(report, $"servicos-{slug}", AskReplaceAsync)
+
+        // Shown rather than saved. A tutor's bill is the report most likely to be sent straight to
+        // that tutor, so the share sheet is the point of the screen.
+        var shown = await Preview
+            .ShowAsync(report, $"servicos-{slug}", AskReplaceAsync)
             .WithSync();
 
-        ExportMsg = fileName == null ? string.Empty : $"Resumo salvo: {fileName}";
+        ExportMsg = shown == Response.Successful ? string.Empty : "Não foi possível gerar o resumo.";
     }
 
     /// <summary>
@@ -1055,5 +1141,42 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         session.SelectedTutorId = null;
         session.NotifyDataChanged();
         currentView.GoBack();
+    }
+
+    /// <summary>
+    /// Moves the period, replacing the two drop-downs this screen used to carry.
+    /// </summary>
+    /// <remarks>
+    /// A popup lays out in its own visual root and so ignores the design canvas' scale — at phone
+    /// size the month list came out several times wider than the field that opened it. Stepping
+    /// keeps the whole interaction inside ordinary layout.
+    /// </remarks>
+    /// <param name="delta">−1 or +1.</param>
+    /// <summary>Opens one of this tutor's dogs, the same way the Cachorros tab does.</summary>
+    /// <param name="dogId">Which dog to show.</param>
+    private void OpenDog(int dogId)
+    {
+        session.SelectedDogId = dogId;
+        currentView.Show(dogDetailView);
+    }
+
+    /// <summary>Switches the period between a single month and the whole year.</summary>
+    private void ToggleWholeYear()
+    {
+        var number = ServicePeriod.ToggleWholeYear(SelectedMonth);
+        SelectedMonth = MonthOptions.FirstOrDefault(m => m.Number == number) ?? SelectedMonth;
+    }
+
+    private void StepPeriod(int delta)
+    {
+        var (month, year) = ServicePeriod.Step(SelectedMonth, SelectedYear, delta);
+
+        if (!YearOptions.Contains(year))
+        {
+            YearOptions.Add(year);
+        }
+
+        SelectedYear = year;
+        SelectedMonth = MonthOptions.FirstOrDefault(m => m.Number == month) ?? SelectedMonth;
     }
 }

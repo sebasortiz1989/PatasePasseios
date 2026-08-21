@@ -1,4 +1,5 @@
 ﻿using Avalonia.Platform.Storage;
+using DapperDemo.View.Imaging;
 using DapperDemo.Viewmodel.Services;
 using System;
 using System.IO;
@@ -33,11 +34,21 @@ public sealed class StorageProviderImagePicker : ImagePicker
         }
 
         var file = files[0];
-        var stream = await file.OpenReadAsync().ConfigureAwait(true);
 
         // Android returns a content:// URI whose Name still carries the original extension;
         // falling back to .jpg only matters for a file the picker could not name at all.
         var extension = Path.GetExtension(file.Name);
-        return new PickedImage(stream, string.IsNullOrEmpty(extension) ? ".jpg" : extension);
+        extension = string.IsNullOrEmpty(extension) ? ".jpg" : extension;
+
+        var stream = await file.OpenReadAsync().ConfigureAwait(true);
+
+        // Reduced here rather than in the image store, which is in the data layer and has no
+        // codecs. Every caller of the picker gets it — dog photos and profile photos alike — and
+        // what reaches disk and the backup zip is already the size the app draws.
+        await using (stream.ConfigureAwait(true))
+        {
+            var (content, storedExtension) = PhotoDownscaler.Reduce(stream, extension);
+            return new PickedImage(content, storedExtension);
+        }
     }
 }

@@ -1,0 +1,97 @@
+<UserControl
+    IsVisible="{Binding #Root.IsOpen}"
+    x:Class="DapperDemo.View.Components.PhotoViewer"
+    x:Name="Root"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:imaging="using:DapperDemo.View.Imaging"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        Bindings target the control's own properties through #Root rather than the ambient
+        DataContext, the same as ConfirmDialog: a UserControl inherits its parent's DataContext, so
+        a plain {Binding Path} would look for Path on the screen's view model.
+    -->
+    <!--
+        The whole scrim is the dismiss target. A photo opened by tapping it is closed by tapping it
+        again — there is nothing else on this screen to hit by accident.
+    -->
+    <Button
+        Background="{DynamicResource Scrim}"
+        BorderThickness="0"
+        Command="{Binding #Root.CloseCommand}"
+        CornerRadius="0"
+        HorizontalAlignment="Stretch"
+        HorizontalContentAlignment="Stretch"
+        Padding="0"
+        VerticalAlignment="Stretch"
+        VerticalContentAlignment="Stretch">
+        <Grid RowDefinitions="*,Auto">
+            <!--
+                Uniform, not UniformToFill: this is the one place the photo is shown whole rather
+                than cropped to a circle. Margin keeps it clear of the screen edges so a portrait
+                photo does not run under the status bar, and clear of the cross above it.
+            -->
+            <Image
+                imaging:ImageLoader.DecodeWidth="0"
+                imaging:ImageLoader.Path="{Binding #Root.ActivePath}"
+                Grid.Row="0"
+                Margin="35,126,35,35"
+                Stretch="Uniform" />
+
+            <!--
+                The cross says the photo is dismissible without having to guess that the scrim is.
+                Nested inside the dismiss button on purpose: whichever of the two is hit, the
+                outcome is the same, so there is nothing to get wrong.
+            -->
+            <Border
+                Background="{DynamicResource SurfaceRaised}"
+                BorderBrush="{DynamicResource StrokeControl}"
+                BorderThickness="1"
+                CornerRadius="35"
+                Grid.Row="0"
+                HorizontalAlignment="Right"
+                Margin="35,35,35,0"
+                VerticalAlignment="Top">
+                <Button
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Command="{Binding #Root.CloseCommand}"
+                    Height="70"
+                    Padding="0"
+                    Width="70">
+                    <Viewbox
+                        Height="32"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Width="32">
+                        <Path
+                            Data="{StaticResource IconClose}"
+                            Stretch="Uniform"
+                            Stroke="{DynamicResource InkPrimary}"
+                            StrokeJoin="Round"
+                            StrokeLineCap="Round"
+                            StrokeThickness="2" />
+                    </Viewbox>
+                </Button>
+            </Border>
+
+            <!--
+                The caption cannot sit straight on the scrim: the scrim is dark in both palettes,
+                and every ink token is dark in the light one. It gets the same treatment
+                ConfirmDialog uses over a scrim — fill and edge, no ring, because there is no page
+                colour behind it to ring with.
+            -->
+            <Border
+                Background="{DynamicResource SurfaceRaised}"
+                BorderBrush="{DynamicResource StrokeControl}"
+                BorderThickness="1"
+                CornerRadius="21"
+                Grid.Row="1"
+                HorizontalAlignment="Center"
+                Margin="0,0,0,70"
+                Padding="28,14">
+                <TextBlock Classes="TUi" Text="Toque para fechar" />
+            </Border>
+        </Grid>
+    </Button>
+</UserControl>

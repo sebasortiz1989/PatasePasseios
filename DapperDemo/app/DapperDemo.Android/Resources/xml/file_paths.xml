@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    What the FileProvider declared in AndroidManifest.xml is allowed to hand out.
+
+    Only one folder: the "shared" directory inside the app's own cache, which AndroidShareSheet
+    copies a report into just before opening the share sheet. Nothing else the app writes is
+    exposed — not the database, not the dog photos — because a provider grants read access to
+    whatever it can address, and the share sheet only ever needs the one file being sent.
+
+    The cache is the right home for it: Android reclaims it under storage pressure, so a report the
+    user shared and forgot about does not sit on the device for ever.
+-->
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <cache-path name="shared" path="shared/" />
+</paths>

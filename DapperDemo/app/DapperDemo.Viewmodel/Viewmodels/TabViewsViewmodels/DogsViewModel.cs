@@ -41,7 +41,7 @@ public class DogsViewModel : PresentationModelBase<Unit, Unit>
 
         dogDetailView = dogDetailFactory.Create();
         newDogView = newDogFactory.Create();
-        AddDogCommand = new SynchronizedCommand(() => currentView.ViewShown = newDogView, SynchronizationBehavior.Discard, true);
+        AddDogCommand = new SynchronizedCommand(() => currentView.Show(newDogView), SynchronizationBehavior.Discard, true);
     }
 
     public ICommand AddDogCommand { get; }
@@ -100,7 +100,7 @@ public class DogsViewModel : PresentationModelBase<Unit, Unit>
     private Task Open(int dogId)
     {
         session.SelectedDogId = dogId;
-        currentView.ViewShown = dogDetailView;
+        currentView.Show(dogDetailView);
         return Task.CompletedTask;
     }
 }

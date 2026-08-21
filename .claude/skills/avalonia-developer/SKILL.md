@@ -45,7 +45,10 @@ Two things override everything below:
   `Pagamento`), error text mapped from `Response` via
   `EnumExtensions.GetDescription()`. Write natural pt-BR, not translated
   English. Domain vocabulary the app already uses: Tutor (never Client),
-  Passeio (walk), Hospedagem (hotel), Creche (day-care), A executar.
+  Passeio (walk), A executar.
+  **Exception (owner's call, 2026-08-21):** the hotel and day-care labels are
+  English — **Hotel** and **Day Care**, not Hospedagem and Creche. See the root
+  `CLAUDE.md`; do not translate them back.
 - **Legacy Portuguese structure stays.** `src/1. Contrato`, the test project
   names — leave them, write English inside them. Do not rename, do not
   recreate the numbered template folders that were removed.

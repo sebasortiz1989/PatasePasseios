@@ -1,0 +1,121 @@
+<UserControl
+    IsVisible="{Binding #Root.IsOpen}"
+    x:Class="DapperDemo.View.Components.ReportPreview"
+    x:Name="Root"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:imaging="using:DapperDemo.View.Imaging"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        Bindings target the control's own properties through #Root rather than the ambient
+        DataContext, the same as ConfirmDialog and PhotoViewer.
+    -->
+    <Border Background="{DynamicResource Scrim}">
+        <Grid RowDefinitions="Auto,*,Auto">
+
+            <!--  Dismissing is the cross, not the scrim: the actions below are the point of the screen.  -->
+            <Border
+                Background="{DynamicResource SurfaceRaised}"
+                BorderBrush="{DynamicResource StrokeControl}"
+                BorderThickness="1"
+                CornerRadius="35"
+                Grid.Row="0"
+                HorizontalAlignment="Right"
+                Margin="35,35,35,0">
+                <Button
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Command="{Binding #Root.CloseCommand}"
+                    Height="70"
+                    Padding="0"
+                    Width="70">
+                    <Viewbox
+                        Height="32"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Width="32">
+                        <Path
+                            Data="{StaticResource IconClose}"
+                            Stretch="Uniform"
+                            Stroke="{DynamicResource InkPrimary}"
+                            StrokeJoin="Round"
+                            StrokeLineCap="Round"
+                            StrokeThickness="2" />
+                    </Viewbox>
+                </Button>
+            </Border>
+
+            <!--
+                Uniform: the whole page has to be legible at a glance, so it is fitted rather than
+                cropped. Decoded at full size — a report is text, and a downscale would make the
+                figures the sitter is checking unreadable.
+            -->
+            <Border
+                Background="{DynamicResource SurfaceRaised}"
+                CornerRadius="21"
+                Grid.Row="1"
+                Margin="35,21,35,21">
+                <Image
+                    imaging:ImageLoader.DecodeWidth="0"
+                    imaging:ImageLoader.Path="{Binding #Root.ImagePath}"
+                    Margin="14"
+                    Stretch="Uniform" />
+            </Border>
+
+            <StackPanel Grid.Row="2" Margin="35,0,35,70">
+                <TextBlock
+                    Classes="TCaption"
+                    Foreground="{DynamicResource InkPrimary}"
+                    HorizontalAlignment="Center"
+                    IsVisible="{Binding #Root.HasMessage}"
+                    Margin="0,0,0,21"
+                    Text="{Binding #Root.Message}"
+                    TextAlignment="Center"
+                    TextWrapping="Wrap" />
+
+                <!--
+                    Compartilhar leads: sending the report is the common errand, and it needs no
+                    file kept anywhere. It is hidden on the heads with no system share sheet, so
+                    Salvar becomes the only action rather than sitting beside a dead button.
+                -->
+                <Border
+                    Background="{DynamicResource SurfaceRaised}"
+                    BorderBrush="{DynamicResource StrokeControl}"
+                    BorderThickness="1"
+                    CornerRadius="21">
+                    <StackPanel>
+                        <Button
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Command="{Binding #Root.ShareCommand}"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            IsVisible="{Binding #Root.CanShare}"
+                            Padding="0">
+                            <TextBlock
+                                Classes="TBody"
+                                FontWeight="SemiBold"
+                                Margin="28,21"
+                                Text="Compartilhar" />
+                        </Button>
+
+                        <Border Classes="RowRule" IsVisible="{Binding #Root.CanShare}" Margin="0" />
+
+                        <Button
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Command="{Binding #Root.SaveCommand}"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            Padding="0">
+                            <TextBlock
+                                Classes="TBody"
+                                Margin="28,21"
+                                Text="Salvar no aparelho" />
+                        </Button>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

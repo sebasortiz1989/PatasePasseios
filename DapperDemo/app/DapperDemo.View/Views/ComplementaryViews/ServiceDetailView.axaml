@@ -5,606 +5,329 @@
     x:Class="DapperDemo.View.Views.ComplementaryViews.ServiceDetailView"
     x:DataType="complementaryViewsViewmodels:ServiceDetailViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
     xmlns:complementaryViewsViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:components="using:DapperDemo.View.Components"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:imaging="using:DapperDemo.View.Imaging"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Background="{StaticResource ColorBg}" Width="720">
+    <Grid Background="{DynamicResource SurfacePrimary}" Width="720">
         <ScrollViewer>
-            <StackPanel Spacing="0">
-                <Grid ColumnDefinitions="*,Auto" Margin="32,32,32,0">
-                    <buttons:VButton
-                        Classes="BtnBack"
-                        Command="{Binding BackCommand}"
-                        VText="← Voltar" />
+            <StackPanel>
+                <Button
+                    Command="{Binding BackCommand}"
+                    Margin="30,30,0,0"
+                    Tag="{Binding Navigation.BackLabel}"
+                    Theme="{StaticResource BackControl}" />
 
-                    <!--
-                        Opens Google Calendar's compose screen with the booking already filled
-                        in. The user saves it there, which is why the app needs no calendar
-                        access of its own — see AvaloniaUriLauncher.
-                    -->
-                    <Button
-                        Classes="IconToggle"
-                        Command="{Binding AddToCalendarCommand}"
-                        Grid.Column="1"
-                        ToolTip.Tip="Adicionar à Google Agenda"
-                        VerticalAlignment="Center">
-                        <Viewbox
-                            Height="36"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Width="36">
-                            <Path
-                                Data="{StaticResource IconCalendarAdd}"
-                                HorizontalAlignment="Center"
-                                Margin="0,0,2,3"
-                                Stroke="{StaticResource ColorAccent}"
-                                StrokeJoin="Round"
-                                StrokeLineCap="Round"
-                                StrokeThickness="1.8"
-                                VerticalAlignment="Center" />
-                        </Viewbox>
-                    </Button>
-                </Grid>
-
-                <StackPanel Margin="32,24,32,56" Spacing="0">
-                    <!--  The dog's photo, so a booking is recognisable at a glance.  -->
-                    <Grid ColumnDefinitions="Auto,*">
-                        <Panel
-                            Height="132"
-                            Margin="0,0,24,0"
-                            VerticalAlignment="Top"
-                            Width="132">
+                <StackPanel IsVisible="{Binding !IsEditing}">
+                    <!--  Identity: whose service this is, and what kind.  -->
+                    <Grid ColumnDefinitions="Auto,*" Margin="35,28,35,0">
+                        <Panel Height="132" Width="132">
                             <Image
+                                imaging:ImageLoader.Path="{Binding DogImagePath}"
                                 IsVisible="{Binding HasDogImage}"
-                                Source="{Binding DogImagePath, Converter={StaticResource ImagePathConverter}}"
                                 Stretch="UniformToFill">
                                 <Image.Clip>
                                     <EllipseGeometry Rect="0,0,132,132" />
                                 </Image.Clip>
                             </Image>
                             <Border
-                                BorderBrush="{StaticResource ColorAccent}"
-                                BorderThickness="2"
-                                CornerRadius="66">
+                                Background="{DynamicResource SurfaceControl}"
+                                CornerRadius="66"
+                                IsVisible="{Binding NoDogImage}">
                                 <TextBlock
-                                    FontFamily="{StaticResource FontHeading}"
-                                    FontSize="62"
-                                    Foreground="{StaticResource ColorAccentDark700}"
+                                    Classes="TSection"
                                     HorizontalAlignment="Center"
-                                    IsVisible="{Binding NoDogImage}"
                                     Text="{Binding DogInitials}"
                                     VerticalAlignment="Center" />
                             </Border>
                         </Panel>
-
-                        <StackPanel
-                            Grid.Column="1"
-                            Spacing="0"
-                            VerticalAlignment="Center">
-                            <TextBlock Classes="Kicker" Text="{Binding TypeLabel}" />
-                            <TextBlock
-                                Classes="Heading1"
-                                FontSize="68"
-                                Margin="0,4,0,0"
-                                Text="{Binding DogName}"
-                                TextWrapping="Wrap" />
-                            <TextBlock
-                                FontFamily="{StaticResource FontBody}"
-                                FontSize="31"
-                                FontStyle="Italic"
-                                Foreground="{StaticResource ColorTextMuted55}"
-                                Margin="0,4,0,0">
-                                <Run Text="tutor: " />
-                                <Run Text="{Binding TutorName}" />
-                            </TextBlock>
-
-                            <!--  Straight to the tutor behind this booking; their Back returns here.  -->
-                            <buttons:VButton
-                                Classes="BtnGhost"
-                                Command="{Binding OpenTutorCommand}"
-                                Height="56"
-                                HorizontalAlignment="Left"
-                                VText="Ver tutor →" />
+                        <StackPanel Grid.Column="1" Margin="21,0,0,0" Spacing="4" VerticalAlignment="Center">
+                            <TextBlock Classes="TTitle" Text="{Binding TypeLabel}" />
+                            <TextBlock Classes="TCaption" Text="{Binding DogName}" />
                         </StackPanel>
                     </Grid>
 
-                    <Border
-                        Background="{StaticResource ColorAccent}"
-                        Height="2"
-                        HorizontalAlignment="Left"
-                        Margin="0,32,0,0"
-                        Width="77" />
-
-                    <!--  Read view  -->
-                    <StackPanel IsVisible="{Binding IsViewing}">
-                        <Border
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="0,2,0,0"
-                            Margin="0,32,0,0"
-                            Padding="0,20,0,20">
-                            <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="28"
-                                    Foreground="{StaticResource ColorTextMuted55}"
-                                    LetterSpacing="1"
-                                    Text="DATA" />
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="34"
-                                    Foreground="{StaticResource ColorText}"
-                                    Grid.Column="1"
-                                    Text="{Binding DateLabel}" />
+                    <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="QUANDO" />
+                    <Border Classes="Group">
+                        <StackPanel>
+                            <Grid ColumnDefinitions="*,Auto" Margin="28,21">
+                                <TextBlock Classes="TBody" Text="Início" />
+                                <TextBlock Classes="TBody Muted" Grid.Column="1" Text="{Binding DateLabel}" />
                             </Grid>
-                        </Border>
-
-                        <!--  Only a stay has a check-out; day-care ends when the day does.  -->
-                        <Border
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="0,2,0,0"
-                            IsVisible="{Binding IsHotel}"
-                            Padding="0,20,0,20">
-                            <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="28"
-                                    Foreground="{StaticResource ColorTextMuted55}"
-                                    LetterSpacing="1"
-                                    Text="SAÍDA" />
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="34"
-                                    Foreground="{StaticResource ColorText}"
-                                    Grid.Column="1"
-                                    Text="{Binding EndLabel}" />
+                            <Border Classes="RowRule" IsVisible="{Binding IsHotel}" />
+                            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsHotel}" Margin="28,21">
+                                <TextBlock Classes="TBody" Text="Saída" />
+                                <TextBlock Classes="TBody Muted" Grid.Column="1" Text="{Binding EndLabel}" />
                             </Grid>
-                        </Border>
-
-                        <!--  Walks are bundled into both hotel stays and day-care.  -->
-                        <Border
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="0,2,0,0"
-                            IsVisible="{Binding ShowsWalking}"
-                            Padding="0,20,0,20">
-                            <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="28"
-                                    Foreground="{StaticResource ColorTextMuted55}"
-                                    LetterSpacing="1"
-                                    Text="PASSEIOS" />
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="34"
-                                    Foreground="{StaticResource ColorText}"
-                                    Grid.Column="1"
-                                    Text="{Binding WalkingLabel}" />
+                            <Border Classes="RowRule" IsVisible="{Binding ShowsWalking}" />
+                            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding ShowsWalking}" Margin="28,21">
+                                <TextBlock Classes="TBody" Text="Passeios" />
+                                <TextBlock Classes="TBody Muted" Grid.Column="1" Text="{Binding WalkingLabel}" />
                             </Grid>
-                        </Border>
-
-                        <Border
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="0,2,0,0"
-                            Padding="0,20,0,20">
-                            <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="28"
-                                    Foreground="{StaticResource ColorTextMuted55}"
-                                    LetterSpacing="1"
-                                    Text="{Binding PriceFieldLabel}" />
-                                <TextBlock
-                                    FontFamily="{StaticResource FontHeading}"
-                                    FontSize="45"
-                                    Foreground="{StaticResource ColorText}"
-                                    Grid.Column="1"
-                                    Text="{Binding PriceLabel}" />
-                            </Grid>
-                        </Border>
-
-                        <!--  A stay is priced per day, so the amount actually owed is the daily rate times the nights.  -->
-                        <StackPanel IsVisible="{Binding IsHotel}">
-                            <Border
-                                BorderBrush="{StaticResource ColorDivider}"
-                                BorderThickness="0,2,0,0"
-                                Padding="0,20,0,20">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <TextBlock
-                                        FontFamily="{StaticResource FontBody}"
-                                        FontSize="28"
-                                        Foreground="{StaticResource ColorTextMuted55}"
-                                        LetterSpacing="1"
-                                        Text="DIÁRIAS" />
-                                    <TextBlock
-                                        FontFamily="{StaticResource FontBody}"
-                                        FontSize="34"
-                                        Foreground="{StaticResource ColorText}"
-                                        Grid.Column="1"
-                                        Text="{Binding DaysLabel}" />
-                                </Grid>
-                            </Border>
-                            <!--  Only shown when there is one, so an ordinary stay stays uncluttered.  -->
-                            <Border
-                                BorderBrush="{StaticResource ColorDivider}"
-                                BorderThickness="0,2,0,0"
-                                IsVisible="{Binding HasExtraCharge}"
-                                Padding="0,20,0,20">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <TextBlock
-                                        FontFamily="{StaticResource FontBody}"
-                                        FontSize="28"
-                                        Foreground="{StaticResource ColorTextMuted55}"
-                                        LetterSpacing="1"
-                                        Text="ADICIONAL" />
-                                    <TextBlock
-                                        FontFamily="{StaticResource FontBody}"
-                                        FontSize="34"
-                                        Foreground="{StaticResource ColorText}"
-                                        Grid.Column="1"
-                                        Text="{Binding ExtraChargeLabel}" />
-                                </Grid>
-                            </Border>
                         </StackPanel>
+                    </Border>
 
-                        <!--
-                            What the booking came to before the discount. Only worth a row on a
-                            discounted stay, where the price above is a daily rate and the
-                            arithmetic would otherwise be invisible — everywhere else the subtotal
-                            is the price already on screen.
-                        -->
-                        <Border
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="0,2,0,0"
-                            IsVisible="{Binding ShowsSubtotal}"
-                            Padding="0,20,0,20">
-                            <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="28"
-                                    Foreground="{StaticResource ColorTextMuted55}"
-                                    LetterSpacing="1"
-                                    Text="SUBTOTAL" />
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="34"
-                                    Foreground="{StaticResource ColorText}"
+                    <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="TUTOR" />
+                    <Border Classes="Group">
+                        <Button
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Command="{Binding OpenTutorCommand}"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            Padding="0">
+                            <Grid ColumnDefinitions="*,Auto" Margin="28,21">
+                                <TextBlock Classes="TBody" Text="{Binding TutorName}" VerticalAlignment="Center" />
+                                <Path
+                                    Data="{StaticResource IconChevronRight}"
                                     Grid.Column="1"
-                                    Text="{Binding SubtotalLabel}" />
+                                    Height="30"
+                                    Stretch="Uniform"
+                                    Stroke="{DynamicResource InkSecondary}"
+                                    StrokeJoin="Round"
+                                    StrokeLineCap="Round"
+                                    StrokeThickness="2.4"
+                                    VerticalAlignment="Center"
+                                    Width="30" />
                             </Grid>
-                        </Border>
+                        </Button>
+                    </Border>
 
-                        <!--  The rate rides in the caption so the money stays aligned with the amounts above it.  -->
-                        <Border
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="0,2,0,0"
-                            IsVisible="{Binding HasDiscount}"
-                            Padding="0,20,0,20">
-                            <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="28"
-                                    Foreground="{StaticResource ColorTextMuted55}"
-                                    LetterSpacing="1"
-                                    Text="{Binding DiscountFieldLabel}"
-                                    VerticalAlignment="Center" />
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="34"
-                                    Foreground="{StaticResource ColorAccent}"
-                                    Grid.Column="1"
-                                    Text="{Binding DiscountAmountLabel}" />
+                    <!--
+                        The money block, in one order for all four kinds: what it costs, what came
+                        off, what it comes to. Total is the only figure in accent.
+                    -->
+                    <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="VALOR" />
+                    <Border Classes="Group">
+                        <StackPanel>
+                            <Grid ColumnDefinitions="*,Auto" Margin="28,21">
+                                <TextBlock Classes="TBody" Text="{Binding PriceFieldLabel}" />
+                                <TextBlock Classes="TBody Muted" Grid.Column="1" Text="{Binding PriceLabel}" />
                             </Grid>
-                        </Border>
 
-                        <!--
-                            A stay always needs this because its price is a rate; anything else
-                            needs it only once a discount has moved the total off the price above.
-                        -->
-                        <Border
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="0,2,0,0"
-                            IsVisible="{Binding ShowsTotal}"
-                            Padding="0,20,0,20">
-                            <Grid ColumnDefinitions="*,Auto">
+                            <Border Classes="RowRule" IsVisible="{Binding IsHotel}" />
+                            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsHotel}" Margin="28,21">
+                                <TextBlock Classes="TBody" Text="Diárias" />
+                                <TextBlock Classes="TBody Muted" Grid.Column="1" Text="{Binding DaysLabel}" />
+                            </Grid>
+
+                            <Border Classes="RowRule" IsVisible="{Binding HasExtraCharge}" />
+                            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding HasExtraCharge}" Margin="28,21">
+                                <TextBlock Classes="TBody" Text="Adicional" />
+                                <TextBlock Classes="TBody Muted" Grid.Column="1" Text="{Binding ExtraChargeLabel}" />
+                            </Grid>
+
+                            <Border Classes="RowRule" IsVisible="{Binding ShowsSubtotal}" />
+                            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding ShowsSubtotal}" Margin="28,21">
+                                <TextBlock Classes="TBody" Text="Subtotal" />
+                                <TextBlock Classes="TBody Muted" Grid.Column="1" Text="{Binding SubtotalLabel}" />
+                            </Grid>
+
+                            <Border Classes="RowRule" IsVisible="{Binding HasDiscount}" />
+                            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding HasDiscount}" Margin="28,21">
+                                <TextBlock Classes="TBody" Text="{Binding DiscountFieldLabel}" />
+                                <TextBlock Classes="TBody Muted" Grid.Column="1" Text="{Binding DiscountAmountLabel}" />
+                            </Grid>
+
+                            <Border Classes="RowRule" IsVisible="{Binding ShowsTotal}" />
+                            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding ShowsTotal}" Margin="28,21">
+                                <TextBlock Classes="TBody" Text="Total" />
                                 <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="28"
-                                    Foreground="{StaticResource ColorAccentDark700}"
-                                    LetterSpacing="1"
-                                    Text="TOTAL"
-                                    VerticalAlignment="Center" />
-                                <TextBlock
-                                    FontFamily="{StaticResource FontHeading}"
-                                    FontSize="53"
-                                    Foreground="{StaticResource ColorAccentDark700}"
+                                    Classes="TBody Owed"
+                                    FontWeight="SemiBold"
                                     Grid.Column="1"
                                     Text="{Binding TotalLabel}" />
                             </Grid>
-                        </Border>
 
-                        <!--
-                            The settled/outstanding split, shown only while a service is part
-                            settled. A service keeps its price now, so this is where the money that
-                            has already landed on it is accounted for.
-                        -->
-                        <StackPanel IsVisible="{Binding HasPartialSettlement}">
-                            <Border
-                                BorderBrush="{StaticResource ColorDivider}"
-                                BorderThickness="0,2,0,0"
-                                Padding="0,20,0,20">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <TextBlock
-                                        FontFamily="{StaticResource FontBody}"
-                                        FontSize="28"
-                                        Foreground="{StaticResource ColorTextMuted55}"
-                                        LetterSpacing="1"
-                                        Text="JÁ PAGO" />
-                                    <TextBlock
-                                        FontFamily="{StaticResource FontHeading}"
-                                        FontSize="45"
-                                        Foreground="{StaticResource ColorText}"
-                                        Grid.Column="1"
-                                        Text="{Binding SettledLabel}" />
-                                </Grid>
-                            </Border>
-                            <Border
-                                BorderBrush="{StaticResource ColorDivider}"
-                                BorderThickness="0,2,0,0"
-                                Padding="0,20,0,20">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <TextBlock
-                                        FontFamily="{StaticResource FontBody}"
-                                        FontSize="28"
-                                        Foreground="{StaticResource ColorTextMuted55}"
-                                        LetterSpacing="1"
-                                        Text="EM ABERTO" />
-                                    <TextBlock
-                                        FontFamily="{StaticResource FontHeading}"
-                                        FontSize="45"
-                                        Foreground="{StaticResource ColorAccentDark700}"
-                                        Grid.Column="1"
-                                        Text="{Binding OutstandingLabel}" />
-                                </Grid>
-                            </Border>
+                            <Border Classes="RowRule" IsVisible="{Binding HasPartialSettlement}" />
+                            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding HasPartialSettlement}" Margin="28,21">
+                                <TextBlock Classes="TBody" Text="Já pago" />
+                                <TextBlock Classes="TBody Muted" Grid.Column="1" Text="{Binding SettledLabel}" />
+                            </Grid>
+                            <Border Classes="RowRule" IsVisible="{Binding HasPartialSettlement}" />
+                            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding HasPartialSettlement}" Margin="28,21">
+                                <TextBlock Classes="TBody" Text="Em aberto" />
+                                <TextBlock Classes="TBody Owed" Grid.Column="1" Text="{Binding OutstandingLabel}" />
+                            </Grid>
                         </StackPanel>
+                    </Border>
 
-                        <!--  Where the money came from, when part of it was the tutor's own credit.  -->
-                        <Border
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="0,2,0,0"
-                            IsVisible="{Binding HasCreditNote}"
-                            Padding="0,16,0,16">
-                            <TextBlock
-                                FontFamily="{StaticResource FontBody}"
-                                FontSize="29"
-                                FontStyle="Italic"
-                                Foreground="{StaticResource ColorAccentDark700}"
-                                Text="{Binding CreditNote}"
-                                TextWrapping="Wrap" />
-                        </Border>
+                    <TextBlock
+                        Classes="TCaption"
+                        IsVisible="{Binding HasCreditNote}"
+                        Margin="35,14,35,0"
+                        Text="{Binding CreditNote}"
+                        TextWrapping="Wrap" />
 
-                        <!--  Whether the work happened. Independent of payment: this is where the flag is set.  -->
-                        <Border
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="0,2,0,0"
-                            Padding="0,20,0,20"
-                            VerticalAlignment="Center">
-                            <Grid ColumnDefinitions="*,Auto">
+                    <!--  Execução is the sitter's to set; Pagamento is recorded on the tutor screen.  -->
+                    <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="SITUAÇÃO" />
+                    <Border Classes="Group">
+                        <StackPanel>
+                            <Button
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Command="{Binding ToggleDoneCommand}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                Padding="0">
+                                <Grid ColumnDefinitions="*,Auto" Margin="28,21">
+                                    <TextBlock Classes="TBody" Text="Execução" />
+                                    <TextBlock Classes="TBody Muted" Grid.Column="1" Text="{Binding DoneActionLabel}" />
+                                </Grid>
+                            </Button>
+                            <Border Classes="RowRule" />
+                            <Grid ColumnDefinitions="*,Auto" Margin="28,21">
+                                <TextBlock Classes="TBody" Text="Pagamento" />
                                 <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="28"
-                                    Foreground="{StaticResource ColorTextMuted55}"
-                                    LetterSpacing="1"
-                                    Text="EXECUÇÃO"
-                                    VerticalAlignment="Center" />
-                                <Button
-                                    Classes="Chip"
-                                    Classes.Active="{Binding Done}"
-                                    Command="{Binding ToggleDoneCommand}"
-                                    Content="{Binding DoneActionLabel}"
-                                    Grid.Column="1" />
-                            </Grid>
-                        </Border>
-
-                        <!--  What marking it done did to the tutor's credit, when it did anything.  -->
-                        <TextBlock
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="26"
-                            FontStyle="Italic"
-                            Foreground="{StaticResource ColorAccentDark700}"
-                            IsVisible="{Binding HasCreditMsg}"
-                            Margin="0,0,0,12"
-                            Text="{Binding CreditMsg}"
-                            TextWrapping="Wrap" />
-
-                        <Border
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="0,2,0,2"
-                            Padding="0,20,0,20"
-                            VerticalAlignment="Center">
-                            <StackPanel Spacing="10">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <TextBlock
-                                        FontFamily="{StaticResource FontBody}"
-                                        FontSize="28"
-                                        Foreground="{StaticResource ColorTextMuted55}"
-                                        LetterSpacing="1"
-                                        Text="PAGAMENTO"
-                                        VerticalAlignment="Center" />
-                                    <Border
-                                        Classes="TagSign"
-                                        Classes.Paid="{Binding Paid}"
-                                        Classes.Pending="{Binding !Paid}"
-                                        Grid.Column="1">
-                                        <TextBlock Text="{Binding PaidActionLabel}" />
-                                    </Border>
-                                </Grid>
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="25"
-                                    FontStyle="Italic"
-                                    Foreground="{StaticResource ColorTextMuted45}"
-                                    IsVisible="{Binding ShowsPaymentBlockedHint}"
-                                    Text="Marque como feito para poder cobrar. Um adiantamento do tutor entra como crédito na tela dele."
-                                    TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
-
-                        <buttons:VButton
-                            Classes="BtnPrimary"
-                            Command="{Binding EditCommand}"
-                            Height="88"
-                            HorizontalAlignment="Stretch"
-                            Margin="0,32,0,0"
-                            VText="Editar serviço" />
-
-                        <!--  Destructive, so it asks first — see the ConfirmDialog at the end of this file.  -->
-                        <buttons:VButton
-                            Classes="BtnSecondary"
-                            Command="{Binding AskDeleteCommand}"
-                            Height="88"
-                            HorizontalAlignment="Stretch"
-                            Margin="0,16,0,0"
-                            VText="Excluir serviço" />
-                    </StackPanel>
-
-                    <!--
-                        Editor. The dog and the service type are not editable: each type lives in
-                        its own table, so changing one is a move, not an edit.
-                    -->
-                    <StackPanel
-                        IsVisible="{Binding IsEditing}"
-                        Margin="0,32,0,0"
-                        Spacing="28">
-                        <StackPanel Spacing="10">
-                            <TextBlock Classes="FormLabel" Text="Data e hora" />
-                            <Grid ColumnDefinitions="*,16,Auto">
-                                <CalendarDatePicker
-                                    Background="Transparent"
-                                    BorderBrush="{StaticResource ColorDivider}"
-                                    BorderThickness="2"
-                                    CornerRadius="7"
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="32"
-                                    Foreground="{StaticResource ColorText}"
-                                    MinHeight="74"
-                                    SelectedDate="{Binding EditDatePart}" />
-                                <!--  Day-care has no time of day, so it edits the date alone.  -->
-                                <TimePicker
-                                    ClockIdentifier="24HourClock"
-                                    Grid.Column="2"
-                                    IsVisible="{Binding !IsDayCare}"
-                                    MinHeight="74"
-                                    SelectedTime="{Binding EditTimePart}" />
+                                    Classes="TBody"
+                                    Classes.Owed="{Binding !Paid}"
+                                    Classes.Muted="{Binding Paid}"
+                                    Grid.Column="1"
+                                    Text="{Binding PaidActionLabel}" />
                             </Grid>
                         </StackPanel>
+                    </Border>
 
-                        <StackPanel IsVisible="{Binding IsHotel}" Spacing="10">
-                            <TextBlock Classes="FormLabel" Text="Saída" />
-                            <Grid ColumnDefinitions="*,16,Auto">
-                                <CalendarDatePicker
-                                    Background="Transparent"
-                                    BorderBrush="{StaticResource ColorDivider}"
-                                    BorderThickness="2"
-                                    CornerRadius="7"
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="32"
-                                    Foreground="{StaticResource ColorText}"
-                                    MinHeight="74"
-                                    SelectedDate="{Binding EditEndDatePart}" />
-                                <TimePicker
-                                    ClockIdentifier="24HourClock"
-                                    Grid.Column="2"
-                                    MinHeight="74"
-                                    SelectedTime="{Binding EditEndTimePart}" />
-                            </Grid>
+                    <TextBlock
+                        Classes="TCaption"
+                        IsVisible="{Binding ShowsPaymentBlockedHint}"
+                        Margin="35,14,35,0"
+                        Text="O pagamento é registrado na ficha do tutor, depois que o serviço for feito."
+                        TextWrapping="Wrap" />
+
+                    <TextBlock
+                        Classes="TCaption"
+                        IsVisible="{Binding HasCreditMsg}"
+                        Margin="35,14,35,0"
+                        Text="{Binding CreditMsg}"
+                        TextWrapping="Wrap" />
+
+                    <Border Classes="Group" Margin="35,42,35,0">
+                        <StackPanel>
+                            <Button
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Command="{Binding AddToCalendarCommand}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                Padding="0">
+                                <TextBlock Classes="TBody" Margin="28,21" Text="Adicionar ao calendário" />
+                            </Button>
+                            <Border Classes="RowRule" />
+                            <Button
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Command="{Binding EditCommand}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                Padding="0">
+                                <TextBlock Classes="TBody" Margin="28,21" Text="Editar" />
+                            </Button>
+                            <Border Classes="RowRule" />
+                            <Button
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Command="{Binding AskDeleteCommand}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                Padding="0">
+                                <TextBlock Classes="TBody Owed" Margin="28,21" Text="Excluir" />
+                            </Button>
                         </StackPanel>
-
-                        <CheckBox
-                            Content="Inclui passeios"
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="32"
-                            Foreground="{StaticResource ColorTextMuted70}"
-                            IsChecked="{Binding EditRequiresWalking}"
-                            IsVisible="{Binding ShowsWalking}"
-                            Theme="{StaticResource ClassicCheckBox}" />
-
-                        <StackPanel Spacing="10">
-                            <TextBlock Classes="FormLabel" Text="{Binding EditPriceLabel}" />
-                            <TextBox Classes="FormInput" Text="{Binding EditPrice}" />
-                        </StackPanel>
-
-                        <!--  A one-off on top of the nightly rate: a late pick-up, an extra bath.  -->
-                        <StackPanel IsVisible="{Binding IsHotel}" Spacing="10">
-                            <TextBlock Classes="FormLabel" Text="Valor adicional (R$)" />
-                            <TextBox
-                                Classes="FormInput"
-                                PlaceholderText="ex.: 40 por atraso na retirada"
-                                Text="{Binding EditExtraCharge}" />
-                            <TextBlock
-                                FontFamily="{StaticResource FontBody}"
-                                FontSize="25"
-                                FontStyle="Italic"
-                                Foreground="{StaticResource ColorTextMuted45}"
-                                Text="Cobrado uma vez, somado ao total das diárias."
-                                TextWrapping="Wrap" />
-                        </StackPanel>
-
-                        <!--  A rate rather than an amount, so it keeps holding if the price is edited later.  -->
-                        <StackPanel Spacing="10">
-                            <TextBlock Classes="FormLabel" Text="Desconto (%)" />
-                            <TextBox
-                                Classes="FormInput"
-                                PlaceholderText="ex.: 10 para 10% de desconto"
-                                Text="{Binding EditDiscount}" />
-                            <TextBlock
-                                FontFamily="{StaticResource FontBody}"
-                                FontSize="25"
-                                FontStyle="Italic"
-                                Foreground="{StaticResource ColorTextMuted45}"
-                                Text="Deixe em branco para cobrar o preço cheio."
-                                TextWrapping="Wrap" />
-                        </StackPanel>
-
-                        <TextBlock
-                            Classes="FormMsg Error"
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="31"
-                            FontStyle="Italic"
-                            HorizontalAlignment="Center"
-                            IsVisible="{Binding HasEditError}"
-                            Text="{Binding EditError}"
-                            TextAlignment="Center" />
-
-                        <Grid ColumnDefinitions="*,16,*">
-                            <buttons:VButton
-                                Classes="BtnSecondary"
-                                Command="{Binding CancelEditCommand}"
-                                Height="97"
-                                VText="Cancelar" />
-                            <buttons:VButton
-                                Classes="BtnPrimary"
-                                Command="{Binding SaveEditCommand}"
-                                Grid.Column="2"
-                                Height="97"
-                                VText="Salvar" />
-                        </Grid>
-                    </StackPanel>
+                    </Border>
                 </StackPanel>
+
+                <!--  Editing state  -->
+                <StackPanel IsVisible="{Binding IsEditing}">
+                    <TextBlock Classes="TTitle" Margin="35,28,35,0" Text="Editar serviço" />
+                    <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="QUANDO" />
+
+                    <Border Classes="Group">
+                        <StackPanel>
+                            <StackPanel Margin="28,21" Spacing="7">
+                                <TextBlock Classes="TCaption" Text="Data" />
+                                <CalendarDatePicker Classes="Field" SelectedDate="{Binding EditDatePart}" />
+                            </StackPanel>
+                            <Border Classes="RowRule" IsVisible="{Binding !IsDayCare}" />
+                            <StackPanel IsVisible="{Binding !IsDayCare}" Margin="28,21" Spacing="7">
+                                <TextBlock Classes="TCaption" Text="Hora" />
+                                <TimePicker Classes="Field" ClockIdentifier="24HourClock" SelectedTime="{Binding EditTimePart}" />
+                            </StackPanel>
+                            <Border Classes="RowRule" IsVisible="{Binding IsHotel}" />
+                            <StackPanel IsVisible="{Binding IsHotel}" Margin="28,21" Spacing="7">
+                                <TextBlock Classes="TCaption" Text="Saída" />
+                                <CalendarDatePicker Classes="Field" SelectedDate="{Binding EditEndDatePart}" />
+                                <TimePicker Classes="Field" ClockIdentifier="24HourClock" SelectedTime="{Binding EditEndTimePart}" />
+                            </StackPanel>
+                            <Border Classes="RowRule" IsVisible="{Binding ShowsWalking}" />
+                            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding ShowsWalking}" Margin="28,14">
+                                <TextBlock Classes="TUi" Text="Passeios incluídos" VerticalAlignment="Center" />
+                                <ToggleSwitch
+                                    Grid.Column="1"
+                                    IsChecked="{Binding EditRequiresWalking}"
+                                    OffContent=""
+                                    OnContent=""
+                                    VerticalAlignment="Center" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="VALOR" />
+                    <Border Classes="Group">
+                        <StackPanel>
+                            <StackPanel Margin="28,21" Spacing="7">
+                                <TextBlock Classes="TCaption" Text="{Binding EditPriceLabel}" />
+                                <TextBox Classes="Field" Text="{Binding EditPrice}" PlaceholderText="0,00" />
+                            </StackPanel>
+                            <Border Classes="RowRule" IsVisible="{Binding IsHotel}" />
+                            <StackPanel IsVisible="{Binding IsHotel}" Margin="28,21" Spacing="7">
+                                <TextBlock Classes="TCaption" Text="Valor adicional (R$)" />
+                                <TextBox Classes="Field" Text="{Binding EditExtraCharge}" PlaceholderText="ex.: 40 por atraso na retirada" />
+                            </StackPanel>
+                            <Border Classes="RowRule" />
+                            <StackPanel Margin="28,21" Spacing="7">
+                                <TextBlock Classes="TCaption" Text="Desconto (%)" />
+                                <TextBox Classes="Field" Text="{Binding EditDiscount}" PlaceholderText="ex.: 10 para 10% de desconto" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <TextBlock
+                        Classes="TCaption Owed"
+                        IsVisible="{Binding HasEditError}"
+                        Margin="35,14,35,0"
+                        Text="{Binding EditError}"
+                        TextWrapping="Wrap" />
+
+                    <Border Classes="ControlRing" Margin="30,28,30,0">
+                        <Border Classes="FloatingControl">
+                            <Button Classes="Submit" Command="{Binding SaveEditCommand}">
+                                <TextBlock Classes="TBody" Text="Salvar" />
+                            </Button>
+                        </Border>
+                    </Border>
+
+                    <Button
+                        Classes="TextLink"
+                        Command="{Binding CancelEditCommand}"
+                        Content="Cancelar"
+                        HorizontalAlignment="Center"
+                        Margin="0,28,0,0" />
+                </StackPanel>
+
+                <!--  Clearance for the floating tab bar, which content scrolls under.  -->
+                <Border Height="168" />
             </StackPanel>
         </ScrollViewer>
 
-        <!--  Last child of the Grid, so the scrim covers the screen underneath it.  -->
         <components:ConfirmDialog
             CancelCommand="{Binding CancelDeleteCommand}"
             ConfirmCommand="{Binding ConfirmDeleteCommand}"
             IsOpen="{Binding ConfirmingDelete}"
-            Message="Este serviço será excluído para sempre. Esta ação não pode ser desfeita."
+            Message="Este serviço será excluído para sempre. Não é possível desfazer."
             Title="Excluir serviço?" />
     </Grid>
 </UserControl>

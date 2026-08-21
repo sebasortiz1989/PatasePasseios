@@ -1,6 +1,5 @@
 <Styles
     xmlns="https://github.com/avaloniaui"
-    xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
     xmlns:inputs="using:AvaloniaFramework.Controls.Inputs"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
@@ -13,500 +12,610 @@
         720-wide canvas versus the design's 412-wide canvas).
     -->
     <Styles.Resources>
-        <SolidColorBrush Color="#F3F2F2" x:Key="ColorBg" />
-        <SolidColorBrush Color="#EAE9E9" x:Key="ColorSurface" />
-        <SolidColorBrush Color="#201F1D" x:Key="ColorText" />
-        <SolidColorBrush Color="#73201F1D" x:Key="ColorTextMuted45" />
-        <SolidColorBrush Color="#80201F1D" x:Key="ColorTextMuted50" />
-        <SolidColorBrush Color="#8C201F1D" x:Key="ColorTextMuted55" />
-        <SolidColorBrush Color="#A6201F1D" x:Key="ColorTextMuted65" />
-        <SolidColorBrush Color="#B3201F1D" x:Key="ColorTextMuted70" />
-        <SolidColorBrush Color="#BF201F1D" x:Key="ColorTextMuted75" />
-        <SolidColorBrush Color="#29201F1D" x:Key="ColorDivider" />
-        <SolidColorBrush Color="#B68235" x:Key="ColorAccent" />
-        <SolidColorBrush Color="#7D5411" x:Key="ColorAccentDark700" />
-        <SolidColorBrush Color="#5A3B0A" x:Key="ColorAccentDark800" />
-        <SolidColorBrush Color="#1FB68235" x:Key="ColorAccentTint12" />
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <!--
+                    Both palettes come from the 2026-08-21 refresh delivery (DesignDocs). Light is the
+                    app's own set with one change: surface.raised is #E6E5E5 rather than #EAE9E9, which
+                    was ΔL* 3.14 from the page and invisible as a group fill. Dark is authored as
+                    explicit hex — the old muted inks were alphas of the ink over a light page, and an
+                    alpha composites to the wrong colour once the page is dark.
+                -->
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush Color="#F3F2F2" x:Key="SurfacePrimary" />
+                    <SolidColorBrush Color="#E6E5E5" x:Key="SurfaceRaised" />
+                    <SolidColorBrush Color="#D9D8D8" x:Key="SurfaceControl" />
+                    <SolidColorBrush Color="#D1D0D0" x:Key="StrokeSubtle" />
+                    <SolidColorBrush Color="#C6C5C5" x:Key="StrokeRaised" />
+                    <SolidColorBrush Color="#BBBABA" x:Key="StrokeControl" />
+                    <SolidColorBrush Color="#201F1D" x:Key="InkPrimary" />
+                    <SolidColorBrush Color="#5F5E5D" x:Key="InkSecondary" />
+                    <SolidColorBrush Color="#949392" x:Key="InkDisabled" />
+                    <SolidColorBrush Color="#B68235" x:Key="Accent" />
+                    <SolidColorBrush Color="#7D5411" x:Key="AccentStrong" />
+                    <SolidColorBrush Color="#5A3B0A" x:Key="AccentDeep" />
+                    <SolidColorBrush Color="#ECE5DB" x:Key="AccentTint" />
+                    <SolidColorBrush Color="#99201F1D" x:Key="Scrim" />
+                </ResourceDictionary>
 
-        <!--  Dims the screen behind a modal, so the dialog reads as the only live thing on it.  -->
-        <SolidColorBrush Color="#99201F1D" x:Key="ColorScrim" />
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush Color="#1B1A18" x:Key="SurfacePrimary" />
+                    <SolidColorBrush Color="#262523" x:Key="SurfaceRaised" />
+                    <SolidColorBrush Color="#302E2B" x:Key="SurfaceControl" />
+                    <SolidColorBrush Color="#34322F" x:Key="StrokeSubtle" />
+                    <SolidColorBrush Color="#3C3A36" x:Key="StrokeRaised" />
+                    <SolidColorBrush Color="#4C4945" x:Key="StrokeControl" />
+                    <SolidColorBrush Color="#EDEBE7" x:Key="InkPrimary" />
+                    <SolidColorBrush Color="#A5A09A" x:Key="InkSecondary" />
+                    <SolidColorBrush Color="#6F6B66" x:Key="InkDisabled" />
+                    <SolidColorBrush Color="#D9A857" x:Key="Accent" />
+                    <SolidColorBrush Color="#EFCE93" x:Key="AccentStrong" />
+                    <SolidColorBrush Color="#F7E4BE" x:Key="AccentDeep" />
+                    <SolidColorBrush Color="#3C3529" x:Key="AccentTint" />
+                    <SolidColorBrush Color="#A6000000" x:Key="Scrim" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
 
-        <FontFamily x:Key="FontHeading">Times New Roman,Georgia,serif</FontFamily>
-        <FontFamily x:Key="FontBody">Georgia,Times New Roman,serif</FontFamily>
+            <!--
+                Geometry. The plain 1.7476 factor with no type multiplier — margins, radii and hit
+                targets do not scale with the text-size control.
+            -->
+            <x:Double x:Key="TextMargin">35</x:Double>
+            <x:Double x:Key="GroupRadius">21</x:Double>
+            <x:Double x:Key="GroupGap">35</x:Double>
+            <Thickness x:Key="RowPadding">28,21,28,21</Thickness>
+            <Thickness x:Key="ControlRing">5</Thickness>
 
-        <!--
-            Bottom-navigation icons, transcribed from the design system's 24×24 stroke icons.
-            They are stroked (never filled) so a single geometry serves both the muted and the
-            accent state — the stroke follows the tab's Foreground.
-        -->
-        <StreamGeometry x:Key="IconDogs">M11.25 16.25h1.5L12 17z M16 14v.5 M8 14v.5 M11.5 21.5a5 5 0 0 1-5-5c0-2 .5-3 1.5-4.5.6-.9 1.2-1.6 1.2-2.5a2.7 2.7 0 0 0-.7-1.8 M12.5 21.5a5 5 0 0 0 5-5c0-2-.5-3-1.5-4.5-.6-.9-1.2-1.6-1.2-2.5a2.7 2.7 0 0 1 .7-1.8 M6.5 7.5C5 6.5 4 5 4 3.5c1.5 0 3 .5 4 2 M17.5 7.5C19 6.5 20 5 20 3.5c-1.5 0-3 .5-4 2</StreamGeometry>
-        <StreamGeometry x:Key="IconTutors">M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0z M22 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75</StreamGeometry>
-        <!--
-            Home: a house with a paw inside it. The paw is drawn as five stroked ellipses (four
-            toes and a pad) rather than filled shapes, so it matches the other tabs' outline
-            weight instead of reading as a solid blob at 37px.
-        -->
-        <StreamGeometry x:Key="IconHome">M3.2 11.3 12 4.4l8.8 6.9 M5.8 10.2V19.7h12.4V10.2 M9 13.9a.8 .8 0 1 0 1.6 0 .8 .8 0 1 0-1.6 0z M10.7 12.7a.8 .8 0 1 0 1.6 0 .8 .8 0 1 0-1.6 0z M12.6 12.7a.8 .8 0 1 0 1.6 0 .8 .8 0 1 0-1.6 0z M14.3 13.9a.8 .8 0 1 0 1.6 0 .8 .8 0 1 0-1.6 0z M10.2 16.7a2.2 1.7 0 1 0 4.4 0 2.2 1.7 0 1 0-4.4 0z</StreamGeometry>
-        <StreamGeometry x:Key="IconNew">M12 5v14 M5 12h14</StreamGeometry>
-        <StreamGeometry x:Key="IconProfile">M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2 M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0z</StreamGeometry>
-
-        <!--  Same stroked 24×24 convention: the expand/collapse chevrons on the agenda's dog groups.  -->
-        <StreamGeometry x:Key="IconChevronRight">M9 5l7 7-7 7</StreamGeometry>
-        <StreamGeometry x:Key="IconChevronDown">M5 9l7 7 7-7</StreamGeometry>
-
-        <!--  Same stroked 24×24 convention: a calendar page with a plus, for "add to calendar".  -->
-        <StreamGeometry x:Key="IconCalendarAdd">M8 2v4 M16 2v4 M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z M3 10h18 M12 13v6 M9 16h6</StreamGeometry>
-
-        <!--  The same page without the plus: the date pickers' drop-down button, which opens a calendar rather than adding to one.  -->
-        <StreamGeometry x:Key="IconCalendar">M8 2v4 M16 2v4 M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z M3 10h18</StreamGeometry>
-
-        <!--  Same stroked 24×24 convention: the billing eye, open and struck through.  -->
-        <StreamGeometry x:Key="IconEyeOpen">M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z</StreamGeometry>
-        <StreamGeometry x:Key="IconEyeClosed">M17.9 17.9A10.1 10.1 0 0 1 12 19c-6.4 0-10-7-10-7a18.4 18.4 0 0 1 5.1-5.9 M10.9 5.2A9.1 9.1 0 0 1 12 5c6.4 0 10 7 10 7a18.5 18.5 0 0 1-2.2 3.2 M14.1 14.1a3 3 0 1 1-4.2-4.2 M2 2l20 20</StreamGeometry>
-
-        <!--
-            A bottom-navigation tab: stroked icon over a small caption, accent when selected and
-            muted otherwise. Content is the icon; Tag is the caption.
-        -->
-        <ControlTheme TargetType="RadioButton" x:Key="NavTab">
-            <Setter Property="Foreground" Value="{StaticResource ColorTextMuted50}" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="Template">
-                <ControlTemplate>
-                    <Border Background="Transparent">
-                        <Grid RowDefinitions="6,*">
-                            <!--
-                                Selection is carried by three cues, not just the icon's colour: a
-                                bar along the tab's top edge, a tinted rounded surface behind it,
-                                and a heavier caption. One colour change alone was too easy to miss
-                                on a five-tab bar.
-                            -->
+            <!--
+                The back control every pushed screen carries, top left. Always labelled with where it
+                returns to — never icon-only, never the bare word "Voltar". Tag is the destination.
+            -->
+            <ControlTheme TargetType="Button" x:Key="BackControl">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="HorizontalAlignment" Value="Left" />
+                <Setter Property="Cursor" Value="Hand" />
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Border
+                            Background="{DynamicResource SurfacePrimary}"
+                            CornerRadius="26"
+                            Padding="5">
                             <Border
-                                Background="Transparent"
-                                CornerRadius="0,0,4,4"
-                                Grid.Row="0"
-                                Margin="18,0"
-                                Name="PART_Indicator" />
-                            <Border
-                                Background="Transparent"
-                                CornerRadius="8"
-                                Grid.Row="1"
-                                Margin="6,4,6,3"
-                                Name="PART_Surface"
-                                Padding="0,7,0,5">
+                                Background="{DynamicResource SurfaceControl}"
+                                BorderBrush="{DynamicResource StrokeControl}"
+                                BorderThickness="1"
+                                CornerRadius="21"
+                                Height="77"
+                                Padding="21,0,28,0">
                                 <StackPanel
-                                    HorizontalAlignment="Center"
-                                    Spacing="5"
+                                    Orientation="Horizontal"
+                                    Spacing="10"
                                     VerticalAlignment="Center">
-                                    <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" />
+                                    <Path
+                                        Data="{StaticResource IconChevronLeft}"
+                                        Height="30"
+                                        Stretch="Uniform"
+                                        Stroke="{DynamicResource InkPrimary}"
+                                        StrokeJoin="Round"
+                                        StrokeLineCap="Round"
+                                        StrokeThickness="2.4"
+                                        VerticalAlignment="Center"
+                                        Width="30" />
                                     <TextBlock
                                         FontFamily="{StaticResource FontBody}"
-                                        FontSize="19"
-                                        Foreground="{TemplateBinding Foreground}"
-                                        HorizontalAlignment="Center"
-                                        LetterSpacing="0.7"
-                                        Name="PART_Caption"
-                                        Text="{TemplateBinding Tag}" />
+                                        FontSize="{DynamicResource TypeUi}"
+                                        Foreground="{DynamicResource InkPrimary}"
+                                        MaxWidth="350"
+                                        Text="{TemplateBinding Tag}"
+                                        TextTrimming="CharacterEllipsis"
+                                        VerticalAlignment="Center" />
                                 </StackPanel>
                             </Border>
-                        </Grid>
-                    </Border>
-                </ControlTemplate>
-            </Setter>
-
-            <Style Selector="^:checked">
-                <Setter Property="Foreground" Value="{StaticResource ColorAccent}" />
-            </Style>
-            <Style Selector="^:checked /template/ Border#PART_Indicator">
-                <Setter Property="Background" Value="{StaticResource ColorAccent}" />
-            </Style>
-            <Style Selector="^:checked /template/ Border#PART_Surface">
-                <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
-            </Style>
-            <Style Selector="^:checked /template/ TextBlock#PART_Caption">
-                <Setter Property="FontWeight" Value="Bold" />
-            </Style>
-        </ControlTheme>
-
-        <!--
-            A checkbox sized for a thumb on the 720-wide canvas, and drawn from the palette.
-            
-            A full ControlTheme rather than styles over Fluent's: Fluent sets the 20px box's Width
-            and Height as local values inside its template, and a local value beats a style setter,
-            so the box cannot be resized from outside. Its box is also top-aligned to suit a
-            wrapping label, which reads as misaligned once the box is taller than one line of text.
-            
-            Applied per instance with Theme="{StaticResource ClassicCheckBox}", the same way NavTab
-            is — an implicit ControlTheme keyed on the type is not picked up from a Styles file's
-            resources.
-        -->
-        <ControlTheme TargetType="CheckBox" x:Key="ClassicCheckBox">
-            <Setter Property="Foreground" Value="{StaticResource ColorTextMuted70}" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Template">
-                <ControlTemplate>
-                    <!--  Background on the Grid so the whole row is the tap target, not just the box.  -->
-                    <Grid Background="Transparent" ColumnDefinitions="Auto,*">
-                        <Border
-                            Background="Transparent"
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="3"
-                            CornerRadius="8"
-                            Height="64"
-                            Name="PART_Box"
-                            VerticalAlignment="Center"
-                            Width="64">
-                            <Path
-                                Data="M4 12 l5 5 l11 -12"
-                                IsVisible="False"
-                                Margin="12"
-                                Name="PART_Check"
-                                Stretch="Uniform"
-                                Stroke="{StaticResource ColorAccent}"
-                                StrokeJoin="Round"
-                                StrokeLineCap="Round"
-                                StrokeThickness="3" />
                         </Border>
+                    </ControlTemplate>
+                </Setter>
+            </ControlTheme>
 
-                        <ContentPresenter
-                            Content="{TemplateBinding Content}"
-                            ContentTemplate="{TemplateBinding ContentTemplate}"
-                            Grid.Column="1"
-                            Margin="18,0,0,0"
-                            Name="PART_ContentPresenter"
-                            VerticalAlignment="Center" />
-                    </Grid>
-                </ControlTemplate>
-            </Setter>
+            <!--
+                The switch, sized for the 720 canvas. Fluent's own is drawn for device pixels, so on a
+                canvas this wide it came out about a third of the size of the text beside it. Colours
+                come from the palette too: the stock one derives its on-state from Fluent's accent.
+            -->
+            <ControlTheme TargetType="ToggleSwitch" x:Key="{x:Type ToggleSwitch}">
+                <Setter Property="Cursor" Value="Hand" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Border
+                            Background="{DynamicResource SurfaceControl}"
+                            BorderBrush="{DynamicResource StrokeControl}"
+                            BorderThickness="1"
+                            CornerRadius="28"
+                            Height="56"
+                            Name="PART_Track"
+                            Width="98">
+                            <Panel
+                                HorizontalAlignment="Left"
+                                Margin="7,0"
+                                Name="PART_MovingKnobs"
+                                VerticalAlignment="Center">
+                                <Panel
+                                    Height="40"
+                                    Name="PART_SwitchKnob"
+                                    Width="40">
+                                    <Ellipse Fill="{DynamicResource InkSecondary}" Name="Knob" />
+                                </Panel>
+                            </Panel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter>
 
-            <Style Selector="^:checked /template/ Path#PART_Check">
-                <Setter Property="IsVisible" Value="True" />
-            </Style>
-            <Style Selector="^:checked /template/ Border#PART_Box">
-                <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
-                <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
-            </Style>
-            <Style Selector="^:pointerover /template/ Border#PART_Box">
-                <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
-            </Style>
-        </ControlTheme>
+                <Style Selector="^:checked /template/ Border#PART_Track">
+                    <Setter Property="Background" Value="{DynamicResource AccentTint}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource AccentStrong}" />
+                </Style>
+                <Style Selector="^:checked /template/ Ellipse#Knob">
+                    <Setter Property="Fill" Value="{DynamicResource AccentStrong}" />
+                </Style>
+                <Style Selector="^:checked /template/ Panel#PART_MovingKnobs">
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                </Style>
+            </ControlTheme>
+
+            <FontFamily x:Key="FontHeading">Times New Roman,Georgia,serif</FontFamily>
+            <FontFamily x:Key="FontBody">Georgia,Times New Roman,serif</FontFamily>
+
+            <!--
+                Bottom-navigation icons, transcribed from the design system's 24×24 stroke icons.
+                They are stroked (never filled) so a single geometry serves both the muted and the
+                accent state — the stroke follows the tab's Foreground.
+            -->
+            <StreamGeometry x:Key="IconDogs">M11.25 16.25h1.5L12 17z M16 14v.5 M8 14v.5 M11.5 21.5a5 5 0 0 1-5-5c0-2 .5-3 1.5-4.5.6-.9 1.2-1.6 1.2-2.5a2.7 2.7 0 0 0-.7-1.8 M12.5 21.5a5 5 0 0 0 5-5c0-2-.5-3-1.5-4.5-.6-.9-1.2-1.6-1.2-2.5a2.7 2.7 0 0 1 .7-1.8 M6.5 7.5C5 6.5 4 5 4 3.5c1.5 0 3 .5 4 2 M17.5 7.5C19 6.5 20 5 20 3.5c-1.5 0-3 .5-4 2</StreamGeometry>
+            <StreamGeometry x:Key="IconTutors">M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0z M22 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75</StreamGeometry>
+            <!--
+                Home: a house with a paw inside it. The paw is drawn as five stroked ellipses (four
+                toes and a pad) rather than filled shapes, so it matches the other tabs' outline
+                weight instead of reading as a solid blob at 37px.
+            -->
+            <StreamGeometry x:Key="IconHome">M3.2 11.3 12 4.4l8.8 6.9 M5.8 10.2V19.7h12.4V10.2 M9 13.9a.8 .8 0 1 0 1.6 0 .8 .8 0 1 0-1.6 0z M10.7 12.7a.8 .8 0 1 0 1.6 0 .8 .8 0 1 0-1.6 0z M12.6 12.7a.8 .8 0 1 0 1.6 0 .8 .8 0 1 0-1.6 0z M14.3 13.9a.8 .8 0 1 0 1.6 0 .8 .8 0 1 0-1.6 0z M10.2 16.7a2.2 1.7 0 1 0 4.4 0 2.2 1.7 0 1 0-4.4 0z</StreamGeometry>
+            <StreamGeometry x:Key="IconNew">M12 5v14 M5 12h14</StreamGeometry>
+            <StreamGeometry x:Key="IconProfile">M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2 M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0z</StreamGeometry>
+
+            <!--  Same stroked 24×24 convention: the expand/collapse chevrons on the agenda's dog groups.  -->
+            <StreamGeometry x:Key="IconChevronRight">M9 5l7 7-7 7</StreamGeometry>
+            <StreamGeometry x:Key="IconChevronDown">M5 9l7 7 7-7</StreamGeometry>
+            <StreamGeometry x:Key="IconChevronLeft">M15 5l-7 7 7 7</StreamGeometry>
+
+            <!--  Same stroked 24×24 convention: the dismiss cross on the full-screen photo.  -->
+            <StreamGeometry x:Key="IconClose">M18 6L6 18 M6 6l12 12</StreamGeometry>
+
+            <!--  Same stroked 24×24 convention: a calendar page with a plus, for "add to calendar".  -->
+            <StreamGeometry x:Key="IconCalendarAdd">M8 2v4 M16 2v4 M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z M3 10h18 M12 13v6 M9 16h6</StreamGeometry>
+
+            <!--  The same page without the plus: the date pickers' drop-down button, which opens a calendar rather than adding to one.  -->
+            <StreamGeometry x:Key="IconCalendar">M8 2v4 M16 2v4 M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z M3 10h18</StreamGeometry>
+
+            <!--  Same stroked 24×24 convention: the billing eye, open and struck through.  -->
+            <StreamGeometry x:Key="IconEyeOpen">M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z</StreamGeometry>
+            <StreamGeometry x:Key="IconEyeClosed">M17.9 17.9A10.1 10.1 0 0 1 12 19c-6.4 0-10-7-10-7a18.4 18.4 0 0 1 5.1-5.9 M10.9 5.2A9.1 9.1 0 0 1 12 5c6.4 0 10 7 10 7a18.5 18.5 0 0 1-2.2 3.2 M14.1 14.1a3 3 0 1 1-4.2-4.2 M2 2l20 20</StreamGeometry>
+
+            <!--
+                A bottom-navigation tab: stroked icon over a small caption, accent when selected and
+                muted otherwise. Content is the icon; Tag is the caption.
+            -->
+            <!--
+                A bottom-navigation tab inside the floating bar. Selection is colour plus weight — no
+                fill, no indicator bar, no badge: accent cannot be a fill under ink on a control
+                surface (2.37:1), and the rest of the design marks state the same way.
+            -->
+            <ControlTheme TargetType="RadioButton" x:Key="NavTab">
+                <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
+                <Setter Property="Cursor" Value="Hand" />
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Border Background="Transparent">
+                            <StackPanel
+                                HorizontalAlignment="Center"
+                                Spacing="7"
+                                VerticalAlignment="Center">
+                                <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" />
+                                <!--
+                                    Fixed at the default micro size rather than following the ramp. The
+                                    bar is a control, and control sizes do not scale — but its caption
+                                    is text, so at Máximo the five labels grew into each other inside a
+                                    bar whose height had deliberately stayed put. The tab labels are
+                                    furniture, not content; the content behind them is what grows.
+                                -->
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="21"
+                                    Foreground="{TemplateBinding Foreground}"
+                                    HorizontalAlignment="Center"
+                                    LetterSpacing="1"
+                                    Name="PART_Caption"
+                                    Text="{TemplateBinding Tag}" />
+                            </StackPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter>
+
+                <Style Selector="^:checked">
+                    <Setter Property="Foreground" Value="{DynamicResource AccentStrong}" />
+                </Style>
+                <Style Selector="^:checked /template/ TextBlock#PART_Caption">
+                    <Setter Property="FontWeight" Value="SemiBold" />
+                </Style>
+            </ControlTheme>
+
+        </ResourceDictionary>
     </Styles.Resources>
 
     <Design.PreviewWith>
-        <Border Background="{StaticResource ColorBg}" Padding="20">
+        <Border Background="{DynamicResource SurfacePrimary}" Padding="20">
             <!--  Add Controls for Previewer Here  -->
         </Border>
     </Design.PreviewWith>
 
-    <!--  Headings / labels  -->
-    <Style Selector="TextBlock.Heading1">
-        <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
-        <Setter Property="FontWeight" Value="Normal" />
-        <Setter Property="FontSize" Value="68" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
-        <Setter Property="LineHeight" Value="78" />
+    <!--
+        The group — the change that carries the refresh. Every list of rows becomes one of these
+        instead of full-bleed rows on hairlines. Inset 35 each side of the 720 canvas, radius 21,
+        and separators between rows only: the fill and the radius are the outer edge, so a hairline
+        at the top or bottom of a group is deleted rather than retinted.
+    -->
+    <Style Selector="Border.Group">
+        <Setter Property="Background" Value="{DynamicResource SurfaceRaised}" />
+        <Setter Property="CornerRadius" Value="21" />
+        <Setter Property="Margin" Value="35,0" />
+        <Setter Property="ClipToBounds" Value="True" />
     </Style>
 
-    <Style Selector="TextBlock.CardTitle">
-        <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
-        <Setter Property="FontWeight" Value="Medium" />
-        <Setter Property="FontSize" Value="44" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
-    </Style>
-
-    <Style Selector="TextBlock.Kicker">
-        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="FontSize" Value="25" />
-        <Setter Property="LetterSpacing" Value="2" />
-        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted50}" />
-    </Style>
-
-    <!--  Buttons — outlined, never filled, per the source system's "Do not fill" rule  -->
-    <Style Selector="buttons|VButton.BtnPrimary">
-        <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
-        <Setter Property="VFontWeight" Value="600" />
-        <Setter Property="VFontSize" Value="32" />
-        <Setter Property="VBorderThickness" Value="2" />
-        <Setter Property="VCornerRadius" Value="7" />
-        <Setter Property="VNormalBackground" Value="Transparent" />
-        <Setter Property="VNormalBorderBrush" Value="{StaticResource ColorAccent}" />
-        <Setter Property="VNormalForeground" Value="{StaticResource ColorAccent}" />
-        <Setter Property="VPressedBackground" Value="{StaticResource ColorAccentTint12}" />
-        <Setter Property="VPressedBorderBrush" Value="{StaticResource ColorAccent}" />
-        <Setter Property="VPressedForeground" Value="{StaticResource ColorAccentDark800}" />
-        <Setter Property="VTextHorizontalAlignment" Value="Center" />
-        <Setter Property="VTextVerticalAlignment" Value="Center" />
-    </Style>
-
-    <Style Selector="buttons|VButton.BtnSecondary">
-        <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
-        <Setter Property="VFontWeight" Value="600" />
-        <Setter Property="VFontSize" Value="32" />
-        <Setter Property="VBorderThickness" Value="2" />
-        <Setter Property="VCornerRadius" Value="7" />
-        <Setter Property="VNormalBackground" Value="Transparent" />
-        <Setter Property="VNormalBorderBrush" Value="{StaticResource ColorDivider}" />
-        <Setter Property="VNormalForeground" Value="{StaticResource ColorText}" />
-        <Setter Property="VPressedBackground" Value="{StaticResource ColorSurface}" />
-        <Setter Property="VPressedBorderBrush" Value="{StaticResource ColorDivider}" />
-        <Setter Property="VPressedForeground" Value="{StaticResource ColorText}" />
-        <Setter Property="VTextHorizontalAlignment" Value="Center" />
-        <Setter Property="VTextVerticalAlignment" Value="Center" />
-    </Style>
-
-    <Style Selector="buttons|VButton.BtnGhost">
-        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="VFontWeight" Value="Normal" />
-        <Setter Property="VFontSize" Value="29" />
-        <Setter Property="VBorderThickness" Value="0" />
-        <Setter Property="VCornerRadius" Value="7" />
-        <Setter Property="VNormalBackground" Value="Transparent" />
-        <Setter Property="VNormalBorderBrush" Value="Transparent" />
-        <Setter Property="VNormalForeground" Value="{StaticResource ColorAccent}" />
-        <Setter Property="VPressedBackground" Value="{StaticResource ColorAccentTint12}" />
-        <Setter Property="VPressedBorderBrush" Value="Transparent" />
-        <Setter Property="VPressedForeground" Value="{StaticResource ColorAccentDark800}" />
-        <Setter Property="VTextHorizontalAlignment" Value="Center" />
-        <Setter Property="VTextVerticalAlignment" Value="Center" />
-    </Style>
-
-    <!--  Cards  -->
-    <Style Selector="Border.Card">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
-        <Setter Property="BorderThickness" Value="2" />
-        <Setter Property="CornerRadius" Value="7" />
-        <Setter Property="Padding" Value="24" />
+    <!--  A separator between two rows of one group. Inset to the row's text edge, never at an outer edge.  -->
+    <Style Selector="Border.RowRule">
+        <Setter Property="Height" Value="1" />
+        <Setter Property="Background" Value="{DynamicResource StrokeRaised}" />
+        <Setter Property="Margin" Value="28,0,0,0" />
     </Style>
 
     <!--
-        Tag / Chip / SegOption are Buttons (not static Borders) since every place they're used
-        is tappable (paid toggle, filter chips, segmented type picker). Border/Foreground/Background
-        are bound per-instance from computed ViewModel brush properties (active vs inactive),
-        mirroring the source design's own per-instance computed style approach.
+        A floating control: fill, a 1px edge, and outside that a 5px ring of page colour. The ring
+        is a hard keyline gap rather than a shadow — there is no shadow anywhere in this design —
+        and it is what keeps content that scrolls underneath from touching the control's edge.
     -->
-    <Style Selector="Button.Tag">
+    <Style Selector="Border.ControlRing">
+        <Setter Property="Background" Value="{DynamicResource SurfacePrimary}" />
+        <Setter Property="CornerRadius" Value="26" />
+        <Setter Property="Padding" Value="5" />
+    </Style>
+
+    <Style Selector="Border.FloatingControl">
+        <Setter Property="Background" Value="{DynamicResource SurfaceControl}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource StrokeControl}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="21" />
+    </Style>
+
+    <!--  The seven type roles. Views set a class, never a FontSize literal.  -->
+    <Style Selector="TextBlock.TDisplay">
+        <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeDisplay}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
+    </Style>
+
+    <Style Selector="TextBlock.TTitle">
+        <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeTitle}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
+    </Style>
+
+    <Style Selector="TextBlock.TSection">
+        <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeSection}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
+    </Style>
+
+    <Style Selector="TextBlock.TBody">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="FontSize" Value="25" />
-        <Setter Property="Padding" Value="17,5" />
-        <Setter Property="CornerRadius" Value="3" />
-        <Setter Property="BorderThickness" Value="2" />
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Cursor" Value="Hand" />
-    </Style>
-    <Style Selector="Button.Tag.Pending">
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted55}" />
-    </Style>
-    <Style Selector="Button.Tag.Paid">
-        <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
-    </Style>
-
-    <!--
-        Execution is a second, independent state on the same row — the work happening and the
-        money arriving are different events. Same two-tone vocabulary as Paid/Pending, named for
-        what it means so a row's markup says which of the two it is showing.
-    -->
-    <Style Selector="Button.Tag.Todo">
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted55}" />
-    </Style>
-    <Style Selector="Button.Tag.Done">
-        <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
-    </Style>
-
-    <!--
-        The read-only twin of Button.Tag, for lists where paid/pending is a label rather than a
-        control. A Button here would sit inside the row's own tap target and look pressable while
-        doing nothing. Border carries no text properties, so the type styling lives on its child.
-    -->
-    <Style Selector="Border.TagSign">
-        <Setter Property="Padding" Value="17,5" />
-        <Setter Property="CornerRadius" Value="3" />
-        <Setter Property="BorderThickness" Value="2" />
-        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeBody}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
-    <Style Selector="Border.TagSign.Pending">
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
-    </Style>
-    <Style Selector="Border.TagSign.Paid">
-        <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
-    </Style>
-    <Style Selector="Border.TagSign &gt; TextBlock">
+
+    <Style Selector="TextBlock.TUi">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="FontSize" Value="25" />
-    </Style>
-    <Style Selector="Border.TagSign.Pending &gt; TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted55}" />
-    </Style>
-    <Style Selector="Border.TagSign.Paid &gt; TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
-    </Style>
-    <Style Selector="Border.TagSign.Todo">
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
-    </Style>
-    <Style Selector="Border.TagSign.Done">
-        <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
-    </Style>
-    <Style Selector="Border.TagSign.Todo &gt; TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted55}" />
-    </Style>
-    <Style Selector="Border.TagSign.Done &gt; TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeUi}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
     </Style>
 
+    <Style Selector="TextBlock.TCaption">
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeCaption}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkSecondary}" />
+    </Style>
+
+    <!--  Section labels: the one place 600 meets uppercase, and it sits outside the group on the page.  -->
+    <Style Selector="TextBlock.TMicro">
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeMicro}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource InkSecondary}" />
+        <Setter Property="LetterSpacing" Value="3" />
+    </Style>
+
+    <!--  Muted and accent variants, so a role never has to be restated to change its colour.  -->
+    <Style Selector="TextBlock.Muted">
+        <Setter Property="Foreground" Value="{DynamicResource InkSecondary}" />
+    </Style>
+
+    <Style Selector="TextBlock.Owed">
+        <Setter Property="Foreground" Value="{DynamicResource AccentStrong}" />
+    </Style>
+
+    <!--
+        A list of rows in one group. Every row draws a separator above it; the list is nudged up by
+        one pixel so the first row's separator lands under the group's edge and is clipped away by
+        the corner radius. Index-free on purpose — a nth-child selector stops being reliable once
+        the panel virtualizes and starts recycling containers.
+    -->
+    <Style Selector="ItemsControl.RowGroup">
+        <Setter Property="Margin" Value="0,-1,0,0" />
+    </Style>
+
+    <!--
+        A field inside a group row. No box of its own: the group is the container, the separator
+        between rows is the only line, and the label above it says what it is.
+    -->
+    <Style Selector="TextBox.Field">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeBody}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource Accent}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource AccentTint}" />
+        <Setter Property="SelectionForegroundBrush" Value="{DynamicResource InkPrimary}" />
+    </Style>
+
+    <Style Selector="TextBox.Field /template/ TextBlock#PART_Watermark">
+        <Setter Property="Foreground" Value="{DynamicResource InkSecondary}" />
+    </Style>
+
+    <!--
+        Fluent paints the focused and hovered states on the template's own border element, so
+        setting Background on the TextBox does not reach them: in dark mode a focused field came up
+        as a black box with an accent ring, sitting on a raised group surface it was supposed to be
+        part of. The fill stays transparent in every state and focus is shown by a 1px accent rule
+        under the text — the field has no box to light up.
+    -->
+    <Style Selector="TextBox.Field /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+        <Setter Property="CornerRadius" Value="0" />
+    </Style>
+
+    <Style Selector="TextBox.Field:pointerover /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource StrokeRaised}" />
+    </Style>
+
+    <Style Selector="TextBox.Field:focus /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
+    </Style>
+
+    <Style Selector="TextBox.Field:focus-within /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
+    </Style>
+
+    <!--  The same for the date picker's inner text box, which is a TextBox with its own template.  -->
+    <Style Selector="CalendarDatePicker.Field /template/ TextBox#PART_TextBox /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
+    <!--  The one control that submits a form: full measure, and the only thing below the fields.  -->
+    <Style Selector="Button.Submit">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Height" Value="91" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <!--  A secondary route out of a screen: a line at the margin, not a second button.  -->
+    <Style Selector="Button.TextLink">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeUi}" />
+        <Setter Property="Foreground" Value="{DynamicResource AccentStrong}" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <!--
+        A date or time picker inside a group row, dressed like TextBox.Field beside it. The stock
+        drop-down button is a miniature calendar built out of Borders with an accent fill — sized
+        and coloured for the old bordered field, and conspicuous inside a borderless row. It is
+        retemplated down to one stroked chevron, the same glyph every other row uses to say
+        "this opens".
+    -->
+    <Style Selector="CalendarDatePicker.Field">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeBody}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+
+    <Style Selector="CalendarDatePicker.Field /template/ TextBox#PART_TextBox">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeBody}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
+    </Style>
+
+    <Style Selector="CalendarDatePicker.Field /template/ Button#PART_Button">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Width" Value="56" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="Transparent">
+                    <Path
+                        Data="{StaticResource IconChevronDown}"
+                        Height="28"
+                        HorizontalAlignment="Center"
+                        Stretch="Uniform"
+                        Stroke="{DynamicResource InkSecondary}"
+                        StrokeJoin="Round"
+                        StrokeLineCap="Round"
+                        StrokeThickness="2.4"
+                        VerticalAlignment="Center"
+                        Width="28" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <!--  The time picker gets the same treatment; its own chrome is a three-cell button row.  -->
+    <Style Selector="TimePicker.Field">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeBody}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
+    </Style>
+
+    <Style Selector="TimePicker.Field /template/ Button#PART_FlyoutButton">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+    </Style>
+
+    <!--
+        A filter chip. Unselected it is a raised object on the page; selected it takes the tint
+        fill and the strong accent. Accent itself is 3.02:1 on the page and 2.68:1 on raised, so
+        the label is accent.strong at every size — the one accent rule.
+    -->
     <Style Selector="Button.Chip">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="FontSize" Value="28" />
-        <Setter Property="Padding" Value="21,9" />
-        <Setter Property="CornerRadius" Value="7" />
-        <Setter Property="BorderThickness" Value="2" />
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted65}" />
-        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeUi}" />
+        <Setter Property="Padding" Value="24,12" />
+        <Setter Property="CornerRadius" Value="14" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
+        <Setter Property="Background" Value="{DynamicResource SurfaceRaised}" />
         <Setter Property="Cursor" Value="Hand" />
     </Style>
     <Style Selector="Button.Chip.Active">
-        <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
+        <Setter Property="Foreground" Value="{DynamicResource AccentStrong}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Background" Value="{DynamicResource AccentTint}" />
     </Style>
 
+    <!--
+        One cell of a segmented group: a mutually exclusive mode switch, sharing a single raised
+        surface with 1px dividers between cells. Same selected treatment as a chip, so the two
+        read as one idea at two scales.
+    -->
     <Style Selector="Button.SegOption">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="FontSize" Value="31" />
-        <Setter Property="Padding" Value="21,12" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeUi}" />
+        <Setter Property="Padding" Value="12,0" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted65}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
         <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Cursor" Value="Hand" />
     </Style>
     <Style Selector="Button.SegOption.Active">
-        <Setter Property="Foreground" Value="{StaticResource ColorAccent}" />
+        <Setter Property="Foreground" Value="{DynamicResource AccentStrong}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Background" Value="{DynamicResource AccentTint}" />
     </Style>
 
-    <!--  Flat, chrome-less row container so an entire list row is one tap target  -->
-    <Style Selector="Button.RowButton">
+    <!--  The divider between two cells of a segmented group.  -->
+    <Style Selector="Border.SegRule">
+        <Setter Property="Width" Value="1" />
+        <Setter Property="Background" Value="{DynamicResource StrokeRaised}" />
+        <Setter Property="Margin" Value="0,14" />
+    </Style>
+
+    <!--
+        The picker that expands inline instead of opening a popup. A popup lays out in its own
+        visual root and so ignores the design canvas' scale — at phone size its list came out
+        several times wider than the field that opened it.
+    -->
+    <Style Selector="inputs|VSearchableComboBox.FieldPicker">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Padding" Value="0" />
         <Setter Property="CornerRadius" Value="0" />
-        <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-        <Setter Property="Cursor" Value="Hand" />
-    </Style>
-    <Style Selector="Button.RowButton:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource ColorSurface}" />
-    </Style>
-
-    <!--  Inline form feedback — success in the accent, errors in the deepest accent step  -->
-    <Style Selector="TextBlock.FormMsg">
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark700}" />
-    </Style>
-    <Style Selector="TextBlock.FormMsg.Error">
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
-    </Style>
-
-    <!--  Form fields  -->
-    <Style Selector="inputs|VTextBoxWithLabel.ClassicInput">
-        <Setter Property="VBorderBrush" Value="{StaticResource ColorDivider}" />
-        <Setter Property="VBorderBrushFocus" Value="{StaticResource ColorAccent}" />
-        <Setter Property="VContentFontSize" Value="34" />
-        <Setter Property="VCornerRadius" Value="7" />
-        <Setter Property="VDescriptionFontSize" Value="28" />
-        <Setter Property="VDescriptionForeground" Value="{StaticResource ColorTextMuted70}" />
-        <Setter Property="VDescriptionBackground" Value="{StaticResource ColorBg}" />
-        <Setter Property="VTextForeground" Value="{StaticResource ColorText}" />
-        <Setter Property="VTextForegroundFocus" Value="{StaticResource ColorText}" />
-        <Setter Property="VTextFontSize" Value="34" />
-        <Setter Property="VCaretBrush" Value="{StaticResource ColorAccent}" />
-        <Setter Property="VCaretBrushFocus" Value="{StaticResource ColorAccent}" />
-    </Style>
-
-    <!--  Icon-only button, sized for a thumb. Used for the billing eye.  -->
-    <Style Selector="Button.IconToggle">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
-        <Setter Property="BorderThickness" Value="2" />
-        <Setter Property="CornerRadius" Value="7" />
-        <Setter Property="Width" Value="72" />
-        <Setter Property="Height" Value="72" />
-        <Setter Property="Padding" Value="0" />
-        <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-    </Style>
-    <Style Selector="Button.IconToggle:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
-        <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
-    </Style>
-
-    <!--
-        The bare TextBox/ComboBox field shape, previously copied inline into every form. The
-        detail screens' editors reuse it, so it lives here rather than being pasted a fourth time.
-    -->
-    <Style Selector="TextBlock.FormLabel">
+        <!--
+            The search field is a row of this list, so it gets a row's vertical rhythm and a row's
+            hit area. At Padding 0 / MinHeight 0 it collapsed to one line of text and read as a
+            cramped box wedged above options twice its height.
+        -->
+        <Setter Property="Padding" Value="0,14" />
+        <Setter Property="MinHeight" Value="64" />
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="FontSize" Value="28" />
-        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted70}" />
-    </Style>
-    <Style Selector="TextBox.FormInput">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
-        <Setter Property="BorderThickness" Value="2" />
-        <Setter Property="CornerRadius" Value="7" />
-        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="FontSize" Value="34" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
-        <Setter Property="MinHeight" Value="90" />
-        <Setter Property="Padding" Value="18,0" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-    </Style>
-    <!--  A multi-line field needs top padding and cannot centre its content.  -->
-    <Style Selector="TextBox.FormInput.Multiline">
-        <Setter Property="MinHeight" Value="176" />
-        <Setter Property="Padding" Value="18,12" />
-        <Setter Property="VerticalContentAlignment" Value="Top" />
-    </Style>
-    <Style Selector="ComboBox.FormInput">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
-        <Setter Property="BorderThickness" Value="2" />
-        <Setter Property="CornerRadius" Value="7" />
-        <Setter Property="FontSize" Value="34" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeBody}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <Setter Property="MinHeight" Value="90" />
-        <Setter Property="Padding" Value="18,0" />
-    </Style>
-
-    <!--
-        The searchable picker, dressed to match ComboBox.FormInput beside it — a dog or tutor list
-        should not look like a different kind of field just because it can be typed into.
-
-        Every size here is in canvas units, unlike a ComboBox's drop-down: this control lists its
-        matches inline rather than in a popup, so the list is scaled by DesignCanvas along with the
-        rest of the page. That is what it exists for.
-    -->
-    <Style Selector="inputs|VSearchableComboBox.FormInput">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
-        <Setter Property="BorderThickness" Value="2" />
-        <Setter Property="CornerRadius" Value="7" />
-        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="FontSize" Value="34" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
-        <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <Setter Property="MinHeight" Value="90" />
-        <Setter Property="Padding" Value="18,0" />
-        <Setter Property="VItemPadding" Value="18,14" />
-        <Setter Property="VListBackground" Value="{StaticResource ColorBg}" />
+        <Setter Property="VItemPadding" Value="0,14" />
+        <Setter Property="VListBackground" Value="Transparent" />
         <Setter Property="VListMaxHeight" Value="520" />
-        <Setter Property="VListSpacing" Value="8" />
-        <Setter Property="VPlaceholderForeground" Value="{StaticResource ColorTextMuted45}" />
+        <Setter Property="VListSpacing" Value="4" />
+        <Setter Property="VPlaceholderForeground" Value="{DynamicResource InkSecondary}" />
+    </Style>
+
+    <!--
+        The search box inside the picker is a plain TextBox with no style class, so it was still
+        wearing Fluent's own chrome — a filled, rounded box with an accent ring on focus, sitting
+        inside a borderless group row. These give it the same treatment TextBox.Field gets: no box
+        at all, and a 1px accent rule under the text to show focus.
+    -->
+    <Style Selector="inputs|VSearchableComboBox.FieldPicker /template/ TextBox#PART_TextBox /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource StrokeRaised}" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+        <Setter Property="CornerRadius" Value="0" />
+    </Style>
+
+    <Style Selector="inputs|VSearchableComboBox.FieldPicker /template/ TextBox#PART_TextBox:focus /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
+    </Style>
+
+    <Style Selector="inputs|VSearchableComboBox.FieldPicker /template/ TextBox#PART_TextBox:pointerover /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
     </Style>
 
     <!--
@@ -516,70 +625,46 @@
         as well as the bare ones.
     -->
     <Style Selector="TextBox">
-        <Setter Property="SelectionBrush" Value="{StaticResource ColorAccentTint12}" />
-        <Setter Property="SelectionForegroundBrush" Value="{StaticResource ColorAccentDark800}" />
-        <Setter Property="CaretBrush" Value="{StaticResource ColorAccent}" />
-    </Style>
-
-    <!--
-        The back affordance every screen starts with. Left-aligned and auto-width so the label
-        hugs the edge — the earlier per-view fixed widths (180/200) centred "← Voltar" inside an
-        oversized invisible box, which is what made them look inconsistent.
-    -->
-    <Style Selector="buttons|VButton.BtnBack">
-        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="VFontSize" Value="31" />
-        <Setter Property="VFontWeight" Value="Normal" />
-        <Setter Property="VBorderThickness" Value="0" />
-        <Setter Property="VCornerRadius" Value="7" />
-        <Setter Property="VNormalBackground" Value="Transparent" />
-        <Setter Property="VNormalBorderBrush" Value="Transparent" />
-        <Setter Property="VNormalForeground" Value="{StaticResource ColorAccent}" />
-        <Setter Property="VPressedBackground" Value="{StaticResource ColorAccentTint12}" />
-        <Setter Property="VPressedBorderBrush" Value="Transparent" />
-        <Setter Property="VPressedForeground" Value="{StaticResource ColorAccentDark800}" />
-        <Setter Property="VTextHorizontalAlignment" Value="Left" />
-        <Setter Property="VTextVerticalAlignment" Value="Center" />
-        <Setter Property="VPadding" Value="8,10" />
-        <Setter Property="Height" Value="73" />
-        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource AccentTint}" />
+        <Setter Property="SelectionForegroundBrush" Value="{DynamicResource AccentDeep}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource Accent}" />
     </Style>
 
     <!--  Dropdown surface and item highlight, so a picked option reads brown rather than filled.  -->
     <Style Selector="ComboBox">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
-        <Setter Property="PlaceholderForeground" Value="{StaticResource ColorTextMuted50}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
+        <Setter Property="PlaceholderForeground" Value="{DynamicResource InkSecondary}" />
     </Style>
     <Style Selector="ComboBox /template/ Border#PopupBorder">
-        <Setter Property="Background" Value="{StaticResource ColorBg}" />
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
+        <Setter Property="Background" Value="{DynamicResource SurfacePrimary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource StrokeSubtle}" />
     </Style>
     <Style Selector="ComboBoxItem">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
         <Setter Property="Background" Value="Transparent" />
     </Style>
     <Style Selector="ComboBoxItem:pointerover">
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+        <Setter Property="Background" Value="{DynamicResource AccentTint}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
     </Style>
     <Style Selector="ComboBoxItem:selected">
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="Background" Value="{DynamicResource AccentTint}" />
+        <Setter Property="Foreground" Value="{DynamicResource AccentDeep}" />
     </Style>
     <Style Selector="ComboBoxItem:selected:pointerover">
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="Background" Value="{DynamicResource AccentTint}" />
+        <Setter Property="Foreground" Value="{DynamicResource AccentDeep}" />
     </Style>
 
     <!--  Generic list selection, for anything else that uses ListBoxItem.  -->
     <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="Background" Value="{DynamicResource AccentTint}" />
+        <Setter Property="Foreground" Value="{DynamicResource AccentDeep}" />
     </Style>
     <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
+        <Setter Property="Background" Value="{DynamicResource AccentTint}" />
     </Style>
 
     <!--
@@ -588,14 +673,14 @@
     -->
     <Style Selector="CalendarDatePicker">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
     </Style>
 
     <!--
         The drop-down button that opens the calendar. Fluent sizes it for a mouse on a desktop
         window; on this 720-wide canvas it ends up a tiny tap target, so it is scaled to match
         the 74px-high field it sits in.
-
+        
         The button is retemplated rather than restyled, because its glyph cannot be reached from
         here. Fluent does not draw it with a PathIcon whose Data could be swapped — the
         FluentCalendarDatePickerButton theme builds a miniature calendar out of Borders, an
@@ -603,7 +688,7 @@
         collapse into a couple of specks. Replacing the template discards them wholesale and puts
         the app's own IconCalendar in their place, stroked with Path exactly like every other icon
         in this file.
-
+        
         The left divider is the point of the Border: the button sits inside the text field's own
         outline, so without a rule between them nothing marks which end of the field is a tap
         target and which is typed into.
@@ -613,8 +698,8 @@
         <Setter Property="Margin" Value="0" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorAccent}" />
+        <Setter Property="Background" Value="{DynamicResource AccentTint}" />
+        <Setter Property="Foreground" Value="{DynamicResource Accent}" />
         <Setter Property="Template">
             <ControlTemplate>
                 <!--
@@ -624,7 +709,7 @@
                 -->
                 <Border
                     Background="{TemplateBinding Background}"
-                    BorderBrush="{StaticResource ColorDivider}"
+                    BorderBrush="{DynamicResource StrokeSubtle}"
                     BorderThickness="2,0,0,0"
                     CornerRadius="0,5,5,0"
                     Margin="0,2,2,2">
@@ -655,65 +740,65 @@
         page colour, so the icon stays legible instead of disappearing into the fill.
     -->
     <Style Selector="CalendarDatePicker /template/ Button#PART_Button:pointerover">
-        <Setter Property="Background" Value="{StaticResource ColorAccent}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorBg}" />
+        <Setter Property="Background" Value="{DynamicResource Accent}" />
+        <Setter Property="Foreground" Value="{DynamicResource SurfacePrimary}" />
     </Style>
     <Style Selector="CalendarDatePicker /template/ Button#PART_Button:pressed">
-        <Setter Property="Background" Value="{StaticResource ColorAccentDark700}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorBg}" />
+        <Setter Property="Background" Value="{DynamicResource AccentStrong}" />
+        <Setter Property="Foreground" Value="{DynamicResource SurfacePrimary}" />
     </Style>
 
     <Style Selector="Calendar">
-        <Setter Property="Background" Value="{StaticResource ColorBg}" />
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
+        <Setter Property="Background" Value="{DynamicResource SurfacePrimary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource StrokeSubtle}" />
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="CornerRadius" Value="7" />
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
     </Style>
 
     <Style Selector="CalendarItem">
-        <Setter Property="Background" Value="{StaticResource ColorBg}" />
-        <Setter Property="HeaderBackground" Value="{StaticResource ColorBg}" />
+        <Setter Property="Background" Value="{DynamicResource SurfacePrimary}" />
+        <Setter Property="HeaderBackground" Value="{DynamicResource SurfacePrimary}" />
     </Style>
 
     <Style Selector="CalendarDayButton">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
         <Setter Property="Background" Value="Transparent" />
     </Style>
     <Style Selector="CalendarDayButton:pointerover">
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
+        <Setter Property="Background" Value="{DynamicResource AccentTint}" />
     </Style>
     <Style Selector="CalendarDayButton:selected">
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="Background" Value="{DynamicResource AccentTint}" />
+        <Setter Property="Foreground" Value="{DynamicResource AccentDeep}" />
     </Style>
     <Style Selector="CalendarDayButton:today">
-        <Setter Property="Foreground" Value="{StaticResource ColorAccent}" />
+        <Setter Property="Foreground" Value="{DynamicResource Accent}" />
     </Style>
     <Style Selector="CalendarDayButton:blackout">
-        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted45}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkSecondary}" />
     </Style>
 
     <Style Selector="CalendarButton">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
         <Setter Property="Background" Value="Transparent" />
     </Style>
     <Style Selector="CalendarButton:selected">
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="Background" Value="{DynamicResource AccentTint}" />
+        <Setter Property="Foreground" Value="{DynamicResource AccentDeep}" />
     </Style>
 
     <Style Selector="TimePicker">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource StrokeSubtle}" />
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="CornerRadius" Value="7" />
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
         <Setter Property="FontSize" Value="37" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
     </Style>
 
     <!--
@@ -735,21 +820,21 @@
     </Style>
 
     <Style Selector="TimePickerPresenter">
-        <Setter Property="Background" Value="{StaticResource ColorBg}" />
+        <Setter Property="Background" Value="{DynamicResource SurfacePrimary}" />
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
     </Style>
 
     <!--  The scrollable hour/minute columns inside the clock popup.  -->
     <Style Selector="DateTimePickerPanel &gt; ListBoxItem">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
     </Style>
     <Style Selector="DateTimePickerPanel &gt; ListBoxItem:pointerover">
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
+        <Setter Property="Background" Value="{DynamicResource AccentTint}" />
     </Style>
     <Style Selector="DateTimePickerPanel &gt; ListBoxItem:selected">
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="Background" Value="{DynamicResource AccentTint}" />
+        <Setter Property="Foreground" Value="{DynamicResource AccentDeep}" />
     </Style>
 
 </Styles>

@@ -7,6 +7,7 @@ using DapperDemo.Repository.Dapper.Dtos;
 using DapperDemo.Repository.Dapper.Services;
 using DapperDemo.Viewmodel.Reports;
 using DapperDemo.Viewmodel.Services;
+using DapperDemo.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;
 using DapperDemo.Viewmodel.Viewmodels.Session;
 using DapperDemo.Viewmodel.Viewmodels.Utils;
 using PropertyChanged;
@@ -18,7 +19,7 @@ using System.Windows.Input;
 namespace DapperDemo.Viewmodel.Viewmodels.TabViewsViewmodels;
 
 [AddINotifyPropertyChangedInterface]
-public class UsersViewModel : PresentationModelBase<Unit, Unit>
+public class UsersViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
 {
     /// <summary>What a hidden amount reads as. Wide enough not to hint at the figure's length.</summary>
     private const string HiddenMoney = "••••••";
@@ -35,6 +36,8 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     private readonly ImagePicker imagePicker;
     private readonly BackupArchive backupArchive;
     private readonly CloudBackupService cloudBackup;
+    private readonly CurrentView currentView;
+    private readonly PresenterBase<SettingsViewModel, Unit, Unit> settingsView;
     private readonly FileExportDialog fileExportDialog;
     private readonly EventHandler dataChangedHandler;
 
@@ -66,21 +69,29 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         RepositoryTutors repositoryTutors,
         RepositoryPetSitter repositoryPetSitter,
         ReportExporter reportExporter,
+        ShareSheet shareSheet,
         AppSession session,
         BackupArchive backupArchive,
         CloudBackupService cloudBackup,
+        CurrentView currentView,
+        Factory<PresenterBase<SettingsViewModel, Unit, Unit>> settingsFactory,
         FileExportDialog fileExportDialog,
         ImagePicker imagePicker)
     {
+        ArgumentNullException.ThrowIfNull(settingsFactory);
+
         this.imagePicker = imagePicker;
         this.repositoryServices = repositoryServices;
         this.repositoryDogs = repositoryDogs;
         this.repositoryTutors = repositoryTutors;
         this.repositoryPetSitter = repositoryPetSitter;
         this.reportExporter = reportExporter;
+        Preview = new ReportPreview(reportExporter, shareSheet);
         this.session = session;
         this.backupArchive = backupArchive;
         this.cloudBackup = cloudBackup;
+        this.currentView = currentView;
+        settingsView = settingsFactory.Create();
         this.fileExportDialog = fileExportDialog;
 
         // Billing totals depend on services marked paid elsewhere (Agenda, service detail).
@@ -94,14 +105,22 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         EditProfileCommand = new SynchronizedCommand(StartEditProfile, SynchronizationBehavior.Discard, true);
         ChoosePhotoCommand = new SynchronizedCommand(ChoosePhoto, SynchronizationBehavior.Discard, true);
         RemovePhotoCommand = new SynchronizedCommand(RemovePhoto, SynchronizationBehavior.Discard, true);
+        OpenPhotoCommand = new SynchronizedCommand(() => ViewingPhoto = HasPhoto, SynchronizationBehavior.Discard, true);
+        ClosePhotoCommand = new SynchronizedCommand(() => ViewingPhoto = false, SynchronizationBehavior.Discard, true);
         CancelProfileCommand = new SynchronizedCommand(CancelEditProfile, SynchronizationBehavior.Discard, true);
         SaveProfileCommand = new SynchronizedCommand(SaveProfile, SynchronizationBehavior.Discard, true);
         ToggleMoneyVisibleCommand = new SynchronizedCommand(ToggleMoneyVisible, SynchronizationBehavior.Discard, true);
         ExportSummaryCommand = new SynchronizedCommand(ExportSummary, SynchronizationBehavior.Discard, true);
-        ExportBackupCommand = new SynchronizedCommand(ExportBackup, SynchronizationBehavior.Discard, true);
+        PreviousPeriodCommand = new SynchronizedCommand(() => StepPeriod(-1), SynchronizationBehavior.Discard, true);
+        NextPeriodCommand = new SynchronizedCommand(() => StepPeriod(1), SynchronizationBehavior.Discard, true);
+        ToggleWholeYearCommand = new SynchronizedCommand(ToggleWholeYear, SynchronizationBehavior.Discard, true);
+        Picker = new PeriodPicker(this);
         ImportBackupCommand = new SynchronizedCommand(ImportBackup, SynchronizationBehavior.Discard, true);
         SendCloudBackupCommand = new SynchronizedCommand(SendCloudBackup, SynchronizationBehavior.Discard, true);
+        SetUpCloudBackupCommand = new SynchronizedCommand(SetUpCloudBackup, SynchronizationBehavior.Discard, true);
+        OpenSettingsCommand = new SynchronizedCommand(() => currentView.Show(settingsView), SynchronizationBehavior.Discard, true);
         DismissInvalidBackupCommand = new SynchronizedCommand(() => ShowInvalidBackupAlert = false, SynchronizationBehavior.Discard, true);
+        DismissBackupDoneCommand = new SynchronizedCommand(() => ShowBackupDoneAlert = false, SynchronizationBehavior.Discard, true);
 
         // "Ano todo" first, then the twelve months — the same list TutorDetail and DogDetail pick
         // their period from, so a sitter learns one convention across every billing screen.
@@ -137,6 +156,17 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
 
     public ICommand RemovePhotoCommand { get; }
 
+    /// <summary>Gets shows the profile photo full screen, at the resolution it was stored at.</summary>
+    public ICommand OpenPhotoCommand { get; }
+
+    public ICommand ClosePhotoCommand { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the photo is open full screen. The viewer is the one place
+    /// that decodes the file at its stored size, so this staying false is what keeps the tab cheap.
+    /// </summary>
+    public bool ViewingPhoto { get; private set; }
+
     /// <summary>Gets the photo file name the editor would save; also what the read view shows.</summary>
     public string PhotoFileName { get; private set; } = string.Empty;
 
@@ -155,13 +185,20 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     /// <summary>Gets saves the selected month's billing as an image.</summary>
     public ICommand ExportSummaryCommand { get; }
 
-    public ICommand ExportBackupCommand { get; }
-
     public ICommand ImportBackupCommand { get; }
 
     public ICommand SendCloudBackupCommand { get; }
 
+    /// <summary>Gets the command that picks the folder automatic backups go to.</summary>
+    public ICommand SetUpCloudBackupCommand { get; }
+
+    /// <summary>Gets the command opening Ajustes, which is pushed rather than shown inline.</summary>
+    public ICommand OpenSettingsCommand { get; }
+
     public ICommand DismissInvalidBackupCommand { get; }
+
+    /// <summary>Gets the command closing the "backup saved" confirmation.</summary>
+    public ICommand DismissBackupDoneCommand { get; }
 
     /// <summary>
     /// Gets the "replace the file already there?" question, asked mid-export on the platforms where
@@ -170,11 +207,22 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     public ConfirmRequest ReplaceRequest { get; } = new();
 
     /// <summary>
+    /// Gets the rendered month summary, held on screen with Compartilhar and Salvar beside it.
+    /// </summary>
+    public ReportPreview Preview { get; }
+
+    /// <summary>
     /// Gets a value indicating whether the "not a valid backup" alert is up. A popup rather than
     /// the inline message for this one case: it is the only outcome where the user picked a file
     /// and nothing happened, so it has to be impossible to miss.
     /// </summary>
     public bool ShowInvalidBackupAlert { get; private set; }
+
+    /// <summary>Gets a value indicating whether the "backup saved" confirmation is up.</summary>
+    public bool ShowBackupDoneAlert { get; private set; }
+
+    /// <summary>Gets where the backup went and when, e.g. "Salvo em "Documents/Patas" em 21/08/2026 às 14:30.".</summary>
+    public string BackupDoneMessage { get; private set; } = string.Empty;
 
     /// <summary>Gets the title of the alert shown when a backup could not be imported.</summary>
     public string InvalidBackupTitle { get; private set; } = string.Empty;
@@ -196,6 +244,16 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
 
     /// <summary>Gets when the automatic backup last ran, as the sitter reads it.</summary>
     public string CloudBackupLabel { get; private set; } = string.Empty;
+
+    /// <summary>Gets the automatic-backup row's title, which changes once a folder is chosen.</summary>
+    public string CloudBackupTitle { get; private set; } = "Ativar backup automático";
+
+    /// <summary>
+    /// Gets a value indicating whether a destination folder is set up and reachable. "Enviar agora"
+    /// only exists once it is — before that there is nowhere to send to, and the row would fail
+    /// every time it was pressed.
+    /// </summary>
+    public bool CloudBackupLinked { get; private set; }
 
     /// <summary>Gets the app version, shown at the foot of the profile screen.</summary>
     public string VersionLabel => AppVersion.Label;
@@ -258,6 +316,21 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
 
     /// <summary>Gets the years worth offering: every year with a service, plus this one.</summary>
     public ObservableCollection<int> YearOptions { get; } = [];
+
+    /// <summary>Gets the period as one line, e.g. "Agosto 2026".</summary>
+    public string PeriodLabel => ServicePeriod.Label(SelectedMonth, SelectedYear);
+
+    /// <summary>Gets the command stepping the period back one month.</summary>
+    public ICommand PreviousPeriodCommand { get; private set; } = null!;
+
+    /// <summary>Gets the command stepping the period forward one month.</summary>
+    public ICommand NextPeriodCommand { get; private set; } = null!;
+
+    /// <summary>Gets the command switching between one month and the whole year.</summary>
+    public ICommand ToggleWholeYearCommand { get; private set; } = null!;
+
+    /// <summary>Gets the inline period picker: a year row over a grid of months.</summary>
+    public PeriodPicker Picker { get; }
 
     public MonthOption? SelectedMonth { get; set; }
 
@@ -409,7 +482,16 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
 
     private void ReloadWhenPeriodChanges(object? sender, PropertyChangedEventArgs e)
     {
-        if (reloading || (e.PropertyName != nameof(SelectedMonth) && e.PropertyName != nameof(SelectedYear)))
+        if (e.PropertyName != nameof(SelectedMonth) && e.PropertyName != nameof(SelectedYear))
+        {
+            return;
+        }
+
+        // Unguarded: the picker's highlight and its whole-year label must follow the period even
+        // while a reload is already under way.
+        Picker?.Refresh();
+
+        if (reloading)
         {
             return;
         }
@@ -428,7 +510,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         IncomeBreakdown.Add(new IncomeRow("Passeio", Money(income.Walk)));
         IncomeBreakdown.Add(new IncomeRow("Pet sitting", Money(income.Sitting)));
         IncomeBreakdown.Add(new IncomeRow("Hotel", Money(income.Hotel)));
-        IncomeBreakdown.Add(new IncomeRow("Day-Care", Money(income.DayCare)));
+        IncomeBreakdown.Add(new IncomeRow("Day Care", Money(income.DayCare)));
 
         RefreshMonthDetail();
     }
@@ -554,6 +636,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         received.Rows.Add(new ReportRow("Passeio", AppSession.Money(income.Walk)));
         received.Rows.Add(new ReportRow("Pet sitting", AppSession.Money(income.Sitting)));
         received.Rows.Add(new ReportRow("Hotel", AppSession.Money(income.Hotel)));
+        received.Rows.Add(new ReportRow("Day Care", AppSession.Money(income.DayCare)));
         received.Totals.Add(new ReportField("Total recebido", AppSession.Money(income.Total), true));
         report.Sections.Add(received);
 
@@ -614,11 +697,14 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         var periodSlug = isWholeYear
             ? year
             : $"{year}-{(SelectedMonth?.Number ?? 1).ToString("00", CultureInfo.InvariantCulture)}";
-        var fileName = await reportExporter
-            .ExportAsync(report, $"faturamento-{periodSlug}", AskReplaceAsync)
+
+        // Shown rather than saved: the preview offers Compartilhar and Salvar side by side, so
+        // sending the month to someone no longer means writing a file first and going to find it.
+        var shown = await Preview
+            .ShowAsync(report, $"faturamento-{periodSlug}", AskReplaceAsync)
             .WithSync();
 
-        SummaryMsg = fileName == null ? string.Empty : $"Resumo salvo: {fileName}";
+        SummaryMsg = shown == Response.Successful ? string.Empty : "Não foi possível gerar o resumo.";
     }
 
     /// <summary>
@@ -626,32 +712,6 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     /// </summary>
     private Task<bool> AskReplaceAsync(string fileName) =>
         ReplaceRequest.AskAsync($"Já existe um arquivo chamado {fileName} nesta pasta. Substituir?");
-
-    private async Task ExportBackup()
-    {
-        BackupMsgIsError = false;
-        BackupMsg = string.Empty;
-
-        var destination = await fileExportDialog
-            .CreateAsync(BackupArchive.SuggestedFileName(), ExportFileKind.Zip, AskReplaceAsync)
-            .WithSync();
-
-        if (destination == null)
-        {
-            return;
-        }
-
-        Response result;
-        await using (destination.Content.ConfigureAwait(true))
-        {
-            result = await backupArchive.WriteToAsync(destination.Content).WithSync();
-        }
-
-        BackupMsgIsError = result != Response.Successful;
-        BackupMsg = result == Response.Successful
-            ? "Backup exportado."
-            : "Não foi possível exportar o backup.";
-    }
 
     /// <summary>
     /// Sends a backup to the automatic destination now, rather than waiting for the weekly prompt.
@@ -666,22 +726,70 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         BackupMsg = "Enviando backup…";
 
         var result = await cloudBackup.RunAsync().WithSync();
+        var destination = await cloudBackup.DestinationNameAsync().WithSync();
 
         BackupMsgIsError = result != Response.Successful;
         BackupMsg = result == Response.Successful
-            ? $"Backup enviado para a {cloudBackup.DestinationName}."
+            ? $"Backup enviado para \"{destination}\"."
             : "Não foi possível enviar o backup.";
+
+        // A backup is the one action here with nothing on screen to show for it — the row's caption
+        // changes, but a sitter who just tapped it is owed a plain answer that it worked, and when.
+        if (result == Response.Successful)
+        {
+            var stamp = DateTime.Now.ToString("dd/MM/yyyy 'às' HH:mm", CultureInfo.InvariantCulture);
+            BackupDoneMessage = $"Salvo em \"{destination}\" em {stamp}.";
+            ShowBackupDoneAlert = true;
+        }
 
         await RefreshCloudBackupLabelAsync().WithSync();
     }
 
+    /// <summary>
+    /// Chooses the folder automatic backups go to, and sends the first one straight away.
+    /// </summary>
+    /// <remarks>
+    /// The one setup step, and the whole point of the row: after this the weekly prompt has
+    /// somewhere to write. The first backup runs immediately rather than waiting a week, both
+    /// because the sitter has just asked for this and because it proves the folder is actually
+    /// writable while they are still looking at the screen.
+    /// </remarks>
+    private async Task SetUpCloudBackup()
+    {
+        BackupMsgIsError = false;
+        BackupMsg = string.Empty;
+
+        if (await cloudBackup.LinkAsync().WithSync() != Response.Successful)
+        {
+            // Cancelling the folder picker is the ordinary case, not an error worth shouting
+            // about. Only refresh, so the row goes back to saying what it said before.
+            await RefreshCloudBackupLabelAsync().WithSync();
+            return;
+        }
+
+        await RefreshCloudBackupLabelAsync().WithSync();
+        await SendCloudBackup().WithSync();
+    }
+
     private async Task RefreshCloudBackupLabelAsync()
     {
+        var destination = await cloudBackup.DestinationNameAsync().WithSync();
+
+        CloudBackupLinked = destination is { Length: > 0 };
+
+        if (!CloudBackupLinked)
+        {
+            CloudBackupTitle = "Ativar backup automático";
+            CloudBackupLabel = "Escolha uma pasta — no Drive ou no aparelho. Depois disso o app avisa toda semana para enviar uma cópia.";
+            return;
+        }
+
         var last = await cloudBackup.LastUploadAsync().WithSync();
 
+        CloudBackupTitle = "Backup automático";
         CloudBackupLabel = last == null
-            ? $"Nenhum backup automático enviado ainda. Destino: {cloudBackup.DestinationName}."
-            : $"Último backup automático: {last.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)}.";
+            ? $"Salvando em \"{destination}\". Nenhuma cópia enviada ainda. Toque para trocar de pasta."
+            : $"Salvando em \"{destination}\". Última cópia em {last.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)}. Toque para trocar de pasta.";
     }
 
     /// <summary>
@@ -737,6 +845,10 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         PhotoFileName = storedPhotoFileName;
         ProfileMsg = string.Empty;
         IsEditingProfile = true;
+
+        // The viewer opens from the reading state's portrait, which the editor replaces. Leaving it
+        // open would strand a full-screen photo over a form the user can no longer reach.
+        ViewingPhoto = false;
     }
 
     private void CancelEditProfile()
@@ -910,5 +1022,29 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
             : "Este arquivo não é um backup do Patas & Passeios. Escolha um .zip exportado por este aplicativo. Nada foi alterado neste aparelho.";
 
         ShowInvalidBackupAlert = true;
+    }
+
+    /// <summary>
+    /// Moves the billing period, replacing the two drop-downs this screen used to carry.
+    /// </summary>
+    /// <param name="delta">−1 or +1.</param>
+    /// <summary>Switches the period between a single month and the whole year.</summary>
+    private void ToggleWholeYear()
+    {
+        var number = ServicePeriod.ToggleWholeYear(SelectedMonth);
+        SelectedMonth = MonthOptions.FirstOrDefault(m => m.Number == number) ?? SelectedMonth;
+    }
+
+    private void StepPeriod(int delta)
+    {
+        var (month, year) = ServicePeriod.Step(SelectedMonth, SelectedYear, delta);
+
+        if (!YearOptions.Contains(year))
+        {
+            YearOptions.Add(year);
+        }
+
+        SelectedYear = year;
+        SelectedMonth = MonthOptions.FirstOrDefault(m => m.Number == month) ?? SelectedMonth;
     }
 }

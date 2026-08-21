@@ -5,114 +5,64 @@
     x:Class="DapperDemo.View.Views.ComplementaryViews.NewTutorView"
     x:DataType="complementaryViewsViewmodels:NewTutorViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
     xmlns:complementaryViewsViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Background="{StaticResource ColorBg}" Width="720">
+    <Grid Background="{DynamicResource SurfacePrimary}" Width="720">
         <ScrollViewer>
-            <StackPanel Spacing="0">
-                <buttons:VButton
-                    Classes="BtnBack"
+            <StackPanel>
+                <Button
                     Command="{Binding BackCommand}"
-                    Margin="32,32,0,0"
-                    VText="← Voltar" />
+                    Margin="30,30,0,0"
+                    Tag="{Binding Navigation.BackLabel}"
+                    Theme="{StaticResource BackControl}" />
 
-                <StackPanel Margin="32,24,32,16" Spacing="2">
-                    <TextBlock
-                        Classes="Heading1"
-                        FontSize="68"
-                        Text="Novo tutor" />
-                    <TextBlock Classes="Kicker" Text="Cadastrar" />
-                </StackPanel>
+                <TextBlock Classes="TTitle" Margin="35,28,35,0" Text="Novo tutor" />
 
-                <StackPanel Margin="32,16,32,48" Spacing="28">
-                    <StackPanel Spacing="10">
-                        <TextBlock
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="28"
-                            Foreground="{StaticResource ColorTextMuted70}"
-                            Text="Nome completo" />
-                        <TextBox
-                            Background="Transparent"
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="2"
-                            CaretBrush="{StaticResource ColorAccent}"
-                            CornerRadius="7"
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="34"
-                            Foreground="{StaticResource ColorText}"
-                            MinHeight="82"
-                            Padding="18,0"
-                            PlaceholderText="Marina Alves"
-                            Text="{Binding Name}"
-                            VerticalContentAlignment="Center" />
+                <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="DADOS" />
+
+                <Border Classes="Group">
+                    <StackPanel>
+                        <StackPanel Margin="28,21" Spacing="7">
+                            <TextBlock Classes="TCaption" Text="Nome completo" />
+                            <TextBox Classes="Field" Text="{Binding Name}" PlaceholderText="Marina Alves" />
+                        </StackPanel>
+
+                        <Border Classes="RowRule" />
+
+                        <StackPanel Margin="28,21" Spacing="7">
+                            <TextBlock Classes="TCaption" Text="Telefone" />
+                            <TextBox Classes="Field" Text="{Binding Phone}" PlaceholderText="(11) 98221-4432" />
+                        </StackPanel>
+
+                        <Border Classes="RowRule" />
+
+                        <StackPanel Margin="28,21" Spacing="7">
+                            <TextBlock Classes="TCaption" Text="Endereço" />
+                            <TextBox Classes="Field" Text="{Binding Neighborhood}" PlaceholderText="Vila Madalena" />
+                        </StackPanel>
                     </StackPanel>
+                </Border>
 
-                    <StackPanel Spacing="10">
-                        <TextBlock
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="28"
-                            Foreground="{StaticResource ColorTextMuted70}"
-                            Text="Telefone" />
-                        <TextBox
-                            Background="Transparent"
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="2"
-                            CaretBrush="{StaticResource ColorAccent}"
-                            CornerRadius="7"
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="34"
-                            Foreground="{StaticResource ColorText}"
-                            MinHeight="82"
-                            Padding="18,0"
-                            PlaceholderText="(11) 98221-4432"
-                            Text="{Binding Phone}"
-                            VerticalContentAlignment="Center" />
-                    </StackPanel>
+                <TextBlock
+                    Classes="TCaption Owed"
+                    IsVisible="{Binding HasError}"
+                    Margin="35,14,35,0"
+                    Text="{Binding ErrorMessage}"
+                    TextWrapping="Wrap" />
 
-                    <StackPanel Spacing="10">
-                        <TextBlock
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="28"
-                            Foreground="{StaticResource ColorTextMuted70}"
-                            Text="Endereço" />
-                        <TextBox
-                            Background="Transparent"
-                            BorderBrush="{StaticResource ColorDivider}"
-                            BorderThickness="2"
-                            CaretBrush="{StaticResource ColorAccent}"
-                            CornerRadius="7"
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="34"
-                            Foreground="{StaticResource ColorText}"
-                            MinHeight="82"
-                            Padding="18,0"
-                            PlaceholderText="Vila Madalena"
-                            Text="{Binding Neighborhood}"
-                            VerticalContentAlignment="Center" />
-                    </StackPanel>
+                <Border Classes="ControlRing" Margin="30,28,30,0">
+                    <Border Classes="FloatingControl">
+                        <Button Classes="Submit" Command="{Binding SaveCommand}">
+                            <TextBlock Classes="TBody" Text="Salvar tutor" />
+                        </Button>
+                    </Border>
+                </Border>
 
-                    <TextBlock
-                        Classes="FormMsg Error"
-                        FontFamily="{StaticResource FontBody}"
-                        FontSize="31"
-                        FontStyle="Italic"
-                        HorizontalAlignment="Center"
-                        IsVisible="{Binding HasError}"
-                        Text="{Binding ErrorMessage}"
-                        TextAlignment="Center" />
-
-                    <buttons:VButton
-                        Classes="BtnPrimary"
-                        Command="{Binding SaveCommand}"
-                        Height="97"
-                        HorizontalAlignment="Stretch"
-                        VText="Salvar tutor" />
-                </StackPanel>
+                <!--  Clearance for the floating tab bar, which content scrolls under.  -->
+                <Border Height="168" />
             </StackPanel>
         </ScrollViewer>
     </Grid>

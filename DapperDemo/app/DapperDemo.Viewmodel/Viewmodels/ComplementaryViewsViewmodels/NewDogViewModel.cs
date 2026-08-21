@@ -33,6 +33,7 @@ public class NewDogViewModel : PresentationModelBase<Unit, Unit>
         this.repositoryTutors = repositoryTutors;
         this.imagePicker = imagePicker;
         this.session = session;
+        Navigation = currentView;
         BackCommand = new SynchronizedCommand(currentView.GoBack, SynchronizationBehavior.Discard, true);
         SaveCommand = new SynchronizedCommand(Save, SynchronizationBehavior.Discard, true);
         ChoosePhotoCommand = new SynchronizedCommand(ChoosePhoto, SynchronizationBehavior.Discard, true);
@@ -40,6 +41,9 @@ public class NewDogViewModel : PresentationModelBase<Unit, Unit>
     }
 
     public ICommand BackCommand { get; }
+
+    /// <summary>Gets the navigator, so the back control can name the screen it returns to.</summary>
+    public CurrentView Navigation { get; }
 
     public ICommand SaveCommand { get; }
 

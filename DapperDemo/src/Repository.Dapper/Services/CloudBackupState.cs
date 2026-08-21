@@ -61,7 +61,14 @@ public sealed class CloudBackupState
             using var document = JsonDocument.Parse(json);
             var root = document.RootElement;
 
-            return new CloudBackupSchedule(ReadStamp(root, "lastUploadUtc"), ReadStamp(root, "lastPromptUtc"));
+            var destination = root.TryGetProperty("destination", out var value) && value.ValueKind == JsonValueKind.String
+                ? value.GetString()
+                : null;
+
+            return new CloudBackupSchedule(
+                ReadStamp(root, "lastUploadUtc"),
+                ReadStamp(root, "lastPromptUtc"),
+                destination);
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException or JsonException)
         {
@@ -83,7 +90,8 @@ public sealed class CloudBackupState
                 $$"""
                 {
                   "lastUploadUtc": {{Stamp(schedule.LastUploadUtc)}},
-                  "lastPromptUtc": {{Stamp(schedule.LastPromptUtc)}}
+                  "lastPromptUtc": {{Stamp(schedule.LastPromptUtc)}},
+                  "destination": {{Text(schedule.Destination)}}
                 }
                 """;
 
@@ -112,6 +120,10 @@ public sealed class CloudBackupState
             ? value.ToUniversalTime()
             : null;
     }
+
+    /// <summary>Writes a string as JSON, or null. Escaped, because a bookmark is opaque bytes.</summary>
+    private static string Text(string? value) =>
+        value == null ? "null" : JsonSerializer.Serialize(value);
 
     private static string Stamp(DateTime? value) =>
         value == null ? "null" : $"\"{value.Value.ToUniversalTime().ToString("O", CultureInfo.InvariantCulture)}\"";

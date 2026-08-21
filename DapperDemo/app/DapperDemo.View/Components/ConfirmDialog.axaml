@@ -11,60 +11,84 @@
         DataContext: a UserControl inherits its parent's DataContext, so a plain {Binding Message}
         would look for Message on the screen's view model instead of on this control.
     -->
-    <Border Background="{StaticResource ColorScrim}">
+    <!--
+        Over a scrim there is no page colour to ring with, so this is the one floating thing in the
+        app with fill and edge but no ring — the scrim does the separating.
+    -->
+    <Border Background="{DynamicResource Scrim}">
         <Border
-            Background="{StaticResource ColorBg}"
-            BorderBrush="{StaticResource ColorDivider}"
-            BorderThickness="2"
-            CornerRadius="7"
+            Background="{DynamicResource SurfaceRaised}"
+            BorderBrush="{DynamicResource StrokeControl}"
+            BorderThickness="1"
+            CornerRadius="21"
             HorizontalAlignment="Center"
             Margin="48"
-            MaxWidth="600"
-            Padding="40"
-            VerticalAlignment="Center">
-            <StackPanel Spacing="24">
-                <TextBlock
-                    Classes="CardTitle"
-                    HorizontalAlignment="Center"
-                    Text="{Binding #Root.Title}"
-                    TextAlignment="Center"
-                    TextWrapping="Wrap" />
+            VerticalAlignment="Center"
+            Width="595">
+            <StackPanel>
+                <StackPanel Margin="35,35,35,28" Spacing="14">
+                    <TextBlock
+                        Classes="TBody"
+                        Text="{Binding #Root.Title}"
+                        TextWrapping="Wrap" />
+                    <TextBlock
+                        Classes="TUi Muted"
+                        Text="{Binding #Root.Message}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
 
-                <TextBlock
-                    FontFamily="{StaticResource FontBody}"
-                    FontSize="30"
-                    Foreground="{StaticResource ColorTextMuted70}"
-                    Text="{Binding #Root.Message}"
-                    TextAlignment="Center"
-                    TextWrapping="Wrap" />
+                <Border Classes="RowRule" Margin="0" />
 
                 <!--  Não sits left as the safe default; Sim carries the destructive action.  -->
-                <Grid ColumnDefinitions="*,16,*" IsVisible="{Binding #Root.ShowCancel}">
-                    <buttons:VButton
-                        Classes="BtnSecondary"
+                <Grid
+                    ColumnDefinitions="*,Auto,*"
+                    Height="84"
+                    IsVisible="{Binding #Root.ShowCancel}">
+                    <Button
+                        Background="Transparent"
+                        BorderThickness="0"
                         Command="{Binding #Root.CancelCommand}"
-                        Height="88"
-                        VText="{Binding #Root.CancelText}" />
-                    <buttons:VButton
-                        Classes="BtnPrimary"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        VerticalAlignment="Stretch"
+                        VerticalContentAlignment="Center">
+                        <TextBlock Classes="TBody" Text="{Binding #Root.CancelText}" />
+                    </Button>
+                    <Border Classes="SegRule" Grid.Column="1" />
+                    <Button
+                        Background="Transparent"
+                        BorderThickness="0"
                         Command="{Binding #Root.ConfirmCommand}"
                         Grid.Column="2"
-                        Height="88"
-                        VText="{Binding #Root.ConfirmText}" />
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        VerticalAlignment="Stretch"
+                        VerticalContentAlignment="Center">
+                        <TextBlock
+                            Classes="TBody Owed"
+                            FontWeight="SemiBold"
+                            Text="{Binding #Root.ConfirmText}" />
+                    </Button>
                 </Grid>
 
                 <!--
-                    Alert form: one full-width button. A separate element rather than a spanning
+                    Alert form: one full-width cell. A separate element rather than a spanning
                     column, because hiding a Grid child leaves its column occupying space and the
                     lone button would sit off-centre.
                 -->
-                <buttons:VButton
-                    Classes="BtnPrimary"
+                <Button
+                    Background="Transparent"
+                    BorderThickness="0"
                     Command="{Binding #Root.ConfirmCommand}"
-                    Height="88"
+                    Height="84"
                     HorizontalAlignment="Stretch"
-                    IsVisible="{Binding !#Root.ShowCancel}"
-                    VText="{Binding #Root.ConfirmText}" />
+                    HorizontalContentAlignment="Center"
+                    IsVisible="{Binding !#Root.ShowCancel}">
+                    <TextBlock
+                        Classes="TBody Owed"
+                        FontWeight="SemiBold"
+                        Text="{Binding #Root.ConfirmText}" />
+                </Button>
             </StackPanel>
         </Border>
     </Border>

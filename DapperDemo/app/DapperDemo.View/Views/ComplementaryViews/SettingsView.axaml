@@ -1,0 +1,185 @@
+<UserControl
+    d:DesignHeight="1460"
+    d:DesignWidth="720"
+    mc:Ignorable="d"
+    x:Class="DapperDemo.View.Views.ComplementaryViews.SettingsView"
+    x:DataType="complementaryViewsViewmodels:SettingsViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:complementaryViewsViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;assembly=DapperDemo.Viewmodel"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Background="{DynamicResource SurfacePrimary}" Width="720">
+        <ScrollViewer>
+            <StackPanel>
+
+                <Border Classes="ControlRing" HorizontalAlignment="Left" Margin="30,30,0,0">
+                    <Border Classes="FloatingControl">
+                        <Button
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Command="{Binding BackCommand}"
+                            Height="77"
+                            Padding="21,0">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <Path
+                                    Data="{StaticResource IconChevronLeft}"
+                                    Height="30"
+                                    Stretch="Uniform"
+                                    Stroke="{DynamicResource InkPrimary}"
+                                    StrokeJoin="Round"
+                                    StrokeLineCap="Round"
+                                    StrokeThickness="1.6"
+                                    VerticalAlignment="Center"
+                                    Width="30" />
+                                <TextBlock
+                                    Classes="TUi"
+                                    Text="{Binding Navigation.BackLabel}"
+                                    VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </Border>
+                </Border>
+
+                <TextBlock
+                    Classes="TTitle"
+                    Margin="35,28,35,0"
+                    Text="Ajustes" />
+
+                <!--
+                    Appearance. Three peer states, exactly one of which is true — a segmented group
+                    rather than a switch plus a dependent control, which would encode the same three
+                    states in two controls and make you work out which is in charge.
+                -->
+                <TextBlock
+                    Classes="TMicro"
+                    Margin="35,42,35,14"
+                    Text="APARÊNCIA" />
+
+                <Border Classes="Group">
+                    <Grid ColumnDefinitions="*,Auto,*,Auto,*" Height="77">
+                        <Button
+                            Classes="SegOption"
+                            Classes.Active="{Binding IsThemeLight}"
+                            Command="{Binding SetThemeLightCommand}"
+                            Content="Claro"
+                            CornerRadius="21,0,0,21" />
+                        <Border Classes="SegRule" Grid.Column="1" />
+                        <Button
+                            Classes="SegOption"
+                            Classes.Active="{Binding IsThemeDark}"
+                            Command="{Binding SetThemeDarkCommand}"
+                            Content="Escuro"
+                            Grid.Column="2" />
+                        <Border Classes="SegRule" Grid.Column="3" />
+                        <Button
+                            Classes="SegOption"
+                            Classes.Active="{Binding IsThemeSystem}"
+                            Command="{Binding SetThemeSystemCommand}"
+                            Content="Sistema"
+                            CornerRadius="0,21,21,0"
+                            Grid.Column="4" />
+                    </Grid>
+                </Border>
+
+                <!--  Text size. The screen is its own preview, so there is nothing to commit.  -->
+                <TextBlock
+                    Classes="TMicro"
+                    Margin="35,42,35,14"
+                    Text="TAMANHO DO TEXTO" />
+
+                <Border Classes="Group">
+                    <StackPanel>
+                        <StackPanel Margin="28,21,28,0">
+                            <!--  The specimens: the same letter at each step, so the ramp is visible as a ramp.  -->
+                            <Grid ColumnDefinitions="*,*,*,*,*,*">
+                                <TextBlock
+                                    Classes="TCaption"
+                                    FontSize="23"
+                                    HorizontalAlignment="Center"
+                                    Text="A" />
+                                <TextBlock
+                                    Classes="TCaption"
+                                    FontSize="27"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Center"
+                                    Text="A" />
+                                <TextBlock
+                                    Classes="TCaption"
+                                    FontSize="31"
+                                    Grid.Column="2"
+                                    HorizontalAlignment="Center"
+                                    Text="A" />
+                                <TextBlock
+                                    Classes="TCaption"
+                                    FontSize="36"
+                                    Grid.Column="3"
+                                    HorizontalAlignment="Center"
+                                    Text="A" />
+                                <TextBlock
+                                    Classes="TCaption"
+                                    FontSize="41"
+                                    Grid.Column="4"
+                                    HorizontalAlignment="Center"
+                                    Text="A" />
+                                <TextBlock
+                                    Classes="TCaption"
+                                    FontSize="46"
+                                    Grid.Column="5"
+                                    HorizontalAlignment="Center"
+                                    Text="A" />
+                            </Grid>
+
+                            <Slider
+                                IsEnabled="{Binding StepIsEditable}"
+                                IsSnapToTickEnabled="True"
+                                Margin="0,8,0,0"
+                                Maximum="6"
+                                Minimum="1"
+                                TickFrequency="1"
+                                Value="{Binding SelectedStep}" />
+
+                            <Grid ColumnDefinitions="*,Auto" Margin="0,4,0,21">
+                                <TextBlock Classes="TCaption" Text="{Binding StepLabel}" />
+                                <TextBlock
+                                    Classes="TCaption"
+                                    Grid.Column="1"
+                                    Text="{Binding StepCountLabel}" />
+                            </Grid>
+                        </StackPanel>
+
+                        <Border Classes="RowRule" />
+
+                        <Grid ColumnDefinitions="*,Auto" Margin="28,21">
+                            <StackPanel Spacing="4">
+                                <TextBlock Classes="TBody" Text="Seguir o tamanho do sistema" />
+                                <TextBlock Classes="TCaption" Text="Usa o tamanho de texto do aparelho" />
+                            </StackPanel>
+                            <ToggleSwitch
+                                Grid.Column="1"
+                                IsChecked="{Binding FollowSystemTextSize}"
+                                OffContent=""
+                                OnContent=""
+                                VerticalAlignment="Center" />
+                        </Grid>
+
+                        <Border Classes="RowRule" />
+
+                        <!--  The preview, at whatever the ramp is currently set to.  -->
+                        <StackPanel Margin="28,21" Spacing="7">
+                            <TextBlock
+                                Classes="TBody"
+                                Text="Toby tem um passeio hoje às 09:00."
+                                TextWrapping="Wrap" />
+                            <TextBlock Classes="TCaption" Text="Prévia no tamanho atual" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!--  Clearance for the floating tab bar.  -->
+                <Border Height="168" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

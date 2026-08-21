@@ -8,6 +8,7 @@ using DapperDemo.View.Services;
 using DapperDemo.Viewmodel.Reports;
 using DapperDemo.Viewmodel.Services;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace DapperDemo.View.Reports;
@@ -59,10 +60,39 @@ public sealed class PngReportExporter(FileExportDialog fileExportDialog) : Repor
     private static readonly FontFamily Body = new("Georgia,Times New Roman,serif");
 
     /// <inheritdoc/>
-    public async Task<string?> ExportAsync(ReportDocument report, string suggestedFileName, Func<string, Task<bool>> confirmReplace)
+    public Task<string?> RenderAsync(ReportDocument report, string suggestedFileName)
     {
         ArgumentNullException.ThrowIfNull(report);
 
+        // A folder of our own inside the temporary one, so cleaning up a stale preview cannot
+        // reach anything else the system keeps there.
+        var folder = Path.Combine(Path.GetTempPath(), "dapperdemo-reports");
+        var path = Path.Combine(folder, Path.GetFileName(suggestedFileName) + ".png");
+
+        try
+        {
+            Directory.CreateDirectory(folder);
+
+            using var bitmap = Render(report);
+            var file = File.Create(path);
+
+            using (file)
+            {
+                bitmap.Save(file, new PngBitmapEncoderOptions());
+            }
+
+            return Task.FromResult<string?>(path);
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+        {
+            Console.WriteLine(e);
+            return Task.FromResult<string?>(null);
+        }
+    }
+
+    /// <inheritdoc/>
+    public async Task<string?> SaveAsync(string renderedPath, string suggestedFileName, Func<string, Task<bool>> confirmReplace)
+    {
         // Where the file goes, whether an existing one may be replaced, and how the platform is
         // best asked, all belong to the dialog — this only knows how to draw.
         var target = await fileExportDialog
@@ -74,14 +104,23 @@ public sealed class PngReportExporter(FileExportDialog fileExportDialog) : Repor
             return null;
         }
 
-        using var bitmap = Render(report);
-
-        await using (target.Content.ConfigureAwait(true))
+        try
         {
-            bitmap.Save(target.Content, new PngBitmapEncoderOptions());
-        }
+            var source = File.OpenRead(renderedPath);
 
-        return target.Name;
+            await using (source.ConfigureAwait(true))
+            await using (target.Content.ConfigureAwait(true))
+            {
+                await source.CopyToAsync(target.Content).ConfigureAwait(true);
+            }
+
+            return target.Name;
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+        {
+            Console.WriteLine(e);
+            return null;
+        }
     }
 
     private static TextBlock Text(

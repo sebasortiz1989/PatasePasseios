@@ -16,12 +16,13 @@ namespace DapperDemo.Viewmodel.Viewmodels.Utils;
 [AddINotifyPropertyChangedInterface]
 public sealed class DogServiceGroup : IDisposable
 {
-    public DogServiceGroup(string dogName, string countLabel, IEnumerable<ServiceRow> services)
+    public DogServiceGroup(string dogName, string countLabel, string totalLabel, IEnumerable<ServiceRow> services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
         DogName = dogName;
         CountLabel = countLabel;
+        TotalLabel = totalLabel;
         Services = [.. services];
 
         // Owned here rather than by the view model: the group is what gets thrown away when the
@@ -36,6 +37,15 @@ public sealed class DogServiceGroup : IDisposable
 
     /// <summary>Gets how many services this dog has under the current filters, e.g. "6 serviços".</summary>
     public string CountLabel { get; }
+
+    /// <summary>
+    /// Gets what those services come to, e.g. "R$ 540,00".
+    /// </summary>
+    /// <remarks>
+    /// On the header so a collapsed group still states what it holds — the count and the money are
+    /// the two facts that decide whether the group is worth opening.
+    /// </remarks>
+    public string TotalLabel { get; }
 
     /// <summary>Gets or sets a value indicating whether the dog's services are showing.</summary>
     public bool IsExpanded { get; set; }
