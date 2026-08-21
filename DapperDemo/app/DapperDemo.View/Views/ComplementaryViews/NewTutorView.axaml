@@ -16,7 +16,7 @@
                 <Button
                     Command="{Binding BackCommand}"
                     Margin="30,30,0,0"
-                    Tag="Tutores"
+                    Tag="{Binding Navigation.BackLabel}"
                     Theme="{StaticResource BackControl}" />
 
                 <TextBlock Classes="TTitle" Margin="35,28,35,0" Text="Novo tutor" />

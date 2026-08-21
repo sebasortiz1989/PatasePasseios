@@ -35,7 +35,7 @@
                                     Width="30" />
                                 <TextBlock
                                     Classes="TUi"
-                                    Text="Perfil"
+                                    Text="{Binding Navigation.BackLabel}"
                                     VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>

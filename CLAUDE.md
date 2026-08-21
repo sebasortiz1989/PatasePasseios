@@ -148,6 +148,14 @@ builder below it plus its own registrations.
 - Adding a view or view model means registering it in **both**
   `DapperDemoViewContainerBuilder` and `DapperDemoViewmodelContainerBuilder`
   (with `.WithAbstractions()`). A miss fails at runtime, not compile time.
+- Navigating is `CurrentView.Show(view, label)` — or `ShowRoot(view, label)` for a
+  tab, which also clears the back stack. `ViewShown` has no public setter, so a new
+  screen cannot forget the label. The label names **the screen being shown**, so that
+  whatever opens on top of it can put its name on the back control: pass the record's
+  own name where you have one (`dog.Name`, `tutor.Name`) and a screen name otherwise.
+  Back controls bind `Tag="{Binding Navigation.BackLabel}"` and never a literal — the
+  detail screens are reachable from several places and a constant is wrong in all but
+  one of them.
 - Data-layer singletons (`DapperDatabaseService`, the repositories,
   `BackupArchive`) are registered in `DapperDemoInfrastructureContainerBuilder`.
 - `AvaloniaViewContainerBuilder` (framework) supplies the
@@ -187,11 +195,28 @@ Say what is real — several things here are not. Verified 2026-08-21.
   the default step. The switch, the inert-slider readout and the persistence are
   real; the platform value is the seam, and it needs per-head code for iOS Dynamic
   Type and Android's font scale.
-- **Dog photos are stored at the camera's own size.** `DogImageStore.SaveAsync`
-  copies the stream untouched, so the *files* are still full-size: the backup zip
-  carries them at full resolution and uncompressed. Downscaling on save is the other
-  half and has not been done. Display no longer depends on it — see below — but the
-  backup does.
+- **Automatic backup is set up from one row in Perfil.** It was unreachable before:
+  `CloudBackupStore.LinkAsync` existed and nothing ever called it, so no destination
+  was ever stored, `IsLinkedAsync` was always false, and "Enviar backup agora" could
+  only fail. `SetUpCloudBackupCommand` now picks the folder, and sends the first copy
+  immediately — which proves the folder is writable while the sitter is still looking
+  at it. The weekly prompt (`CloudBackupSchedule.UploadInterval`, 7 days; `RetryInterval`,
+  1 day after a "Não") fires from `MainViewModel.OfferBackupAsync` at login and returns
+  early when no folder is set. The row's caption names the actual folder, resolved from
+  the stored bookmark through `DestinationNameAsync` — the old `DisplayName` was the
+  constant string "pasta escolhida", which named nothing. The manual "Salvar backup em
+  outro lugar" is a deliberately separate one-off and says so; it does not touch the
+  automatic destination.
+- **Photos are reduced on save, in the picker.** `PhotoDownscaler.Reduce` caps the
+  longest edge at 1280 and re-encodes JPEG at quality 85, and
+  `StorageProviderImagePicker` runs it before handing the stream on — so dog photos
+  and profile photos both shrink, and no view model or repository changed.
+  `DogImageStore` still writes whatever stream it is given: it is in the data layer,
+  which has no codecs and stays that way. Two things to know if you touch it. The EXIF
+  rotation is **baked into the pixels** and the tag dropped, because a re-encode loses
+  the tag and a photo that kept it would be turned twice. And a photo already within
+  1280 and already upright is passed through byte-for-byte, so picking a small image
+  costs it no generation loss.
 - **Photos are decoded off the UI thread, through `Imaging/ImageLoader`.** Bind
   `imaging:ImageLoader.Path` (plus `DecodeWidth` where the display size is small),
   never `Image.Source` through a converter: a converter has to return the bitmap

@@ -130,15 +130,18 @@
                                     Command="{Binding PreviousPeriodCommand}"
                                     Grid.Column="0"
                                     Margin="18,0,0,0"
+                                    Padding="0"
                                     Width="77">
                                     <Path
                                         Data="{StaticResource IconChevronLeft}"
                                         Height="35"
+                                        HorizontalAlignment="Center"
                                         Stretch="Uniform"
                                         Stroke="{DynamicResource InkPrimary}"
                                         StrokeJoin="Round"
                                         StrokeLineCap="Round"
                                         StrokeThickness="2.4"
+                                        VerticalAlignment="Center"
                                         Width="35" />
                                 </Button>
                                 <!--  The label is the way back to "Ano todo" once the arrows have moved off it.  -->
@@ -159,15 +162,18 @@
                                     Command="{Binding NextPeriodCommand}"
                                     Grid.Column="2"
                                     Margin="0,0,18,0"
+                                    Padding="0"
                                     Width="77">
                                     <Path
                                         Data="{StaticResource IconChevronRight}"
                                         Height="35"
+                                        HorizontalAlignment="Center"
                                         Stretch="Uniform"
                                         Stroke="{DynamicResource InkPrimary}"
                                         StrokeJoin="Round"
                                         StrokeLineCap="Round"
                                         StrokeThickness="2.4"
+                                        VerticalAlignment="Center"
                                         Width="35" />
                                 </Button>
                             </Grid>
@@ -190,28 +196,33 @@
                                     Command="{Binding ToggleMoneyVisibleCommand}"
                                     Grid.Column="1"
                                     Height="77"
+                                    Padding="0"
                                     VerticalAlignment="Center"
                                     Width="77">
                                     <Panel>
                                         <Path
                                             Data="{StaticResource IconEyeOpen}"
                                             Height="42"
+                                            HorizontalAlignment="Center"
                                             IsVisible="{Binding MoneyVisible}"
                                             Stretch="Uniform"
                                             Stroke="{DynamicResource InkPrimary}"
                                             StrokeJoin="Round"
                                             StrokeLineCap="Round"
                                             StrokeThickness="1.6"
+                                            VerticalAlignment="Center"
                                             Width="42" />
                                         <Path
                                             Data="{StaticResource IconEyeClosed}"
                                             Height="42"
+                                            HorizontalAlignment="Center"
                                             IsVisible="{Binding MoneyHidden}"
                                             Stretch="Uniform"
                                             Stroke="{DynamicResource InkPrimary}"
                                             StrokeJoin="Round"
                                             StrokeLineCap="Round"
                                             StrokeThickness="1.6"
+                                            VerticalAlignment="Center"
                                             Width="42" />
                                     </Panel>
                                 </Button>
@@ -342,8 +353,47 @@
                         Classes="TMicro"
                         Margin="35,42,35,14"
                         Text="BACKUP" />
+                    <!--
+                        Setting up the folder leads, because it is the one thing that has to happen
+                        once; everything after it is the weekly prompt doing the work. "Enviar
+                        agora" only appears once there is somewhere to send to, and the manual
+                        export sits below the rule with wording that says what makes it different —
+                        the two used to read as the same button twice.
+                    -->
                     <Border Classes="Group">
                         <StackPanel>
+                            <Button
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Command="{Binding SetUpCloudBackupCommand}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                Padding="0">
+                                <StackPanel Margin="28,21" Spacing="7">
+                                    <TextBlock Classes="TBody" Text="{Binding CloudBackupTitle}" />
+                                    <TextBlock
+                                        Classes="TCaption"
+                                        Text="{Binding CloudBackupLabel}"
+                                        TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Button>
+
+                            <Border Classes="RowRule" IsVisible="{Binding CloudBackupLinked}" />
+                            <Button
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Command="{Binding SendCloudBackupCommand}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                IsVisible="{Binding CloudBackupLinked}"
+                                Padding="0">
+                                <TextBlock
+                                    Classes="TBody"
+                                    Margin="28,21"
+                                    Text="Enviar uma cópia agora" />
+                            </Button>
+
+                            <Border Classes="RowRule" />
                             <Button
                                 Background="Transparent"
                                 BorderThickness="0"
@@ -351,11 +401,15 @@
                                 HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Stretch"
                                 Padding="0">
-                                <TextBlock
-                                    Classes="TBody"
-                                    Margin="28,21"
-                                    Text="Exportar backup" />
+                                <StackPanel Margin="28,21" Spacing="7">
+                                    <TextBlock Classes="TBody" Text="Salvar backup em outro lugar" />
+                                    <TextBlock
+                                        Classes="TCaption"
+                                        Text="Escolhe o destino desta vez só. Não altera a pasta do backup automático."
+                                        TextWrapping="Wrap" />
+                                </StackPanel>
                             </Button>
+
                             <Border Classes="RowRule" />
                             <Button
                                 Background="Transparent"
@@ -367,22 +421,6 @@
                                 <StackPanel Margin="28,21" Spacing="7">
                                     <TextBlock Classes="TBody" Text="Importar backup" />
                                     <TextBlock Classes="TCaption" Text="Substitui tudo neste aparelho e pede um novo login." />
-                                </StackPanel>
-                            </Button>
-                            <Border Classes="RowRule" />
-                            <Button
-                                Background="Transparent"
-                                BorderThickness="0"
-                                Command="{Binding SendCloudBackupCommand}"
-                                HorizontalAlignment="Stretch"
-                                HorizontalContentAlignment="Stretch"
-                                Padding="0">
-                                <StackPanel Margin="28,21" Spacing="7">
-                                    <TextBlock Classes="TBody" Text="Enviar backup agora" />
-                                    <TextBlock
-                                        Classes="TCaption"
-                                        Text="{Binding CloudBackupLabel}"
-                                        TextWrapping="Wrap" />
                                 </StackPanel>
                             </Button>
                         </StackPanel>

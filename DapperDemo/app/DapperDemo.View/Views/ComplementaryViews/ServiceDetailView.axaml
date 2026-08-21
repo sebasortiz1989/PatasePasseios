@@ -18,7 +18,7 @@
                 <Button
                     Command="{Binding BackCommand}"
                     Margin="30,30,0,0"
-                    Tag="Agenda"
+                    Tag="{Binding Navigation.BackLabel}"
                     Theme="{StaticResource BackControl}" />
 
                 <StackPanel IsVisible="{Binding !IsEditing}">

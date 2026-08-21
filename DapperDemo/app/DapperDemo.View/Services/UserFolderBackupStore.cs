@@ -25,10 +25,24 @@ namespace DapperDemo.View.Services;
 /// </remarks>
 public sealed class UserFolderBackupStore(CloudBackupState state) : CloudBackupStore
 {
-    /// <inheritdoc/>
-    public string DisplayName => "pasta escolhida";
-
     private CloudBackupState State { get; } = state;
+
+    /// <inheritdoc/>
+    public async Task<string?> DestinationNameAsync()
+    {
+        var folder = await OpenDestinationAsync().WithSync();
+
+        // A picked tree can come back unnamed on Android. The path's last segment is a better
+        // answer than an empty label, and null is better than either when nothing is linked.
+        if (folder == null)
+        {
+            return null;
+        }
+
+        return string.IsNullOrWhiteSpace(folder.Name)
+            ? folder.Path?.Segments.LastOrDefault(s => !string.IsNullOrWhiteSpace(s))
+            : folder.Name;
+    }
 
     /// <inheritdoc/>
     public async Task<bool> IsLinkedAsync() => await OpenDestinationAsync().WithSync() != null;

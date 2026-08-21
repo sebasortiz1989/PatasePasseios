@@ -55,11 +55,13 @@ public class MainViewModel : PresentationModelBase<Unit, Unit>
 
         // ShowRoot rather than assigning ViewShown: a tab is the bottom of the back stack, so
         // switching tabs must discard any detail screens opened from the previous one.
-        DogsViewCommand = new SynchronizedCommand(() => CurrentView.ShowRoot(dogsView), SynchronizationBehavior.Discard, true);
-        TutorsViewCommand = new SynchronizedCommand(() => CurrentView.ShowRoot(tutorsView), SynchronizationBehavior.Discard, true);
-        HomeViewCommand = new SynchronizedCommand(() => CurrentView.ShowRoot(homeView), SynchronizationBehavior.Discard, true);
-        ServicesViewCommand = new SynchronizedCommand(() => CurrentView.ShowRoot(servicesView), SynchronizationBehavior.Discard, true);
-        UsersViewCommand = new SynchronizedCommand(() => CurrentView.ShowRoot(usersView), SynchronizationBehavior.Discard, true);
+        // The label each tab is known by, which is what the first detail screen opened from it
+        // shows on its back control.
+        DogsViewCommand = new SynchronizedCommand(() => CurrentView.ShowRoot(dogsView, "Cachorros"), SynchronizationBehavior.Discard, true);
+        TutorsViewCommand = new SynchronizedCommand(() => CurrentView.ShowRoot(tutorsView, "Tutores"), SynchronizationBehavior.Discard, true);
+        HomeViewCommand = new SynchronizedCommand(() => CurrentView.ShowRoot(homeView, "Agenda"), SynchronizationBehavior.Discard, true);
+        ServicesViewCommand = new SynchronizedCommand(() => CurrentView.ShowRoot(servicesView, "Serviços"), SynchronizationBehavior.Discard, true);
+        UsersViewCommand = new SynchronizedCommand(() => CurrentView.ShowRoot(usersView, "Perfil"), SynchronizationBehavior.Discard, true);
     }
 
     public ICommand BackCommand { get; }
@@ -113,8 +115,16 @@ public class MainViewModel : PresentationModelBase<Unit, Unit>
             return;
         }
 
+        // Nothing to offer until a folder has been chosen in Perfil. Asking first and picking a
+        // folder afterwards would put a file browser in front of someone who opened the app to
+        // check the morning's walks.
+        if (await cloudBackup.DestinationNameAsync().NoSync() is not { Length: > 0 } destination)
+        {
+            return;
+        }
+
         var confirmed = await BackupRequest
-            .AskAsync($"Seu último backup tem mais de uma semana. Enviar uma cópia dos seus dados para a {cloudBackup.DestinationName} agora?")
+            .AskAsync($"Seu último backup tem mais de uma semana. Enviar uma cópia dos seus dados para \"{destination}\" agora?")
             .WithSync();
 
         if (!confirmed)

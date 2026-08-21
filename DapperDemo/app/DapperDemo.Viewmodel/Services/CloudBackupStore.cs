@@ -12,8 +12,16 @@ namespace DapperDemo.Viewmodel.Services;
 /// </remarks>
 public interface CloudBackupStore
 {
-    /// <summary>Gets the destination's name as the user should see it, already in pt-BR.</summary>
-    string DisplayName { get; }
+    /// <summary>
+    /// The chosen folder's own name, as the file browser shows it.
+    /// </summary>
+    /// <remarks>
+    /// Asynchronous because the destination is stored as a bookmark: naming it means resolving it,
+    /// which touches storage. Null when nothing is linked or the folder is no longer reachable —
+    /// the caller turns that into the "not set up yet" wording rather than inventing a name.
+    /// </remarks>
+    /// <returns>The folder's display name, or null.</returns>
+    Task<string?> DestinationNameAsync();
 
     /// <summary>
     /// Whether a destination has been chosen and is still reachable.

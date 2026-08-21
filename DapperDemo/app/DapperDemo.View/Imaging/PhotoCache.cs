@@ -127,6 +127,33 @@ internal static class PhotoCache
         return upright;
     }
 
+    /// <summary>
+    /// Maps source pixels onto the upright image for a given EXIF orientation, and reports the
+    /// size that upright image needs. The quarter-turn cases swap width and height.
+    /// </summary>
+    /// <remarks>
+    /// Shared with <see cref="PhotoDownscaler"/>, which bakes the same rotation into the pixels it
+    /// stores so nothing downstream has to read the tag again.
+    /// </remarks>
+    internal static (Matrix Transform, PixelSize Size) TransformFor(int orientation, PixelSize source)
+    {
+        var w = source.Width;
+        var h = source.Height;
+        var turned = new PixelSize(h, w);
+
+        return orientation switch
+        {
+            2 => (new Matrix(-1, 0, 0, 1, w, 0), source),      // mirrored horizontally
+            3 => (new Matrix(-1, 0, 0, -1, w, h), source),     // upside down
+            4 => (new Matrix(1, 0, 0, -1, 0, h), source),      // mirrored vertically
+            5 => (new Matrix(0, 1, 1, 0, 0, 0), turned),       // transposed
+            6 => (new Matrix(0, 1, -1, 0, h, 0), turned),      // quarter turn clockwise
+            7 => (new Matrix(0, -1, -1, 0, h, w), turned),     // transversed
+            8 => (new Matrix(0, -1, 1, 0, 0, w), turned),      // quarter turn anticlockwise
+            _ => (Matrix.Identity, source),
+        };
+    }
+
     private static void Store(string path, int width, Bitmap image)
     {
         lock (Gate)
@@ -191,29 +218,6 @@ internal static class PhotoCache
             // a data template, which takes the whole list down with it.
             return null;
         }
-    }
-
-    /// <summary>
-    /// Maps source pixels onto the upright image for a given EXIF orientation, and reports the
-    /// size that upright image needs. The quarter-turn cases swap width and height.
-    /// </summary>
-    private static (Matrix Transform, PixelSize Size) TransformFor(int orientation, PixelSize source)
-    {
-        var w = source.Width;
-        var h = source.Height;
-        var turned = new PixelSize(h, w);
-
-        return orientation switch
-        {
-            2 => (new Matrix(-1, 0, 0, 1, w, 0), source),      // mirrored horizontally
-            3 => (new Matrix(-1, 0, 0, -1, w, h), source),     // upside down
-            4 => (new Matrix(1, 0, 0, -1, 0, h), source),      // mirrored vertically
-            5 => (new Matrix(0, 1, 1, 0, 0, 0), turned),       // transposed
-            6 => (new Matrix(0, 1, -1, 0, h, 0), turned),      // quarter turn clockwise
-            7 => (new Matrix(0, -1, -1, 0, h, w), turned),     // transversed
-            8 => (new Matrix(0, -1, 1, 0, 0, w), turned),      // quarter turn anticlockwise
-            _ => (Matrix.Identity, source),
-        };
     }
 
     private static RenderTargetBitmap Reorient(Bitmap source, int orientation)

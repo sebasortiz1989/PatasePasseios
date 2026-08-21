@@ -23,14 +23,30 @@ public sealed class CloudBackupService(BackupArchive archive, CloudBackupStore s
     /// </remarks>
     private const string ArchiveName = "patas-backup.zip";
 
-    /// <summary>Gets the destination's name as the user should see it.</summary>
-    public string DestinationName => Store.DisplayName;
-
     private BackupArchive Archive { get; } = archive;
 
     private CloudBackupStore Store { get; } = store;
 
     private CloudBackupState State { get; } = state;
+
+    /// <summary>Gets the chosen folder's name, or null when none is set up or reachable.</summary>
+    /// <returns>The folder's display name, or null.</returns>
+    public Task<string?> DestinationNameAsync() => Store.DestinationNameAsync();
+
+    /// <summary>Gets a value indicating whether a destination is set up and writable right now.</summary>
+    /// <returns>True when a backup could be written.</returns>
+    public Task<bool> IsLinkedAsync() => Store.IsLinkedAsync();
+
+    /// <summary>
+    /// Asks the user which folder backups should go to, and remembers it.
+    /// </summary>
+    /// <remarks>
+    /// The one setup step. Everything after it is automatic: the weekly prompt uses the same
+    /// destination, and on Android the stored bookmark carries the permission grant so later
+    /// launches write there without asking again.
+    /// </remarks>
+    /// <returns>Successful, or Failed if the user cancelled or the choice could not be kept.</returns>
+    public Task<Response> LinkAsync() => Store.LinkAsync();
 
     /// <summary>Gets when a backup last reached the destination.</summary>
     /// <returns>The time in UTC, or null if none ever has.</returns>

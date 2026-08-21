@@ -76,6 +76,13 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
 
     public ICommand BackCommand { get; }
 
+    /// <summary>
+    /// Gets the navigator, so the back control can read the name of the screen it actually returns
+    /// to. Not a constant in the markup: a service opens from the agenda, from a dog and from a
+    /// tutor, and each has to be named correctly.
+    /// </summary>
+    public CurrentView Navigation => currentView;
+
     /// <summary>Gets opens the tutor this service's dog belongs to.</summary>
     public ICommand OpenTutorCommand { get; }
 
@@ -499,7 +506,7 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
 
         session.SelectedTutorId = id;
         tutorDetailView ??= tutorDetailFactory.Create();
-        currentView.ViewShown = tutorDetailView;
+        currentView.Show(tutorDetailView, TutorName);
         return Task.CompletedTask;
     }
 

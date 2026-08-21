@@ -13,17 +13,28 @@
 
     <components:DesignCanvas DesignHeight="1560" DesignWidth="720">
         <Grid Background="{DynamicResource SurfacePrimary}" Width="720">
-            <ScrollViewer>
-                <StackPanel Margin="0,0,0,70">
+            <!--
+                The sign-in screen is short enough to sit in the middle of the window rather than
+                hanging off the top. A ScrollViewer measures its content against infinite height, so
+                VerticalAlignment alone would do nothing — the Panel is pinned to the viewport's own
+                height, and the content centres inside that. It still scrolls when the keyboard is
+                up or the text ramp is at Máximo, because the Panel only sets a minimum.
+            -->
+            <ScrollViewer Name="Scroller">
+                <Panel MinHeight="{Binding #Scroller.Bounds.Height}">
+                    <StackPanel Margin="0,70" VerticalAlignment="Center">
 
-                    <!--  The brand line is the one display-size thing in the app.  -->
-                    <StackPanel Margin="35,140,35,0" Spacing="10">
-                        <TextBlock Classes="TDisplay" Text="Patas &amp; Passeios" TextWrapping="Wrap" />
-                        <TextBlock Classes="TCaption" Text="Serviços para cães" />
-                    </StackPanel>
+                        <!--  The brand line is the one display-size thing in the app.  -->
+                        <StackPanel Margin="35,0" Spacing="10">
+                            <TextBlock Classes="TDisplay" Text="Patas &amp; Passeios" TextWrapping="Wrap" />
+                            <TextBlock Classes="TCaption" Text="Serviços para cães" />
+                        </StackPanel>
 
-                    <Border Classes="Group" Margin="35,56,35,0">
-                        <StackPanel>
+                        <!--
+                            Two groups rather than one with a rule between them: e-mail and senha are
+                            separate answers, and the refresh uses a group per idea.
+                        -->
+                        <Border Classes="Group" Margin="35,56,35,0">
                             <StackPanel Margin="28,21" Spacing="7">
                                 <TextBlock Classes="TCaption" Text="E-mail" />
                                 <TextBox
@@ -31,9 +42,9 @@
                                     Text="{Binding Email}"
                                     PlaceholderText="voce@exemplo.com" />
                             </StackPanel>
+                        </Border>
 
-                            <Border Classes="RowRule" />
-
+                        <Border Classes="Group" Margin="35,21,35,0">
                             <StackPanel Margin="28,21" Spacing="7">
                                 <TextBlock Classes="TCaption" Text="Senha" />
                                 <TextBox
@@ -41,51 +52,51 @@
                                     PasswordChar="•"
                                     Text="{Binding Password}" />
                             </StackPanel>
-                        </StackPanel>
-                    </Border>
-
-                    <TextBlock
-                        Classes="TCaption Owed"
-                        IsVisible="{Binding HasLoginError}"
-                        Margin="35,14,35,0"
-                        Text="{Binding LoginError}"
-                        TextWrapping="Wrap" />
-
-                    <Border Classes="ControlRing" Margin="30,28,30,0">
-                        <Border Classes="FloatingControl">
-                            <Button Classes="Submit" Command="{Binding LoginCommand}">
-                                <TextBlock Classes="TBody" Text="Entrar" />
-                            </Button>
                         </Border>
-                    </Border>
 
-                    <!--  Secondary routes are lines at the margin, never a second button.  -->
-                    <StackPanel HorizontalAlignment="Center" Margin="35,35,35,0" Spacing="24">
-                        <Button
-                            Classes="TextLink"
-                            Command="{Binding SignUpCommand}"
-                            Content="Criar uma conta" />
-                        <Button
-                            Classes="TextLink"
-                            Command="{Binding ImportBackupCommand}"
-                            Content="Importar backup" />
+                        <TextBlock
+                            Classes="TCaption Owed"
+                            IsVisible="{Binding HasLoginError}"
+                            Margin="35,14,35,0"
+                            Text="{Binding LoginError}"
+                            TextWrapping="Wrap" />
+
+                        <Border Classes="ControlRing" Margin="30,28,30,0">
+                            <Border Classes="FloatingControl">
+                                <Button Classes="Submit" Command="{Binding LoginCommand}">
+                                    <TextBlock Classes="TBody" Text="Entrar" />
+                                </Button>
+                            </Border>
+                        </Border>
+
+                        <!--  Secondary routes are lines at the margin, never a second button.  -->
+                        <StackPanel HorizontalAlignment="Center" Margin="35,35,35,0" Spacing="24">
+                            <Button
+                                Classes="TextLink"
+                                Command="{Binding SignUpCommand}"
+                                Content="Criar uma conta" />
+                            <Button
+                                Classes="TextLink"
+                                Command="{Binding ImportBackupCommand}"
+                                Content="Importar backup" />
+                        </StackPanel>
+
+                        <TextBlock
+                            Classes="TCaption"
+                            HorizontalAlignment="Center"
+                            IsVisible="{Binding HasBackupMsg}"
+                            Margin="35,21,35,0"
+                            Text="{Binding BackupMsg}"
+                            TextAlignment="Center"
+                            TextWrapping="Wrap" />
+
+                        <TextBlock
+                            Classes="TCaption"
+                            HorizontalAlignment="Center"
+                            Margin="0,35,0,0"
+                            Text="{Binding VersionLabel}" />
                     </StackPanel>
-
-                    <TextBlock
-                        Classes="TCaption"
-                        HorizontalAlignment="Center"
-                        IsVisible="{Binding HasBackupMsg}"
-                        Margin="35,21,35,0"
-                        Text="{Binding BackupMsg}"
-                        TextAlignment="Center"
-                        TextWrapping="Wrap" />
-
-                    <TextBlock
-                        Classes="TCaption"
-                        HorizontalAlignment="Center"
-                        Margin="0,35,0,0"
-                        Text="{Binding VersionLabel}" />
-                </StackPanel>
+                </Panel>
             </ScrollViewer>
 
             <components:ConfirmDialog

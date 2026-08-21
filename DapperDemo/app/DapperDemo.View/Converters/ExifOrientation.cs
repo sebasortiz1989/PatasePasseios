@@ -43,6 +43,41 @@ internal static class ExifOrientation
         }
     }
 
+    /// <summary>
+    /// Reads the orientation from an already-open stream, which is left where it started.
+    /// </summary>
+    /// <param name="stream">A seekable stream positioned anywhere in an image file.</param>
+    /// <returns>An EXIF orientation of 1 to 8, or <see cref="Normal"/> if there is no usable tag.</returns>
+    /// <remarks>
+    /// The picker hands back a stream rather than a path — Android's content:// URIs have no file
+    /// behind them — so the save path cannot use the path overload.
+    /// </remarks>
+    public static int Read(Stream stream)
+    {
+        ArgumentNullException.ThrowIfNull(stream);
+
+        if (!stream.CanSeek)
+        {
+            return Normal;
+        }
+
+        var origin = stream.Position;
+
+        try
+        {
+            stream.Position = 0;
+            return ReadCore(stream);
+        }
+        catch (IOException)
+        {
+            return Normal;
+        }
+        finally
+        {
+            stream.Position = origin;
+        }
+    }
+
     private static int ReadCore(Stream stream)
     {
         Span<byte> header = stackalloc byte[2];

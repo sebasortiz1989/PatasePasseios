@@ -181,15 +181,18 @@
                         Command="{Binding PreviousPeriodCommand}"
                         Grid.Column="0"
                         Margin="18,0,0,0"
+                        Padding="0"
                         Width="77">
                         <Path
                             Data="{StaticResource IconChevronLeft}"
                             Height="35"
+                            HorizontalAlignment="Center"
                             Stretch="Uniform"
                             Stroke="{DynamicResource InkPrimary}"
                             StrokeJoin="Round"
                             StrokeLineCap="Round"
                             StrokeThickness="2.4"
+                            VerticalAlignment="Center"
                             Width="35" />
                     </Button>
                     <!--  The label is the way back to "Ano todo" once the arrows have moved off it.  -->
@@ -210,15 +213,18 @@
                         Command="{Binding NextPeriodCommand}"
                         Grid.Column="2"
                         Margin="0,0,18,0"
+                        Padding="0"
                         Width="77">
                         <Path
                             Data="{StaticResource IconChevronRight}"
                             Height="35"
+                            HorizontalAlignment="Center"
                             Stretch="Uniform"
                             Stroke="{DynamicResource InkPrimary}"
                             StrokeJoin="Round"
                             StrokeLineCap="Round"
                             StrokeThickness="2.4"
+                            VerticalAlignment="Center"
                             Width="35" />
                     </Button>
                 </Grid>

@@ -36,6 +36,7 @@ public class SettingsViewModel : PresentationModelBase<Unit, Unit>
         this.store = store;
         this.display = display;
 
+        Navigation = currentView;
         BackCommand = new SynchronizedCommand(currentView.GoBack, SynchronizationBehavior.Discard, true);
         SetThemeSystemCommand = new SynchronizedCommand(() => SetTheme(AppTheme.System), SynchronizationBehavior.Discard, true);
         SetThemeLightCommand = new SynchronizedCommand(() => SetTheme(AppTheme.Light), SynchronizationBehavior.Discard, true);
@@ -52,6 +53,9 @@ public class SettingsViewModel : PresentationModelBase<Unit, Unit>
     }
 
     public ICommand BackCommand { get; }
+
+    /// <summary>Gets the navigator, so the back control can name the screen it returns to.</summary>
+    public CurrentView Navigation { get; }
 
     public ICommand SetThemeSystemCommand { get; }
 

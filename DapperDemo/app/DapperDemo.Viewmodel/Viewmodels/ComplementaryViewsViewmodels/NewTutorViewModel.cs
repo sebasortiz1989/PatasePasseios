@@ -31,6 +31,9 @@ public class NewTutorViewModel : PresentationModelBase<Unit, Unit>
 
     public ICommand BackCommand { get; }
 
+    /// <summary>Gets the navigator, so the back control can name the screen it returns to.</summary>
+    public CurrentView Navigation => currentView;
+
     public ICommand SaveCommand { get; }
 
     public string Name { get; set; } = string.Empty;

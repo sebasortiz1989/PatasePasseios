@@ -114,6 +114,13 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
 
     public ICommand BackCommand { get; }
 
+    /// <summary>
+    /// Gets the navigator, so the back control can read the name of the screen it actually returns
+    /// to. Not a constant in the markup: this screen is reachable from the Tutores tab, from a
+    /// dog's Tutor row and from a service, and each has to be named correctly.
+    /// </summary>
+    public CurrentView Navigation => currentView;
+
     public ICommand AskDeleteCommand { get; }
 
     public ICommand CancelDeleteCommand { get; }
@@ -362,7 +369,13 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         foreach (var dog in dogs)
         {
             var dogId = dog.DogId;
-            var open = new SynchronizedCommand(() => OpenDog(dogId), SynchronizationBehavior.Discard, true);
+            var dogName = dog.Name;
+
+            // CA2000: ownership passes to the DogRow, which disposes the command when the list is
+            // rebuilt — the same arrangement every other row list here uses.
+#pragma warning disable CA2000
+            var open = new SynchronizedCommand(() => OpenDog(dogId, dogName), SynchronizationBehavior.Discard, true);
+#pragma warning restore CA2000
             Dogs.Add(new DogRow(
                 AppSession.Initials(dog.Name),
                 dog.Name,
@@ -745,7 +758,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     {
         session.SelectedServiceKind = kind;
         session.SelectedServiceId = serviceId;
-        currentView.ViewShown = serviceDetailView;
+        currentView.Show(serviceDetailView, "Serviço");
         return Task.CompletedTask;
     }
 
@@ -1123,10 +1136,10 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     /// <param name="delta">−1 or +1.</param>
     /// <summary>Opens one of this tutor's dogs, the same way the Cachorros tab does.</summary>
     /// <param name="dogId">Which dog to show.</param>
-    private void OpenDog(int dogId)
+    private void OpenDog(int dogId, string dogName)
     {
         session.SelectedDogId = dogId;
-        currentView.ViewShown = dogDetailView;
+        currentView.Show(dogDetailView, dogName);
     }
 
     /// <summary>Switches the period between a single month and the whole year.</summary>

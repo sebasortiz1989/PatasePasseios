@@ -113,7 +113,8 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         ExportBackupCommand = new SynchronizedCommand(ExportBackup, SynchronizationBehavior.Discard, true);
         ImportBackupCommand = new SynchronizedCommand(ImportBackup, SynchronizationBehavior.Discard, true);
         SendCloudBackupCommand = new SynchronizedCommand(SendCloudBackup, SynchronizationBehavior.Discard, true);
-        OpenSettingsCommand = new SynchronizedCommand(() => currentView.ViewShown = settingsView, SynchronizationBehavior.Discard, true);
+        SetUpCloudBackupCommand = new SynchronizedCommand(SetUpCloudBackup, SynchronizationBehavior.Discard, true);
+        OpenSettingsCommand = new SynchronizedCommand(() => currentView.Show(settingsView, "Ajustes"), SynchronizationBehavior.Discard, true);
         DismissInvalidBackupCommand = new SynchronizedCommand(() => ShowInvalidBackupAlert = false, SynchronizationBehavior.Discard, true);
 
         // "Ano todo" first, then the twelve months — the same list TutorDetail and DogDetail pick
@@ -174,6 +175,9 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
 
     public ICommand SendCloudBackupCommand { get; }
 
+    /// <summary>Gets the command that picks the folder automatic backups go to.</summary>
+    public ICommand SetUpCloudBackupCommand { get; }
+
     /// <summary>Gets the command opening Ajustes, which is pushed rather than shown inline.</summary>
     public ICommand OpenSettingsCommand { get; }
 
@@ -212,6 +216,16 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
 
     /// <summary>Gets when the automatic backup last ran, as the sitter reads it.</summary>
     public string CloudBackupLabel { get; private set; } = string.Empty;
+
+    /// <summary>Gets the automatic-backup row's title, which changes once a folder is chosen.</summary>
+    public string CloudBackupTitle { get; private set; } = "Ativar backup automático";
+
+    /// <summary>
+    /// Gets a value indicating whether a destination folder is set up and reachable. "Enviar agora"
+    /// only exists once it is — before that there is nowhere to send to, and the row would fail
+    /// every time it was pressed.
+    /// </summary>
+    public bool CloudBackupLinked { get; private set; }
 
     /// <summary>Gets the app version, shown at the foot of the profile screen.</summary>
     public string VersionLabel => AppVersion.Label;
@@ -694,22 +708,61 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         BackupMsg = "Enviando backup…";
 
         var result = await cloudBackup.RunAsync().WithSync();
+        var destination = await cloudBackup.DestinationNameAsync().WithSync();
 
         BackupMsgIsError = result != Response.Successful;
         BackupMsg = result == Response.Successful
-            ? $"Backup enviado para a {cloudBackup.DestinationName}."
+            ? $"Backup enviado para \"{destination}\"."
             : "Não foi possível enviar o backup.";
 
         await RefreshCloudBackupLabelAsync().WithSync();
     }
 
+    /// <summary>
+    /// Chooses the folder automatic backups go to, and sends the first one straight away.
+    /// </summary>
+    /// <remarks>
+    /// The one setup step, and the whole point of the row: after this the weekly prompt has
+    /// somewhere to write. The first backup runs immediately rather than waiting a week, both
+    /// because the sitter has just asked for this and because it proves the folder is actually
+    /// writable while they are still looking at the screen.
+    /// </remarks>
+    private async Task SetUpCloudBackup()
+    {
+        BackupMsgIsError = false;
+        BackupMsg = string.Empty;
+
+        if (await cloudBackup.LinkAsync().WithSync() != Response.Successful)
+        {
+            // Cancelling the folder picker is the ordinary case, not an error worth shouting
+            // about. Only refresh, so the row goes back to saying what it said before.
+            await RefreshCloudBackupLabelAsync().WithSync();
+            return;
+        }
+
+        await RefreshCloudBackupLabelAsync().WithSync();
+        await SendCloudBackup().WithSync();
+    }
+
     private async Task RefreshCloudBackupLabelAsync()
     {
+        var destination = await cloudBackup.DestinationNameAsync().WithSync();
+
+        CloudBackupLinked = destination is { Length: > 0 };
+
+        if (!CloudBackupLinked)
+        {
+            CloudBackupTitle = "Ativar backup automático";
+            CloudBackupLabel = "Escolha uma pasta — no Drive ou no aparelho. Depois disso o app avisa toda semana para enviar uma cópia.";
+            return;
+        }
+
         var last = await cloudBackup.LastUploadAsync().WithSync();
 
+        CloudBackupTitle = "Backup automático";
         CloudBackupLabel = last == null
-            ? $"Nenhum backup automático enviado ainda. Destino: {cloudBackup.DestinationName}."
-            : $"Último backup automático: {last.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)}.";
+            ? $"Salvando em \"{destination}\". Nenhuma cópia enviada ainda. Toque para trocar de pasta."
+            : $"Salvando em \"{destination}\". Última cópia em {last.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)}. Toque para trocar de pasta.";
     }
 
     /// <summary>

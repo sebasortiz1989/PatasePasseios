@@ -574,8 +574,13 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="CornerRadius" Value="0" />
-        <Setter Property="Padding" Value="0" />
-        <Setter Property="MinHeight" Value="0" />
+        <!--
+            The search field is a row of this list, so it gets a row's vertical rhythm and a row's
+            hit area. At Padding 0 / MinHeight 0 it collapsed to one line of text and read as a
+            cramped box wedged above options twice its height.
+        -->
+        <Setter Property="Padding" Value="0,14" />
+        <Setter Property="MinHeight" Value="64" />
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
         <Setter Property="FontSize" Value="{DynamicResource TypeBody}" />
         <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
@@ -585,6 +590,29 @@
         <Setter Property="VListMaxHeight" Value="520" />
         <Setter Property="VListSpacing" Value="4" />
         <Setter Property="VPlaceholderForeground" Value="{DynamicResource InkSecondary}" />
+    </Style>
+
+    <!--
+        The search box inside the picker is a plain TextBox with no style class, so it was still
+        wearing Fluent's own chrome — a filled, rounded box with an accent ring on focus, sitting
+        inside a borderless group row. These give it the same treatment TextBox.Field gets: no box
+        at all, and a 1px accent rule under the text to show focus.
+    -->
+    <Style Selector="inputs|VSearchableComboBox.FieldPicker /template/ TextBox#PART_TextBox /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource StrokeRaised}" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+        <Setter Property="CornerRadius" Value="0" />
+    </Style>
+
+    <Style Selector="inputs|VSearchableComboBox.FieldPicker /template/ TextBox#PART_TextBox:focus /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
+    </Style>
+
+    <Style Selector="inputs|VSearchableComboBox.FieldPicker /template/ TextBox#PART_TextBox:pointerover /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
     </Style>
 
     <!--
