@@ -13,7 +13,7 @@
     xmlns:utils="clr-namespace:DapperDemo.Viewmodel.Viewmodels.Utils;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Background="{StaticResource ColorBg}" Width="720">
+    <Grid Background="{DynamicResource ColorBg}" Width="720">
         <ScrollViewer>
             <StackPanel Spacing="0">
                 <StackPanel Margin="32,32,32,16" Spacing="2">
@@ -26,7 +26,7 @@
 
                 <!--  Nothing can be scheduled without a dog, so say so instead of showing an empty picker  -->
                 <Border
-                    BorderBrush="{StaticResource ColorDivider}"
+                    BorderBrush="{DynamicResource ColorDivider}"
                     BorderThickness="0,2,0,0"
                     IsVisible="{Binding HasNoDogs}"
                     Margin="32,16,32,0"
@@ -35,7 +35,7 @@
                         FontFamily="{StaticResource FontBody}"
                         FontSize="32"
                         FontStyle="Italic"
-                        Foreground="{StaticResource ColorTextMuted45}"
+                        Foreground="{DynamicResource ColorTextMuted45}"
                         HorizontalAlignment="Center"
                         Text="Cadastre um tutor e um cachorro antes de agendar."
                         TextAlignment="Center"
@@ -51,14 +51,14 @@
                         <TextBlock
                             FontFamily="{StaticResource FontBody}"
                             FontSize="28"
-                            Foreground="{StaticResource ColorTextMuted70}"
+                            Foreground="{DynamicResource ColorTextMuted70}"
                             Text="Tipo de serviço" />
                         <!--
                             Two by two rather than one row of four: at a quarter of the canvas
                             "Pet sitting" no longer fits inside its own segment.
                         -->
                         <Border
-                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderBrush="{DynamicResource ColorDivider}"
                             BorderThickness="2"
                             CornerRadius="7">
                             <Grid ColumnDefinitions="*,2,*" RowDefinitions="Auto,2,Auto">
@@ -69,7 +69,7 @@
                                     Content="Passeio"
                                     HorizontalAlignment="Stretch"
                                     HorizontalContentAlignment="Center" />
-                                <Border Background="{StaticResource ColorDivider}" Grid.Column="1" />
+                                <Border Background="{DynamicResource ColorDivider}" Grid.Column="1" />
                                 <Button
                                     Classes="SegOption"
                                     Classes.Active="{Binding IsTypeSitting}"
@@ -80,7 +80,7 @@
                                     HorizontalContentAlignment="Center" />
 
                                 <Border
-                                    Background="{StaticResource ColorDivider}"
+                                    Background="{DynamicResource ColorDivider}"
                                     Grid.ColumnSpan="3"
                                     Grid.Row="1" />
 
@@ -93,7 +93,7 @@
                                     HorizontalAlignment="Stretch"
                                     HorizontalContentAlignment="Center" />
                                 <Border
-                                    Background="{StaticResource ColorDivider}"
+                                    Background="{DynamicResource ColorDivider}"
                                     Grid.Column="1"
                                     Grid.Row="2" />
                                 <Button
@@ -114,7 +114,7 @@
                         <TextBlock
                             FontFamily="{StaticResource FontBody}"
                             FontSize="28"
-                            Foreground="{StaticResource ColorTextMuted70}"
+                            Foreground="{DynamicResource ColorTextMuted70}"
                             Text="Cachorro" />
                         <!--  Typeable: the dog list grows, and scrolling it to find a name does not.  -->
                         <inputs:VSearchableComboBox
@@ -135,7 +135,7 @@
                             <TextBlock
                                 FontFamily="{StaticResource FontBody}"
                                 FontSize="30"
-                                Foreground="{StaticResource ColorText}"
+                                Foreground="{DynamicResource ColorText}"
                                 Text="{Binding SelectedTutorName}"
                                 VerticalAlignment="Center" />
                         </StackPanel>
@@ -147,17 +147,17 @@
                             <TextBlock
                                 FontFamily="{StaticResource FontBody}"
                                 FontSize="28"
-                                Foreground="{StaticResource ColorTextMuted70}"
+                                Foreground="{DynamicResource ColorTextMuted70}"
                                 Text="Entrada" />
                             <Grid ColumnDefinitions="*,16,Auto">
                                 <CalendarDatePicker
                                     Background="Transparent"
-                                    BorderBrush="{StaticResource ColorDivider}"
+                                    BorderBrush="{DynamicResource ColorDivider}"
                                     BorderThickness="2"
                                     CornerRadius="7"
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="32"
-                                    Foreground="{StaticResource ColorText}"
+                                    Foreground="{DynamicResource ColorText}"
                                     MinHeight="74"
                                     SelectedDate="{Binding SvcDatePart}" />
                                 <TimePicker
@@ -172,17 +172,17 @@
                             <TextBlock
                                 FontFamily="{StaticResource FontBody}"
                                 FontSize="28"
-                                Foreground="{StaticResource ColorTextMuted70}"
+                                Foreground="{DynamicResource ColorTextMuted70}"
                                 Text="Saída" />
                             <Grid ColumnDefinitions="*,16,Auto">
                                 <CalendarDatePicker
                                     Background="Transparent"
-                                    BorderBrush="{StaticResource ColorDivider}"
+                                    BorderBrush="{DynamicResource ColorDivider}"
                                     BorderThickness="2"
                                     CornerRadius="7"
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="32"
-                                    Foreground="{StaticResource ColorText}"
+                                    Foreground="{DynamicResource ColorText}"
                                     MinHeight="74"
                                     SelectedDate="{Binding SvcEndDatePart}" />
                                 <TimePicker
@@ -197,7 +197,7 @@
                             Content="Inclui passeios diários"
                             FontFamily="{StaticResource FontBody}"
                             FontSize="32"
-                            Foreground="{StaticResource ColorTextMuted70}"
+                            Foreground="{DynamicResource ColorTextMuted70}"
                             IsChecked="{Binding SvcRequiresWalking}"
                             Theme="{StaticResource ClassicCheckBox}" />
 
@@ -205,17 +205,17 @@
                             <TextBlock
                                 FontFamily="{StaticResource FontBody}"
                                 FontSize="28"
-                                Foreground="{StaticResource ColorTextMuted70}"
+                                Foreground="{DynamicResource ColorTextMuted70}"
                                 Text="Preço por dia (R$)" />
                             <TextBox
                                 Background="Transparent"
-                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderBrush="{DynamicResource ColorDivider}"
                                 BorderThickness="2"
-                                CaretBrush="{StaticResource ColorAccent}"
+                                CaretBrush="{DynamicResource ColorAccent}"
                                 CornerRadius="7"
                                 FontFamily="{StaticResource FontBody}"
                                 FontSize="34"
-                                Foreground="{StaticResource ColorText}"
+                                Foreground="{DynamicResource ColorText}"
                                 MinHeight="74"
                                 Padding="18,0"
                                 PlaceholderText="0,00"
@@ -231,7 +231,7 @@
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="28"
-                                    Foreground="{StaticResource ColorTextMuted70}"
+                                    Foreground="{DynamicResource ColorTextMuted70}"
                                     Text="Datas"
                                     VerticalAlignment="Center" />
                                 <buttons:VButton
@@ -247,7 +247,7 @@
                                 Content="Usar intervalo de datas"
                                 FontFamily="{StaticResource FontBody}"
                                 FontSize="30"
-                                Foreground="{StaticResource ColorTextMuted70}"
+                                Foreground="{DynamicResource ColorTextMuted70}"
                                 IsChecked="{Binding SvcUseDateRange}"
                                 Theme="{StaticResource ClassicCheckBox}" />
 
@@ -258,12 +258,12 @@
                                         <Grid ColumnDefinitions="*,12,Auto" Margin="0,0,0,12">
                                             <CalendarDatePicker
                                                 Background="Transparent"
-                                                BorderBrush="{StaticResource ColorDivider}"
+                                                BorderBrush="{DynamicResource ColorDivider}"
                                                 BorderThickness="2"
                                                 CornerRadius="7"
                                                 FontFamily="{StaticResource FontBody}"
                                                 FontSize="32"
-                                                Foreground="{StaticResource ColorText}"
+                                                Foreground="{DynamicResource ColorText}"
                                                 HorizontalAlignment="Stretch"
                                                 MinHeight="74"
                                                 SelectedDate="{Binding Date}" />
@@ -285,32 +285,32 @@
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="28"
-                                    Foreground="{StaticResource ColorTextMuted70}"
+                                    Foreground="{DynamicResource ColorTextMuted70}"
                                     Text="De" />
                                 <CalendarDatePicker
                                     Background="Transparent"
-                                    BorderBrush="{StaticResource ColorDivider}"
+                                    BorderBrush="{DynamicResource ColorDivider}"
                                     BorderThickness="2"
                                     CornerRadius="7"
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="32"
-                                    Foreground="{StaticResource ColorText}"
+                                    Foreground="{DynamicResource ColorText}"
                                     HorizontalAlignment="Stretch"
                                     MinHeight="74"
                                     SelectedDate="{Binding SvcRangeFromPart}" />
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="28"
-                                    Foreground="{StaticResource ColorTextMuted70}"
+                                    Foreground="{DynamicResource ColorTextMuted70}"
                                     Text="Até" />
                                 <CalendarDatePicker
                                     Background="Transparent"
-                                    BorderBrush="{StaticResource ColorDivider}"
+                                    BorderBrush="{DynamicResource ColorDivider}"
                                     BorderThickness="2"
                                     CornerRadius="7"
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="32"
-                                    Foreground="{StaticResource ColorText}"
+                                    Foreground="{DynamicResource ColorText}"
                                     HorizontalAlignment="Stretch"
                                     MinHeight="74"
                                     SelectedDate="{Binding SvcRepeatUntilPart}" />
@@ -326,7 +326,7 @@
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="28"
-                                    Foreground="{StaticResource ColorTextMuted70}"
+                                    Foreground="{DynamicResource ColorTextMuted70}"
                                     Text="Horários por dia"
                                     VerticalAlignment="Center" />
                                 <buttons:VButton
@@ -366,7 +366,7 @@
                             Content="Inclui passeios"
                             FontFamily="{StaticResource FontBody}"
                             FontSize="32"
-                            Foreground="{StaticResource ColorTextMuted70}"
+                            Foreground="{DynamicResource ColorTextMuted70}"
                             IsChecked="{Binding SvcRequiresWalking}"
                             IsVisible="{Binding SvcIsDayCare}"
                             Theme="{StaticResource ClassicCheckBox}" />
@@ -380,17 +380,17 @@
                             <TextBlock
                                 FontFamily="{StaticResource FontBody}"
                                 FontSize="28"
-                                Foreground="{StaticResource ColorTextMuted70}"
+                                Foreground="{DynamicResource ColorTextMuted70}"
                                 Text="Preço (R$)" />
                             <TextBox
                                 Background="Transparent"
-                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderBrush="{DynamicResource ColorDivider}"
                                 BorderThickness="2"
-                                CaretBrush="{StaticResource ColorAccent}"
+                                CaretBrush="{DynamicResource ColorAccent}"
                                 CornerRadius="7"
                                 FontFamily="{StaticResource FontBody}"
                                 FontSize="34"
-                                Foreground="{StaticResource ColorText}"
+                                Foreground="{DynamicResource ColorText}"
                                 MinHeight="74"
                                 Padding="18,0"
                                 PlaceholderText="0,00"
@@ -408,17 +408,17 @@
                         <TextBlock
                             FontFamily="{StaticResource FontBody}"
                             FontSize="28"
-                            Foreground="{StaticResource ColorTextMuted70}"
+                            Foreground="{DynamicResource ColorTextMuted70}"
                             Text="Desconto (%)" />
                         <TextBox
                             Background="Transparent"
-                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderBrush="{DynamicResource ColorDivider}"
                             BorderThickness="2"
-                            CaretBrush="{StaticResource ColorAccent}"
+                            CaretBrush="{DynamicResource ColorAccent}"
                             CornerRadius="7"
                             FontFamily="{StaticResource FontBody}"
                             FontSize="34"
-                            Foreground="{StaticResource ColorText}"
+                            Foreground="{DynamicResource ColorText}"
                             MinHeight="74"
                             Padding="18,0"
                             PlaceholderText="ex.: 10 para 10% de desconto"
@@ -428,7 +428,7 @@
                             FontFamily="{StaticResource FontBody}"
                             FontSize="25"
                             FontStyle="Italic"
-                            Foreground="{StaticResource ColorTextMuted45}"
+                            Foreground="{DynamicResource ColorTextMuted45}"
                             Text="Deixe em branco para cobrar o preço cheio."
                             TextWrapping="Wrap" />
                     </StackPanel>

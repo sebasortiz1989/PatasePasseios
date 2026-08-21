@@ -21,16 +21,16 @@
     -->
     <UserControl.Styles>
         <Style Selector="CalendarDatePicker:pressed /template/ Border#Background">
-            <Setter Property="Background" Value="{StaticResource ColorBg}" />
+            <Setter Property="Background" Value="{DynamicResource ColorBg}" />
         </Style>
 
         <Style Selector="CalendarDatePicker:pointover /template/ Border#Background">
-            <Setter Property="Background" Value="{StaticResource ColorBg}" />
+            <Setter Property="Background" Value="{DynamicResource ColorBg}" />
         </Style>
     </UserControl.Styles>
 
     <components:DesignCanvas DesignHeight="1560" DesignWidth="720">
-        <Grid Background="{StaticResource ColorBg}" Width="720">
+        <Grid Background="{DynamicResource ColorBg}" Width="720">
             <StackPanel
                 HorizontalAlignment="Center"
                 Spacing="24"
@@ -46,7 +46,7 @@
                         HorizontalAlignment="Center"
                         Text="Criar Conta" />
                     <Border
-                        Background="{StaticResource ColorAccent}"
+                        Background="{DynamicResource ColorAccent}"
                         Height="2"
                         HorizontalAlignment="Center"
                         Margin="0,8,0,0"
@@ -67,13 +67,13 @@
                         </Image.Clip>
                     </Image>
                     <Border
-                        BorderBrush="{StaticResource ColorAccent}"
+                        BorderBrush="{DynamicResource ColorAccent}"
                         BorderThickness="2"
                         CornerRadius="84">
                         <TextBlock
                             FontFamily="{StaticResource FontHeading}"
                             FontSize="66"
-                            Foreground="{StaticResource ColorAccentDark700}"
+                            Foreground="{DynamicResource ColorAccentDark700}"
                             HorizontalAlignment="Center"
                             IsVisible="{Binding NoPhoto}"
                             Text="Foto"
@@ -127,14 +127,14 @@
 
                 <Grid Margin="0,8,0,0">
                     <CalendarDatePicker
-                        Background="{StaticResource ColorBg}"
-                        BorderBrush="{StaticResource ColorDivider}"
+                        Background="{DynamicResource ColorBg}"
+                        BorderBrush="{DynamicResource ColorDivider}"
                         BorderThickness="2"
                         CornerRadius="7"
                         DisplayDateStart="{Binding MinimumDate}"
                         FontFamily="{StaticResource FontBody}"
                         FontSize="34"
-                        Foreground="{StaticResource ColorText}"
+                        Foreground="{DynamicResource ColorText}"
                         Height="77"
                         HorizontalAlignment="Stretch"
                         Padding="18,0,0,0"
@@ -142,7 +142,7 @@
                         VerticalAlignment="Center" />
 
                     <Border
-                        Background="{StaticResource ColorBg}"
+                        Background="{DynamicResource ColorBg}"
                         HorizontalAlignment="Left"
                         Margin="18,-13,0,0"
                         VerticalAlignment="Top">
@@ -150,7 +150,7 @@
                             Background="Transparent"
                             FontFamily="{StaticResource FontBody}"
                             FontSize="28"
-                            Foreground="{StaticResource ColorTextMuted70}"
+                            Foreground="{DynamicResource ColorTextMuted70}"
                             Margin="3,0,3,0"
                             Text="Data de nascimento" />
                     </Border>
@@ -160,7 +160,7 @@
                     FontFamily="{StaticResource FontBody}"
                     FontSize="31"
                     FontStyle="Italic"
-                    Foreground="{StaticResource ColorAccentDark800}"
+                    Foreground="{DynamicResource ColorAccentDark800}"
                     HorizontalAlignment="Center"
                     IsVisible="{Binding HasSignupError}"
                     Text="{Binding SignupError}"

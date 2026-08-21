@@ -13,7 +13,7 @@
     xmlns:viewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Background="{StaticResource ColorBg}" Width="720">
+    <Grid Background="{DynamicResource ColorBg}" Width="720">
         <ScrollViewer>
             <StackPanel Spacing="0">
                 <Grid ColumnDefinitions="*,Auto" Margin="32,32,32,0">
@@ -42,7 +42,7 @@
                                 Data="{StaticResource IconCalendarAdd}"
                                 HorizontalAlignment="Center"
                                 Margin="0,0,2,3"
-                                Stroke="{StaticResource ColorAccent}"
+                                Stroke="{DynamicResource ColorAccent}"
                                 StrokeJoin="Round"
                                 StrokeLineCap="Round"
                                 StrokeThickness="1.8"
@@ -68,13 +68,13 @@
                                 </Image.Clip>
                             </Image>
                             <Border
-                                BorderBrush="{StaticResource ColorAccent}"
+                                BorderBrush="{DynamicResource ColorAccent}"
                                 BorderThickness="2"
                                 CornerRadius="66">
                                 <TextBlock
                                     FontFamily="{StaticResource FontHeading}"
                                     FontSize="62"
-                                    Foreground="{StaticResource ColorAccentDark700}"
+                                    Foreground="{DynamicResource ColorAccentDark700}"
                                     HorizontalAlignment="Center"
                                     IsVisible="{Binding NoDogImage}"
                                     Text="{Binding DogInitials}"
@@ -97,7 +97,7 @@
                                 FontFamily="{StaticResource FontBody}"
                                 FontSize="31"
                                 FontStyle="Italic"
-                                Foreground="{StaticResource ColorTextMuted55}"
+                                Foreground="{DynamicResource ColorTextMuted55}"
                                 Margin="0,4,0,0">
                                 <Run Text="tutor: " />
                                 <Run Text="{Binding TutorName}" />
@@ -114,7 +114,7 @@
                     </Grid>
 
                     <Border
-                        Background="{StaticResource ColorAccent}"
+                        Background="{DynamicResource ColorAccent}"
                         Height="2"
                         HorizontalAlignment="Left"
                         Margin="0,32,0,0"
@@ -123,7 +123,7 @@
                     <!--  Read view  -->
                     <StackPanel IsVisible="{Binding IsViewing}">
                         <Border
-                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderBrush="{DynamicResource ColorDivider}"
                             BorderThickness="0,2,0,0"
                             Margin="0,32,0,0"
                             Padding="0,20,0,20">
@@ -131,13 +131,13 @@
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="28"
-                                    Foreground="{StaticResource ColorTextMuted55}"
+                                    Foreground="{DynamicResource ColorTextMuted55}"
                                     LetterSpacing="1"
                                     Text="DATA" />
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="34"
-                                    Foreground="{StaticResource ColorText}"
+                                    Foreground="{DynamicResource ColorText}"
                                     Grid.Column="1"
                                     Text="{Binding DateLabel}" />
                             </Grid>
@@ -145,7 +145,7 @@
 
                         <!--  Only a stay has a check-out; day-care ends when the day does.  -->
                         <Border
-                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderBrush="{DynamicResource ColorDivider}"
                             BorderThickness="0,2,0,0"
                             IsVisible="{Binding IsHotel}"
                             Padding="0,20,0,20">
@@ -153,13 +153,13 @@
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="28"
-                                    Foreground="{StaticResource ColorTextMuted55}"
+                                    Foreground="{DynamicResource ColorTextMuted55}"
                                     LetterSpacing="1"
                                     Text="SAÍDA" />
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="34"
-                                    Foreground="{StaticResource ColorText}"
+                                    Foreground="{DynamicResource ColorText}"
                                     Grid.Column="1"
                                     Text="{Binding EndLabel}" />
                             </Grid>
@@ -167,7 +167,7 @@
 
                         <!--  Walks are bundled into both hotel stays and day-care.  -->
                         <Border
-                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderBrush="{DynamicResource ColorDivider}"
                             BorderThickness="0,2,0,0"
                             IsVisible="{Binding ShowsWalking}"
                             Padding="0,20,0,20">
@@ -175,33 +175,33 @@
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="28"
-                                    Foreground="{StaticResource ColorTextMuted55}"
+                                    Foreground="{DynamicResource ColorTextMuted55}"
                                     LetterSpacing="1"
                                     Text="PASSEIOS" />
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="34"
-                                    Foreground="{StaticResource ColorText}"
+                                    Foreground="{DynamicResource ColorText}"
                                     Grid.Column="1"
                                     Text="{Binding WalkingLabel}" />
                             </Grid>
                         </Border>
 
                         <Border
-                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderBrush="{DynamicResource ColorDivider}"
                             BorderThickness="0,2,0,0"
                             Padding="0,20,0,20">
                             <Grid ColumnDefinitions="*,Auto">
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="28"
-                                    Foreground="{StaticResource ColorTextMuted55}"
+                                    Foreground="{DynamicResource ColorTextMuted55}"
                                     LetterSpacing="1"
                                     Text="{Binding PriceFieldLabel}" />
                                 <TextBlock
                                     FontFamily="{StaticResource FontHeading}"
                                     FontSize="45"
-                                    Foreground="{StaticResource ColorText}"
+                                    Foreground="{DynamicResource ColorText}"
                                     Grid.Column="1"
                                     Text="{Binding PriceLabel}" />
                             </Grid>
@@ -210,27 +210,27 @@
                         <!--  A stay is priced per day, so the amount actually owed is the daily rate times the nights.  -->
                         <StackPanel IsVisible="{Binding IsHotel}">
                             <Border
-                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderBrush="{DynamicResource ColorDivider}"
                                 BorderThickness="0,2,0,0"
                                 Padding="0,20,0,20">
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock
                                         FontFamily="{StaticResource FontBody}"
                                         FontSize="28"
-                                        Foreground="{StaticResource ColorTextMuted55}"
+                                        Foreground="{DynamicResource ColorTextMuted55}"
                                         LetterSpacing="1"
                                         Text="DIÁRIAS" />
                                     <TextBlock
                                         FontFamily="{StaticResource FontBody}"
                                         FontSize="34"
-                                        Foreground="{StaticResource ColorText}"
+                                        Foreground="{DynamicResource ColorText}"
                                         Grid.Column="1"
                                         Text="{Binding DaysLabel}" />
                                 </Grid>
                             </Border>
                             <!--  Only shown when there is one, so an ordinary stay stays uncluttered.  -->
                             <Border
-                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderBrush="{DynamicResource ColorDivider}"
                                 BorderThickness="0,2,0,0"
                                 IsVisible="{Binding HasExtraCharge}"
                                 Padding="0,20,0,20">
@@ -238,13 +238,13 @@
                                     <TextBlock
                                         FontFamily="{StaticResource FontBody}"
                                         FontSize="28"
-                                        Foreground="{StaticResource ColorTextMuted55}"
+                                        Foreground="{DynamicResource ColorTextMuted55}"
                                         LetterSpacing="1"
                                         Text="ADICIONAL" />
                                     <TextBlock
                                         FontFamily="{StaticResource FontBody}"
                                         FontSize="34"
-                                        Foreground="{StaticResource ColorText}"
+                                        Foreground="{DynamicResource ColorText}"
                                         Grid.Column="1"
                                         Text="{Binding ExtraChargeLabel}" />
                                 </Grid>
@@ -258,7 +258,7 @@
                             is the price already on screen.
                         -->
                         <Border
-                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderBrush="{DynamicResource ColorDivider}"
                             BorderThickness="0,2,0,0"
                             IsVisible="{Binding ShowsSubtotal}"
                             Padding="0,20,0,20">
@@ -266,13 +266,13 @@
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="28"
-                                    Foreground="{StaticResource ColorTextMuted55}"
+                                    Foreground="{DynamicResource ColorTextMuted55}"
                                     LetterSpacing="1"
                                     Text="SUBTOTAL" />
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="34"
-                                    Foreground="{StaticResource ColorText}"
+                                    Foreground="{DynamicResource ColorText}"
                                     Grid.Column="1"
                                     Text="{Binding SubtotalLabel}" />
                             </Grid>
@@ -280,7 +280,7 @@
 
                         <!--  The rate rides in the caption so the money stays aligned with the amounts above it.  -->
                         <Border
-                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderBrush="{DynamicResource ColorDivider}"
                             BorderThickness="0,2,0,0"
                             IsVisible="{Binding HasDiscount}"
                             Padding="0,20,0,20">
@@ -288,14 +288,14 @@
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="28"
-                                    Foreground="{StaticResource ColorTextMuted55}"
+                                    Foreground="{DynamicResource ColorTextMuted55}"
                                     LetterSpacing="1"
                                     Text="{Binding DiscountFieldLabel}"
                                     VerticalAlignment="Center" />
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="34"
-                                    Foreground="{StaticResource ColorAccent}"
+                                    Foreground="{DynamicResource ColorAccent}"
                                     Grid.Column="1"
                                     Text="{Binding DiscountAmountLabel}" />
                             </Grid>
@@ -306,7 +306,7 @@
                             needs it only once a discount has moved the total off the price above.
                         -->
                         <Border
-                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderBrush="{DynamicResource ColorDivider}"
                             BorderThickness="0,2,0,0"
                             IsVisible="{Binding ShowsTotal}"
                             Padding="0,20,0,20">
@@ -314,14 +314,14 @@
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="28"
-                                    Foreground="{StaticResource ColorAccentDark700}"
+                                    Foreground="{DynamicResource ColorAccentDark700}"
                                     LetterSpacing="1"
                                     Text="TOTAL"
                                     VerticalAlignment="Center" />
                                 <TextBlock
                                     FontFamily="{StaticResource FontHeading}"
                                     FontSize="53"
-                                    Foreground="{StaticResource ColorAccentDark700}"
+                                    Foreground="{DynamicResource ColorAccentDark700}"
                                     Grid.Column="1"
                                     Text="{Binding TotalLabel}" />
                             </Grid>
@@ -334,39 +334,39 @@
                         -->
                         <StackPanel IsVisible="{Binding HasPartialSettlement}">
                             <Border
-                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderBrush="{DynamicResource ColorDivider}"
                                 BorderThickness="0,2,0,0"
                                 Padding="0,20,0,20">
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock
                                         FontFamily="{StaticResource FontBody}"
                                         FontSize="28"
-                                        Foreground="{StaticResource ColorTextMuted55}"
+                                        Foreground="{DynamicResource ColorTextMuted55}"
                                         LetterSpacing="1"
                                         Text="JÁ PAGO" />
                                     <TextBlock
                                         FontFamily="{StaticResource FontHeading}"
                                         FontSize="45"
-                                        Foreground="{StaticResource ColorText}"
+                                        Foreground="{DynamicResource ColorText}"
                                         Grid.Column="1"
                                         Text="{Binding SettledLabel}" />
                                 </Grid>
                             </Border>
                             <Border
-                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderBrush="{DynamicResource ColorDivider}"
                                 BorderThickness="0,2,0,0"
                                 Padding="0,20,0,20">
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock
                                         FontFamily="{StaticResource FontBody}"
                                         FontSize="28"
-                                        Foreground="{StaticResource ColorTextMuted55}"
+                                        Foreground="{DynamicResource ColorTextMuted55}"
                                         LetterSpacing="1"
                                         Text="EM ABERTO" />
                                     <TextBlock
                                         FontFamily="{StaticResource FontHeading}"
                                         FontSize="45"
-                                        Foreground="{StaticResource ColorAccentDark700}"
+                                        Foreground="{DynamicResource ColorAccentDark700}"
                                         Grid.Column="1"
                                         Text="{Binding OutstandingLabel}" />
                                 </Grid>
@@ -375,7 +375,7 @@
 
                         <!--  Where the money came from, when part of it was the tutor's own credit.  -->
                         <Border
-                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderBrush="{DynamicResource ColorDivider}"
                             BorderThickness="0,2,0,0"
                             IsVisible="{Binding HasCreditNote}"
                             Padding="0,16,0,16">
@@ -383,14 +383,14 @@
                                 FontFamily="{StaticResource FontBody}"
                                 FontSize="29"
                                 FontStyle="Italic"
-                                Foreground="{StaticResource ColorAccentDark700}"
+                                Foreground="{DynamicResource ColorAccentDark700}"
                                 Text="{Binding CreditNote}"
                                 TextWrapping="Wrap" />
                         </Border>
 
                         <!--  Whether the work happened. Independent of payment: this is where the flag is set.  -->
                         <Border
-                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderBrush="{DynamicResource ColorDivider}"
                             BorderThickness="0,2,0,0"
                             Padding="0,20,0,20"
                             VerticalAlignment="Center">
@@ -398,7 +398,7 @@
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="28"
-                                    Foreground="{StaticResource ColorTextMuted55}"
+                                    Foreground="{DynamicResource ColorTextMuted55}"
                                     LetterSpacing="1"
                                     Text="EXECUÇÃO"
                                     VerticalAlignment="Center" />
@@ -416,14 +416,14 @@
                             FontFamily="{StaticResource FontBody}"
                             FontSize="26"
                             FontStyle="Italic"
-                            Foreground="{StaticResource ColorAccentDark700}"
+                            Foreground="{DynamicResource ColorAccentDark700}"
                             IsVisible="{Binding HasCreditMsg}"
                             Margin="0,0,0,12"
                             Text="{Binding CreditMsg}"
                             TextWrapping="Wrap" />
 
                         <Border
-                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderBrush="{DynamicResource ColorDivider}"
                             BorderThickness="0,2,0,2"
                             Padding="0,20,0,20"
                             VerticalAlignment="Center">
@@ -432,7 +432,7 @@
                                     <TextBlock
                                         FontFamily="{StaticResource FontBody}"
                                         FontSize="28"
-                                        Foreground="{StaticResource ColorTextMuted55}"
+                                        Foreground="{DynamicResource ColorTextMuted55}"
                                         LetterSpacing="1"
                                         Text="PAGAMENTO"
                                         VerticalAlignment="Center" />
@@ -448,7 +448,7 @@
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="25"
                                     FontStyle="Italic"
-                                    Foreground="{StaticResource ColorTextMuted45}"
+                                    Foreground="{DynamicResource ColorTextMuted45}"
                                     IsVisible="{Binding ShowsPaymentBlockedHint}"
                                     Text="Marque como feito para poder cobrar. Um adiantamento do tutor entra como crédito na tela dele."
                                     TextWrapping="Wrap" />
@@ -486,12 +486,12 @@
                             <Grid ColumnDefinitions="*,16,Auto">
                                 <CalendarDatePicker
                                     Background="Transparent"
-                                    BorderBrush="{StaticResource ColorDivider}"
+                                    BorderBrush="{DynamicResource ColorDivider}"
                                     BorderThickness="2"
                                     CornerRadius="7"
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="32"
-                                    Foreground="{StaticResource ColorText}"
+                                    Foreground="{DynamicResource ColorText}"
                                     MinHeight="74"
                                     SelectedDate="{Binding EditDatePart}" />
                                 <!--  Day-care has no time of day, so it edits the date alone.  -->
@@ -509,12 +509,12 @@
                             <Grid ColumnDefinitions="*,16,Auto">
                                 <CalendarDatePicker
                                     Background="Transparent"
-                                    BorderBrush="{StaticResource ColorDivider}"
+                                    BorderBrush="{DynamicResource ColorDivider}"
                                     BorderThickness="2"
                                     CornerRadius="7"
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="32"
-                                    Foreground="{StaticResource ColorText}"
+                                    Foreground="{DynamicResource ColorText}"
                                     MinHeight="74"
                                     SelectedDate="{Binding EditEndDatePart}" />
                                 <TimePicker
@@ -529,7 +529,7 @@
                             Content="Inclui passeios"
                             FontFamily="{StaticResource FontBody}"
                             FontSize="32"
-                            Foreground="{StaticResource ColorTextMuted70}"
+                            Foreground="{DynamicResource ColorTextMuted70}"
                             IsChecked="{Binding EditRequiresWalking}"
                             IsVisible="{Binding ShowsWalking}"
                             Theme="{StaticResource ClassicCheckBox}" />
@@ -550,7 +550,7 @@
                                 FontFamily="{StaticResource FontBody}"
                                 FontSize="25"
                                 FontStyle="Italic"
-                                Foreground="{StaticResource ColorTextMuted45}"
+                                Foreground="{DynamicResource ColorTextMuted45}"
                                 Text="Cobrado uma vez, somado ao total das diárias."
                                 TextWrapping="Wrap" />
                         </StackPanel>
@@ -566,7 +566,7 @@
                                 FontFamily="{StaticResource FontBody}"
                                 FontSize="25"
                                 FontStyle="Italic"
-                                Foreground="{StaticResource ColorTextMuted45}"
+                                Foreground="{DynamicResource ColorTextMuted45}"
                                 Text="Deixe em branco para cobrar o preço cheio."
                                 TextWrapping="Wrap" />
                         </StackPanel>

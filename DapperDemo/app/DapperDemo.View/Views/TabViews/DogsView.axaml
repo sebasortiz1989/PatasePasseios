@@ -12,7 +12,7 @@
     xmlns:utils="clr-namespace:DapperDemo.Viewmodel.Viewmodels.Utils;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Background="{StaticResource ColorBg}" Width="720">
+    <Grid Background="{DynamicResource ColorBg}" Width="720">
         <ScrollViewer>
             <StackPanel Spacing="0">
                 <Grid ColumnDefinitions="*,Auto" Margin="32,32,32,16">
@@ -34,7 +34,7 @@
                 </Grid>
 
                 <Border
-                    BorderBrush="{StaticResource ColorDivider}"
+                    BorderBrush="{DynamicResource ColorDivider}"
                     BorderThickness="0,2,0,0"
                     IsVisible="{Binding IsEmpty}"
                     Margin="32,0,32,0"
@@ -43,7 +43,7 @@
                         FontFamily="{StaticResource FontBody}"
                         FontSize="32"
                         FontStyle="Italic"
-                        Foreground="{StaticResource ColorTextMuted45}"
+                        Foreground="{DynamicResource ColorTextMuted45}"
                         HorizontalAlignment="Center"
                         Text="Nenhum cachorro cadastrado ainda."
                         TextAlignment="Center"
@@ -55,7 +55,7 @@
                         <DataTemplate DataType="utils:DogRow">
                             <Button Classes="RowButton" Command="{Binding OpenCommand}">
                                 <Border
-                                    BorderBrush="{StaticResource ColorDivider}"
+                                    BorderBrush="{DynamicResource ColorDivider}"
                                     BorderThickness="0,2,0,0"
                                     HorizontalAlignment="Stretch"
                                     Padding="0,24"
@@ -77,13 +77,13 @@
                                             </Image>
                                             <!--  The ring sits over the photo, so one border serves both states.  -->
                                             <Border
-                                                BorderBrush="{StaticResource ColorAccent}"
+                                                BorderBrush="{DynamicResource ColorAccent}"
                                                 BorderThickness="2"
                                                 CornerRadius="40">
                                                 <TextBlock
                                                     FontFamily="{StaticResource FontHeading}"
                                                     FontSize="37"
-                                                    Foreground="{StaticResource ColorAccentDark700}"
+                                                    Foreground="{DynamicResource ColorAccentDark700}"
                                                     HorizontalAlignment="Center"
                                                     IsVisible="{Binding NoImage}"
                                                     Text="{Binding Initials}"
@@ -98,17 +98,17 @@
                                                 FontFamily="{StaticResource FontHeading}"
                                                 FontSize="44"
                                                 FontWeight="Medium"
-                                                Foreground="{StaticResource ColorText}"
+                                                Foreground="{DynamicResource ColorText}"
                                                 Text="{Binding Name}" />
                                             <TextBlock
                                                 FontFamily="{StaticResource FontBody}"
                                                 FontSize="28"
-                                                Foreground="{StaticResource ColorTextMuted55}"
+                                                Foreground="{DynamicResource ColorTextMuted55}"
                                                 Text="{Binding Subtitle}" />
                                         </StackPanel>
                                         <TextBlock
                                             FontSize="37"
-                                            Foreground="{StaticResource ColorAccent}"
+                                            Foreground="{DynamicResource ColorAccent}"
                                             Grid.Column="2"
                                             HorizontalAlignment="Right"
                                             Margin="0,0,25,0"

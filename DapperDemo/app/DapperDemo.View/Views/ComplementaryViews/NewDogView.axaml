@@ -15,7 +15,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Grid
-        Background="{StaticResource ColorBg}"
+        Background="{DynamicResource ColorBg}"
         RowDefinitions="Auto,*"
         Width="720">
 
@@ -24,7 +24,7 @@
             under it. It carries the background as well, or the fields would show through as
             they pass behind.
         -->
-        <Border Background="{StaticResource ColorBg}" Grid.Row="0">
+        <Border Background="{DynamicResource ColorBg}" Grid.Row="0">
             <buttons:VButton
                 Classes="BtnBack"
                 Command="{Binding BackCommand}"
@@ -44,7 +44,7 @@
 
                 <!--  A dog needs an owner, so with no tutors yet the form sends the user there first  -->
                 <Border
-                    BorderBrush="{StaticResource ColorDivider}"
+                    BorderBrush="{DynamicResource ColorDivider}"
                     BorderThickness="0,2,0,0"
                     IsVisible="{Binding HasNoTutors}"
                     Margin="32,16,32,0"
@@ -53,7 +53,7 @@
                         FontFamily="{StaticResource FontBody}"
                         FontSize="32"
                         FontStyle="Italic"
-                        Foreground="{StaticResource ColorTextMuted45}"
+                        Foreground="{DynamicResource ColorTextMuted45}"
                         HorizontalAlignment="Center"
                         Text="Cadastre um tutor primeiro."
                         TextAlignment="Center"
@@ -79,14 +79,14 @@
                                 </Image.Clip>
                             </Image>
                             <Border
-                                BorderBrush="{StaticResource ColorDivider}"
+                                BorderBrush="{DynamicResource ColorDivider}"
                                 BorderThickness="2"
                                 CornerRadius="84">
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="30"
                                     FontStyle="Italic"
-                                    Foreground="{StaticResource ColorTextMuted45}"
+                                    Foreground="{DynamicResource ColorTextMuted45}"
                                     HorizontalAlignment="Center"
                                     IsVisible="{Binding NoPhoto}"
                                     Text="sem foto"
@@ -117,17 +117,17 @@
                         <TextBlock
                             FontFamily="{StaticResource FontBody}"
                             FontSize="28"
-                            Foreground="{StaticResource ColorTextMuted70}"
+                            Foreground="{DynamicResource ColorTextMuted70}"
                             Text="Nome" />
                         <TextBox
                             Background="Transparent"
-                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderBrush="{DynamicResource ColorDivider}"
                             BorderThickness="2"
-                            CaretBrush="{StaticResource ColorAccent}"
+                            CaretBrush="{DynamicResource ColorAccent}"
                             CornerRadius="7"
                             FontFamily="{StaticResource FontBody}"
                             FontSize="34"
-                            Foreground="{StaticResource ColorText}"
+                            Foreground="{DynamicResource ColorText}"
                             MinHeight="82"
                             Padding="18,0"
                             PlaceholderText="Toby"
@@ -139,17 +139,17 @@
                         <TextBlock
                             FontFamily="{StaticResource FontBody}"
                             FontSize="28"
-                            Foreground="{StaticResource ColorTextMuted70}"
+                            Foreground="{DynamicResource ColorTextMuted70}"
                             Text="Raça" />
                         <TextBox
                             Background="Transparent"
-                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderBrush="{DynamicResource ColorDivider}"
                             BorderThickness="2"
-                            CaretBrush="{StaticResource ColorAccent}"
+                            CaretBrush="{DynamicResource ColorAccent}"
                             CornerRadius="7"
                             FontFamily="{StaticResource FontBody}"
                             FontSize="34"
-                            Foreground="{StaticResource ColorText}"
+                            Foreground="{DynamicResource ColorText}"
                             MinHeight="82"
                             Padding="18,0"
                             PlaceholderText="Golden Retriever"
@@ -161,7 +161,7 @@
                         <TextBlock
                             FontFamily="{StaticResource FontBody}"
                             FontSize="28"
-                            Foreground="{StaticResource ColorTextMuted70}"
+                            Foreground="{DynamicResource ColorTextMuted70}"
                             Text="Tutor" />
                         <!--  Typeable: the tutor list grows, and scrolling it to find a name does not.  -->
                         <inputs:VSearchableComboBox
@@ -175,18 +175,18 @@
                         <TextBlock
                             FontFamily="{StaticResource FontBody}"
                             FontSize="28"
-                            Foreground="{StaticResource ColorTextMuted70}"
+                            Foreground="{DynamicResource ColorTextMuted70}"
                             Text="Descrição" />
                         <TextBox
                             AcceptsReturn="True"
                             Background="Transparent"
-                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderBrush="{DynamicResource ColorDivider}"
                             BorderThickness="2"
-                            CaretBrush="{StaticResource ColorAccent}"
+                            CaretBrush="{DynamicResource ColorAccent}"
                             CornerRadius="7"
                             FontFamily="{StaticResource FontBody}"
                             FontSize="34"
-                            Foreground="{StaticResource ColorText}"
+                            Foreground="{DynamicResource ColorText}"
                             MinHeight="160"
                             Padding="18,12"
                             PlaceholderText="Temperamento, cuidados, rotina…"

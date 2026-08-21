@@ -14,7 +14,7 @@
     xmlns:utils="clr-namespace:DapperDemo.Viewmodel.Viewmodels.Utils;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Background="{StaticResource ColorBg}" Width="720">
+    <Grid Background="{DynamicResource ColorBg}" Width="720">
         <ScrollViewer>
             <StackPanel Spacing="0">
                 <StackPanel Margin="32,32,32,16" Spacing="2">
@@ -43,13 +43,13 @@
                                     </Image.Clip>
                                 </Image>
                                 <Border
-                                    BorderBrush="{StaticResource ColorAccent}"
+                                    BorderBrush="{DynamicResource ColorAccent}"
                                     BorderThickness="2"
                                     CornerRadius="84">
                                     <TextBlock
                                         FontFamily="{StaticResource FontHeading}"
                                         FontSize="78"
-                                        Foreground="{StaticResource ColorAccentDark700}"
+                                        Foreground="{DynamicResource ColorAccentDark700}"
                                         HorizontalAlignment="Center"
                                         IsVisible="{Binding NoPhoto}"
                                         Text="{Binding Initials}"
@@ -101,7 +101,7 @@
                                         <TextBlock
                                             FontFamily="{StaticResource FontBody}"
                                             FontSize="32"
-                                            Foreground="{StaticResource ColorText}"
+                                            Foreground="{DynamicResource ColorText}"
                                             Text="{Binding Email}" />
                                     </StackPanel>
                                     <StackPanel Spacing="2">
@@ -109,7 +109,7 @@
                                         <TextBlock
                                             FontFamily="{StaticResource FontBody}"
                                             FontSize="32"
-                                            Foreground="{StaticResource ColorText}"
+                                            Foreground="{DynamicResource ColorText}"
                                             Text="{Binding PixLabel}"
                                             TextWrapping="Wrap" />
                                     </StackPanel>
@@ -118,7 +118,7 @@
                                         <TextBlock
                                             FontFamily="{StaticResource FontBody}"
                                             FontSize="32"
-                                            Foreground="{StaticResource ColorText}"
+                                            Foreground="{DynamicResource ColorText}"
                                             Text="{Binding BirthDateLabel}" />
                                     </StackPanel>
                                 </StackPanel>
@@ -143,7 +143,7 @@
                                 <StackPanel Spacing="8">
                                     <TextBlock Classes="FormLabel" Text="E-mail" />
                                     <Border
-                                        BorderBrush="{StaticResource ColorDivider}"
+                                        BorderBrush="{DynamicResource ColorDivider}"
                                         BorderThickness="2"
                                         CornerRadius="7"
                                         MinHeight="74"
@@ -151,7 +151,7 @@
                                         <TextBlock
                                             FontFamily="{StaticResource FontBody}"
                                             FontSize="32"
-                                            Foreground="{StaticResource ColorTextMuted50}"
+                                            Foreground="{DynamicResource ColorTextMuted50}"
                                             Text="{Binding Email}"
                                             VerticalAlignment="Center" />
                                     </Border>
@@ -159,7 +159,7 @@
                                         FontFamily="{StaticResource FontBody}"
                                         FontSize="25"
                                         FontStyle="Italic"
-                                        Foreground="{StaticResource ColorTextMuted45}"
+                                        Foreground="{DynamicResource ColorTextMuted45}"
                                         Text="O e-mail identifica a conta e não pode ser alterado."
                                         TextWrapping="Wrap" />
                                 </StackPanel>
@@ -176,12 +176,12 @@
                                     <TextBlock Classes="FormLabel" Text="Nascimento" />
                                     <CalendarDatePicker
                                         Background="Transparent"
-                                        BorderBrush="{StaticResource ColorDivider}"
+                                        BorderBrush="{DynamicResource ColorDivider}"
                                         BorderThickness="2"
                                         CornerRadius="7"
                                         FontFamily="{StaticResource FontBody}"
                                         FontSize="32"
-                                        Foreground="{StaticResource ColorText}"
+                                        Foreground="{DynamicResource ColorText}"
                                         MinHeight="74"
                                         SelectedDate="{Binding EditBirthDate}" />
                                 </StackPanel>
@@ -274,7 +274,7 @@
                                     <TextBlock
                                         FontFamily="{StaticResource FontBody}"
                                         FontSize="28"
-                                        Foreground="{StaticResource ColorTextMuted50}"
+                                        Foreground="{DynamicResource ColorTextMuted50}"
                                         LetterSpacing="3"
                                         Text="••••••••" />
                                 </StackPanel>
@@ -295,7 +295,7 @@
                         <TextBlock
                             FontFamily="{StaticResource FontBody}"
                             FontSize="25"
-                            Foreground="{StaticResource ColorAccent}"
+                            Foreground="{DynamicResource ColorAccent}"
                             LetterSpacing="2"
                             Text="FATURAMENTO" />
 
@@ -337,12 +337,12 @@
                                         <Path
                                             Data="{StaticResource IconEyeOpen}"
                                             IsVisible="{Binding MoneyVisible}"
-                                            Stroke="{StaticResource ColorAccent}"
+                                            Stroke="{DynamicResource ColorAccent}"
                                             StrokeThickness="1.8" />
                                         <Path
                                             Data="{StaticResource IconEyeClosed}"
                                             IsVisible="{Binding MoneyHidden}"
-                                            Stroke="{StaticResource ColorAccent}"
+                                            Stroke="{DynamicResource ColorAccent}"
                                             StrokeThickness="1.8" />
                                     </Panel>
                                 </Viewbox>
@@ -352,7 +352,7 @@
                         <TextBlock
                             FontFamily="{StaticResource FontHeading}"
                             FontSize="97"
-                            Foreground="{StaticResource ColorText}"
+                            Foreground="{DynamicResource ColorText}"
                             Margin="0,16,0,16"
                             Text="{Binding MonthTotalLabel}" />
 
@@ -360,19 +360,19 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate DataType="utils:IncomeRow">
                                     <Border
-                                        BorderBrush="{StaticResource ColorDivider}"
+                                        BorderBrush="{DynamicResource ColorDivider}"
                                         BorderThickness="0,2,0,0"
                                         Padding="0,16">
                                         <Grid ColumnDefinitions="*,Auto">
                                             <TextBlock
                                                 FontFamily="{StaticResource FontBody}"
                                                 FontSize="32"
-                                                Foreground="{StaticResource ColorTextMuted75}"
+                                                Foreground="{DynamicResource ColorTextMuted75}"
                                                 Text="{Binding Label}" />
                                             <TextBlock
                                                 FontFamily="{StaticResource FontHeading}"
                                                 FontSize="40"
-                                                Foreground="{StaticResource ColorText}"
+                                                Foreground="{DynamicResource ColorText}"
                                                 Grid.Column="1"
                                                 Text="{Binding Amount}" />
                                         </Grid>
@@ -382,14 +382,14 @@
                         </ItemsControl>
 
                         <Border
-                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderBrush="{DynamicResource ColorDivider}"
                             BorderThickness="0,2,0,0"
                             Padding="0,16,0,0">
                             <TextBlock
                                 FontFamily="{StaticResource FontBody}"
                                 FontSize="25"
                                 FontStyle="Italic"
-                                Foreground="{StaticResource ColorTextMuted45}"
+                                Foreground="{DynamicResource ColorTextMuted45}"
                                 Text="Considera apenas serviços marcados como pagos. Pendentes conta todos os meses."
                                 TextWrapping="Wrap" />
                         </Border>
@@ -422,7 +422,7 @@
                             Content="Detalhar por cachorro"
                             FontFamily="{StaticResource FontBody}"
                             FontSize="31"
-                            Foreground="{StaticResource ColorTextMuted65}"
+                            Foreground="{DynamicResource ColorTextMuted65}"
                             IsChecked="{Binding ShowMonthDetail}"
                             Margin="0,16,0,0"
                             Theme="{StaticResource ClassicCheckBox}" />
@@ -431,7 +431,7 @@
                             <TextBlock
                                 FontFamily="{StaticResource FontBody}"
                                 FontSize="25"
-                                Foreground="{StaticResource ColorAccent}"
+                                Foreground="{DynamicResource ColorAccent}"
                                 LetterSpacing="2"
                                 Margin="0,16,0,0"
                                 Text="{Binding ReceivedHeading}" />
@@ -440,7 +440,7 @@
                                 FontFamily="{StaticResource FontBody}"
                                 FontSize="30"
                                 FontStyle="Italic"
-                                Foreground="{StaticResource ColorTextMuted45}"
+                                Foreground="{DynamicResource ColorTextMuted45}"
                                 IsVisible="{Binding HasNothingPaidInMonth}"
                                 Text="{Binding NoPaidLabel}" />
 
@@ -448,7 +448,7 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="utils:DogSummaryRow">
                                         <Border
-                                            BorderBrush="{StaticResource ColorDivider}"
+                                            BorderBrush="{DynamicResource ColorDivider}"
                                             BorderThickness="0,2,0,0"
                                             Padding="0,18">
                                             <StackPanel Spacing="10">
@@ -457,13 +457,13 @@
                                                         FontFamily="{StaticResource FontHeading}"
                                                         FontSize="40"
                                                         FontWeight="Medium"
-                                                        Foreground="{StaticResource ColorText}"
+                                                        Foreground="{DynamicResource ColorText}"
                                                         Text="{Binding DogName}"
                                                         VerticalAlignment="Center" />
                                                     <TextBlock
                                                         FontFamily="{StaticResource FontHeading}"
                                                         FontSize="37"
-                                                        Foreground="{StaticResource ColorAccentDark800}"
+                                                        Foreground="{DynamicResource ColorAccentDark800}"
                                                         Grid.Column="1"
                                                         Text="{Binding TotalLabel}"
                                                         VerticalAlignment="Center" />
@@ -475,12 +475,12 @@
                                                                 <TextBlock
                                                                     FontFamily="{StaticResource FontBody}"
                                                                     FontSize="29"
-                                                                    Foreground="{StaticResource ColorTextMuted65}"
+                                                                    Foreground="{DynamicResource ColorTextMuted65}"
                                                                     Text="{Binding CountLabel}" />
                                                                 <TextBlock
                                                                     FontFamily="{StaticResource FontBody}"
                                                                     FontSize="29"
-                                                                    Foreground="{StaticResource ColorTextMuted55}"
+                                                                    Foreground="{DynamicResource ColorTextMuted55}"
                                                                     Grid.Column="1"
                                                                     Text="{Binding AmountLabel}" />
                                                             </Grid>
@@ -497,14 +497,14 @@
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="25"
-                                    Foreground="{StaticResource ColorAccent}"
+                                    Foreground="{DynamicResource ColorAccent}"
                                     LetterSpacing="2"
                                     Text="{Binding PendingHeading}"
                                     VerticalAlignment="Center" />
                                 <TextBlock
                                     FontFamily="{StaticResource FontHeading}"
                                     FontSize="40"
-                                    Foreground="{StaticResource ColorText}"
+                                    Foreground="{DynamicResource ColorText}"
                                     Grid.Column="1"
                                     Text="{Binding PendingTotalLabel}"
                                     VerticalAlignment="Center" />
@@ -514,7 +514,7 @@
                                 FontFamily="{StaticResource FontBody}"
                                 FontSize="30"
                                 FontStyle="Italic"
-                                Foreground="{StaticResource ColorTextMuted45}"
+                                Foreground="{DynamicResource ColorTextMuted45}"
                                 IsVisible="{Binding HasNothingPendingInMonth}"
                                 Text="{Binding NoPendingLabel}" />
 
@@ -522,7 +522,7 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="utils:DogSummaryRow">
                                         <Border
-                                            BorderBrush="{StaticResource ColorDivider}"
+                                            BorderBrush="{DynamicResource ColorDivider}"
                                             BorderThickness="0,2,0,0"
                                             Padding="0,18">
                                             <StackPanel Spacing="10">
@@ -531,13 +531,13 @@
                                                         FontFamily="{StaticResource FontHeading}"
                                                         FontSize="40"
                                                         FontWeight="Medium"
-                                                        Foreground="{StaticResource ColorText}"
+                                                        Foreground="{DynamicResource ColorText}"
                                                         Text="{Binding DogName}"
                                                         VerticalAlignment="Center" />
                                                     <TextBlock
                                                         FontFamily="{StaticResource FontHeading}"
                                                         FontSize="37"
-                                                        Foreground="{StaticResource ColorAccentDark800}"
+                                                        Foreground="{DynamicResource ColorAccentDark800}"
                                                         Grid.Column="1"
                                                         Text="{Binding TotalLabel}"
                                                         VerticalAlignment="Center" />
@@ -549,12 +549,12 @@
                                                                 <TextBlock
                                                                     FontFamily="{StaticResource FontBody}"
                                                                     FontSize="29"
-                                                                    Foreground="{StaticResource ColorTextMuted65}"
+                                                                    Foreground="{DynamicResource ColorTextMuted65}"
                                                                     Text="{Binding CountLabel}" />
                                                                 <TextBlock
                                                                     FontFamily="{StaticResource FontBody}"
                                                                     FontSize="29"
-                                                                    Foreground="{StaticResource ColorTextMuted55}"
+                                                                    Foreground="{DynamicResource ColorTextMuted55}"
                                                                     Grid.Column="1"
                                                                     Text="{Binding AmountLabel}" />
                                                             </Grid>
@@ -575,7 +575,7 @@
                             <TextBlock
                                 FontFamily="{StaticResource FontHeading}"
                                 FontSize="51"
-                                Foreground="{StaticResource ColorText}"
+                                Foreground="{DynamicResource ColorText}"
                                 Text="{Binding TutorCountLabel}" />
                             <TextBlock Classes="Kicker" Text="Tutores" />
                         </StackPanel>
@@ -583,7 +583,7 @@
                             <TextBlock
                                 FontFamily="{StaticResource FontHeading}"
                                 FontSize="51"
-                                Foreground="{StaticResource ColorText}"
+                                Foreground="{DynamicResource ColorText}"
                                 Text="{Binding DogCountLabel}" />
                             <TextBlock Classes="Kicker" Text="Cães" />
                         </StackPanel>
@@ -592,7 +592,7 @@
                             <TextBlock
                                 FontFamily="{StaticResource FontHeading}"
                                 FontSize="51"
-                                Foreground="{StaticResource ColorText}"
+                                Foreground="{DynamicResource ColorText}"
                                 Text="{Binding ServiceCountLabel}" />
                             <TextBlock Classes="Kicker" Text="{Binding ServiceCountKicker}" />
                         </StackPanel>
@@ -600,7 +600,7 @@
                             <TextBlock
                                 FontFamily="{StaticResource FontHeading}"
                                 FontSize="51"
-                                Foreground="{StaticResource ColorAccentDark700}"
+                                Foreground="{DynamicResource ColorAccentDark700}"
                                 Text="{Binding PendingCountLabel}" />
                             <TextBlock Classes="Kicker" Text="Pendentes" />
                         </StackPanel>
@@ -615,14 +615,14 @@
                         <TextBlock
                             FontFamily="{StaticResource FontBody}"
                             FontSize="25"
-                            Foreground="{StaticResource ColorAccent}"
+                            Foreground="{DynamicResource ColorAccent}"
                             LetterSpacing="2"
                             Text="BACKUP" />
 
                         <TextBlock
                             FontFamily="{StaticResource FontBody}"
                             FontSize="28"
-                            Foreground="{StaticResource ColorTextMuted70}"
+                            Foreground="{DynamicResource ColorTextMuted70}"
                             Margin="0,8,0,16"
                             Text="Exporte um arquivo .zip com todos os seus dados e fotos. Guarde-o no Drive ou envie para outro aparelho."
                             TextWrapping="Wrap" />
@@ -645,7 +645,7 @@
                             FontFamily="{StaticResource FontBody}"
                             FontSize="25"
                             FontStyle="Italic"
-                            Foreground="{StaticResource ColorTextMuted45}"
+                            Foreground="{DynamicResource ColorTextMuted45}"
                             Margin="0,12,0,0"
                             Text="Importar substitui tudo o que está neste aparelho e pede um novo login."
                             TextWrapping="Wrap" />
@@ -659,7 +659,7 @@
                             FontFamily="{StaticResource FontBody}"
                             FontSize="25"
                             FontStyle="Italic"
-                            Foreground="{StaticResource ColorTextMuted45}"
+                            Foreground="{DynamicResource ColorTextMuted45}"
                             Margin="0,20,0,0"
                             Text="{Binding CloudBackupLabel}"
                             TextWrapping="Wrap" />

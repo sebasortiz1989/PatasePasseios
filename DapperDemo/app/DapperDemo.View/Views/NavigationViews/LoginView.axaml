@@ -15,7 +15,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <components:DesignCanvas DesignHeight="1560" DesignWidth="720">
-        <Grid Background="{StaticResource ColorBg}" Width="720">
+        <Grid Background="{DynamicResource ColorBg}" Width="720">
             <StackPanel
                 HorizontalAlignment="Center"
                 Spacing="32"
@@ -32,7 +32,7 @@
                         HorizontalAlignment="Center"
                         Text="Patas &amp; Passeios" />
                     <Border
-                        Background="{StaticResource ColorAccent}"
+                        Background="{DynamicResource ColorAccent}"
                         Height="2"
                         HorizontalAlignment="Center"
                         Margin="0,8,0,0"
@@ -67,7 +67,7 @@
                     FontFamily="{StaticResource FontBody}"
                     FontSize="31"
                     FontStyle="Italic"
-                    Foreground="{StaticResource ColorAccentDark800}"
+                    Foreground="{DynamicResource ColorAccentDark800}"
                     HorizontalAlignment="Center"
                     IsVisible="{Binding HasLoginError}"
                     Text="{Binding LoginError}"

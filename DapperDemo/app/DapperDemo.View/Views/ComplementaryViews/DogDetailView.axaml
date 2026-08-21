@@ -16,7 +16,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Grid
-        Background="{StaticResource ColorBg}"
+        Background="{DynamicResource ColorBg}"
         RowDefinitions="Auto,*"
         Width="720">
 
@@ -25,7 +25,7 @@
             under it. It carries the background as well, or the content would show through as
             it passes behind.
         -->
-        <Border Background="{StaticResource ColorBg}" Grid.Row="0">
+        <Border Background="{DynamicResource ColorBg}" Grid.Row="0">
             <buttons:VButton
                 Classes="BtnBack"
                 Command="{Binding BackCommand}"
@@ -53,13 +53,13 @@
                             </Image.Clip>
                         </Image>
                         <Border
-                            BorderBrush="{StaticResource ColorAccent}"
+                            BorderBrush="{DynamicResource ColorAccent}"
                             BorderThickness="2"
                             CornerRadius="84">
                             <TextBlock
                                 FontFamily="{StaticResource FontHeading}"
                                 FontSize="78"
-                                Foreground="{StaticResource ColorAccentDark700}"
+                                Foreground="{DynamicResource ColorAccentDark700}"
                                 HorizontalAlignment="Center"
                                 IsVisible="{Binding NoPhoto}"
                                 Text="{Binding Initials}"
@@ -103,7 +103,7 @@
                     <!--  Read view  -->
                     <StackPanel IsVisible="{Binding IsViewing}" Spacing="28">
                         <Border
-                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderBrush="{DynamicResource ColorDivider}"
                             BorderThickness="0,2,0,0"
                             Padding="0,20,0,0">
                             <StackPanel Spacing="6">
@@ -112,7 +112,7 @@
                                     <TextBlock
                                         FontFamily="{StaticResource FontBody}"
                                         FontSize="34"
-                                        Foreground="{StaticResource ColorText}"
+                                        Foreground="{DynamicResource ColorText}"
                                         Text="{Binding OwnerName}"
                                         VerticalAlignment="Center" />
 
@@ -129,7 +129,7 @@
                         </Border>
 
                         <Border
-                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderBrush="{DynamicResource ColorDivider}"
                             BorderThickness="0,2,0,0"
                             Padding="0,20,0,0">
                             <StackPanel Spacing="6">
@@ -137,7 +137,7 @@
                                 <TextBlock
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="34"
-                                    Foreground="{StaticResource ColorText}"
+                                    Foreground="{DynamicResource ColorText}"
                                     LineHeight="48"
                                     Text="{Binding Description}"
                                     TextWrapping="Wrap" />
@@ -145,7 +145,7 @@
                         </Border>
 
                         <Border
-                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderBrush="{DynamicResource ColorDivider}"
                             BorderThickness="0,2,0,0"
                             Padding="0,20,0,0">
                             <StackPanel Spacing="12">
@@ -175,7 +175,7 @@
                                     Content="Mostrar serviços já pagos"
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="30"
-                                    Foreground="{StaticResource ColorTextMuted65}"
+                                    Foreground="{DynamicResource ColorTextMuted65}"
                                     IsChecked="{Binding ShowPaidServices}"
                                     Theme="{StaticResource ClassicCheckBox}" />
 
@@ -183,7 +183,7 @@
                                     FontFamily="{StaticResource FontBody}"
                                     FontSize="32"
                                     FontStyle="Italic"
-                                    Foreground="{StaticResource ColorTextMuted45}"
+                                    Foreground="{DynamicResource ColorTextMuted45}"
                                     IsVisible="{Binding NoFuture}"
                                     Text="Nenhum serviço neste período." />
                                 <!--
@@ -197,7 +197,7 @@
                                                 <!--  The whole heading is the tap target, not just the chevron.  -->
                                                 <Button Classes="RowButton" Command="{Binding ToggleCommand}">
                                                     <Border
-                                                        BorderBrush="{StaticResource ColorDivider}"
+                                                        BorderBrush="{DynamicResource ColorDivider}"
                                                         BorderThickness="0,0,0,2"
                                                         Padding="0,18">
                                                         <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
@@ -211,7 +211,7 @@
                                                                     Data="{StaticResource IconChevronRight}"
                                                                     IsVisible="{Binding !IsExpanded}"
                                                                     Stretch="Uniform"
-                                                                    Stroke="{StaticResource ColorAccent}"
+                                                                    Stroke="{DynamicResource ColorAccent}"
                                                                     StrokeJoin="Round"
                                                                     StrokeLineCap="Round"
                                                                     StrokeThickness="2" />
@@ -219,7 +219,7 @@
                                                                     Data="{StaticResource IconChevronDown}"
                                                                     IsVisible="{Binding IsExpanded}"
                                                                     Stretch="Uniform"
-                                                                    Stroke="{StaticResource ColorAccent}"
+                                                                    Stroke="{DynamicResource ColorAccent}"
                                                                     StrokeJoin="Round"
                                                                     StrokeLineCap="Round"
                                                                     StrokeThickness="2" />
@@ -229,7 +229,7 @@
                                                                 FontFamily="{StaticResource FontHeading}"
                                                                 FontSize="36"
                                                                 FontWeight="Medium"
-                                                                Foreground="{StaticResource ColorText}"
+                                                                Foreground="{DynamicResource ColorText}"
                                                                 Grid.Column="1"
                                                                 Text="{Binding TypeLabel}"
                                                                 VerticalAlignment="Center" />
@@ -237,7 +237,7 @@
                                                             <TextBlock
                                                                 FontFamily="{StaticResource FontBody}"
                                                                 FontSize="26"
-                                                                Foreground="{StaticResource ColorTextMuted55}"
+                                                                Foreground="{DynamicResource ColorTextMuted55}"
                                                                 Grid.Column="2"
                                                                 Text="{Binding CountLabel}"
                                                                 VerticalAlignment="Center" />
@@ -250,7 +250,7 @@
                                                         <DataTemplate DataType="utils:ServiceGroupRow">
                                                             <Button Classes="RowButton" Command="{Binding OpenCommand}">
                                                                 <Border
-                                                                    BorderBrush="{StaticResource ColorDivider}"
+                                                                    BorderBrush="{DynamicResource ColorDivider}"
                                                                     BorderThickness="0,0,0,2"
                                                                     Padding="0,16">
                                                                     <Grid ColumnDefinitions="*,Auto,14,Auto,10,Auto">
@@ -268,7 +268,7 @@
                                                                             <TextBlock
                                                                                 FontFamily="{StaticResource FontBody}"
                                                                                 FontSize="30"
-                                                                                Foreground="{StaticResource ColorText}"
+                                                                                Foreground="{DynamicResource ColorText}"
                                                                                 Grid.Column="0"
                                                                                 Margin="0,0,10,0"
                                                                                 Text="{Binding DogName}"
@@ -277,10 +277,10 @@
                                                                             <TextBlock
                                                                                 FontFamily="{StaticResource FontBody}"
                                                                                 FontSize="30"
-                                                                                Foreground="{StaticResource ColorTextMuted65}"
+                                                                                Foreground="{DynamicResource ColorTextMuted65}"
                                                                                 Grid.Column="1"
                                                                                 TextWrapping="NoWrap">
-                                                                                <Run Foreground="{StaticResource ColorTextMuted55}" Text="·" />
+                                                                                <Run Foreground="{DynamicResource ColorTextMuted55}" Text="·" />
                                                                                 <Run Text="{Binding DateLabel}" />
                                                                             </TextBlock>
                                                                         </Grid>
@@ -289,7 +289,7 @@
                                                                         <TextBlock
                                                                             FontFamily="{StaticResource FontBody}"
                                                                             FontSize="30"
-                                                                            Foreground="{StaticResource ColorTextMuted65}"
+                                                                            Foreground="{DynamicResource ColorTextMuted65}"
                                                                             IsVisible="{Binding !ShowsDogName}"
                                                                             Text="{Binding DateLabel}"
                                                                             TextWrapping="NoWrap"

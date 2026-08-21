@@ -12,7 +12,7 @@
     xmlns:viewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Background="{StaticResource ColorBg}" Width="720">
+    <Grid Background="{DynamicResource ColorBg}" Width="720">
         <ScrollViewer>
             <StackPanel Spacing="0">
                 <buttons:VButton
@@ -34,17 +34,17 @@
                         <TextBlock
                             FontFamily="{StaticResource FontBody}"
                             FontSize="28"
-                            Foreground="{StaticResource ColorTextMuted70}"
+                            Foreground="{DynamicResource ColorTextMuted70}"
                             Text="Nome completo" />
                         <TextBox
                             Background="Transparent"
-                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderBrush="{DynamicResource ColorDivider}"
                             BorderThickness="2"
-                            CaretBrush="{StaticResource ColorAccent}"
+                            CaretBrush="{DynamicResource ColorAccent}"
                             CornerRadius="7"
                             FontFamily="{StaticResource FontBody}"
                             FontSize="34"
-                            Foreground="{StaticResource ColorText}"
+                            Foreground="{DynamicResource ColorText}"
                             MinHeight="82"
                             Padding="18,0"
                             PlaceholderText="Marina Alves"
@@ -56,17 +56,17 @@
                         <TextBlock
                             FontFamily="{StaticResource FontBody}"
                             FontSize="28"
-                            Foreground="{StaticResource ColorTextMuted70}"
+                            Foreground="{DynamicResource ColorTextMuted70}"
                             Text="Telefone" />
                         <TextBox
                             Background="Transparent"
-                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderBrush="{DynamicResource ColorDivider}"
                             BorderThickness="2"
-                            CaretBrush="{StaticResource ColorAccent}"
+                            CaretBrush="{DynamicResource ColorAccent}"
                             CornerRadius="7"
                             FontFamily="{StaticResource FontBody}"
                             FontSize="34"
-                            Foreground="{StaticResource ColorText}"
+                            Foreground="{DynamicResource ColorText}"
                             MinHeight="82"
                             Padding="18,0"
                             PlaceholderText="(11) 98221-4432"
@@ -78,17 +78,17 @@
                         <TextBlock
                             FontFamily="{StaticResource FontBody}"
                             FontSize="28"
-                            Foreground="{StaticResource ColorTextMuted70}"
+                            Foreground="{DynamicResource ColorTextMuted70}"
                             Text="Endereço" />
                         <TextBox
                             Background="Transparent"
-                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderBrush="{DynamicResource ColorDivider}"
                             BorderThickness="2"
-                            CaretBrush="{StaticResource ColorAccent}"
+                            CaretBrush="{DynamicResource ColorAccent}"
                             CornerRadius="7"
                             FontFamily="{StaticResource FontBody}"
                             FontSize="34"
-                            Foreground="{StaticResource ColorText}"
+                            Foreground="{DynamicResource ColorText}"
                             MinHeight="82"
                             Padding="18,0"
                             PlaceholderText="Vila Madalena"

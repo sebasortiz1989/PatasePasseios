@@ -93,6 +93,8 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
         SetTypeSitting = new SynchronizedCommand(() => SetType(ServiceKind.Sitting), SynchronizationBehavior.Discard, true);
         SetTypeHotel = new SynchronizedCommand(() => SetType(ServiceKind.Hotel), SynchronizationBehavior.Discard, true);
         SetTypeDayCare = new SynchronizedCommand(() => SetType(ServiceKind.DayCare), SynchronizationBehavior.Discard, true);
+        PreviousPeriodCommand = new SynchronizedCommand(() => StepPeriod(-1), SynchronizationBehavior.Discard, true);
+        NextPeriodCommand = new SynchronizedCommand(() => StepPeriod(1), SynchronizationBehavior.Discard, true);
 
         TodayLabel = FormatToday();
         HomeRange = HomeRangeFilter.Semana;
@@ -146,6 +148,24 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
 
     /// <summary>Gets the years that actually have services, most recent first.</summary>
     public ObservableCollection<int> YearOptions { get; } = [];
+
+    /// <summary>
+    /// Gets the period as one line, e.g. "Agosto 2026" or "Ano todo de 2026".
+    /// </summary>
+    /// <remarks>
+    /// Replaces the two drop-downs. A popup lays out in its own visual root and so ignores the
+    /// design canvas' scale — at phone size the list came out several times wider than the control
+    /// that opened it. Stepping keeps the whole interaction inside ordinary layout.
+    /// </remarks>
+    public string PeriodLabel => SelectedMonth is not { } month || month.Number == ServicePeriod.WholeYear
+        ? $"Ano todo de {SelectedYear.ToString(CultureInfo.InvariantCulture)}"
+        : $"{month.Label} {SelectedYear.ToString(CultureInfo.InvariantCulture)}";
+
+    /// <summary>Gets the command stepping the period back one month.</summary>
+    public ICommand PreviousPeriodCommand { get; private set; } = null!;
+
+    /// <summary>Gets the command stepping the period forward one month.</summary>
+    public ICommand NextPeriodCommand { get; private set; } = null!;
 
     public bool IsRangeHoje => HomeRange == HomeRangeFilter.Hoje;
 
@@ -339,11 +359,57 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
             var services = dog.Select(CreateRow).ToArray();
             var count = services.Length == 1 ? "1 serviço" : $"{services.Length} serviços";
 
-            DogGroups.Add(new DogServiceGroup(dog.Key, count, services)
+            // What the group is worth in full, discounts included — Total is the figure every
+            // other balance in the app is built from.
+            var total = AppSession.Money(dog.Sum(s => s.Total));
+
+            DogGroups.Add(new DogServiceGroup(dog.Key, count, total, services)
             {
                 IsExpanded = expanded.Contains(dog.Key),
             });
         }
+    }
+
+    /// <summary>
+    /// Moves the period by whole months, carrying into the next or previous year at the ends.
+    /// </summary>
+    /// <remarks>
+    /// "Ano todo" is a peer of the twelve rather than a thirteenth step, so stepping off it lands
+    /// on a real month — January going forward, December going back — instead of cycling through a
+    /// state the arrows cannot express.
+    /// </remarks>
+    /// <param name="delta">−1 or +1.</param>
+    private void StepPeriod(int delta)
+    {
+        var current = SelectedMonth?.Number ?? DateTime.Now.Month;
+        if (current == ServicePeriod.WholeYear)
+        {
+            current = delta > 0 ? 0 : 13;
+        }
+
+        var next = current + delta;
+        var year = SelectedYear;
+
+        if (next < 1)
+        {
+            next = 12;
+            year -= 1;
+        }
+        else if (next > 12)
+        {
+            next = 1;
+            year += 1;
+        }
+
+        // The year first: both assignments raise PropertyChanged and the reload hook reads both,
+        // so setting the month last means the rebuild sees the pair it is meant to.
+        if (!YearOptions.Contains(year))
+        {
+            YearOptions.Add(year);
+        }
+
+        SelectedYear = year;
+        SelectedMonth = MonthOptions.FirstOrDefault(m => m.Number == next) ?? SelectedMonth;
     }
 
     /// <summary>Builds one agenda row. Shared so a grouped row behaves exactly like a flat one.</summary>

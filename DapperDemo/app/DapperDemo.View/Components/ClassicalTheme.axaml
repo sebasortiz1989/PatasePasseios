@@ -13,23 +13,112 @@
         720-wide canvas versus the design's 412-wide canvas).
     -->
     <Styles.Resources>
-        <SolidColorBrush Color="#F3F2F2" x:Key="ColorBg" />
-        <SolidColorBrush Color="#EAE9E9" x:Key="ColorSurface" />
-        <SolidColorBrush Color="#201F1D" x:Key="ColorText" />
-        <SolidColorBrush Color="#73201F1D" x:Key="ColorTextMuted45" />
-        <SolidColorBrush Color="#80201F1D" x:Key="ColorTextMuted50" />
-        <SolidColorBrush Color="#8C201F1D" x:Key="ColorTextMuted55" />
-        <SolidColorBrush Color="#A6201F1D" x:Key="ColorTextMuted65" />
-        <SolidColorBrush Color="#B3201F1D" x:Key="ColorTextMuted70" />
-        <SolidColorBrush Color="#BF201F1D" x:Key="ColorTextMuted75" />
-        <SolidColorBrush Color="#29201F1D" x:Key="ColorDivider" />
-        <SolidColorBrush Color="#B68235" x:Key="ColorAccent" />
-        <SolidColorBrush Color="#7D5411" x:Key="ColorAccentDark700" />
-        <SolidColorBrush Color="#5A3B0A" x:Key="ColorAccentDark800" />
-        <SolidColorBrush Color="#1FB68235" x:Key="ColorAccentTint12" />
+        <ResourceDictionary>
+        <ResourceDictionary.ThemeDictionaries>
+            <!--
+                Both palettes come from the 2026-08-21 refresh delivery (DesignDocs). Light is the
+                app's own set with one change: surface.raised is #E6E5E5 rather than #EAE9E9, which
+                was ΔL* 3.14 from the page and invisible as a group fill. Dark is authored as
+                explicit hex — the old muted inks were alphas of the ink over a light page, and an
+                alpha composites to the wrong colour once the page is dark.
+            -->
+            <ResourceDictionary x:Key="Light">
+                <SolidColorBrush Color="#F3F2F2" x:Key="SurfacePrimary" />
+                <SolidColorBrush Color="#E6E5E5" x:Key="SurfaceRaised" />
+                <SolidColorBrush Color="#D9D8D8" x:Key="SurfaceControl" />
+                <SolidColorBrush Color="#D1D0D0" x:Key="StrokeSubtle" />
+                <SolidColorBrush Color="#C6C5C5" x:Key="StrokeRaised" />
+                <SolidColorBrush Color="#BBBABA" x:Key="StrokeControl" />
+                <SolidColorBrush Color="#201F1D" x:Key="InkPrimary" />
+                <SolidColorBrush Color="#5F5E5D" x:Key="InkSecondary" />
+                <SolidColorBrush Color="#949392" x:Key="InkDisabled" />
+                <SolidColorBrush Color="#B68235" x:Key="Accent" />
+                <SolidColorBrush Color="#7D5411" x:Key="AccentStrong" />
+                <SolidColorBrush Color="#5A3B0A" x:Key="AccentDeep" />
+                <SolidColorBrush Color="#ECE5DB" x:Key="AccentTint" />
+                <SolidColorBrush Color="#99201F1D" x:Key="Scrim" />
 
-        <!--  Dims the screen behind a modal, so the dialog reads as the only live thing on it.  -->
-        <SolidColorBrush Color="#99201F1D" x:Key="ColorScrim" />
+                <!--
+                    The names the eleven not-yet-ported screens still use, pointed at the new roles
+                    so they keep rendering and pick up dark mode without being touched. Every muted
+                    step collapses onto InkSecondary, which is the ink mapping's answer: 55% and
+                    below never cleared 4.5:1, and 65% fails on the new group surface.
+                -->
+                <SolidColorBrush Color="#F3F2F2" x:Key="ColorBg" />
+                <SolidColorBrush Color="#E6E5E5" x:Key="ColorSurface" />
+                <SolidColorBrush Color="#201F1D" x:Key="ColorText" />
+                <SolidColorBrush Color="#5F5E5D" x:Key="ColorTextMuted45" />
+                <SolidColorBrush Color="#5F5E5D" x:Key="ColorTextMuted50" />
+                <SolidColorBrush Color="#5F5E5D" x:Key="ColorTextMuted55" />
+                <SolidColorBrush Color="#5F5E5D" x:Key="ColorTextMuted65" />
+                <SolidColorBrush Color="#5F5E5D" x:Key="ColorTextMuted70" />
+                <SolidColorBrush Color="#5F5E5D" x:Key="ColorTextMuted75" />
+                <SolidColorBrush Color="#D1D0D0" x:Key="ColorDivider" />
+                <SolidColorBrush Color="#B68235" x:Key="ColorAccent" />
+                <SolidColorBrush Color="#7D5411" x:Key="ColorAccentDark700" />
+                <SolidColorBrush Color="#5A3B0A" x:Key="ColorAccentDark800" />
+                <SolidColorBrush Color="#ECE5DB" x:Key="ColorAccentTint12" />
+                <SolidColorBrush Color="#99201F1D" x:Key="ColorScrim" />
+            </ResourceDictionary>
+
+            <ResourceDictionary x:Key="Dark">
+                <SolidColorBrush Color="#1B1A18" x:Key="SurfacePrimary" />
+                <SolidColorBrush Color="#262523" x:Key="SurfaceRaised" />
+                <SolidColorBrush Color="#302E2B" x:Key="SurfaceControl" />
+                <SolidColorBrush Color="#34322F" x:Key="StrokeSubtle" />
+                <SolidColorBrush Color="#3C3A36" x:Key="StrokeRaised" />
+                <SolidColorBrush Color="#4C4945" x:Key="StrokeControl" />
+                <SolidColorBrush Color="#EDEBE7" x:Key="InkPrimary" />
+                <SolidColorBrush Color="#A5A09A" x:Key="InkSecondary" />
+                <SolidColorBrush Color="#6F6B66" x:Key="InkDisabled" />
+                <SolidColorBrush Color="#D9A857" x:Key="Accent" />
+                <SolidColorBrush Color="#EFCE93" x:Key="AccentStrong" />
+                <SolidColorBrush Color="#F7E4BE" x:Key="AccentDeep" />
+                <SolidColorBrush Color="#3C3529" x:Key="AccentTint" />
+                <SolidColorBrush Color="#A6000000" x:Key="Scrim" />
+
+                <SolidColorBrush Color="#1B1A18" x:Key="ColorBg" />
+                <SolidColorBrush Color="#262523" x:Key="ColorSurface" />
+                <SolidColorBrush Color="#EDEBE7" x:Key="ColorText" />
+                <SolidColorBrush Color="#A5A09A" x:Key="ColorTextMuted45" />
+                <SolidColorBrush Color="#A5A09A" x:Key="ColorTextMuted50" />
+                <SolidColorBrush Color="#A5A09A" x:Key="ColorTextMuted55" />
+                <SolidColorBrush Color="#A5A09A" x:Key="ColorTextMuted65" />
+                <SolidColorBrush Color="#A5A09A" x:Key="ColorTextMuted70" />
+                <SolidColorBrush Color="#A5A09A" x:Key="ColorTextMuted75" />
+                <SolidColorBrush Color="#34322F" x:Key="ColorDivider" />
+                <SolidColorBrush Color="#D9A857" x:Key="ColorAccent" />
+                <SolidColorBrush Color="#EFCE93" x:Key="ColorAccentDark700" />
+                <SolidColorBrush Color="#F7E4BE" x:Key="ColorAccentDark800" />
+                <SolidColorBrush Color="#3C3529" x:Key="ColorAccentTint12" />
+                <SolidColorBrush Color="#A6000000" x:Key="ColorScrim" />
+            </ResourceDictionary>
+        </ResourceDictionary.ThemeDictionaries>
+
+        <!--
+            Type. Seven roles from the refresh's ramp, in app units: the design's px times 1.7476
+            (720 canvas over the design's 412) times a further 1.1 for text, per this repo's
+            existing convention — so design 18 body lands on 35, which is where the app's own body
+            already was. Sizes are Doubles rather than literals in the views so the six-step size
+            control has one place to write to.
+        -->
+        <x:Double x:Key="TypeDisplay">81</x:Double>
+        <x:Double x:Key="TypeTitle">58</x:Double>
+        <x:Double x:Key="TypeSection">42</x:Double>
+        <x:Double x:Key="TypeBody">35</x:Double>
+        <x:Double x:Key="TypeUi">29</x:Double>
+        <x:Double x:Key="TypeCaption">25</x:Double>
+        <x:Double x:Key="TypeMicro">21</x:Double>
+
+        <!--
+            Geometry. The plain 1.7476 factor with no type multiplier — margins, radii and hit
+            targets do not scale with the text-size control.
+        -->
+        <x:Double x:Key="TextMargin">35</x:Double>
+        <x:Double x:Key="GroupRadius">21</x:Double>
+        <x:Double x:Key="GroupGap">35</x:Double>
+        <Thickness x:Key="RowPadding">28,21,28,21</Thickness>
+        <Thickness x:Key="ControlRing">5</Thickness>
 
         <FontFamily x:Key="FontHeading">Times New Roman,Georgia,serif</FontFamily>
         <FontFamily x:Key="FontBody">Georgia,Times New Roman,serif</FontFamily>
@@ -53,6 +142,7 @@
         <!--  Same stroked 24×24 convention: the expand/collapse chevrons on the agenda's dog groups.  -->
         <StreamGeometry x:Key="IconChevronRight">M9 5l7 7-7 7</StreamGeometry>
         <StreamGeometry x:Key="IconChevronDown">M5 9l7 7 7-7</StreamGeometry>
+        <StreamGeometry x:Key="IconChevronLeft">M15 5l-7 7 7 7</StreamGeometry>
 
         <!--  Same stroked 24×24 convention: a calendar page with a plus, for "add to calendar".  -->
         <StreamGeometry x:Key="IconCalendarAdd">M8 2v4 M16 2v4 M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z M3 10h18 M12 13v6 M9 16h6</StreamGeometry>
@@ -68,63 +158,42 @@
             A bottom-navigation tab: stroked icon over a small caption, accent when selected and
             muted otherwise. Content is the icon; Tag is the caption.
         -->
+        <!--
+            A bottom-navigation tab inside the floating bar. Selection is colour plus weight — no
+            fill, no indicator bar, no badge: accent cannot be a fill under ink on a control
+            surface (2.37:1), and the rest of the design marks state the same way.
+        -->
         <ControlTheme TargetType="RadioButton" x:Key="NavTab">
-            <Setter Property="Foreground" Value="{StaticResource ColorTextMuted50}" />
+            <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Template">
                 <ControlTemplate>
                     <Border Background="Transparent">
-                        <Grid RowDefinitions="6,*">
-                            <!--
-                                Selection is carried by three cues, not just the icon's colour: a
-                                bar along the tab's top edge, a tinted rounded surface behind it,
-                                and a heavier caption. One colour change alone was too easy to miss
-                                on a five-tab bar.
-                            -->
-                            <Border
-                                Background="Transparent"
-                                CornerRadius="0,0,4,4"
-                                Grid.Row="0"
-                                Margin="18,0"
-                                Name="PART_Indicator" />
-                            <Border
-                                Background="Transparent"
-                                CornerRadius="8"
-                                Grid.Row="1"
-                                Margin="6,4,6,3"
-                                Name="PART_Surface"
-                                Padding="0,7,0,5">
-                                <StackPanel
-                                    HorizontalAlignment="Center"
-                                    Spacing="5"
-                                    VerticalAlignment="Center">
-                                    <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" />
-                                    <TextBlock
-                                        FontFamily="{StaticResource FontBody}"
-                                        FontSize="19"
-                                        Foreground="{TemplateBinding Foreground}"
-                                        HorizontalAlignment="Center"
-                                        LetterSpacing="0.7"
-                                        Name="PART_Caption"
-                                        Text="{TemplateBinding Tag}" />
-                                </StackPanel>
-                            </Border>
-                        </Grid>
+                        <StackPanel
+                            HorizontalAlignment="Center"
+                            Spacing="7"
+                            VerticalAlignment="Center">
+                            <ContentPresenter
+                                Content="{TemplateBinding Content}"
+                                HorizontalAlignment="Center" />
+                            <TextBlock
+                                FontFamily="{StaticResource FontBody}"
+                                FontSize="{DynamicResource TypeMicro}"
+                                Foreground="{TemplateBinding Foreground}"
+                                HorizontalAlignment="Center"
+                                LetterSpacing="1"
+                                Name="PART_Caption"
+                                Text="{TemplateBinding Tag}" />
+                        </StackPanel>
                     </Border>
                 </ControlTemplate>
             </Setter>
 
             <Style Selector="^:checked">
-                <Setter Property="Foreground" Value="{StaticResource ColorAccent}" />
-            </Style>
-            <Style Selector="^:checked /template/ Border#PART_Indicator">
-                <Setter Property="Background" Value="{StaticResource ColorAccent}" />
-            </Style>
-            <Style Selector="^:checked /template/ Border#PART_Surface">
-                <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
+                <Setter Property="Foreground" Value="{DynamicResource AccentStrong}" />
             </Style>
             <Style Selector="^:checked /template/ TextBlock#PART_Caption">
-                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="FontWeight" Value="SemiBold" />
             </Style>
         </ControlTheme>
 
@@ -141,7 +210,7 @@
             resources.
         -->
         <ControlTheme TargetType="CheckBox" x:Key="ClassicCheckBox">
-            <Setter Property="Foreground" Value="{StaticResource ColorTextMuted70}" />
+            <Setter Property="Foreground" Value="{DynamicResource ColorTextMuted70}" />
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -151,7 +220,7 @@
                     <Grid Background="Transparent" ColumnDefinitions="Auto,*">
                         <Border
                             Background="Transparent"
-                            BorderBrush="{StaticResource ColorDivider}"
+                            BorderBrush="{DynamicResource ColorDivider}"
                             BorderThickness="3"
                             CornerRadius="8"
                             Height="64"
@@ -164,7 +233,7 @@
                                 Margin="12"
                                 Name="PART_Check"
                                 Stretch="Uniform"
-                                Stroke="{StaticResource ColorAccent}"
+                                Stroke="{DynamicResource ColorAccent}"
                                 StrokeJoin="Round"
                                 StrokeLineCap="Round"
                                 StrokeThickness="3" />
@@ -185,27 +254,120 @@
                 <Setter Property="IsVisible" Value="True" />
             </Style>
             <Style Selector="^:checked /template/ Border#PART_Box">
-                <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
-                <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource ColorAccent}" />
+                <Setter Property="Background" Value="{DynamicResource ColorAccentTint12}" />
             </Style>
             <Style Selector="^:pointerover /template/ Border#PART_Box">
-                <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource ColorAccent}" />
             </Style>
         </ControlTheme>
+        </ResourceDictionary>
     </Styles.Resources>
 
     <Design.PreviewWith>
-        <Border Background="{StaticResource ColorBg}" Padding="20">
+        <Border Background="{DynamicResource ColorBg}" Padding="20">
             <!--  Add Controls for Previewer Here  -->
         </Border>
     </Design.PreviewWith>
+
+    <!--
+        The group — the change that carries the refresh. Every list of rows becomes one of these
+        instead of full-bleed rows on hairlines. Inset 35 each side of the 720 canvas, radius 21,
+        and separators between rows only: the fill and the radius are the outer edge, so a hairline
+        at the top or bottom of a group is deleted rather than retinted.
+    -->
+    <Style Selector="Border.Group">
+        <Setter Property="Background" Value="{DynamicResource SurfaceRaised}" />
+        <Setter Property="CornerRadius" Value="21" />
+        <Setter Property="Margin" Value="35,0" />
+    </Style>
+
+    <!--  A separator between two rows of one group. Inset to the row's text edge, never at an outer edge.  -->
+    <Style Selector="Border.RowRule">
+        <Setter Property="Height" Value="1" />
+        <Setter Property="Background" Value="{DynamicResource StrokeRaised}" />
+        <Setter Property="Margin" Value="28,0,0,0" />
+    </Style>
+
+    <!--
+        A floating control: fill, a 1px edge, and outside that a 5px ring of page colour. The ring
+        is a hard keyline gap rather than a shadow — there is no shadow anywhere in this design —
+        and it is what keeps content that scrolls underneath from touching the control's edge.
+    -->
+    <Style Selector="Border.ControlRing">
+        <Setter Property="Background" Value="{DynamicResource SurfacePrimary}" />
+        <Setter Property="CornerRadius" Value="26" />
+        <Setter Property="Padding" Value="5" />
+    </Style>
+
+    <Style Selector="Border.FloatingControl">
+        <Setter Property="Background" Value="{DynamicResource SurfaceControl}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource StrokeControl}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="21" />
+    </Style>
+
+    <!--  The seven type roles. Views set a class, never a FontSize literal.  -->
+    <Style Selector="TextBlock.TDisplay">
+        <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeDisplay}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
+    </Style>
+
+    <Style Selector="TextBlock.TTitle">
+        <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeTitle}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
+    </Style>
+
+    <Style Selector="TextBlock.TSection">
+        <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeSection}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
+    </Style>
+
+    <Style Selector="TextBlock.TBody">
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeBody}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
+    </Style>
+
+    <Style Selector="TextBlock.TUi">
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeUi}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
+    </Style>
+
+    <Style Selector="TextBlock.TCaption">
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeCaption}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkSecondary}" />
+    </Style>
+
+    <!--  Section labels: the one place 600 meets uppercase, and it sits outside the group on the page.  -->
+    <Style Selector="TextBlock.TMicro">
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeMicro}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource InkSecondary}" />
+        <Setter Property="LetterSpacing" Value="3" />
+    </Style>
+
+    <!--  Muted and accent variants, so a role never has to be restated to change its colour.  -->
+    <Style Selector="TextBlock.Muted">
+        <Setter Property="Foreground" Value="{DynamicResource InkSecondary}" />
+    </Style>
+
+    <Style Selector="TextBlock.Owed">
+        <Setter Property="Foreground" Value="{DynamicResource AccentStrong}" />
+    </Style>
 
     <!--  Headings / labels  -->
     <Style Selector="TextBlock.Heading1">
         <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
         <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="FontSize" Value="68" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorText}" />
         <Setter Property="LineHeight" Value="78" />
     </Style>
 
@@ -213,14 +375,14 @@
         <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
         <Setter Property="FontWeight" Value="Medium" />
         <Setter Property="FontSize" Value="44" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorText}" />
     </Style>
 
     <Style Selector="TextBlock.Kicker">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
         <Setter Property="FontSize" Value="25" />
         <Setter Property="LetterSpacing" Value="2" />
-        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted50}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorTextMuted50}" />
     </Style>
 
     <!--  Buttons — outlined, never filled, per the source system's "Do not fill" rule  -->
@@ -231,11 +393,11 @@
         <Setter Property="VBorderThickness" Value="2" />
         <Setter Property="VCornerRadius" Value="7" />
         <Setter Property="VNormalBackground" Value="Transparent" />
-        <Setter Property="VNormalBorderBrush" Value="{StaticResource ColorAccent}" />
-        <Setter Property="VNormalForeground" Value="{StaticResource ColorAccent}" />
-        <Setter Property="VPressedBackground" Value="{StaticResource ColorAccentTint12}" />
-        <Setter Property="VPressedBorderBrush" Value="{StaticResource ColorAccent}" />
-        <Setter Property="VPressedForeground" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="VNormalBorderBrush" Value="{DynamicResource ColorAccent}" />
+        <Setter Property="VNormalForeground" Value="{DynamicResource ColorAccent}" />
+        <Setter Property="VPressedBackground" Value="{DynamicResource ColorAccentTint12}" />
+        <Setter Property="VPressedBorderBrush" Value="{DynamicResource ColorAccent}" />
+        <Setter Property="VPressedForeground" Value="{DynamicResource ColorAccentDark800}" />
         <Setter Property="VTextHorizontalAlignment" Value="Center" />
         <Setter Property="VTextVerticalAlignment" Value="Center" />
     </Style>
@@ -247,11 +409,11 @@
         <Setter Property="VBorderThickness" Value="2" />
         <Setter Property="VCornerRadius" Value="7" />
         <Setter Property="VNormalBackground" Value="Transparent" />
-        <Setter Property="VNormalBorderBrush" Value="{StaticResource ColorDivider}" />
-        <Setter Property="VNormalForeground" Value="{StaticResource ColorText}" />
-        <Setter Property="VPressedBackground" Value="{StaticResource ColorSurface}" />
-        <Setter Property="VPressedBorderBrush" Value="{StaticResource ColorDivider}" />
-        <Setter Property="VPressedForeground" Value="{StaticResource ColorText}" />
+        <Setter Property="VNormalBorderBrush" Value="{DynamicResource ColorDivider}" />
+        <Setter Property="VNormalForeground" Value="{DynamicResource ColorText}" />
+        <Setter Property="VPressedBackground" Value="{DynamicResource ColorSurface}" />
+        <Setter Property="VPressedBorderBrush" Value="{DynamicResource ColorDivider}" />
+        <Setter Property="VPressedForeground" Value="{DynamicResource ColorText}" />
         <Setter Property="VTextHorizontalAlignment" Value="Center" />
         <Setter Property="VTextVerticalAlignment" Value="Center" />
     </Style>
@@ -264,10 +426,10 @@
         <Setter Property="VCornerRadius" Value="7" />
         <Setter Property="VNormalBackground" Value="Transparent" />
         <Setter Property="VNormalBorderBrush" Value="Transparent" />
-        <Setter Property="VNormalForeground" Value="{StaticResource ColorAccent}" />
-        <Setter Property="VPressedBackground" Value="{StaticResource ColorAccentTint12}" />
+        <Setter Property="VNormalForeground" Value="{DynamicResource ColorAccent}" />
+        <Setter Property="VPressedBackground" Value="{DynamicResource ColorAccentTint12}" />
         <Setter Property="VPressedBorderBrush" Value="Transparent" />
-        <Setter Property="VPressedForeground" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="VPressedForeground" Value="{DynamicResource ColorAccentDark800}" />
         <Setter Property="VTextHorizontalAlignment" Value="Center" />
         <Setter Property="VTextVerticalAlignment" Value="Center" />
     </Style>
@@ -275,7 +437,7 @@
     <!--  Cards  -->
     <Style Selector="Border.Card">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ColorDivider}" />
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="CornerRadius" Value="7" />
         <Setter Property="Padding" Value="24" />
@@ -297,12 +459,12 @@
         <Setter Property="Cursor" Value="Hand" />
     </Style>
     <Style Selector="Button.Tag.Pending">
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted55}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ColorDivider}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorTextMuted55}" />
     </Style>
     <Style Selector="Button.Tag.Paid">
-        <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ColorAccent}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorAccentDark800}" />
     </Style>
 
     <!--
@@ -311,12 +473,12 @@
         what it means so a row's markup says which of the two it is showing.
     -->
     <Style Selector="Button.Tag.Todo">
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted55}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ColorDivider}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorTextMuted55}" />
     </Style>
     <Style Selector="Button.Tag.Done">
-        <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ColorAccent}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorAccentDark800}" />
     </Style>
 
     <!--
@@ -332,62 +494,85 @@
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
     <Style Selector="Border.TagSign.Pending">
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ColorDivider}" />
     </Style>
     <Style Selector="Border.TagSign.Paid">
-        <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ColorAccent}" />
     </Style>
     <Style Selector="Border.TagSign &gt; TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
         <Setter Property="FontSize" Value="25" />
     </Style>
     <Style Selector="Border.TagSign.Pending &gt; TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted55}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorTextMuted55}" />
     </Style>
     <Style Selector="Border.TagSign.Paid &gt; TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorAccentDark800}" />
     </Style>
     <Style Selector="Border.TagSign.Todo">
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ColorDivider}" />
     </Style>
     <Style Selector="Border.TagSign.Done">
-        <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ColorAccent}" />
     </Style>
     <Style Selector="Border.TagSign.Todo &gt; TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted55}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorTextMuted55}" />
     </Style>
     <Style Selector="Border.TagSign.Done &gt; TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorAccentDark800}" />
     </Style>
 
+    <!--
+        A filter chip. Unselected it is a raised object on the page; selected it takes the tint
+        fill and the strong accent. Accent itself is 3.02:1 on the page and 2.68:1 on raised, so
+        the label is accent.strong at every size — the one accent rule.
+    -->
     <Style Selector="Button.Chip">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="FontSize" Value="28" />
-        <Setter Property="Padding" Value="21,9" />
-        <Setter Property="CornerRadius" Value="7" />
-        <Setter Property="BorderThickness" Value="2" />
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted65}" />
-        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeUi}" />
+        <Setter Property="Padding" Value="24,12" />
+        <Setter Property="CornerRadius" Value="14" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
+        <Setter Property="Background" Value="{DynamicResource SurfaceRaised}" />
         <Setter Property="Cursor" Value="Hand" />
     </Style>
     <Style Selector="Button.Chip.Active">
-        <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
+        <Setter Property="Foreground" Value="{DynamicResource AccentStrong}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Background" Value="{DynamicResource AccentTint}" />
     </Style>
 
+    <!--
+        One cell of a segmented group: a mutually exclusive mode switch, sharing a single raised
+        surface with 1px dividers between cells. Same selected treatment as a chip, so the two
+        read as one idea at two scales.
+    -->
     <Style Selector="Button.SegOption">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="FontSize" Value="31" />
-        <Setter Property="Padding" Value="21,12" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeUi}" />
+        <Setter Property="Padding" Value="12,0" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted65}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
         <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Cursor" Value="Hand" />
     </Style>
     <Style Selector="Button.SegOption.Active">
-        <Setter Property="Foreground" Value="{StaticResource ColorAccent}" />
+        <Setter Property="Foreground" Value="{DynamicResource AccentStrong}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Background" Value="{DynamicResource AccentTint}" />
+    </Style>
+
+    <!--  The divider between two cells of a segmented group.  -->
+    <Style Selector="Border.SegRule">
+        <Setter Property="Width" Value="1" />
+        <Setter Property="Background" Value="{DynamicResource StrokeRaised}" />
+        <Setter Property="Margin" Value="0,14" />
     </Style>
 
     <!--  Flat, chrome-less row container so an entire list row is one tap target  -->
@@ -401,37 +586,37 @@
         <Setter Property="Cursor" Value="Hand" />
     </Style>
     <Style Selector="Button.RowButton:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource ColorSurface}" />
+        <Setter Property="Background" Value="{DynamicResource ColorSurface}" />
     </Style>
 
     <!--  Inline form feedback — success in the accent, errors in the deepest accent step  -->
     <Style Selector="TextBlock.FormMsg">
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark700}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorAccentDark700}" />
     </Style>
     <Style Selector="TextBlock.FormMsg.Error">
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorAccentDark800}" />
     </Style>
 
     <!--  Form fields  -->
     <Style Selector="inputs|VTextBoxWithLabel.ClassicInput">
-        <Setter Property="VBorderBrush" Value="{StaticResource ColorDivider}" />
-        <Setter Property="VBorderBrushFocus" Value="{StaticResource ColorAccent}" />
+        <Setter Property="VBorderBrush" Value="{DynamicResource ColorDivider}" />
+        <Setter Property="VBorderBrushFocus" Value="{DynamicResource ColorAccent}" />
         <Setter Property="VContentFontSize" Value="34" />
         <Setter Property="VCornerRadius" Value="7" />
         <Setter Property="VDescriptionFontSize" Value="28" />
-        <Setter Property="VDescriptionForeground" Value="{StaticResource ColorTextMuted70}" />
-        <Setter Property="VDescriptionBackground" Value="{StaticResource ColorBg}" />
-        <Setter Property="VTextForeground" Value="{StaticResource ColorText}" />
-        <Setter Property="VTextForegroundFocus" Value="{StaticResource ColorText}" />
+        <Setter Property="VDescriptionForeground" Value="{DynamicResource ColorTextMuted70}" />
+        <Setter Property="VDescriptionBackground" Value="{DynamicResource ColorBg}" />
+        <Setter Property="VTextForeground" Value="{DynamicResource ColorText}" />
+        <Setter Property="VTextForegroundFocus" Value="{DynamicResource ColorText}" />
         <Setter Property="VTextFontSize" Value="34" />
-        <Setter Property="VCaretBrush" Value="{StaticResource ColorAccent}" />
-        <Setter Property="VCaretBrushFocus" Value="{StaticResource ColorAccent}" />
+        <Setter Property="VCaretBrush" Value="{DynamicResource ColorAccent}" />
+        <Setter Property="VCaretBrushFocus" Value="{DynamicResource ColorAccent}" />
     </Style>
 
     <!--  Icon-only button, sized for a thumb. Used for the billing eye.  -->
     <Style Selector="Button.IconToggle">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ColorDivider}" />
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="CornerRadius" Value="7" />
         <Setter Property="Width" Value="72" />
@@ -441,8 +626,8 @@
         <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
     <Style Selector="Button.IconToggle:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
-        <Setter Property="BorderBrush" Value="{StaticResource ColorAccent}" />
+        <Setter Property="Background" Value="{DynamicResource ColorAccentTint12}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ColorAccent}" />
     </Style>
 
     <!--
@@ -452,16 +637,16 @@
     <Style Selector="TextBlock.FormLabel">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
         <Setter Property="FontSize" Value="28" />
-        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted70}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorTextMuted70}" />
     </Style>
     <Style Selector="TextBox.FormInput">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ColorDivider}" />
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="CornerRadius" Value="7" />
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
         <Setter Property="FontSize" Value="34" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorText}" />
         <Setter Property="MinHeight" Value="90" />
         <Setter Property="Padding" Value="18,0" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -474,7 +659,7 @@
     </Style>
     <Style Selector="ComboBox.FormInput">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ColorDivider}" />
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="CornerRadius" Value="7" />
         <Setter Property="FontSize" Value="34" />
@@ -493,20 +678,20 @@
     -->
     <Style Selector="inputs|VSearchableComboBox.FormInput">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ColorDivider}" />
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="CornerRadius" Value="7" />
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
         <Setter Property="FontSize" Value="34" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorText}" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="MinHeight" Value="90" />
         <Setter Property="Padding" Value="18,0" />
         <Setter Property="VItemPadding" Value="18,14" />
-        <Setter Property="VListBackground" Value="{StaticResource ColorBg}" />
+        <Setter Property="VListBackground" Value="{DynamicResource ColorBg}" />
         <Setter Property="VListMaxHeight" Value="520" />
         <Setter Property="VListSpacing" Value="8" />
-        <Setter Property="VPlaceholderForeground" Value="{StaticResource ColorTextMuted45}" />
+        <Setter Property="VPlaceholderForeground" Value="{DynamicResource ColorTextMuted45}" />
     </Style>
 
     <!--
@@ -516,9 +701,9 @@
         as well as the bare ones.
     -->
     <Style Selector="TextBox">
-        <Setter Property="SelectionBrush" Value="{StaticResource ColorAccentTint12}" />
-        <Setter Property="SelectionForegroundBrush" Value="{StaticResource ColorAccentDark800}" />
-        <Setter Property="CaretBrush" Value="{StaticResource ColorAccent}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource ColorAccentTint12}" />
+        <Setter Property="SelectionForegroundBrush" Value="{DynamicResource ColorAccentDark800}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource ColorAccent}" />
     </Style>
 
     <!--
@@ -534,10 +719,10 @@
         <Setter Property="VCornerRadius" Value="7" />
         <Setter Property="VNormalBackground" Value="Transparent" />
         <Setter Property="VNormalBorderBrush" Value="Transparent" />
-        <Setter Property="VNormalForeground" Value="{StaticResource ColorAccent}" />
-        <Setter Property="VPressedBackground" Value="{StaticResource ColorAccentTint12}" />
+        <Setter Property="VNormalForeground" Value="{DynamicResource ColorAccent}" />
+        <Setter Property="VPressedBackground" Value="{DynamicResource ColorAccentTint12}" />
         <Setter Property="VPressedBorderBrush" Value="Transparent" />
-        <Setter Property="VPressedForeground" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="VPressedForeground" Value="{DynamicResource ColorAccentDark800}" />
         <Setter Property="VTextHorizontalAlignment" Value="Left" />
         <Setter Property="VTextVerticalAlignment" Value="Center" />
         <Setter Property="VPadding" Value="8,10" />
@@ -548,38 +733,38 @@
     <!--  Dropdown surface and item highlight, so a picked option reads brown rather than filled.  -->
     <Style Selector="ComboBox">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
-        <Setter Property="PlaceholderForeground" Value="{StaticResource ColorTextMuted50}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorText}" />
+        <Setter Property="PlaceholderForeground" Value="{DynamicResource ColorTextMuted50}" />
     </Style>
     <Style Selector="ComboBox /template/ Border#PopupBorder">
-        <Setter Property="Background" Value="{StaticResource ColorBg}" />
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
+        <Setter Property="Background" Value="{DynamicResource ColorBg}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ColorDivider}" />
     </Style>
     <Style Selector="ComboBoxItem">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorText}" />
         <Setter Property="Background" Value="Transparent" />
     </Style>
     <Style Selector="ComboBoxItem:pointerover">
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+        <Setter Property="Background" Value="{DynamicResource ColorAccentTint12}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorText}" />
     </Style>
     <Style Selector="ComboBoxItem:selected">
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="Background" Value="{DynamicResource ColorAccentTint12}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorAccentDark800}" />
     </Style>
     <Style Selector="ComboBoxItem:selected:pointerover">
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="Background" Value="{DynamicResource ColorAccentTint12}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorAccentDark800}" />
     </Style>
 
     <!--  Generic list selection, for anything else that uses ListBoxItem.  -->
     <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="Background" Value="{DynamicResource ColorAccentTint12}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorAccentDark800}" />
     </Style>
     <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
+        <Setter Property="Background" Value="{DynamicResource ColorAccentTint12}" />
     </Style>
 
     <!--
@@ -588,7 +773,7 @@
     -->
     <Style Selector="CalendarDatePicker">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorText}" />
     </Style>
 
     <!--
@@ -613,8 +798,8 @@
         <Setter Property="Margin" Value="0" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorAccent}" />
+        <Setter Property="Background" Value="{DynamicResource ColorAccentTint12}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorAccent}" />
         <Setter Property="Template">
             <ControlTemplate>
                 <!--
@@ -624,7 +809,7 @@
                 -->
                 <Border
                     Background="{TemplateBinding Background}"
-                    BorderBrush="{StaticResource ColorDivider}"
+                    BorderBrush="{DynamicResource ColorDivider}"
                     BorderThickness="2,0,0,0"
                     CornerRadius="0,5,5,0"
                     Margin="0,2,2,2">
@@ -655,65 +840,65 @@
         page colour, so the icon stays legible instead of disappearing into the fill.
     -->
     <Style Selector="CalendarDatePicker /template/ Button#PART_Button:pointerover">
-        <Setter Property="Background" Value="{StaticResource ColorAccent}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorBg}" />
+        <Setter Property="Background" Value="{DynamicResource ColorAccent}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorBg}" />
     </Style>
     <Style Selector="CalendarDatePicker /template/ Button#PART_Button:pressed">
-        <Setter Property="Background" Value="{StaticResource ColorAccentDark700}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorBg}" />
+        <Setter Property="Background" Value="{DynamicResource ColorAccentDark700}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorBg}" />
     </Style>
 
     <Style Selector="Calendar">
-        <Setter Property="Background" Value="{StaticResource ColorBg}" />
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
+        <Setter Property="Background" Value="{DynamicResource ColorBg}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ColorDivider}" />
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="CornerRadius" Value="7" />
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorText}" />
     </Style>
 
     <Style Selector="CalendarItem">
-        <Setter Property="Background" Value="{StaticResource ColorBg}" />
-        <Setter Property="HeaderBackground" Value="{StaticResource ColorBg}" />
+        <Setter Property="Background" Value="{DynamicResource ColorBg}" />
+        <Setter Property="HeaderBackground" Value="{DynamicResource ColorBg}" />
     </Style>
 
     <Style Selector="CalendarDayButton">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorText}" />
         <Setter Property="Background" Value="Transparent" />
     </Style>
     <Style Selector="CalendarDayButton:pointerover">
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
+        <Setter Property="Background" Value="{DynamicResource ColorAccentTint12}" />
     </Style>
     <Style Selector="CalendarDayButton:selected">
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="Background" Value="{DynamicResource ColorAccentTint12}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorAccentDark800}" />
     </Style>
     <Style Selector="CalendarDayButton:today">
-        <Setter Property="Foreground" Value="{StaticResource ColorAccent}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorAccent}" />
     </Style>
     <Style Selector="CalendarDayButton:blackout">
-        <Setter Property="Foreground" Value="{StaticResource ColorTextMuted45}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorTextMuted45}" />
     </Style>
 
     <Style Selector="CalendarButton">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorText}" />
         <Setter Property="Background" Value="Transparent" />
     </Style>
     <Style Selector="CalendarButton:selected">
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="Background" Value="{DynamicResource ColorAccentTint12}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorAccentDark800}" />
     </Style>
 
     <Style Selector="TimePicker">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="{StaticResource ColorDivider}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ColorDivider}" />
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="CornerRadius" Value="7" />
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
         <Setter Property="FontSize" Value="37" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorText}" />
     </Style>
 
     <!--
@@ -735,21 +920,21 @@
     </Style>
 
     <Style Selector="TimePickerPresenter">
-        <Setter Property="Background" Value="{StaticResource ColorBg}" />
+        <Setter Property="Background" Value="{DynamicResource ColorBg}" />
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
     </Style>
 
     <!--  The scrollable hour/minute columns inside the clock popup.  -->
     <Style Selector="DateTimePickerPanel &gt; ListBoxItem">
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorText}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorText}" />
     </Style>
     <Style Selector="DateTimePickerPanel &gt; ListBoxItem:pointerover">
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
+        <Setter Property="Background" Value="{DynamicResource ColorAccentTint12}" />
     </Style>
     <Style Selector="DateTimePickerPanel &gt; ListBoxItem:selected">
-        <Setter Property="Background" Value="{StaticResource ColorAccentTint12}" />
-        <Setter Property="Foreground" Value="{StaticResource ColorAccentDark800}" />
+        <Setter Property="Background" Value="{DynamicResource ColorAccentTint12}" />
+        <Setter Property="Foreground" Value="{DynamicResource ColorAccentDark800}" />
     </Style>
 
 </Styles>

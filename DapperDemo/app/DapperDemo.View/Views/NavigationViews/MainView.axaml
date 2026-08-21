@@ -18,23 +18,26 @@
         grows and the 100-unit navigation bar stays put at the bottom.
     -->
     <components:DesignCanvas DesignHeight="1560" DesignWidth="720">
-        <Grid
-            Background="{StaticResource ColorBg}"
-            RowDefinitions="*, 100"
-            Width="720">
+        <Grid Background="{DynamicResource SurfacePrimary}" Width="720">
 
-            <TransitioningContentControl Content="{Binding CurrentView.ViewShown}" Grid.Row="0">
+            <TransitioningContentControl Content="{Binding CurrentView.ViewShown}">
                 <TransitioningContentControl.PageTransition>
                     <CrossFade Duration="0:0:0.25" />
                 </TransitioningContentControl.PageTransition>
             </TransitioningContentControl>
 
-            <!--  Bottom navigation bar: five equal columns spanning the full canvas width.  -->
+            <!--
+                The bar is an object on the page rather than a band welded to its bottom edge: 650
+                wide, inset 35, 35 above the safe area, with the same fill, 1px edge and 5px ring of
+                page colour every other floating control carries. Content passes underneath, which
+                is why each screen ends with its own bottom clearance.
+            -->
             <Border
-                Background="{StaticResource ColorBg}"
-                BorderBrush="{StaticResource ColorDivider}"
-                BorderThickness="0,2,0,0"
-                Grid.Row="1">
+                Classes="ControlRing"
+                HorizontalAlignment="Center"
+                Margin="0,0,0,30"
+                VerticalAlignment="Bottom">
+                <Border Classes="FloatingControl" Height="98" Width="650">
                 <Grid ColumnDefinitions="*,*,*,*,*">
                     <RadioButton
                         Command="{Binding DogsViewCommand}"
@@ -122,6 +125,7 @@
                             Width="37" />
                     </RadioButton>
                 </Grid>
+                </Border>
             </Border>
 
             <!--
@@ -135,7 +139,6 @@
                 CancelText="Agora não"
                 ConfirmCommand="{Binding BackupRequest.ConfirmCommand}"
                 ConfirmText="Enviar"
-                Grid.RowSpan="2"
                 IsOpen="{Binding BackupRequest.IsOpen}"
                 Message="{Binding BackupRequest.Message}"
                 Title="Backup automático" />

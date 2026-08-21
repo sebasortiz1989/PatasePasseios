@@ -11,10 +11,10 @@
         DataContext: a UserControl inherits its parent's DataContext, so a plain {Binding Message}
         would look for Message on the screen's view model instead of on this control.
     -->
-    <Border Background="{StaticResource ColorScrim}">
+    <Border Background="{DynamicResource ColorScrim}">
         <Border
-            Background="{StaticResource ColorBg}"
-            BorderBrush="{StaticResource ColorDivider}"
+            Background="{DynamicResource ColorBg}"
+            BorderBrush="{DynamicResource ColorDivider}"
             BorderThickness="2"
             CornerRadius="7"
             HorizontalAlignment="Center"
@@ -33,7 +33,7 @@
                 <TextBlock
                     FontFamily="{StaticResource FontBody}"
                     FontSize="30"
-                    Foreground="{StaticResource ColorTextMuted70}"
+                    Foreground="{DynamicResource ColorTextMuted70}"
                     Text="{Binding #Root.Message}"
                     TextAlignment="Center"
                     TextWrapping="Wrap" />

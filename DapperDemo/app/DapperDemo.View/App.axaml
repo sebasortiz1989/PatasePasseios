@@ -6,11 +6,10 @@
     xmlns:framework="using:AvaloniaFramework"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!--
-        Pinned to Light on purpose. "Default" follows the OS, and on a machine in dark mode Fluent
-        resolves its dark variant for anything it themes itself — combobox dropdowns, focus and
-        selection states, calendar and clock popups — which came out near-black against the
-        Classical palette's hardcoded light surfaces. The design is a light one, so the variant is
-        fixed rather than left to the OS.
+        The starting variant only. ClassicalTheme now carries a full Dark dictionary, so following
+        the OS no longer strands Fluent's dark combobox and calendar popups against hardcoded light
+        surfaces — the reason this was pinned. Ajustes will write Application.Current.RequestedThemeVariant
+        and this becomes the value used until the stored preference is read.
     -->
 
     <!--
