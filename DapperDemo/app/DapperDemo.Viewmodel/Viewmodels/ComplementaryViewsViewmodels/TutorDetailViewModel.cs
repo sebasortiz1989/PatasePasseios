@@ -816,7 +816,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     /// Folds the services into one group per kind, collapsed until tapped.
     /// </summary>
     /// <remarks>
-    /// Kinds come out in the enum's own order — Passeio, Pet sitting, Hotel, Creche — which is the
+    /// Kinds come out in the enum's own order — Passeio, Pet sitting, Hotel, Day Care — which is the
     /// order they appear in everywhere else, rather than alphabetical. Inside a group the list
     /// keeps its newest-first order.
     /// </remarks>

@@ -383,7 +383,7 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
     /// Folds the services into one group per kind, collapsed until tapped.
     /// </summary>
     /// <remarks>
-    /// Kinds come out in the enum's own order — Passeio, Pet sitting, Hotel, Creche — the order
+    /// Kinds come out in the enum's own order — Passeio, Pet sitting, Hotel, Day Care — the order
     /// they appear in everywhere else. The dog's name is left off the rows: this is that dog's own
     /// screen, so repeating it would refill the space the grouping just freed for the date.
     /// </remarks>

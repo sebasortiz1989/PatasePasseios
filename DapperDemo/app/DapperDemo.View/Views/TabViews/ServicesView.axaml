@@ -76,14 +76,14 @@
                             Classes="SegOption"
                             Classes.Active="{Binding IsTypeHotel}"
                             Command="{Binding SetTypeHotel}"
-                            Content="Hospedagem"
+                            Content="Hotel"
                             Grid.Column="4" />
                         <Border Classes="SegRule" Grid.Column="5" />
                         <Button
                             Classes="SegOption"
                             Classes.Active="{Binding IsTypeDayCare}"
                             Command="{Binding SetTypeDayCare}"
-                            Content="Creche"
+                            Content="Day Care"
                             CornerRadius="0,21,21,0"
                             Grid.Column="6" />
                     </Grid>

@@ -55,8 +55,8 @@ public class AppSession
     {
         ServiceKind.Walk => "Passeio",
         ServiceKind.Sitting => "Pet sitting",
-        ServiceKind.Hotel => "Hospedagem",
-        ServiceKind.DayCare => "Creche",
+        ServiceKind.Hotel => "Hotel",
+        ServiceKind.DayCare => "Day Care",
         _ => string.Empty,
     };
 

@@ -496,8 +496,8 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         IncomeBreakdown.Clear();
         IncomeBreakdown.Add(new IncomeRow("Passeio", Money(income.Walk)));
         IncomeBreakdown.Add(new IncomeRow("Pet sitting", Money(income.Sitting)));
-        IncomeBreakdown.Add(new IncomeRow("Hospedagem", Money(income.Hotel)));
-        IncomeBreakdown.Add(new IncomeRow("Creche", Money(income.DayCare)));
+        IncomeBreakdown.Add(new IncomeRow("Hotel", Money(income.Hotel)));
+        IncomeBreakdown.Add(new IncomeRow("Day Care", Money(income.DayCare)));
 
         RefreshMonthDetail();
     }
@@ -622,7 +622,8 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         received.RightAligned.Add(true);
         received.Rows.Add(new ReportRow("Passeio", AppSession.Money(income.Walk)));
         received.Rows.Add(new ReportRow("Pet sitting", AppSession.Money(income.Sitting)));
-        received.Rows.Add(new ReportRow("Hospedagem", AppSession.Money(income.Hotel)));
+        received.Rows.Add(new ReportRow("Hotel", AppSession.Money(income.Hotel)));
+        received.Rows.Add(new ReportRow("Day Care", AppSession.Money(income.DayCare)));
         received.Totals.Add(new ReportField("Total recebido", AppSession.Money(income.Total), true));
         report.Sections.Add(received);
 

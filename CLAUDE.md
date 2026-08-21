@@ -25,6 +25,14 @@ A learning project for Dapper: a cross-platform Avalonia app for a pet-sitting
 business ("Patas & Passeios"). Identifiers, comments and docs are English; the
 UI text is Brazilian Portuguese.
 
+**One deliberate exception, added 2026-08-21:** the four service-kind labels read
+**Passeio · Pet sitting · Hotel · Day Care**. `Hospedagem` and `Creche` were the
+pt-BR words and were replaced on the owner's instruction, twice confirmed. They live
+in `AppSession.TypeLabel` plus the chip lists in `AgendaView`/`ServicesView` and the
+two income lists in `UsersViewModel` — change all of them together or the screens
+disagree. Do not "correct" these back to Portuguese; everything else user-facing
+stays pt-BR.
+
 `README.md` (repo root) describes the product as built — screens, schema names
 (`Tutors` / `PetSitterTutors`, not Client), and how to run it. For task-specific
 rules (billing, navigation, schema), prefer the skills below over inventing

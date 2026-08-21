@@ -263,13 +263,13 @@
                     Classes="Chip"
                     Classes.Active="{Binding IsTypeHotel}"
                     Command="{Binding SetTypeHotel}"
-                    Content="Hospedagem"
+                    Content="Hotel"
                     Margin="0,0,16,14" />
                 <Button
                     Classes="Chip"
                     Classes.Active="{Binding IsTypeDayCare}"
                     Command="{Binding SetTypeDayCare}"
-                    Content="Creche"
+                    Content="Day Care"
                     Margin="0,0,16,14" />
             </WrapPanel>
 
