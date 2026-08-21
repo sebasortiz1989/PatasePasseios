@@ -11,6 +11,7 @@ using NewDogView = DapperDemo.View.Views.ComplementaryViews.NewDogView;
 using NewTutorView = DapperDemo.View.Views.ComplementaryViews.NewTutorView;
 using ServiceDetailView = DapperDemo.View.Views.ComplementaryViews.ServiceDetailView;
 using ServicesView = DapperDemo.View.Views.TabViews.ServicesView;
+using SettingsView = DapperDemo.View.Views.ComplementaryViews.SettingsView;
 using SignUpView = DapperDemo.View.Views.NavigationViews.SignUpView;
 using TutorDetailView = DapperDemo.View.Views.ComplementaryViews.TutorDetailView;
 using TutorsView = DapperDemo.View.Views.TabViews.TutorsView;
@@ -43,6 +44,10 @@ namespace DapperDemo.View.DependencyInversion
             yield return CreateSingleton<AvaloniaUriLauncher>().WithAbstractions();
             yield return CreateSingleton<StorageProviderFileExportDialog>().WithAbstractions();
 
+            // Applying a theme or a type size means writing to the running Application, which is
+            // this layer's to touch — the view models take the DisplaySettings abstraction.
+            yield return CreateSingleton<AvaloniaDisplaySettings>().WithAbstractions();
+
             // Drawing and the save dialog both need this layer; the view models build a
             // ReportDocument and never see a control.
             yield return CreateSingleton<PngReportExporter>().WithAbstractions();
@@ -55,6 +60,7 @@ namespace DapperDemo.View.DependencyInversion
             yield return CreateTransient<DogDetailView>().WithAbstractions();
             yield return CreateTransient<TutorDetailView>().WithAbstractions();
             yield return CreateTransient<ServiceDetailView>().WithAbstractions();
+            yield return CreateTransient<SettingsView>().WithAbstractions();
             yield return CreateTransient<DogsView>().WithAbstractions();
             yield return CreateTransient<TutorsView>().WithAbstractions();
             yield return CreateTransient<AgendaView>().WithAbstractions();

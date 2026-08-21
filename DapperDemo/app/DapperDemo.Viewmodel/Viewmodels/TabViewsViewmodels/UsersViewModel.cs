@@ -7,6 +7,7 @@ using DapperDemo.Repository.Dapper.Dtos;
 using DapperDemo.Repository.Dapper.Services;
 using DapperDemo.Viewmodel.Reports;
 using DapperDemo.Viewmodel.Services;
+using DapperDemo.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;
 using DapperDemo.Viewmodel.Viewmodels.Session;
 using DapperDemo.Viewmodel.Viewmodels.Utils;
 using PropertyChanged;
@@ -35,6 +36,8 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     private readonly ImagePicker imagePicker;
     private readonly BackupArchive backupArchive;
     private readonly CloudBackupService cloudBackup;
+    private readonly CurrentView currentView;
+    private readonly PresenterBase<SettingsViewModel, Unit, Unit> settingsView;
     private readonly FileExportDialog fileExportDialog;
     private readonly EventHandler dataChangedHandler;
 
@@ -69,9 +72,13 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         AppSession session,
         BackupArchive backupArchive,
         CloudBackupService cloudBackup,
+        CurrentView currentView,
+        Factory<PresenterBase<SettingsViewModel, Unit, Unit>> settingsFactory,
         FileExportDialog fileExportDialog,
         ImagePicker imagePicker)
     {
+        ArgumentNullException.ThrowIfNull(settingsFactory);
+
         this.imagePicker = imagePicker;
         this.repositoryServices = repositoryServices;
         this.repositoryDogs = repositoryDogs;
@@ -81,6 +88,8 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         this.session = session;
         this.backupArchive = backupArchive;
         this.cloudBackup = cloudBackup;
+        this.currentView = currentView;
+        settingsView = settingsFactory.Create();
         this.fileExportDialog = fileExportDialog;
 
         // Billing totals depend on services marked paid elsewhere (Agenda, service detail).
@@ -101,6 +110,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         ExportBackupCommand = new SynchronizedCommand(ExportBackup, SynchronizationBehavior.Discard, true);
         ImportBackupCommand = new SynchronizedCommand(ImportBackup, SynchronizationBehavior.Discard, true);
         SendCloudBackupCommand = new SynchronizedCommand(SendCloudBackup, SynchronizationBehavior.Discard, true);
+        OpenSettingsCommand = new SynchronizedCommand(() => currentView.ViewShown = settingsView, SynchronizationBehavior.Discard, true);
         DismissInvalidBackupCommand = new SynchronizedCommand(() => ShowInvalidBackupAlert = false, SynchronizationBehavior.Discard, true);
 
         // "Ano todo" first, then the twelve months — the same list TutorDetail and DogDetail pick
@@ -160,6 +170,9 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     public ICommand ImportBackupCommand { get; }
 
     public ICommand SendCloudBackupCommand { get; }
+
+    /// <summary>Gets the command opening Ajustes, which is pushed rather than shown inline.</summary>
+    public ICommand OpenSettingsCommand { get; }
 
     public ICommand DismissInvalidBackupCommand { get; }
 

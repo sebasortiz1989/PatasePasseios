@@ -6,8 +6,10 @@ using AvaloniaFramework.Hosting.Navigation;
 using AvaloniaFramework.Presentation;
 using AvaloniaFramework.Presentation.UseCase;
 using AvaloniaFramework.Threading;
+using DapperDemo.Repository.Dapper.Services;
 using DapperDemo.View.DependencyInversion;
 using DapperDemo.View.Services;
+using DapperDemo.Viewmodel.Services;
 using DapperDemo.Viewmodel.Viewmodels;
 using DapperDemo.Viewmodel.Viewmodels.NavigationViewsViewmodels;
 
@@ -33,6 +35,15 @@ public partial class App : ApplicationPreview
     public override async void OnFrameworkInitializationCompleted()
     {
         var navigationController = Container.Resolve<NavigationController>();
+
+        // Before any window exists, so the first frame is already in the user's palette and type
+        // size rather than flashing the default and correcting itself.
+        //
+        // Read, not ReadAsync: this method has to set the lifetime's MainWindow before it returns,
+        // because Avalonia starts the main loop the moment it does. Awaiting anything above that
+        // line hands control back with no window built and the app comes up blank — intermittently,
+        // because a small cached file often reads without ever yielding.
+        Container.Resolve<DisplaySettings>().Apply(Container.Resolve<DisplayPreferencesStore>().Read());
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {

@@ -684,6 +684,14 @@
                             TextWrapping="Wrap" />
                     </StackPanel>
 
+                    <!--  Ajustes: the last row before signing out, per the delivery's placement.  -->
+                    <buttons:VButton
+                        Classes="BtnSecondary"
+                        Command="{Binding OpenSettingsCommand}"
+                        Height="88"
+                        HorizontalAlignment="Stretch"
+                        VText="Ajustes" />
+
                     <buttons:VButton
                         Classes="BtnGhost"
                         Command="{Binding LogoutCommand}"
