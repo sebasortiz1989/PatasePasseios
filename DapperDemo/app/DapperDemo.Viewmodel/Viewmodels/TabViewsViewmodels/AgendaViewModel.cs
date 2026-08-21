@@ -53,8 +53,9 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
         this.currentView = currentView;
 
         // Settling a payment from the tutor screen, or toggling done on the service screen, must
-        // show up here on return. This view-model outlives a single OnRunStarting (MainViewModel
-        // builds all five tabs once).
+        // show up here on return. Tabs are never pushed, so the run lifecycle does not reach
+        // them: the reload runs from OnLoaded, and AppSession.SignOut is what releases this
+        // subscription when the login ends.
         dataChangedHandler = (_, _) => AppSession.FireAndForget(ReloadAsync());
         session.DataChanged += dataChangedHandler;
 
@@ -93,7 +94,6 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
         SetTypeDayCare = new SynchronizedCommand(() => SetType(ServiceKind.DayCare), SynchronizationBehavior.Discard, true);
         PreviousPeriodCommand = new SynchronizedCommand(() => StepPeriod(-1), SynchronizationBehavior.Discard, true);
         NextPeriodCommand = new SynchronizedCommand(() => StepPeriod(1), SynchronizationBehavior.Discard, true);
-        ToggleWholeYearCommand = new SynchronizedCommand(ToggleWholeYear, SynchronizationBehavior.Discard, true);
         Picker = new PeriodPicker(this);
 
         TodayLabel = FormatToday();
@@ -168,9 +168,6 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
     /// <summary>Gets the command stepping the period forward one month.</summary>
     public ICommand NextPeriodCommand { get; private set; } = null!;
 
-    /// <summary>Gets the command switching between one month and the whole year.</summary>
-    public ICommand ToggleWholeYearCommand { get; private set; } = null!;
-
     /// <summary>Gets the inline period picker: a year row over a grid of months.</summary>
     public PeriodPicker Picker { get; }
 
@@ -233,15 +230,6 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
         HasNothingBooked = all.Length == 0;
     }
 
-    protected override async Task OnRunStarting(Unit input) => await ReloadAsync().WithSync();
-
-    protected override Task OnRunFinishing()
-    {
-        session.DataChanged -= dataChangedHandler;
-        ClearRows();
-        return Task.CompletedTask;
-    }
-
     /// <summary>PropertyChanged.Fody convention hook — invoked whenever HomeShowPaid changes.</summary>
     protected void OnHomeShowPaidChanged() => AppSession.FireAndForget(ReloadAsync());
 
@@ -266,6 +254,13 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
             AppSession.FireAndForget(ReloadAsync());
         }
     }
+
+    /// <summary>
+    /// Never runs: tabs are shown by assigning CurrentView, not pushed, so the run lifecycle
+    /// does not reach them. The load happens in the view's OnLoaded, and sign-out cleanup in
+    /// AppSession.SignOut. Present only because the base declares it abstract.
+    /// </summary>
+    protected override Task OnRunStarting(Unit input) => Task.CompletedTask;
 
     private static string FormatToday() => DateTime.Now.ToString("dddd, dd 'de' MMMM", Brazil);
 
@@ -387,13 +382,6 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
     /// state the arrows cannot express.
     /// </remarks>
     /// <param name="delta">−1 or +1.</param>
-    /// <summary>Switches the period between a single month and the whole year.</summary>
-    private void ToggleWholeYear()
-    {
-        var number = ServicePeriod.ToggleWholeYear(SelectedMonth);
-        SelectedMonth = MonthOptions.FirstOrDefault(m => m.Number == number) ?? SelectedMonth;
-    }
-
     private void StepPeriod(int delta)
     {
         // Through the shared helper, like the other three period screens. This had its own copy,
@@ -406,10 +394,20 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
             YearOptions.Add(year);
         }
 
-        // The year first: both assignments raise PropertyChanged and the reload hook reads both,
-        // so setting the month last means the rebuild sees the pair it is meant to.
-        SelectedYear = year;
-        SelectedMonth = MonthOptions.FirstOrDefault(m => m.Number == month) ?? SelectedMonth;
+        // Guarded pair, then one reload: each assignment fires its own change hook, so a step
+        // across a year boundary used to start two full reloads racing each other.
+        rebuildingOptions = true;
+        try
+        {
+            SelectedYear = year;
+            SelectedMonth = MonthOptions.FirstOrDefault(m => m.Number == month) ?? SelectedMonth;
+        }
+        finally
+        {
+            rebuildingOptions = false;
+        }
+
+        AppSession.FireAndForget(ReloadAsync());
     }
 
     /// <summary>Builds one agenda row. Shared so a grouped row behaves exactly like a flat one.</summary>

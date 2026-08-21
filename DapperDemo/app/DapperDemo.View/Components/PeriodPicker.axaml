@@ -1,5 +1,4 @@
 <UserControl
-    IsVisible="{Binding #Root.Picker.IsOpen}"
     x:Class="DapperDemo.View.Components.PeriodPicker"
     x:Name="Root"
     xmlns="https://github.com/avaloniaui"
@@ -17,8 +16,18 @@
 
         Bindings target the control's own Picker through #Root rather than the ambient DataContext,
         the same as ConfirmDialog and ReportPreview.
+
+        IsOpen gates this inner border and not the UserControl itself. A host that has its own
+        reason to hide the whole control — Agenda, which shows a period only in the Data range —
+        binds IsVisible on the instance, and that is a local value on the very same object as a
+        root IsVisible here would be. The host's binding is applied after this file is loaded, so
+        it would silently replace the IsOpen gate and leave the picker permanently expanded. One
+        condition per object composes; two do not.
     -->
-    <Border Classes="Group" Margin="35,21,35,0">
+    <Border
+        Classes="Group"
+        IsVisible="{Binding #Root.Picker.IsOpen}"
+        Margin="35,21,35,0">
         <StackPanel Margin="28,21" Spacing="14">
 
             <!--  The year, stepped without closing the picker.  -->

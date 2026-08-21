@@ -47,7 +47,7 @@ public sealed class StorageProviderImagePicker : ImagePicker
         // what reaches disk and the backup zip is already the size the app draws.
         await using (stream.ConfigureAwait(true))
         {
-            var (content, storedExtension) = PhotoDownscaler.Reduce(stream, extension);
+            var (content, storedExtension) = await PhotoDownscaler.ReduceAsync(stream, extension).ConfigureAwait(true);
             return new PickedImage(content, storedExtension);
         }
     }

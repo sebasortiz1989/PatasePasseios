@@ -284,6 +284,44 @@ public sealed class DapperDatabaseService
                  """);
     }
 
+    /// <summary>
+    /// Creates the indexes the queries lean on, on new and existing databases alike.
+    /// </summary>
+    /// <remarks>
+    /// IF NOT EXISTS, like the tables: an index is additive, so it needs no SchemaVersion bump —
+    /// which matters, because bumping the version drops every table. Runs after the column
+    /// migrations so a legacy database picks these up on the same launch that upgrades it.
+    /// One sitter's data is small enough to scan, but the file is shared by every account
+    /// created on the device, and the delete cascades probe the service tables by DogId — four
+    /// scans per subquery without these.
+    /// </remarks>
+    private static void CreateIndexesIfMissing(SqliteConnection connection)
+    {
+        connection.Execute(
+            sql: """
+                 -- The list queries, per account sharing the file.
+                 CREATE INDEX IF NOT EXISTS IX_WalkingService_PetSitterId ON WalkingService (PetSitterId);
+                 CREATE INDEX IF NOT EXISTS IX_PetSittingService_PetSitterId ON PetSittingService (PetSitterId);
+                 CREATE INDEX IF NOT EXISTS IX_PetHotelService_PetSitterId ON PetHotelService (PetSitterId);
+                 CREATE INDEX IF NOT EXISTS IX_DayCareService_PetSitterId ON DayCareService (PetSitterId);
+
+                 -- The delete cascade and the allocation cleanup, which probe each table by dog.
+                 CREATE INDEX IF NOT EXISTS IX_WalkingService_DogId ON WalkingService (DogId);
+                 CREATE INDEX IF NOT EXISTS IX_PetSittingService_DogId ON PetSittingService (DogId);
+                 CREATE INDEX IF NOT EXISTS IX_PetHotelService_DogId ON PetHotelService (DogId);
+                 CREATE INDEX IF NOT EXISTS IX_DayCareService_DogId ON DayCareService (DogId);
+
+                 -- A tutor's dogs, and the tutor side of the account join.
+                 CREATE INDEX IF NOT EXISTS IX_Dogs_TutorId ON Dogs (TutorId);
+                 CREATE INDEX IF NOT EXISTS IX_PetSitterTutors_TutorId ON PetSitterTutors (TutorId);
+
+                 -- A tutor's payment history, and where each payment landed.
+                 CREATE INDEX IF NOT EXISTS IX_TutorPayments_TutorId ON TutorPayments (TutorId);
+                 CREATE INDEX IF NOT EXISTS IX_TutorPaymentAllocations_TutorPaymentId ON TutorPaymentAllocations (TutorPaymentId);
+                 CREATE INDEX IF NOT EXISTS IX_TutorPaymentAllocations_Kind_ServiceId ON TutorPaymentAllocations (Kind, ServiceId);
+                 """);
+    }
+
     private void InitializeDatabase(string databasePath)
     {
         DatabasePath = databasePath;
@@ -298,6 +336,7 @@ public sealed class DapperDatabaseService
             RecreateTablesIfSchemaIsStale(connection);
             CreatePetSitterTableIfNotExists(connection);
             AddMissingColumns(connection);
+            CreateIndexesIfMissing(connection);
             CreateMockData(connection);
         }
     }

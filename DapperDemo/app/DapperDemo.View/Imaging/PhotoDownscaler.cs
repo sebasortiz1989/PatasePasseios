@@ -1,8 +1,10 @@
 using Avalonia;
 using Avalonia.Media.Imaging;
+using AvaloniaFramework.Threading;
 using DapperDemo.View.Converters;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace DapperDemo.View.Imaging;
 
@@ -43,45 +45,41 @@ internal static class PhotoDownscaler
     /// <summary>
     /// Reduces a picked photo, returning the bytes to store and the extension they need.
     /// </summary>
-    /// <param name="source">The picked file's contents. Not disposed here, and left rewound.</param>
+    /// <param name="source">The picked file's contents. Not disposed here.</param>
     /// <param name="sourceExtension">The picked file's own extension, including the dot.</param>
     /// <returns>
     /// A rewound stream the caller owns, and its extension. When the photo is already small enough
     /// and upright the original bytes come back untouched, so no re-encode loss is introduced.
     /// </returns>
     /// <remarks>
-    /// Must run on the UI thread: the rotate-and-scale step draws through a
-    /// <see cref="RenderTargetBitmap"/>.
+    /// The copy and the decode — the expensive half, hundreds of milliseconds for a camera
+    /// original — run on the thread pool, so picking a large photo no longer freezes the screen.
+    /// Only the rotate-and-scale render stays on the calling (UI) thread: it draws through a
+    /// <see cref="RenderTargetBitmap"/>, and by then the pixels are already down to stored size.
     /// </remarks>
-    internal static (Stream Content, string Extension) Reduce(Stream source, string sourceExtension)
+    internal static async Task<(Stream Content, string Extension)> ReduceAsync(Stream source, string sourceExtension)
     {
         // Buffered because the work needs three passes — orientation, decode, and the decision to
         // hand the original back — and a picker stream is often forward-only.
         var buffered = new MemoryStream();
 
+        Bitmap decoded;
+        int orientation;
+
         try
         {
-            source.CopyTo(buffered);
-            buffered.Position = 0;
-
-            var orientation = ExifOrientation.Read(buffered);
-            buffered.Position = 0;
-
-            using var decoded = new Bitmap(buffered);
-            var upright = PhotoCache.TransformFor(orientation, decoded.PixelSize).Size;
-            var longest = Math.Max(upright.Width, upright.Height);
-
-            if (longest <= MaxStoredEdge && orientation == ExifOrientation.Normal)
+            (decoded, orientation) = await Task.Run(() =>
             {
-                // Already small and already the right way up. Re-encoding would only lose quality
-                // and, for a PNG, could make the file larger.
+                source.CopyTo(buffered);
                 buffered.Position = 0;
-                return (buffered, sourceExtension);
-            }
 
-            var reduced = Encode(decoded, orientation, upright, longest);
-            buffered.Dispose();
-            return (reduced, ".jpg");
+                var exif = ExifOrientation.Read(buffered);
+                buffered.Position = 0;
+
+                // Off the UI thread on purpose, like PhotoCache's decodes: nothing here touches a
+                // visual, and this is where the hundreds of milliseconds go.
+                return (new Bitmap(buffered), exif);
+            }).WithSync();
         }
         catch (ArgumentException)
         {
@@ -96,10 +94,37 @@ internal static class PhotoDownscaler
             buffered.Position = 0;
             return (buffered, sourceExtension);
         }
+
+        using (decoded)
+        {
+            var upright = PhotoCache.TransformFor(orientation, decoded.PixelSize).Size;
+            var longest = Math.Max(upright.Width, upright.Height);
+
+            if (longest <= MaxStoredEdge && orientation == ExifOrientation.Normal)
+            {
+                // Already small and already the right way up. Re-encoding would only lose quality
+                // and, for a PNG, could make the file larger.
+                buffered.Position = 0;
+                return (buffered, sourceExtension);
+            }
+
+            try
+            {
+                var reduced = Encode(decoded, orientation, upright, longest);
+                await buffered.DisposeAsync().WithSync();
+                return (reduced, ".jpg");
+            }
+            catch (IOException)
+            {
+                buffered.Position = 0;
+                return (buffered, sourceExtension);
+            }
+        }
     }
 
     /// <summary>
-    /// Draws the photo upright and scaled, then encodes it as JPEG.
+    /// Draws the photo upright and scaled, then encodes it as JPEG. UI thread only: the drawing
+    /// goes through a <see cref="RenderTargetBitmap"/>.
     /// </summary>
     private static MemoryStream Encode(Bitmap decoded, int orientation, PixelSize upright, int longest)
     {

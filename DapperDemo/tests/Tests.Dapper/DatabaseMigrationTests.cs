@@ -107,6 +107,42 @@ public class DatabaseMigrationTests : IDisposable
         Assert.Contains("HideMoney", columns);
     }
 
+    /// <summary>
+    /// The indexes ride the same additive path as the columns: IF NOT EXISTS, no version bump,
+    /// created on a legacy database by the same launch that upgrades it.
+    /// </summary>
+    [Fact]
+    public void OpeningAnOlderDatabaseCreatesTheIndexes()
+    {
+        CreateLegacyDatabase();
+
+        _ = new DapperDatabaseService(path);
+
+        using var connection = new SqliteConnection(new SqliteConnectionStringBuilder { DataSource = path }.ToString());
+        connection.Open();
+        var indexes = connection.Query<string>("SELECT name FROM sqlite_master WHERE type = 'index'").ToArray();
+
+        foreach (var expected in new[]
+        {
+            "IX_WalkingService_PetSitterId",
+            "IX_PetSittingService_PetSitterId",
+            "IX_PetHotelService_PetSitterId",
+            "IX_DayCareService_PetSitterId",
+            "IX_WalkingService_DogId",
+            "IX_PetSittingService_DogId",
+            "IX_PetHotelService_DogId",
+            "IX_DayCareService_DogId",
+            "IX_Dogs_TutorId",
+            "IX_PetSitterTutors_TutorId",
+            "IX_TutorPayments_TutorId",
+            "IX_TutorPaymentAllocations_TutorPaymentId",
+            "IX_TutorPaymentAllocations_Kind_ServiceId",
+        })
+        {
+            Assert.Contains(expected, indexes);
+        }
+    }
+
     /// <summary>The whole point of an ALTER over a version bump: the records survive.</summary>
     [Fact]
     public async Task OpeningAnOlderDatabaseKeepsTheExistingAccount()

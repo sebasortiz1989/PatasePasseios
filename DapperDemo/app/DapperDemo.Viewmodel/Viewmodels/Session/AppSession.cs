@@ -151,6 +151,13 @@ public class AppSession
         SelectedTutorId = null;
         SelectedServiceKind = null;
         SelectedServiceId = null;
+
+        // Every DataChanged subscriber is a tab of the login that just ended. Their own
+        // unsubscribe sat in OnRunFinishing, which never fires — tabs are shown by assigning
+        // CurrentView, never pushed, so the run lifecycle does not reach them. Without this,
+        // each login left five ghost view models reloading from the database on every change
+        // for the rest of the process, multiplying with every logout/login cycle.
+        DataChanged = null;
     }
 
     public void NotifyDataChanged() => DataChanged?.Invoke(this, EventArgs.Empty);

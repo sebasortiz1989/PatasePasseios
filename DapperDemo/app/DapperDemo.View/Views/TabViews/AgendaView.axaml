@@ -62,7 +62,7 @@
         -->
         <DataTemplate DataType="utils:DogServiceGroup" x:Key="DogGroupTemplate">
             <!--  Tighter than the 35 other lists use: this one repeats per dog, so the gap is the dominant rhythm of the screen.  -->
-            <Border Classes="Group" Margin="35,0,35,15">
+            <Border Classes="Group" Margin="35,0,35,21">
                 <StackPanel>
                     <Button
                         Background="Transparent"

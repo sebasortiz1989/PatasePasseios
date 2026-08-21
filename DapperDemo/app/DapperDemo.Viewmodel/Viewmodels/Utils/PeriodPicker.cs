@@ -43,8 +43,15 @@ public sealed class PeriodPicker
     /// <summary>Gets a value indicating whether the picker is expanded.</summary>
     public bool IsOpen { get; private set; }
 
-    /// <summary>Gets the year the picker is showing, as text.</summary>
-    public string YearLabel => scope.SelectedYear.ToString(CultureInfo.InvariantCulture);
+    /// <summary>
+    /// Gets the year the picker is showing, as text.
+    /// </summary>
+    /// <remarks>
+    /// Assigned in <see cref="Refresh"/> rather than computed from the scope: Fody only tracks
+    /// dependencies inside one class, so a computed form never notified and the label froze on
+    /// the year the picker opened with.
+    /// </remarks>
+    public string YearLabel { get; private set; } = string.Empty;
 
     /// <summary>Gets the whole-year cell plus the twelve months.</summary>
     public ObservableCollection<PeriodCell> Cells { get; } = [];
@@ -76,6 +83,8 @@ public sealed class PeriodPicker
 
         Cells.Clear();
 
+        YearLabel = scope.SelectedYear.ToString(CultureInfo.InvariantCulture);
+
         var current = scope.SelectedMonth?.Number ?? ServicePeriod.WholeYear;
 
         foreach (var option in scope.MonthOptions)
@@ -98,6 +107,16 @@ public sealed class PeriodPicker
             Cells.Add(new PeriodCell(label, number, number == current, select));
         }
     }
+
+    /// <summary>
+    /// Closes the picker without selecting anything.
+    /// </summary>
+    /// <remarks>
+    /// For a detail screen arriving on a record: the presenters are reused, so a picker left open
+    /// on one dog would still be open when another dog's screen appears — an expanded control the
+    /// new visitor never asked for.
+    /// </remarks>
+    public void Close() => IsOpen = false;
 
     private void Toggle()
     {

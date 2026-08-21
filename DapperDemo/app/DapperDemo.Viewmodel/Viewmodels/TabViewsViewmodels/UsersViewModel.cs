@@ -31,7 +31,6 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
     private readonly RepositoryDogs repositoryDogs;
     private readonly RepositoryTutors repositoryTutors;
     private readonly RepositoryPetSitter repositoryPetSitter;
-    private readonly ReportExporter reportExporter;
     private readonly AppSession session;
     private readonly ImagePicker imagePicker;
     private readonly BackupArchive backupArchive;
@@ -85,7 +84,6 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
         this.repositoryDogs = repositoryDogs;
         this.repositoryTutors = repositoryTutors;
         this.repositoryPetSitter = repositoryPetSitter;
-        this.reportExporter = reportExporter;
         Preview = new ReportPreview(reportExporter, shareSheet);
         this.session = session;
         this.backupArchive = backupArchive;
@@ -113,7 +111,6 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
         ExportSummaryCommand = new SynchronizedCommand(ExportSummary, SynchronizationBehavior.Discard, true);
         PreviousPeriodCommand = new SynchronizedCommand(() => StepPeriod(-1), SynchronizationBehavior.Discard, true);
         NextPeriodCommand = new SynchronizedCommand(() => StepPeriod(1), SynchronizationBehavior.Discard, true);
-        ToggleWholeYearCommand = new SynchronizedCommand(ToggleWholeYear, SynchronizationBehavior.Discard, true);
         Picker = new PeriodPicker(this);
         ImportBackupCommand = new SynchronizedCommand(ImportBackup, SynchronizationBehavior.Discard, true);
         SendCloudBackupCommand = new SynchronizedCommand(SendCloudBackup, SynchronizationBehavior.Discard, true);
@@ -132,6 +129,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
         var now = DateTime.Now;
         SelectedMonth = MonthOptions.First(m => m.Number == now.Month);
         SelectedYear = now.Year;
+        Picker.Refresh();
 
         // Reloading on a filter change rather than behind a button: two pickers and an Apply
         // would be three taps to see one month.
@@ -326,9 +324,6 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
     /// <summary>Gets the command stepping the period forward one month.</summary>
     public ICommand NextPeriodCommand { get; private set; } = null!;
 
-    /// <summary>Gets the command switching between one month and the whole year.</summary>
-    public ICommand ToggleWholeYearCommand { get; private set; } = null!;
-
     /// <summary>Gets the inline period picker: a year row over a grid of months.</summary>
     public PeriodPicker Picker { get; }
 
@@ -471,14 +466,12 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
         }
     }
 
-    protected override async Task OnRunStarting(Unit input) => await ReopenAsync().WithSync();
-
-    protected override Task OnRunFinishing()
-    {
-        session.DataChanged -= dataChangedHandler;
-        PropertyChanged -= ReloadWhenPeriodChanges;
-        return Task.CompletedTask;
-    }
+    /// <summary>
+    /// Never runs: tabs are shown by assigning CurrentView, not pushed, so the run lifecycle
+    /// does not reach them. The load happens in the view's OnLoaded, and sign-out cleanup in
+    /// AppSession.SignOut. Present only because the base declares it abstract.
+    /// </summary>
+    protected override Task OnRunStarting(Unit input) => Task.CompletedTask;
 
     private void ReloadWhenPeriodChanges(object? sender, PropertyChangedEventArgs e)
     {
@@ -1028,13 +1021,6 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
     /// Moves the billing period, replacing the two drop-downs this screen used to carry.
     /// </summary>
     /// <param name="delta">−1 or +1.</param>
-    /// <summary>Switches the period between a single month and the whole year.</summary>
-    private void ToggleWholeYear()
-    {
-        var number = ServicePeriod.ToggleWholeYear(SelectedMonth);
-        SelectedMonth = MonthOptions.FirstOrDefault(m => m.Number == number) ?? SelectedMonth;
-    }
-
     private void StepPeriod(int delta)
     {
         var (month, year) = ServicePeriod.Step(SelectedMonth, SelectedYear, delta);
@@ -1044,7 +1030,19 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
             YearOptions.Add(year);
         }
 
-        SelectedYear = year;
-        SelectedMonth = MonthOptions.FirstOrDefault(m => m.Number == month) ?? SelectedMonth;
+        // Guarded pair, then one reload: each assignment fires its own change hook, so a step
+        // across a year boundary used to start two full reloads racing each other.
+        reloading = true;
+        try
+        {
+            SelectedYear = year;
+            SelectedMonth = MonthOptions.FirstOrDefault(m => m.Number == month) ?? SelectedMonth;
+        }
+        finally
+        {
+            reloading = false;
+        }
+
+        AppSession.FireAndForget(ReloadAsync());
     }
 }

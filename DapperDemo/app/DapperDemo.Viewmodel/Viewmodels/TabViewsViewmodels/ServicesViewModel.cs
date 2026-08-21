@@ -235,13 +235,12 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
         HasNoDogs = DogOptions.Count == 0;
     }
 
-    protected override async Task OnRunStarting(Unit input) => await ReloadDogsAsync().WithSync();
-
-    protected override Task OnRunFinishing()
-    {
-        session.DataChanged -= dataChangedHandler;
-        return Task.CompletedTask;
-    }
+    /// <summary>
+    /// Never runs: tabs are shown by assigning CurrentView, not pushed, so the run lifecycle
+    /// does not reach them. The load happens in the view's OnLoaded, and sign-out cleanup in
+    /// AppSession.SignOut. Present only because the base declares it abstract.
+    /// </summary>
+    protected override Task OnRunStarting(Unit input) => Task.CompletedTask;
 
     private static bool TryParsePrice(string text, out decimal price) =>
         decimal.TryParse(text?.Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out price);

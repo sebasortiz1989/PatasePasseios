@@ -111,8 +111,9 @@ text at the presentation boundary. Money follows executed-before-paid through
 `ServiceItem.AmountDue` — never re-filter on `ServicePaid` to build a figure
 (`references/money-payments-credit.md`).
 
-**Schema changes have two paths and one destroys data.** New table: nothing
-(`CREATE TABLE IF NOT EXISTS`). New column: `AddColumnIfMissing`. Bumping
+**Schema changes have three additive paths and one destructive one.** New table:
+nothing (`CREATE TABLE IF NOT EXISTS`). New column: `AddColumnIfMissing`. New
+index: `CreateIndexesIfMissing` (`CREATE INDEX IF NOT EXISTS`). Bumping
 `SchemaVersion` drops every table (`references/data-layer-schema.md`).
 
 ## Mode

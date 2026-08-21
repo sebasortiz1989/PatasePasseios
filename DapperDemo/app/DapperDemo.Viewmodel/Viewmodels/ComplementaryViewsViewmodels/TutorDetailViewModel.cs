@@ -26,7 +26,6 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
     private readonly RepositoryServices repositoryServices;
     private readonly RepositoryPayments repositoryPayments;
     private readonly RepositoryPetSitter repositoryPetSitter;
-    private readonly ReportExporter reportExporter;
     private readonly AppSession session;
     private readonly CurrentView currentView;
     private readonly PresenterBase<DogDetailViewModel, Unit, Unit> dogDetailView;
@@ -78,7 +77,6 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
         this.repositoryServices = repositoryServices;
         this.repositoryPayments = repositoryPayments;
         this.repositoryPetSitter = repositoryPetSitter;
-        this.reportExporter = reportExporter;
         Preview = new ReportPreview(reportExporter, shareSheet);
         this.session = session;
         this.currentView = currentView;
@@ -88,7 +86,6 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
         BackCommand = new SynchronizedCommand(currentView.GoBack, SynchronizationBehavior.Discard, true);
         PreviousPeriodCommand = new SynchronizedCommand(() => StepPeriod(-1), SynchronizationBehavior.Discard, true);
         NextPeriodCommand = new SynchronizedCommand(() => StepPeriod(1), SynchronizationBehavior.Discard, true);
-        ToggleWholeYearCommand = new SynchronizedCommand(ToggleWholeYear, SynchronizationBehavior.Discard, true);
         Picker = new PeriodPicker(this);
         AskDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = true, SynchronizationBehavior.Discard, true);
         CancelDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = false, SynchronizationBehavior.Discard, true);
@@ -306,9 +303,6 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
     /// <summary>Gets the command stepping the period forward one month.</summary>
     public ICommand NextPeriodCommand { get; private set; } = null!;
 
-    /// <summary>Gets the command switching between one month and the whole year.</summary>
-    public ICommand ToggleWholeYearCommand { get; private set; } = null!;
-
     /// <summary>Gets the inline period picker: a year row over a grid of months.</summary>
     public PeriodPicker Picker { get; }
 
@@ -336,6 +330,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
         ConfirmingDelete = false;
         IsRegisteringPayment = false;
         PaymentError = string.Empty;
+        Picker.Close();
 
         // Cleared here too, even though the three places that set it do so after calling this —
         // so the confirmation still appears for the tutor just paid. Without this it survived the
@@ -1160,13 +1155,6 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
         currentView.Show(dogDetailView);
     }
 
-    /// <summary>Switches the period between a single month and the whole year.</summary>
-    private void ToggleWholeYear()
-    {
-        var number = ServicePeriod.ToggleWholeYear(SelectedMonth);
-        SelectedMonth = MonthOptions.FirstOrDefault(m => m.Number == number) ?? SelectedMonth;
-    }
-
     private void StepPeriod(int delta)
     {
         var (month, year) = ServicePeriod.Step(SelectedMonth, SelectedYear, delta);
@@ -1176,7 +1164,19 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
             YearOptions.Add(year);
         }
 
-        SelectedYear = year;
-        SelectedMonth = MonthOptions.FirstOrDefault(m => m.Number == month) ?? SelectedMonth;
+        // Guarded pair, then one reload: each assignment fires its own change hook, so a step
+        // across a year boundary used to start two full reloads racing each other.
+        rebuildingOptions = true;
+        try
+        {
+            SelectedYear = year;
+            SelectedMonth = MonthOptions.FirstOrDefault(m => m.Number == month) ?? SelectedMonth;
+        }
+        finally
+        {
+            rebuildingOptions = false;
+        }
+
+        AppSession.FireAndForget(ReloadAsync());
     }
 }
