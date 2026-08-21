@@ -5,45 +5,113 @@
     x:Class="DapperDemo.View.Views.ComplementaryViews.DogDetailView"
     x:DataType="complementaryViewsViewmodels:DogDetailViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
     xmlns:complementaryViewsViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:components="using:DapperDemo.View.Components"
+    xmlns:converters="using:DapperDemo.View.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:inputs="using:AvaloniaFramework.Controls.Inputs"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:utils="clr-namespace:DapperDemo.Viewmodel.Viewmodels.Utils;assembly=DapperDemo.Viewmodel"
-    xmlns:viewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid
-        Background="{DynamicResource ColorBg}"
-        RowDefinitions="Auto,*"
-        Width="720">
+    <UserControl.Resources>
+        <DataTemplate DataType="utils:ServiceGroupRow" x:Key="ServiceGroupRowTemplate">
+            <StackPanel>
+                <Border Classes="RowRule" />
+                <Button
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Command="{Binding OpenCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    Padding="0">
+                    <StackPanel Margin="28,21" Spacing="4">
+                        <TextBlock Classes="TBody" Text="{Binding DateLabel}" />
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Classes="TCaption" IsVisible="{Binding ShowsDogName}" Text="{Binding DogName}" />
+                            <TextBlock Classes="TCaption" IsVisible="{Binding ShowsDogName}" Text=" · " />
+                            <TextBlock Classes="TCaption" Text="{Binding DoneLabel}" />
+                            <TextBlock Classes="TCaption" Text=" · " />
+                            <TextBlock
+                                Classes="TCaption"
+                                Classes.Owed="{Binding !Paid}"
+                                Text="{Binding PaidLabel}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </DataTemplate>
 
-        <!--
-            Outside the ScrollViewer, in its own row, so it stays put while the rest scrolls
-            under it. It carries the background as well, or the content would show through as
-            it passes behind.
-        -->
-        <Border Background="{DynamicResource ColorBg}" Grid.Row="0">
-            <buttons:VButton
-                Classes="BtnBack"
-                Command="{Binding BackCommand}"
-                Margin="32,32,0,12"
-                VText="← Voltar" />
-        </Border>
+        <!--  One kind of service, folded away until tapped. The count never hides.  -->
+        <DataTemplate DataType="utils:ServiceTypeGroup" x:Key="ServiceTypeGroupTemplate">
+            <Border Classes="Group" Margin="35,0,35,35">
+                <StackPanel>
+                    <Button
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Command="{Binding ToggleCommand}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        Padding="0">
+                        <Grid ColumnDefinitions="*,Auto" Margin="28,21">
+                            <StackPanel Spacing="4">
+                                <TextBlock Classes="TBody" Text="{Binding TypeLabel}" />
+                                <TextBlock Classes="TCaption" Text="{Binding CountLabel}" />
+                            </StackPanel>
+                            <Path
+                                Data="{StaticResource IconChevronDown}"
+                                Grid.Column="1"
+                                Height="30"
+                                IsVisible="{Binding IsExpanded}"
+                                Stretch="Uniform"
+                                Stroke="{DynamicResource InkSecondary}"
+                                StrokeJoin="Round"
+                                StrokeLineCap="Round"
+                                StrokeThickness="2.4"
+                                VerticalAlignment="Center"
+                                Width="30" />
+                            <Path
+                                Data="{StaticResource IconChevronRight}"
+                                Grid.Column="1"
+                                Height="30"
+                                IsVisible="{Binding !IsExpanded}"
+                                Stretch="Uniform"
+                                Stroke="{DynamicResource InkSecondary}"
+                                StrokeJoin="Round"
+                                StrokeLineCap="Round"
+                                StrokeThickness="2.4"
+                                VerticalAlignment="Center"
+                                Width="30" />
+                        </Grid>
+                    </Button>
 
-        <ScrollViewer Grid.Row="1">
-            <StackPanel Spacing="0">
-                <StackPanel
-                    HorizontalAlignment="Center"
-                    Margin="32,32,32,24"
-                    Spacing="12">
-                    <!--  Photo when there is one, initials otherwise, so the layout never collapses.  -->
-                    <Panel
-                        Height="168"
-                        HorizontalAlignment="Center"
-                        Width="168">
+                    <ItemsControl
+                        IsVisible="{Binding IsExpanded}"
+                        ItemTemplate="{StaticResource ServiceGroupRowTemplate}"
+                        ItemsSource="{Binding Services}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid Background="{DynamicResource SurfacePrimary}" Width="720">
+        <ScrollViewer>
+            <StackPanel>
+                <Button
+                    Command="{Binding BackCommand}"
+                    Margin="30,30,0,0"
+                    Tag="Cachorros"
+                    Theme="{StaticResource BackControl}" />
+
+                <!--  Identity: the photo, the name, the breed. Not a group — this is the page's head.  -->
+                <StackPanel IsVisible="{Binding !IsEditing}" Margin="35,28,35,0" Spacing="14">
+                    <Panel Height="168" HorizontalAlignment="Left" Width="168">
                         <Image
                             IsVisible="{Binding HasPhoto}"
                             Source="{Binding PhotoPath, Converter={StaticResource ImagePathConverter}}"
@@ -53,359 +121,261 @@
                             </Image.Clip>
                         </Image>
                         <Border
-                            BorderBrush="{DynamicResource ColorAccent}"
-                            BorderThickness="2"
-                            CornerRadius="84">
+                            Background="{DynamicResource SurfaceControl}"
+                            CornerRadius="84"
+                            IsVisible="{Binding NoPhoto}">
                             <TextBlock
-                                FontFamily="{StaticResource FontHeading}"
-                                FontSize="78"
-                                Foreground="{DynamicResource ColorAccentDark700}"
+                                Classes="TTitle"
                                 HorizontalAlignment="Center"
-                                IsVisible="{Binding NoPhoto}"
                                 Text="{Binding Initials}"
                                 VerticalAlignment="Center" />
                         </Border>
                     </Panel>
 
-                    <!--  Photo controls only while editing; reading a record should not offer to change it.  -->
-                    <StackPanel
-                        HorizontalAlignment="Center"
-                        IsVisible="{Binding IsEditing}"
-                        Orientation="Horizontal"
-                        Spacing="12">
-                        <buttons:VButton
-                            Classes="BtnSecondary"
-                            Command="{Binding ChoosePhotoCommand}"
-                            Height="70"
-                            VText="Escolher foto"
-                            Width="240" />
-                        <buttons:VButton
-                            Classes="BtnGhost"
-                            Command="{Binding RemovePhotoCommand}"
-                            Height="70"
-                            IsVisible="{Binding HasPhoto}"
-                            VText="Remover"
-                            Width="180" />
+                    <StackPanel Spacing="4">
+                        <TextBlock Classes="TTitle" Text="{Binding Name}" TextWrapping="Wrap" />
+                        <TextBlock Classes="TCaption" Text="{Binding Breed}" />
                     </StackPanel>
-
-                    <TextBlock
-                        Classes="Heading1"
-                        FontSize="74"
-                        HorizontalAlignment="Center"
-                        Text="{Binding Name}" />
-                    <TextBlock
-                        Classes="Kicker"
-                        HorizontalAlignment="Center"
-                        Text="{Binding Breed}" />
                 </StackPanel>
 
-                <StackPanel Margin="32,0,32,56" Spacing="28">
-                    <!--  Read view  -->
-                    <StackPanel IsVisible="{Binding IsViewing}" Spacing="28">
-                        <Border
-                            BorderBrush="{DynamicResource ColorDivider}"
-                            BorderThickness="0,2,0,0"
-                            Padding="0,20,0,0">
-                            <StackPanel Spacing="6">
-                                <TextBlock Classes="Kicker" Text="Tutor" />
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <TextBlock
-                                        FontFamily="{StaticResource FontBody}"
-                                        FontSize="34"
-                                        Foreground="{DynamicResource ColorText}"
-                                        Text="{Binding OwnerName}"
-                                        VerticalAlignment="Center" />
+                <!--  Reading state  -->
+                <StackPanel IsVisible="{Binding !IsEditing}">
+                    <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="TUTOR" />
+                    <Border Classes="Group">
+                        <Button
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Command="{Binding OpenTutorCommand}"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            Padding="0">
+                            <Grid ColumnDefinitions="*,Auto" Margin="28,21">
+                                <TextBlock Classes="TBody" Text="{Binding OwnerName}" VerticalAlignment="Center" />
+                                <Path
+                                    Data="{StaticResource IconChevronRight}"
+                                    Grid.Column="1"
+                                    Height="30"
+                                    Stretch="Uniform"
+                                    Stroke="{DynamicResource InkSecondary}"
+                                    StrokeJoin="Round"
+                                    StrokeLineCap="Round"
+                                    StrokeThickness="2.4"
+                                    VerticalAlignment="Center"
+                                    Width="30" />
+                            </Grid>
+                        </Button>
+                    </Border>
 
-                                    <!--  Straight to this dog's tutor; their Back returns here.  -->
-                                    <buttons:VButton
-                                        Classes="BtnGhost"
-                                        Command="{Binding OpenTutorCommand}"
-                                        Grid.Column="1"
-                                        Height="56"
-                                        VText="Ver tutor →"
-                                        VerticalAlignment="Center" />
-                                </Grid>
-                            </StackPanel>
-                        </Border>
+                    <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="DESCRIÇÃO" />
+                    <Border Classes="Group">
+                        <TextBlock
+                            Classes="TBody"
+                            Margin="28,21"
+                            Text="{Binding Description}"
+                            TextWrapping="Wrap" />
+                    </Border>
 
-                        <Border
-                            BorderBrush="{DynamicResource ColorDivider}"
-                            BorderThickness="0,2,0,0"
-                            Padding="0,20,0,0">
-                            <StackPanel Spacing="6">
-                                <TextBlock Classes="Kicker" Text="Descrição" />
+                    <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="SERVIÇOS" />
+
+                    <!--
+                        The period this list is scoped to. Stepped rather than picked from a
+                        drop-down: popups ignore the design canvas' scale.
+                    -->
+                    <Border Classes="ControlRing" Margin="30,0,30,21">
+                        <Border Classes="FloatingControl">
+                            <Grid ColumnDefinitions="77,*,77" Height="77">
+                                <Button
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Command="{Binding PreviousPeriodCommand}">
+                                    <Path
+                                        Data="{StaticResource IconChevronLeft}"
+                                        Height="35"
+                                        Stretch="Uniform"
+                                        Stroke="{DynamicResource InkPrimary}"
+                                        StrokeJoin="Round"
+                                        StrokeLineCap="Round"
+                                        StrokeThickness="2.4"
+                                        Width="35" />
+                                </Button>
                                 <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="34"
-                                    Foreground="{DynamicResource ColorText}"
-                                    LineHeight="48"
-                                    Text="{Binding Description}"
+                                    Classes="TBody"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Center"
+                                    Text="{Binding PeriodLabel}"
+                                    VerticalAlignment="Center" />
+                                <Button
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Command="{Binding NextPeriodCommand}"
+                                    Grid.Column="2">
+                                    <Path
+                                        Data="{StaticResource IconChevronRight}"
+                                        Height="35"
+                                        Stretch="Uniform"
+                                        Stroke="{DynamicResource InkPrimary}"
+                                        StrokeJoin="Round"
+                                        StrokeLineCap="Round"
+                                        StrokeThickness="2.4"
+                                        Width="35" />
+                                </Button>
+                            </Grid>
+                        </Border>
+                    </Border>
+
+                    <Border Classes="Group" Margin="35,0,35,35">
+                        <Grid ColumnDefinitions="*,Auto" Margin="28,14">
+                            <TextBlock Classes="TUi" Text="Mostrar serviços já pagos" VerticalAlignment="Center" />
+                            <ToggleSwitch
+                                Grid.Column="1"
+                                IsChecked="{Binding ShowPaidServices}"
+                                OffContent=""
+                                OnContent=""
+                                VerticalAlignment="Center" />
+                        </Grid>
+                    </Border>
+
+                    <TextBlock
+                        Classes="TUi Muted"
+                        IsVisible="{Binding NoFuture}"
+                        Margin="35,0,35,35"
+                        Text="Nenhum serviço neste período."
+                        TextWrapping="Wrap" />
+
+                    <ItemsControl ItemTemplate="{StaticResource ServiceTypeGroupTemplate}" ItemsSource="{Binding FutureServices}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+
+                    <!--  Excluir is accent.strong, not a red: this palette has no danger colour.  -->
+                    <Border Classes="Group">
+                        <StackPanel>
+                            <Button
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Command="{Binding EditCommand}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                Padding="0">
+                                <TextBlock Classes="TBody" Margin="28,21" Text="Editar" />
+                            </Button>
+                            <Border Classes="RowRule" />
+                            <Button
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Command="{Binding AskDeleteCommand}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                Padding="0">
+                                <TextBlock Classes="TBody Owed" Margin="28,21" Text="Excluir" />
+                            </Button>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!--  Editing state  -->
+                <StackPanel IsVisible="{Binding IsEditing}">
+                    <TextBlock Classes="TTitle" Margin="35,28,35,0" Text="Editar cachorro" />
+                    <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="DADOS" />
+
+                    <Border Classes="Group">
+                        <StackPanel>
+                            <StackPanel Margin="28,21" Spacing="4">
+                                <TextBlock Classes="TCaption" Text="Nome" />
+                                <TextBox Classes="Field" Text="{Binding EditName}" />
+                            </StackPanel>
+                            <Border Classes="RowRule" />
+                            <StackPanel Margin="28,21" Spacing="4">
+                                <TextBlock Classes="TCaption" Text="Raça" />
+                                <TextBox Classes="Field" Text="{Binding EditBreed}" />
+                            </StackPanel>
+                            <Border Classes="RowRule" />
+                            <StackPanel Margin="28,21" Spacing="4">
+                                <TextBlock Classes="TCaption" Text="Tutor" />
+                                <inputs:VSearchableComboBox
+                                    Classes="FieldPicker"
+                                    ItemsSource="{Binding TutorOptions}"
+                                    PlaceholderText="Selecione…"
+                                    SelectedItem="{Binding EditTutor}" />
+                            </StackPanel>
+                            <Border Classes="RowRule" />
+                            <StackPanel Margin="28,21" Spacing="4">
+                                <TextBlock Classes="TCaption" Text="Descrição" />
+                                <TextBox
+                                    AcceptsReturn="True"
+                                    Classes="Field"
+                                    Text="{Binding EditDescription}"
                                     TextWrapping="Wrap" />
                             </StackPanel>
+                            <Border Classes="RowRule" />
+                            <Grid ColumnDefinitions="*,Auto" Margin="28,21">
+                                <StackPanel Spacing="4" VerticalAlignment="Center">
+                                    <TextBlock Classes="TBody" Text="Foto" />
+                                    <Button
+                                        Classes="TextLink"
+                                        Command="{Binding RemovePhotoCommand}"
+                                        Content="Remover"
+                                        HorizontalAlignment="Left"
+                                        IsVisible="{Binding HasPhoto}" />
+                                </StackPanel>
+                                <Button
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Command="{Binding ChoosePhotoCommand}"
+                                    Grid.Column="1"
+                                    Padding="0">
+                                    <Border
+                                        BorderBrush="{DynamicResource StrokeRaised}"
+                                        BorderThickness="1"
+                                        CornerRadius="14"
+                                        Height="70"
+                                        Width="70">
+                                        <Image
+                                            IsVisible="{Binding HasPhoto}"
+                                            Source="{Binding PhotoPath, Converter={StaticResource ImagePathConverter}, ConverterParameter=192}"
+                                            Stretch="UniformToFill" />
+                                    </Border>
+                                </Button>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <TextBlock
+                        Classes="TCaption Owed"
+                        IsVisible="{Binding HasEditError}"
+                        Margin="35,14,35,0"
+                        Text="{Binding EditError}"
+                        TextWrapping="Wrap" />
+
+                    <Border Classes="ControlRing" Margin="30,28,30,0">
+                        <Border Classes="FloatingControl">
+                            <Button Classes="Submit" Command="{Binding SaveEditCommand}">
+                                <TextBlock Classes="TBody" Text="Salvar" />
+                            </Button>
                         </Border>
+                    </Border>
 
-                        <Border
-                            BorderBrush="{DynamicResource ColorDivider}"
-                            BorderThickness="0,2,0,0"
-                            Padding="0,20,0,0">
-                            <StackPanel Spacing="12">
-                                <TextBlock Classes="Kicker" Text="Serviços" />
-
-                                <!--  Which period the list covers. "Ano todo" is the default month entry.  -->
-                                <Grid ColumnDefinitions="*,16,Auto">
-                                    <ComboBox
-                                        Classes="FormInput"
-                                        ItemsSource="{Binding MonthOptions}"
-                                        SelectedItem="{Binding SelectedMonth}">
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate DataType="utils:MonthOption">
-                                                <TextBlock Text="{Binding Label}" />
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                    </ComboBox>
-                                    <ComboBox
-                                        Classes="FormInput"
-                                        Grid.Column="2"
-                                        ItemsSource="{Binding YearOptions}"
-                                        MinWidth="180"
-                                        SelectedItem="{Binding SelectedYear}" />
-                                </Grid>
-
-                                <CheckBox
-                                    Content="Mostrar serviços já pagos"
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="30"
-                                    Foreground="{DynamicResource ColorTextMuted65}"
-                                    IsChecked="{Binding ShowPaidServices}"
-                                    Theme="{StaticResource ClassicCheckBox}" />
-
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="32"
-                                    FontStyle="Italic"
-                                    Foreground="{DynamicResource ColorTextMuted45}"
-                                    IsVisible="{Binding NoFuture}"
-                                    Text="Nenhum serviço neste período." />
-                                <!--
-                                    Grouped by kind: the heading carries the service name, which leaves the row's widest
-                                    column free for the date. Collapsed until tapped, the same as the agenda's dog groups.
-                                -->
-                                <ItemsControl ItemsSource="{Binding FutureServices}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate DataType="utils:ServiceTypeGroup">
-                                            <StackPanel>
-                                                <!--  The whole heading is the tap target, not just the chevron.  -->
-                                                <Button Classes="RowButton" Command="{Binding ToggleCommand}">
-                                                    <Border
-                                                        BorderBrush="{DynamicResource ColorDivider}"
-                                                        BorderThickness="0,0,0,2"
-                                                        Padding="0,18">
-                                                        <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
-                                                            <Panel
-                                                                Grid.Column="0"
-                                                                Height="26"
-                                                                Margin="0,0,18,0"
-                                                                VerticalAlignment="Center"
-                                                                Width="26">
-                                                                <Path
-                                                                    Data="{StaticResource IconChevronRight}"
-                                                                    IsVisible="{Binding !IsExpanded}"
-                                                                    Stretch="Uniform"
-                                                                    Stroke="{DynamicResource ColorAccent}"
-                                                                    StrokeJoin="Round"
-                                                                    StrokeLineCap="Round"
-                                                                    StrokeThickness="2" />
-                                                                <Path
-                                                                    Data="{StaticResource IconChevronDown}"
-                                                                    IsVisible="{Binding IsExpanded}"
-                                                                    Stretch="Uniform"
-                                                                    Stroke="{DynamicResource ColorAccent}"
-                                                                    StrokeJoin="Round"
-                                                                    StrokeLineCap="Round"
-                                                                    StrokeThickness="2" />
-                                                            </Panel>
-
-                                                            <TextBlock
-                                                                FontFamily="{StaticResource FontHeading}"
-                                                                FontSize="36"
-                                                                FontWeight="Medium"
-                                                                Foreground="{DynamicResource ColorText}"
-                                                                Grid.Column="1"
-                                                                Text="{Binding TypeLabel}"
-                                                                VerticalAlignment="Center" />
-
-                                                            <TextBlock
-                                                                FontFamily="{StaticResource FontBody}"
-                                                                FontSize="26"
-                                                                Foreground="{DynamicResource ColorTextMuted55}"
-                                                                Grid.Column="2"
-                                                                Text="{Binding CountLabel}"
-                                                                VerticalAlignment="Center" />
-                                                        </Grid>
-                                                    </Border>
-                                                </Button>
-
-                                                <ItemsControl IsVisible="{Binding IsExpanded}" ItemsSource="{Binding Services}">
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate DataType="utils:ServiceGroupRow">
-                                                            <Button Classes="RowButton" Command="{Binding OpenCommand}">
-                                                                <Border
-                                                                    BorderBrush="{DynamicResource ColorDivider}"
-                                                                    BorderThickness="0,0,0,2"
-                                                                    Padding="0,16">
-                                                                    <Grid ColumnDefinitions="*,Auto,14,Auto,10,Auto">
-                                                                        <!--
-                                                                            With the dog's name: the date sits in an Auto column so it always gets the
-                                                                            width it needs, and the name takes whatever is left, trimming to an ellipsis
-                                                                            rather than pushing the date into the tags. A horizontal StackPanel could not
-                                                                            do this — it hands every child infinite width, so nothing ever trims and the
-                                                                            row simply overflows.
-                                                                        -->
-                                                                        <Grid
-                                                                            ColumnDefinitions="*,Auto"
-                                                                            IsVisible="{Binding ShowsDogName}"
-                                                                            VerticalAlignment="Center">
-                                                                            <TextBlock
-                                                                                FontFamily="{StaticResource FontBody}"
-                                                                                FontSize="30"
-                                                                                Foreground="{DynamicResource ColorText}"
-                                                                                Grid.Column="0"
-                                                                                Margin="0,0,10,0"
-                                                                                Text="{Binding DogName}"
-                                                                                TextTrimming="CharacterEllipsis"
-                                                                                TextWrapping="NoWrap" />
-                                                                            <TextBlock
-                                                                                FontFamily="{StaticResource FontBody}"
-                                                                                FontSize="30"
-                                                                                Foreground="{DynamicResource ColorTextMuted65}"
-                                                                                Grid.Column="1"
-                                                                                TextWrapping="NoWrap">
-                                                                                <Run Foreground="{DynamicResource ColorTextMuted55}" Text="·" />
-                                                                                <Run Text="{Binding DateLabel}" />
-                                                                            </TextBlock>
-                                                                        </Grid>
-
-                                                                        <!--  Date only, on a screen that is already about one dog.  -->
-                                                                        <TextBlock
-                                                                            FontFamily="{StaticResource FontBody}"
-                                                                            FontSize="30"
-                                                                            Foreground="{DynamicResource ColorTextMuted65}"
-                                                                            IsVisible="{Binding !ShowsDogName}"
-                                                                            Text="{Binding DateLabel}"
-                                                                            TextWrapping="NoWrap"
-                                                                            VerticalAlignment="Center" />
-
-                                                                        <!--  Whether it happened, and whether it was paid for — two separate states.  -->
-                                                                        <Border
-                                                                            Classes="TagSign"
-                                                                            Classes.Done="{Binding Done}"
-                                                                            Classes.Todo="{Binding !Done}"
-                                                                            Grid.Column="3">
-                                                                            <TextBlock Text="{Binding DoneLabel}" />
-                                                                        </Border>
-                                                                        <Border
-                                                                            Classes="TagSign"
-                                                                            Classes.Paid="{Binding Paid}"
-                                                                            Classes.Pending="{Binding !Paid}"
-                                                                            Grid.Column="5">
-                                                                            <TextBlock Text="{Binding PaidLabel}" />
-                                                                        </Border>
-                                                                    </Grid>
-                                                                </Border>
-                                                            </Button>
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </StackPanel>
-                        </Border>
-
-                        <buttons:VButton
-                            Classes="BtnPrimary"
-                            Command="{Binding EditCommand}"
-                            Height="88"
-                            HorizontalAlignment="Stretch"
-                            Margin="0,16,0,0"
-                            VText="Editar cachorro" />
-
-                        <!--  Destructive, so it asks first — see the ConfirmDialog at the end of this file.  -->
-                        <buttons:VButton
-                            Classes="BtnSecondary"
-                            Command="{Binding AskDeleteCommand}"
-                            Height="88"
-                            HorizontalAlignment="Stretch"
-                            VText="Excluir cachorro" />
-                    </StackPanel>
-
-                    <!--  Editor. Same fields as the new-dog form, so the two screens agree on what a dog is.  -->
-                    <StackPanel IsVisible="{Binding IsEditing}" Spacing="28">
-                        <StackPanel Spacing="10">
-                            <TextBlock Classes="FormLabel" Text="Nome" />
-                            <TextBox Classes="FormInput" Text="{Binding EditName}" />
-                        </StackPanel>
-
-                        <StackPanel Spacing="10">
-                            <TextBlock Classes="FormLabel" Text="Raça" />
-                            <TextBox Classes="FormInput" Text="{Binding EditBreed}" />
-                        </StackPanel>
-
-                        <StackPanel Spacing="10">
-                            <TextBlock Classes="FormLabel" Text="Tutor" />
-                            <!--  Typeable: the tutor list grows, and scrolling it to find a name does not.  -->
-                            <inputs:VSearchableComboBox
-                                Classes="FormInput"
-                                ItemsSource="{Binding TutorOptions}"
-                                PlaceholderText="Selecione…"
-                                SelectedItem="{Binding EditTutor}" />
-                        </StackPanel>
-
-                        <StackPanel Spacing="10">
-                            <TextBlock Classes="FormLabel" Text="Descrição" />
-                            <TextBox
-                                AcceptsReturn="True"
-                                Classes="FormInput Multiline"
-                                Text="{Binding EditDescription}"
-                                TextWrapping="Wrap" />
-                        </StackPanel>
-
-                        <TextBlock
-                            Classes="FormMsg Error"
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="31"
-                            FontStyle="Italic"
-                            HorizontalAlignment="Center"
-                            IsVisible="{Binding HasEditError}"
-                            Text="{Binding EditError}"
-                            TextAlignment="Center" />
-
-                        <Grid ColumnDefinitions="*,16,*">
-                            <buttons:VButton
-                                Classes="BtnSecondary"
-                                Command="{Binding CancelEditCommand}"
-                                Height="97"
-                                VText="Cancelar" />
-                            <buttons:VButton
-                                Classes="BtnPrimary"
-                                Command="{Binding SaveEditCommand}"
-                                Grid.Column="2"
-                                Height="97"
-                                VText="Salvar" />
-                        </Grid>
-                    </StackPanel>
+                    <Button
+                        Classes="TextLink"
+                        Command="{Binding CancelEditCommand}"
+                        Content="Cancelar"
+                        HorizontalAlignment="Center"
+                        Margin="0,28,0,0" />
                 </StackPanel>
+
+                <!--  Clearance for the floating tab bar, which content scrolls under.  -->
+                <Border Height="168" />
             </StackPanel>
         </ScrollViewer>
 
-        <!--  Last child of the Grid, so the scrim covers the screen underneath it.  -->
         <components:ConfirmDialog
-            Grid.RowSpan="2"
             CancelCommand="{Binding CancelDeleteCommand}"
             ConfirmCommand="{Binding ConfirmDeleteCommand}"
             IsOpen="{Binding ConfirmingDelete}"
-            Message="O cachorro e todos os serviços dele serão excluídos para sempre. Esta ação não pode ser desfeita."
+            Message="O cachorro e todos os serviços dele serão excluídos para sempre. Não é possível desfazer."
             Title="Excluir cachorro?" />
     </Grid>
 </UserControl>

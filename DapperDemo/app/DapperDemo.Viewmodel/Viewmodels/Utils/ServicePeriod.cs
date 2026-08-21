@@ -32,6 +32,48 @@ internal static class ServicePeriod
     }
 
     /// <summary>
+    /// The period as one line, e.g. "Agosto 2026" or "Ano todo de 2026".
+    /// </summary>
+    /// <param name="month">The chosen month, or null.</param>
+    /// <param name="year">The chosen year.</param>
+    /// <returns>What the stepper shows between its arrows.</returns>
+    public static string Label(MonthOption? month, int year) =>
+        month is not { } chosen || chosen.Number == WholeYear
+            ? $"Ano todo de {year.ToString(CultureInfo.InvariantCulture)}"
+            : $"{chosen.Label} {year.ToString(CultureInfo.InvariantCulture)}";
+
+    /// <summary>
+    /// Moves a period by whole months, carrying into the next or previous year at the ends.
+    /// </summary>
+    /// <remarks>
+    /// Shared by the three screens that scope a list to a period, so stepping cannot mean one
+    /// thing on the agenda and another on a ficha. "Ano todo" is a peer of the twelve rather than
+    /// a thirteenth step, so stepping off it lands on a real month — January going forward,
+    /// December going back — instead of cycling through a state the arrows cannot express.
+    /// </remarks>
+    /// <param name="month">The month now shown, or null.</param>
+    /// <param name="year">The year now shown.</param>
+    /// <param name="delta">−1 or +1.</param>
+    /// <returns>The month number and year to move to.</returns>
+    public static (int Month, int Year) Step(MonthOption? month, int year, int delta)
+    {
+        var current = month?.Number ?? DateTime.Now.Month;
+        if (current == WholeYear)
+        {
+            current = delta > 0 ? 0 : 13;
+        }
+
+        var next = current + delta;
+
+        if (next < 1)
+        {
+            return (12, year - 1);
+        }
+
+        return next > 12 ? (1, year + 1) : (next, year);
+    }
+
+    /// <summary>
     /// The years worth offering: every year these services touch, plus the current one so a dog
     /// with nothing booked still has something selectable. Most recent first.
     /// </summary>

@@ -70,6 +70,8 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
         this.tutorDetailFactory = tutorDetailFactory;
         serviceDetailView = serviceDetailFactory.Create();
         BackCommand = new SynchronizedCommand(currentView.GoBack, SynchronizationBehavior.Discard, true);
+        PreviousPeriodCommand = new SynchronizedCommand(() => StepPeriod(-1), SynchronizationBehavior.Discard, true);
+        NextPeriodCommand = new SynchronizedCommand(() => StepPeriod(1), SynchronizationBehavior.Discard, true);
         OpenTutorCommand = new SynchronizedCommand(OpenTutor, SynchronizationBehavior.Discard, true);
         AskDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = true, SynchronizationBehavior.Discard, true);
         CancelDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = false, SynchronizationBehavior.Discard, true);
@@ -177,6 +179,15 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
 
     /// <summary>Gets the years this dog has services in, plus the current one.</summary>
     public ObservableCollection<int> YearOptions { get; } = [];
+
+    /// <summary>Gets the period as one line, e.g. "Agosto 2026".</summary>
+    public string PeriodLabel => ServicePeriod.Label(SelectedMonth, SelectedYear);
+
+    /// <summary>Gets the command stepping the period back one month.</summary>
+    public ICommand PreviousPeriodCommand { get; private set; } = null!;
+
+    /// <summary>Gets the command stepping the period forward one month.</summary>
+    public ICommand NextPeriodCommand { get; private set; } = null!;
 
     public ObservableCollection<ServiceTypeGroup> FutureServices { get; } = [];
 
@@ -511,5 +522,27 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
         session.SelectedDogId = null;
         session.NotifyDataChanged();
         BackCommand.Execute(null);
+    }
+
+    /// <summary>
+    /// Moves the period, replacing the two drop-downs this screen used to carry.
+    /// </summary>
+    /// <remarks>
+    /// A popup lays out in its own visual root and so ignores the design canvas' scale — at phone
+    /// size the month list came out several times wider than the field that opened it. Stepping
+    /// keeps the whole interaction inside ordinary layout.
+    /// </remarks>
+    /// <param name="delta">−1 or +1.</param>
+    private void StepPeriod(int delta)
+    {
+        var (month, year) = ServicePeriod.Step(SelectedMonth, SelectedYear, delta);
+
+        if (!YearOptions.Contains(year))
+        {
+            YearOptions.Add(year);
+        }
+
+        SelectedYear = year;
+        SelectedMonth = MonthOptions.FirstOrDefault(m => m.Number == month) ?? SelectedMonth;
     }
 }
