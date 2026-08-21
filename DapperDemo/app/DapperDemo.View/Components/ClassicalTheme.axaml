@@ -105,6 +105,55 @@
         <Thickness x:Key="RowPadding">28,21,28,21</Thickness>
         <Thickness x:Key="ControlRing">5</Thickness>
 
+        <!--
+            The back control every pushed screen carries, top left. Always labelled with where it
+            returns to — never icon-only, never the bare word "Voltar". Tag is the destination.
+        -->
+        <ControlTheme TargetType="Button" x:Key="BackControl">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border
+                        Background="{DynamicResource SurfacePrimary}"
+                        CornerRadius="26"
+                        Padding="5">
+                        <Border
+                            Background="{DynamicResource SurfaceControl}"
+                            BorderBrush="{DynamicResource StrokeControl}"
+                            BorderThickness="1"
+                            CornerRadius="21"
+                            Height="77"
+                            Padding="21,0,28,0">
+                            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                <Path
+                                    Data="{StaticResource IconChevronLeft}"
+                                    Height="30"
+                                    Stretch="Uniform"
+                                    Stroke="{DynamicResource InkPrimary}"
+                                    StrokeJoin="Round"
+                                    StrokeLineCap="Round"
+                                    StrokeThickness="2.4"
+                                    VerticalAlignment="Center"
+                                    Width="30" />
+                                <TextBlock
+                                    FontFamily="{StaticResource FontBody}"
+                                    FontSize="{DynamicResource TypeUi}"
+                                    Foreground="{DynamicResource InkPrimary}"
+                                    MaxWidth="350"
+                                    Text="{TemplateBinding Tag}"
+                                    TextTrimming="CharacterEllipsis"
+                                    VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </ControlTheme>
+
         <FontFamily x:Key="FontHeading">Times New Roman,Georgia,serif</FontFamily>
         <FontFamily x:Key="FontBody">Georgia,Times New Roman,serif</FontFamily>
 
@@ -360,6 +409,49 @@
     -->
     <Style Selector="ItemsControl.RowGroup &gt; ContentPresenter:nth-child(1) Border.RowRule">
         <Setter Property="IsVisible" Value="False" />
+    </Style>
+
+    <!--
+        A field inside a group row. No box of its own: the group is the container, the separator
+        between rows is the only line, and the label above it says what it is.
+    -->
+    <Style Selector="TextBox.Field">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeBody}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource Accent}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource AccentTint}" />
+        <Setter Property="SelectionForegroundBrush" Value="{DynamicResource InkPrimary}" />
+    </Style>
+
+    <Style Selector="TextBox.Field /template/ TextBlock#PART_Watermark">
+        <Setter Property="Foreground" Value="{DynamicResource InkSecondary}" />
+    </Style>
+
+    <!--  The one control that submits a form: full measure, and the only thing below the fields.  -->
+    <Style Selector="Button.Submit">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Height" Value="91" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <!--  A secondary route out of a screen: a line at the margin, not a second button.  -->
+    <Style Selector="Button.TextLink">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeUi}" />
+        <Setter Property="Foreground" Value="{DynamicResource AccentStrong}" />
+        <Setter Property="Cursor" Value="Hand" />
     </Style>
 
     <!--  Headings / labels  -->
@@ -669,12 +761,9 @@
     </Style>
 
     <!--
-        The searchable picker, dressed to match ComboBox.FormInput beside it — a dog or tutor list
-        should not look like a different kind of field just because it can be typed into.
-
-        Every size here is in canvas units, unlike a ComboBox's drop-down: this control lists its
-        matches inline rather than in a popup, so the list is scaled by DesignCanvas along with the
-        rest of the page. That is what it exists for.
+        The pre-refresh dressing, kept while ServiceDetail and Serviços still wear it. Matches
+        ComboBox.FormInput beside it — a dog or tutor list should not look like a different kind of
+        field just because it can be typed into. Delete it once those two screens are ported.
     -->
     <Style Selector="inputs|VSearchableComboBox.FormInput">
         <Setter Property="Background" Value="Transparent" />
@@ -692,6 +781,28 @@
         <Setter Property="VListMaxHeight" Value="520" />
         <Setter Property="VListSpacing" Value="8" />
         <Setter Property="VPlaceholderForeground" Value="{DynamicResource ColorTextMuted45}" />
+    </Style>
+
+    <!--
+        The picker that expands inline instead of opening a popup. A popup lays out in its own
+        visual root and so ignores the design canvas' scale — at phone size its list came out
+        several times wider than the field that opened it.
+    -->
+    <Style Selector="inputs|VSearchableComboBox.FieldPicker">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeBody}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VItemPadding" Value="0,14" />
+        <Setter Property="VListBackground" Value="Transparent" />
+        <Setter Property="VListMaxHeight" Value="520" />
+        <Setter Property="VListSpacing" Value="4" />
+        <Setter Property="VPlaceholderForeground" Value="{DynamicResource InkSecondary}" />
     </Style>
 
     <!--

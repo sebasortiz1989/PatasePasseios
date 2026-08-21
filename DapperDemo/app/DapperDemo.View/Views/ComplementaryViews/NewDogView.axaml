@@ -5,212 +5,128 @@
     x:Class="DapperDemo.View.Views.ComplementaryViews.NewDogView"
     x:DataType="complementaryViewsViewmodels:NewDogViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
     xmlns:complementaryViewsViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;assembly=DapperDemo.Viewmodel"
+    xmlns:converters="using:DapperDemo.View.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:inputs="using:AvaloniaFramework.Controls.Inputs"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:utils="clr-namespace:DapperDemo.Viewmodel.Viewmodels.Utils;assembly=DapperDemo.Viewmodel"
-    xmlns:viewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid
-        Background="{DynamicResource ColorBg}"
-        RowDefinitions="Auto,*"
-        Width="720">
+    <Grid Background="{DynamicResource SurfacePrimary}" Width="720">
+        <ScrollViewer>
+            <StackPanel>
+                <Button
+                    Command="{Binding BackCommand}"
+                    Margin="30,30,0,0"
+                    Tag="Cachorros"
+                    Theme="{StaticResource BackControl}" />
 
-        <!--
-            Outside the ScrollViewer, in its own row, so it stays put while the form scrolls
-            under it. It carries the background as well, or the fields would show through as
-            they pass behind.
-        -->
-        <Border Background="{DynamicResource ColorBg}" Grid.Row="0">
-            <buttons:VButton
-                Classes="BtnBack"
-                Command="{Binding BackCommand}"
-                Margin="32,32,0,12"
-                VText="← Voltar" />
-        </Border>
+                <TextBlock Classes="TTitle" Margin="35,28,35,0" Text="Novo cachorro" />
 
-        <ScrollViewer Grid.Row="1">
-            <StackPanel Spacing="0">
-                <StackPanel Margin="32,24,32,16" Spacing="2">
-                    <TextBlock
-                        Classes="Heading1"
-                        FontSize="68"
-                        Text="Novo cachorro" />
-                    <TextBlock Classes="Kicker" Text="Cadastrar" />
-                </StackPanel>
+                <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="DADOS" />
 
-                <!--  A dog needs an owner, so with no tutors yet the form sends the user there first  -->
-                <Border
-                    BorderBrush="{DynamicResource ColorDivider}"
-                    BorderThickness="0,2,0,0"
-                    IsVisible="{Binding HasNoTutors}"
-                    Margin="32,16,32,0"
-                    Padding="32,64">
-                    <TextBlock
-                        FontFamily="{StaticResource FontBody}"
-                        FontSize="32"
-                        FontStyle="Italic"
-                        Foreground="{DynamicResource ColorTextMuted45}"
-                        HorizontalAlignment="Center"
-                        Text="Cadastre um tutor primeiro."
-                        TextAlignment="Center"
-                        TextWrapping="Wrap" />
+                <Border Classes="Group">
+                    <StackPanel>
+                        <StackPanel Margin="28,21" Spacing="4">
+                            <TextBlock Classes="TCaption" Text="Nome" />
+                            <TextBox Classes="Field" Text="{Binding Name}" Watermark="Toby" />
+                        </StackPanel>
+
+                        <Border Classes="RowRule" />
+
+                        <StackPanel Margin="28,21" Spacing="4">
+                            <TextBlock Classes="TCaption" Text="Raça" />
+                            <TextBox Classes="Field" Text="{Binding Breed}" Watermark="Golden Retriever" />
+                        </StackPanel>
+
+                        <Border Classes="RowRule" />
+
+                        <!--  Typeable: the tutor list grows, and scrolling it to find a name does not.  -->
+                        <StackPanel Margin="28,21" Spacing="4">
+                            <TextBlock Classes="TCaption" Text="Tutor" />
+                            <inputs:VSearchableComboBox
+                                Classes="FieldPicker"
+                                IsVisible="{Binding HasTutors}"
+                                ItemsSource="{Binding TutorOptions}"
+                                PlaceholderText="Selecione…"
+                                SelectedItem="{Binding SelectedTutor}" />
+                            <TextBlock
+                                Classes="TBody Muted"
+                                IsVisible="{Binding HasNoTutors}"
+                                Text="Cadastre um tutor primeiro." />
+                        </StackPanel>
+
+                        <Border Classes="RowRule" />
+
+                        <StackPanel Margin="28,21" Spacing="4">
+                            <TextBlock Classes="TCaption" Text="Descrição" />
+                            <TextBox
+                                AcceptsReturn="True"
+                                Classes="Field"
+                                Text="{Binding Description}"
+                                TextWrapping="Wrap"
+                                Watermark="Temperamento, cuidados, rotina…" />
+                        </StackPanel>
+
+                        <Border Classes="RowRule" />
+
+                        <!--
+                            The photo row's trailing edge is the picture itself — an empty square
+                            when unset, with no glyph and no plus. Tapping the row chooses one.
+                        -->
+                        <Grid ColumnDefinitions="*,Auto" Margin="28,21">
+                            <StackPanel Spacing="4" VerticalAlignment="Center">
+                                <TextBlock Classes="TBody" Text="Foto" />
+                                <TextBlock
+                                    Classes="TCaption"
+                                    IsVisible="{Binding NoPhoto}"
+                                    Text="Nenhuma escolhida" />
+                                <Button
+                                    Classes="TextLink"
+                                    Command="{Binding RemovePhotoCommand}"
+                                    Content="Remover"
+                                    HorizontalAlignment="Left"
+                                    IsVisible="{Binding HasPhoto}" />
+                            </StackPanel>
+                            <Button
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Command="{Binding ChoosePhotoCommand}"
+                                Grid.Column="1"
+                                Padding="0">
+                                <Border
+                                    BorderBrush="{DynamicResource StrokeRaised}"
+                                    BorderThickness="1"
+                                    CornerRadius="14"
+                                    Height="70"
+                                    Width="70">
+                                    <Image
+                                        IsVisible="{Binding HasPhoto}"
+                                        Source="{Binding PhotoPath, Converter={StaticResource ImagePathConverter}, ConverterParameter=192}"
+                                        Stretch="UniformToFill" />
+                                </Border>
+                            </Button>
+                        </Grid>
+                    </StackPanel>
                 </Border>
 
-                <StackPanel
-                    IsVisible="{Binding HasTutors}"
-                    Margin="32,16,32,48"
-                    Spacing="28">
-                    <!--  Optional: a dog with no photo falls back to its initials everywhere.  -->
-                    <StackPanel HorizontalAlignment="Center" Spacing="16">
-                        <Panel
-                            Height="168"
-                            HorizontalAlignment="Center"
-                            Width="168">
-                            <Image
-                                IsVisible="{Binding HasPhoto}"
-                                Source="{Binding PhotoPath, Converter={StaticResource ImagePathConverter}}"
-                                Stretch="UniformToFill">
-                                <Image.Clip>
-                                    <EllipseGeometry Rect="0,0,168,168" />
-                                </Image.Clip>
-                            </Image>
-                            <Border
-                                BorderBrush="{DynamicResource ColorDivider}"
-                                BorderThickness="2"
-                                CornerRadius="84">
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="30"
-                                    FontStyle="Italic"
-                                    Foreground="{DynamicResource ColorTextMuted45}"
-                                    HorizontalAlignment="Center"
-                                    IsVisible="{Binding NoPhoto}"
-                                    Text="sem foto"
-                                    VerticalAlignment="Center" />
-                            </Border>
-                        </Panel>
-                        <StackPanel
-                            HorizontalAlignment="Center"
-                            Orientation="Horizontal"
-                            Spacing="12">
-                            <buttons:VButton
-                                Classes="BtnSecondary"
-                                Command="{Binding ChoosePhotoCommand}"
-                                Height="70"
-                                VText="Escolher foto"
-                                Width="240" />
-                            <buttons:VButton
-                                Classes="BtnGhost"
-                                Command="{Binding RemovePhotoCommand}"
-                                Height="70"
-                                IsVisible="{Binding HasPhoto}"
-                                VText="Remover"
-                                Width="180" />
-                        </StackPanel>
-                    </StackPanel>
+                <TextBlock
+                    Classes="TCaption Owed"
+                    IsVisible="{Binding HasError}"
+                    Margin="35,14,35,0"
+                    Text="{Binding ErrorMessage}"
+                    TextWrapping="Wrap" />
 
-                    <StackPanel Spacing="10">
-                        <TextBlock
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="28"
-                            Foreground="{DynamicResource ColorTextMuted70}"
-                            Text="Nome" />
-                        <TextBox
-                            Background="Transparent"
-                            BorderBrush="{DynamicResource ColorDivider}"
-                            BorderThickness="2"
-                            CaretBrush="{DynamicResource ColorAccent}"
-                            CornerRadius="7"
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="34"
-                            Foreground="{DynamicResource ColorText}"
-                            MinHeight="82"
-                            Padding="18,0"
-                            PlaceholderText="Toby"
-                            Text="{Binding Name}"
-                            VerticalContentAlignment="Center" />
-                    </StackPanel>
+                <Border Classes="ControlRing" Margin="30,28,30,0">
+                    <Border Classes="FloatingControl">
+                        <Button Classes="Submit" Command="{Binding SaveCommand}">
+                            <TextBlock Classes="TBody" Text="Salvar cachorro" />
+                        </Button>
+                    </Border>
+                </Border>
 
-                    <StackPanel Spacing="10">
-                        <TextBlock
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="28"
-                            Foreground="{DynamicResource ColorTextMuted70}"
-                            Text="Raça" />
-                        <TextBox
-                            Background="Transparent"
-                            BorderBrush="{DynamicResource ColorDivider}"
-                            BorderThickness="2"
-                            CaretBrush="{DynamicResource ColorAccent}"
-                            CornerRadius="7"
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="34"
-                            Foreground="{DynamicResource ColorText}"
-                            MinHeight="82"
-                            Padding="18,0"
-                            PlaceholderText="Golden Retriever"
-                            Text="{Binding Breed}"
-                            VerticalContentAlignment="Center" />
-                    </StackPanel>
-
-                    <StackPanel Spacing="10">
-                        <TextBlock
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="28"
-                            Foreground="{DynamicResource ColorTextMuted70}"
-                            Text="Tutor" />
-                        <!--  Typeable: the tutor list grows, and scrolling it to find a name does not.  -->
-                        <inputs:VSearchableComboBox
-                            Classes="FormInput"
-                            ItemsSource="{Binding TutorOptions}"
-                            PlaceholderText="Selecione…"
-                            SelectedItem="{Binding SelectedTutor}" />
-                    </StackPanel>
-
-                    <StackPanel Spacing="10">
-                        <TextBlock
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="28"
-                            Foreground="{DynamicResource ColorTextMuted70}"
-                            Text="Descrição" />
-                        <TextBox
-                            AcceptsReturn="True"
-                            Background="Transparent"
-                            BorderBrush="{DynamicResource ColorDivider}"
-                            BorderThickness="2"
-                            CaretBrush="{DynamicResource ColorAccent}"
-                            CornerRadius="7"
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="34"
-                            Foreground="{DynamicResource ColorText}"
-                            MinHeight="160"
-                            Padding="18,12"
-                            PlaceholderText="Temperamento, cuidados, rotina…"
-                            Text="{Binding Description}"
-                            TextWrapping="Wrap" />
-                    </StackPanel>
-
-                    <TextBlock
-                        Classes="FormMsg Error"
-                        FontFamily="{StaticResource FontBody}"
-                        FontSize="31"
-                        FontStyle="Italic"
-                        HorizontalAlignment="Center"
-                        IsVisible="{Binding HasError}"
-                        Text="{Binding ErrorMessage}"
-                        TextAlignment="Center" />
-
-                    <buttons:VButton
-                        Classes="BtnPrimary"
-                        Command="{Binding SaveCommand}"
-                        Height="97"
-                        HorizontalAlignment="Stretch"
-                        VText="Salvar cachorro" />
-                </StackPanel>
+                <!--  Clearance for the floating tab bar, which content scrolls under.  -->
+                <Border Height="168" />
             </StackPanel>
         </ScrollViewer>
     </Grid>

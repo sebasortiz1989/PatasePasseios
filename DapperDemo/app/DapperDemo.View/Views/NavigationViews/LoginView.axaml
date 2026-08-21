@@ -5,121 +5,88 @@
     x:Class="DapperDemo.View.Views.NavigationViews.LoginView"
     x:DataType="navigationViewsViewmodels:LoginViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
     xmlns:components="using:DapperDemo.View.Components"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:inputs="using:AvaloniaFramework.Controls.Inputs"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:navigationViewsViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.NavigationViewsViewmodels;assembly=DapperDemo.Viewmodel"
-    xmlns:viewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <components:DesignCanvas DesignHeight="1560" DesignWidth="720">
-        <Grid Background="{DynamicResource ColorBg}" Width="720">
-            <StackPanel
-                HorizontalAlignment="Center"
-                Spacing="32"
-                VerticalAlignment="Center">
-                <StackPanel
-                    HorizontalAlignment="Center"
-                    Margin="0,0,0,8"
-                    Spacing="8">
+        <Grid Background="{DynamicResource SurfacePrimary}" Width="720">
+            <ScrollViewer>
+                <StackPanel Margin="0,0,0,70">
+
+                    <!--  The brand line is the one display-size thing in the app.  -->
+                    <StackPanel Margin="35,140,35,0" Spacing="10">
+                        <TextBlock Classes="TDisplay" Text="Patas &amp; Passeios" TextWrapping="Wrap" />
+                        <TextBlock Classes="TCaption" Text="Serviços para cães" />
+                    </StackPanel>
+
+                    <Border Classes="Group" Margin="35,56,35,0">
+                        <StackPanel>
+                            <StackPanel Margin="28,21" Spacing="4">
+                                <TextBlock Classes="TCaption" Text="E-mail" />
+                                <TextBox
+                                    Classes="Field"
+                                    Text="{Binding Email}"
+                                    Watermark="voce@exemplo.com" />
+                            </StackPanel>
+
+                            <Border Classes="RowRule" />
+
+                            <StackPanel Margin="28,21" Spacing="4">
+                                <TextBlock Classes="TCaption" Text="Senha" />
+                                <TextBox
+                                    Classes="Field"
+                                    PasswordChar="•"
+                                    Text="{Binding Password}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
                     <TextBlock
-                        Classes="Heading1"
-                        FontSize="87"
-                        FontWeight="Normal"
-                        Height="100"
-                        HorizontalAlignment="Center"
-                        Text="Patas &amp; Passeios" />
-                    <Border
-                        Background="{DynamicResource ColorAccent}"
-                        Height="2"
-                        HorizontalAlignment="Center"
-                        Margin="0,8,0,0"
-                        Width="77" />
+                        Classes="TCaption Owed"
+                        IsVisible="{Binding HasLoginError}"
+                        Margin="35,14,35,0"
+                        Text="{Binding LoginError}"
+                        TextWrapping="Wrap" />
+
+                    <Border Classes="ControlRing" Margin="30,28,30,0">
+                        <Border Classes="FloatingControl">
+                            <Button Classes="Submit" Command="{Binding LoginCommand}">
+                                <TextBlock Classes="TBody" Text="Entrar" />
+                            </Button>
+                        </Border>
+                    </Border>
+
+                    <!--  Secondary routes are lines at the margin, never a second button.  -->
+                    <StackPanel HorizontalAlignment="Center" Margin="35,35,35,0" Spacing="24">
+                        <Button
+                            Classes="TextLink"
+                            Command="{Binding SignUpCommand}"
+                            Content="Criar uma conta" />
+                        <Button
+                            Classes="TextLink"
+                            Command="{Binding ImportBackupCommand}"
+                            Content="Importar backup" />
+                    </StackPanel>
+
                     <TextBlock
-                        Classes="Kicker"
+                        Classes="TCaption"
                         HorizontalAlignment="Center"
-                        Margin="0,8,0,0"
-                        Text="Serviços para cães" />
+                        IsVisible="{Binding HasBackupMsg}"
+                        Margin="35,21,35,0"
+                        Text="{Binding BackupMsg}"
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+
+                    <TextBlock
+                        Classes="TCaption"
+                        HorizontalAlignment="Center"
+                        Margin="0,35,0,0"
+                        Text="{Binding VersionLabel}" />
                 </StackPanel>
-
-                <inputs:VTextBoxWithLabel
-                    Classes="ClassicInput"
-                    HorizontalAlignment="Center"
-                    VDescriptionText="Email"
-                    VHeight="77"
-                    VText="{Binding Email}"
-                    VTextWatermark="email@exemplo.com"
-                    VWidth="560" />
-
-                <inputs:VTextBoxWithLabel
-                    Classes="ClassicInput"
-                    HorizontalAlignment="Center"
-                    VDescriptionText="Senha"
-                    VHeight="77"
-                    VPasswordChar="•"
-                    VText="{Binding Password}"
-                    VTextWatermark="••••••••"
-                    VWidth="560" />
-
-                <TextBlock
-                    FontFamily="{StaticResource FontBody}"
-                    FontSize="31"
-                    FontStyle="Italic"
-                    Foreground="{DynamicResource ColorAccentDark800}"
-                    HorizontalAlignment="Center"
-                    IsVisible="{Binding HasLoginError}"
-                    Text="{Binding LoginError}"
-                    TextAlignment="Center" />
-
-                <buttons:VButton
-                    Classes="BtnPrimary"
-                    Command="{Binding LoginCommand}"
-                    Height="88"
-                    HorizontalAlignment="Center"
-                    VText="Entrar"
-                    Width="560" />
-                <buttons:VButton
-                    Classes="BtnGhost"
-                    Command="{Binding SignUpCommand}"
-                    Height="77"
-                    HorizontalAlignment="Center"
-                    VText="Criar uma conta"
-                    Width="560" />
-
-                <!--
-                    Restoring belongs here as well as on the profile screen: a new phone has no
-                    account to sign into, so the profile screen cannot be reached at all.
-                -->
-                <buttons:VButton
-                    Classes="BtnGhost"
-                    Command="{Binding ImportBackupCommand}"
-                    Height="77"
-                    HorizontalAlignment="Center"
-                    VText="Importar backup"
-                    Width="560" />
-                <TextBlock
-                    Classes="FormMsg"
-                    FontFamily="{StaticResource FontBody}"
-                    FontSize="29"
-                    FontStyle="Italic"
-                    HorizontalAlignment="Center"
-                    IsVisible="{Binding HasBackupMsg}"
-                    MaxWidth="560"
-                    Text="{Binding BackupMsg}"
-                    TextAlignment="Center"
-                    TextWrapping="Wrap" />
-
-                <!--
-                    The version comes from VersionPrefix in Directory.Packages.props by way of the
-                    assembly's own metadata, so this line never needs touching.
-                -->
-                <TextBlock
-                    Classes="Kicker"
-                    HorizontalAlignment="Center"
-                    Text="{Binding VersionLabel}" />
-            </StackPanel>
+            </ScrollViewer>
 
             <components:ConfirmDialog
                 ConfirmCommand="{Binding DismissInvalidBackupCommand}"
