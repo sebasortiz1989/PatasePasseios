@@ -21,18 +21,26 @@ namespace DapperDemo.View.Converters;
 public sealed class ImagePathConverter : IValueConverter
 {
     /// <summary>
-    /// The width every photo is decoded to, whatever the camera produced.
+    /// Physical pixels a photo is decoded to when the binding does not say.
     /// </summary>
     /// <remarks>
-    /// The largest place a dog photo is shown is 168 canvas units — about 96 device pixels on a
-    /// phone, under 300 physical even at 3× — so 512 is generous. Decoding at the source's own
-    /// size is what made the dogs list crawl on Android: a 12-megapixel camera photo is roughly
-    /// 48 MB once decoded to BGRA, per dog, and re-orienting one allocated a second surface the
-    /// same size. Six dogs with photos was half a gigabyte of bitmaps to draw a row of thumbnails.
+    /// Sized for the largest place a dog photo appears — 168 canvas units on the detail and profile
+    /// screens, which is under 300 physical pixels even at 3×. Decoding at the camera's own size is
+    /// what made the dogs list crawl on Android: a 12-megapixel photo is roughly 48 MB once decoded
+    /// to BGRA, per dog, and re-orienting one allocated a second surface the same size.
     /// </remarks>
-    private const int DecodeWidth = 512;
+    private const int DefaultDecodeWidth = 512;
 
-    private static readonly ConcurrentDictionary<string, Bitmap?> Cache = new();
+    /// <summary>
+    /// Cached per path <i>and</i> per width.
+    /// </summary>
+    /// <remarks>
+    /// A list of 70-unit avatars wants a fortieth of the pixels the detail screen does, and the
+    /// dogs list is not virtualized — every row is realized, so every photo decodes whether or not
+    /// it is on screen. Sharing one large decode between the two would put the detail screen's
+    /// memory cost on every row of the list.
+    /// </remarks>
+    private static readonly ConcurrentDictionary<(string Path, int Width), Bitmap?> Cache = new();
 
     /// <inheritdoc/>
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
@@ -42,7 +50,16 @@ public sealed class ImagePathConverter : IValueConverter
             return null;
         }
 
-        return Cache.GetOrAdd(path, Decode);
+        // The binding says how big it needs the photo, in physical pixels: a row avatar asks for a
+        // fraction of what a detail screen does.
+        var width = parameter switch
+        {
+            int pixels when pixels > 0 => pixels,
+            string text when int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out var pixels) && pixels > 0 => pixels,
+            _ => DefaultDecodeWidth,
+        };
+
+        return Cache.GetOrAdd((path, width), key => Decode(key.Path, key.Width));
     }
 
     /// <inheritdoc/>
@@ -72,7 +89,7 @@ public sealed class ImagePathConverter : IValueConverter
         };
     }
 
-    private static Bitmap? Decode(string path)
+    private static Bitmap? Decode(string path, int width)
     {
         try
         {
@@ -86,7 +103,7 @@ public sealed class ImagePathConverter : IValueConverter
             // up, which costs nothing worth measuring at these sizes.
             using (var stream = File.OpenRead(path))
             {
-                decoded = Bitmap.DecodeToWidth(stream, DecodeWidth);
+                decoded = Bitmap.DecodeToWidth(stream, width);
             }
 
             var orientation = ExifOrientation.Read(path);

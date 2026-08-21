@@ -33,7 +33,7 @@
                         <Panel Height="70" Width="70">
                             <Image
                                 IsVisible="{Binding HasImage}"
-                                Source="{Binding ImagePath, Converter={StaticResource ImagePathConverter}}"
+                                Source="{Binding ImagePath, Converter={StaticResource ImagePathConverter}, ConverterParameter=192}"
                                 Stretch="UniformToFill">
                                 <Image.Clip>
                                     <EllipseGeometry Rect="0,0,70,70" />

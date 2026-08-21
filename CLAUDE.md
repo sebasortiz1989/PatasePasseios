@@ -62,19 +62,24 @@ a code error. Build the individual project you changed, or stop the app.
     Directory.Packages.props      ← NoWarn list only; see Deviations
     Directory.Build.targets       ← imports the analyzer targets from the submodule
     Default.Analyzers.ruleset
-    src/1. Contrato/Repository.Dapper/   ← the whole data layer
+    src/Repository.Dapper/          ← the whole data layer
     app/                          ← Viewmodel, View, Infrastructure, platform heads
     tests/Tests.Dapper/
 ```
 
-`src/` contains only `1. Contrato`. The numbered sibling folders from the
-original template are gone — do not recreate them. The Portuguese folder and
-test-project names are legacy; leave them, and write English inside them.
+The data layer lives at **`src/Repository.Dapper/`**. `src/` also still holds
+`1. Contrato`, `2. Aplicacao`, `3. Modelo` and `4. Infraestrutura` from the
+original template — they are **empty husks plus stale `obj/` output** from where
+the project used to sit, untracked by git and compiled by nothing. Do not put
+anything in them, and do not be misled by the `obj/` folders under
+`1. Contrato/Repository.Dapper/`: that is last year's build output, not source.
+The Portuguese folder and test-project names are legacy; leave them, and write
+English inside them.
 
 ### Project graph
 
 ```
-Repository.Dapper (src/1. Contrato)   ← DTOs, repositories, SQLite/Dapper, backup
+Repository.Dapper (src/Repository.Dapper)  ← DTOs, repositories, SQLite/Dapper, backup
         ↑
 DapperDemo.Viewmodel                  ← presentation models, commands, session
         ↑
@@ -159,41 +164,64 @@ implementation in `DapperDemo.View/Services/`, registered
 |---|---|---|
 | `ImagePicker` | `StorageProviderImagePicker` | choosing a dog photo |
 | `UriLauncher` | `AvaloniaUriLauncher` | opening the Google Calendar link |
-| `BackupFileDialog` | `StorageProviderBackupFileDialog` | export/import dialogs |
+| `FileExportDialog` | `StorageProviderFileExportDialog` | report and backup save/open dialogs |
+| `DisplaySettings` | `AvaloniaDisplaySettings` | applying the theme and the text-size ramp |
 
 Follow it for the next one. The interfaces are not `I`-prefixed, matching the
 framework's convention.
 
 ## Current state and known gaps
 
-Say what is real — several things here are not:
+Say what is real — several things here are not. Verified 2026-08-20.
 
-- **The Android head does not start.** It boots the .NET runtime and Avalonia,
-  then dies in `MainActivity.OnCreate`. Avalonia 12 replaced
-  `ISingleViewApplicationLifetime` with `IActivityApplicationLifetime` on
-  Android; `App.axaml.cs` only handles the former, and
-  `AvaloniaNavigationController.ShowCurrentPresenter` in the submodule has the
-  same gap. `DroidApplication : AvaloniaAndroidApplication<AppAndroid>` (the
-  Avalonia 12 entry point) is already in place. Deploy with
-  `dotnet build … -t:Install`, never a bare `adb install` — Debug builds use
-  Fast Deployment and the APK deliberately ships without managed assemblies.
-- **Hotel income is understated.** `RepositoryServices.GetMonthlyIncomeAsync`
-  sums `s.Price` for hotel stays, which is the *daily rate*, not rate × nights.
-  `DogSummaryBuilder.AmountOf` and `ServiceDetailViewModel` do multiply, so the
-  Perfil headline disagrees with the per-dog breakdown beneath it for months
-  containing stays. Known, not yet fixed.
+- **A visual refresh is half-applied.** `DesignDocs/2026-08-20_dapperdemo-visual-refresh/`
+  holds the brief and the delivered design; `delivery/corrections.md` lists where the
+  design disagrees with the app and the app is right. Ported so far: **Agenda,
+  Cachorros, Tutores**, plus the new **Ajustes**. The other ten screens still use
+  their old layout and hardcoded font sizes — they render, and they pick up both
+  palettes, because `ClassicalTheme` keeps the old token names (`ColorBg`,
+  `ColorText`…) alive as aliases onto the new roles. Port a screen by moving it to
+  the `T*` type classes and the `Border.Group` treatment; do not add new `FontSize`
+  literals to anything.
+- **`Seguir o tamanho do sistema` does nothing yet.** Avalonia exposes no portable
+  read of the OS text scale, so `AvaloniaDisplaySettings.SystemTextSizeStep` returns
+  the default step. The switch, the inert-slider readout and the persistence are
+  real; the platform value is the seam, and it needs per-head code for iOS Dynamic
+  Type and Android's font scale.
+- **Dog photos are stored at the camera's own size.** `DogImageStore.SaveAsync`
+  copies the stream untouched. `ImagePathConverter` now decodes to the size the
+  binding asks for — 192px in the dogs list, 512 elsewhere — which is what fixed the
+  Android lag, but the *files* are still full-size, so the backup zip carries them at
+  full resolution and photos go into it uncompressed. Downscaling on save is the
+  other half and has not been done.
+- **The lists are not virtualized.** `ItemsControl` inside a `StackPanel` inside a
+  `ScrollViewer` realizes every row, so every dog photo decodes whether or not it is
+  on screen. Fine at tens of dogs; the fix is structural (make the list the scrolling
+  element) rather than a setting.
 - **`RepositoryBase` is a full CRUD contract with unimplemented overrides.**
-  `RepositoryDogs`, `RepositoryTutors` and `RepositoryPetSitter` each still throw
-  `NotImplementedException` from several. Check before calling; implement the
-  stub you need rather than routing around it. `RepositoryServices` does not
-  derive from it at all — it spans four tables.
-- **Tests cover the data layer only.** `tests/Tests.Dapper` has real coverage of
-  the repositories, the migrations and the money rules (`ServiceItem`,
-  `PaymentAllocation`) — run it before touching any of them. The view models have
-  none, so anything in `DapperDemo.Viewmodel` is still verified only by running
-  the app.
+  `RepositoryDogs`, `RepositoryTutors` and `RepositoryPetSitter` throw
+  `NotImplementedException` from ten overrides between them. Check before calling;
+  implement the stub you need rather than routing around it. `RepositoryServices`
+  does not derive from it at all — it spans four tables.
+- **Tests cover the data layer only.** `tests/Tests.Dapper` has real coverage of the
+  repositories, the migrations, the money rules, backup compatibility and the display
+  preference — 176 tests; run them before touching any of those. The view models have
+  none, so anything in `DapperDemo.Viewmodel` is verified only by running the app.
 - **Walk and pet-sitting bookings have no stored duration.** The Google Calendar
-  export assumes one hour.
-- The dog screen lists **upcoming unpaid services only** (`s.Date >= now &&
-  !s.ServicePaid`), so past unpaid work is invisible there. The tutor screen lists
-  every unpaid service regardless of date, because that list is the tutor's bill.
+  export assumes one hour (`ServiceDetailViewModel`, `Date.AddHours(1)`).
+- The dog screen lists **upcoming unpaid services only**, so past unpaid work is
+  invisible there. The tutor screen lists every unpaid service regardless of date,
+  because that list is the tutor's bill.
+
+### Fixed since this list was written
+
+Kept briefly so the entries are not re-added from memory:
+
+- **The Android head starts.** `App.axaml.cs` handles `IActivityApplicationLifetime`
+  and so does `AvaloniaNavigationController` in the submodule; `DroidApplication`
+  is in place. Deploy with `dotnet build … -t:Install`, never a bare `adb install` —
+  Debug builds use Fast Deployment and the APK deliberately ships without managed
+  assemblies.
+- **Hotel income is not understated.** `GetMonthlyIncomeAsync` sums `ServiceItem.Total`,
+  which multiplies nights, adds the extra and applies the discount — the same figure
+  the per-dog breakdown uses.
