@@ -20,6 +20,18 @@ namespace DapperDemo.View.Converters;
 /// </remarks>
 public sealed class ImagePathConverter : IValueConverter
 {
+    /// <summary>
+    /// The width every photo is decoded to, whatever the camera produced.
+    /// </summary>
+    /// <remarks>
+    /// The largest place a dog photo is shown is 168 canvas units — about 96 device pixels on a
+    /// phone, under 300 physical even at 3× — so 512 is generous. Decoding at the source's own
+    /// size is what made the dogs list crawl on Android: a 12-megapixel camera photo is roughly
+    /// 48 MB once decoded to BGRA, per dog, and re-orienting one allocated a second surface the
+    /// same size. Six dogs with photos was half a gigabyte of bitmaps to draw a row of thumbnails.
+    /// </remarks>
+    private const int DecodeWidth = 512;
+
     private static readonly ConcurrentDictionary<string, Bitmap?> Cache = new();
 
     /// <inheritdoc/>
@@ -68,9 +80,13 @@ public sealed class ImagePathConverter : IValueConverter
 
             // Read through a stream that is closed straight away rather than handing the file to
             // the Bitmap: a photo the user then replaces has to be deletable while the app runs.
+            //
+            // DecodeToWidth rather than the Bitmap constructor: it scales during decode, so the
+            // full-size image never exists in memory at all. A source narrower than this is scaled
+            // up, which costs nothing worth measuring at these sizes.
             using (var stream = File.OpenRead(path))
             {
-                decoded = new Bitmap(stream);
+                decoded = Bitmap.DecodeToWidth(stream, DecodeWidth);
             }
 
             var orientation = ExifOrientation.Read(path);

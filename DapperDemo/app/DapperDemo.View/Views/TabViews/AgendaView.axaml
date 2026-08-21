@@ -87,7 +87,7 @@
                                 Stroke="{DynamicResource InkSecondary}"
                                 StrokeJoin="Round"
                                 StrokeLineCap="Round"
-                                StrokeThickness="1.6"
+                                StrokeThickness="2.4"
                                 VerticalAlignment="Center"
                                 Width="30" />
                             <Path
@@ -99,7 +99,7 @@
                                 Stroke="{DynamicResource InkSecondary}"
                                 StrokeJoin="Round"
                                 StrokeLineCap="Round"
-                                StrokeThickness="1.6"
+                                StrokeThickness="2.4"
                                 VerticalAlignment="Center"
                                 Width="30" />
                         </Grid>
@@ -253,14 +253,25 @@
                     Margin="0,0,14,12" />
             </WrapPanel>
 
-            <CheckBox
-                Content="Mostrar serviços já feitos"
-                FontFamily="{StaticResource FontBody}"
-                FontSize="{DynamicResource TypeUi}"
-                Foreground="{DynamicResource InkSecondary}"
-                IsChecked="{Binding HomeShowPaid}"
-                Margin="35,16,35,0"
-                Theme="{StaticResource ClassicCheckBox}" />
+            <!--
+                A row in a group with a switch, not a loose checkbox. Every other boolean in the
+                refresh reads this way, and the old square was the last control on the screen still
+                drawing its own box on the page.
+            -->
+            <Border Classes="Group" Margin="35,28,35,0">
+                <Grid ColumnDefinitions="*,Auto" Margin="28,14">
+                    <TextBlock
+                        Classes="TUi"
+                        Text="Mostrar serviços já feitos"
+                        VerticalAlignment="Center" />
+                    <ToggleSwitch
+                        Grid.Column="1"
+                        IsChecked="{Binding HomeShowPaid}"
+                        OffContent=""
+                        OnContent=""
+                        VerticalAlignment="Center" />
+                </Grid>
+            </Border>
         </StackPanel>
 
         <ScrollViewer

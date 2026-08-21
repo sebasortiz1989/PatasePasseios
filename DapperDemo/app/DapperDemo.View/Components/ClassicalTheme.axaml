@@ -354,6 +354,14 @@
         <Setter Property="Foreground" Value="{DynamicResource AccentStrong}" />
     </Style>
 
+    <!--
+        A list of rows in one group. The separator is drawn at the top of every row and hidden on
+        the first, because a group's own edge is its fill and radius — never a hairline.
+    -->
+    <Style Selector="ItemsControl.RowGroup &gt; ContentPresenter:nth-child(1) Border.RowRule">
+        <Setter Property="IsVisible" Value="False" />
+    </Style>
+
     <!--  Headings / labels  -->
     <Style Selector="TextBlock.Heading1">
         <Setter Property="FontFamily" Value="{StaticResource FontHeading}" />
