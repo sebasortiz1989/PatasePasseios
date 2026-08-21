@@ -26,8 +26,8 @@
 
                         <!--  The brand line is the one display-size thing in the app.  -->
                         <StackPanel Margin="35,0" Spacing="10">
-                            <TextBlock Classes="TDisplay" Text="Patas &amp; Passeios" TextWrapping="Wrap" />
-                            <TextBlock Classes="TCaption" Text="Serviços para cães" />
+                            <TextBlock Classes="TDisplay" Text="Patas &amp; Passeios" TextWrapping="Wrap" HorizontalAlignment="Center"/>
+                            <TextBlock Classes="TCaption" Text="Serviços para cães" HorizontalAlignment="Center" />
                         </StackPanel>
 
                         <!--

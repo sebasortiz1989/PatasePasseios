@@ -16,9 +16,13 @@ public class CurrentView : INotifyPropertyChanged
     private object? viewShown;
 
     /// <summary>
-    /// What the screen currently shown would be called by the screen above it. Held so that
-    /// pushing the next screen can put this one on the stack under its own name.
+    /// The name of the tab this branch of navigation started from.
     /// </summary>
+    /// <remarks>
+    /// Only tabs are ever pushed, so this is the label that goes on the stack with the tab and
+    /// comes back off it on the way home. Detail screens do not set it — they are never a back
+    /// target, so they are never named.
+    /// </remarks>
     private string currentLabel = string.Empty;
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -42,26 +46,37 @@ public class CurrentView : INotifyPropertyChanged
     public string BackLabel => history.TryPeek(out var previous) ? previous.Label : string.Empty;
 
     /// <summary>
-    /// Pushes a screen on top of the current one.
+    /// Shows a detail screen. Back from it returns to the tab it was opened from.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Detail screens replace each other rather than stacking, so the history is never deeper than
+    /// one screen above a tab. A dog opens its tutor, whose dog list opens another dog, whose tutor
+    /// opens again — left to stack that grows without bound, and Back has to be pressed once per
+    /// hop to escape.
+    /// </para>
+    /// <para>
+    /// Depth is not the only reason. The presenters are reused instances and the selected record
+    /// lives on <see cref="AppSession"/>, so a stacked entry does not remember which dog it was
+    /// showing: walking back through one would re-render it with whatever record is selected now.
+    /// A stack of those is not history, it is a loop.
+    /// </para>
+    /// </remarks>
     /// <param name="view">The screen's presenter.</param>
-    /// <param name="label">
-    /// What this screen should be called by whatever opens next on top of it — a record's own name
-    /// where the caller has one, so Back reads "Rex" rather than "Cachorro".
-    /// </param>
-    public void Show(object? view, string label)
+    public void Show(object? view)
     {
         if (EqualityComparer<object?>.Default.Equals(viewShown, view))
         {
             return;
         }
 
-        if (viewShown is { } previous)
+        // Only a tab is ever pushed. Arriving here with something already on the stack means the
+        // current screen is itself a detail, and it is replaced rather than added to.
+        if (history.Count == 0 && viewShown is { } previous)
         {
             history.Push(new Entry(previous, currentLabel));
         }
 
-        currentLabel = label;
         ViewShown = view;
         OnPropertyChanged(nameof(BackLabel));
     }

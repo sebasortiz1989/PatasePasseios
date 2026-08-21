@@ -204,12 +204,13 @@
                     Theme="{StaticResource BackControl}" />
 
                 <StackPanel IsVisible="{Binding !IsEditing}">
+                    <!--  Centred as one block, the same as the dog screen's head.  -->
                     <StackPanel Margin="35,28,35,0" Spacing="14">
                         <Border
                             Background="{DynamicResource SurfaceControl}"
                             CornerRadius="84"
                             Height="168"
-                            HorizontalAlignment="Left"
+                            HorizontalAlignment="Center"
                             Width="168">
                             <TextBlock
                                 Classes="TTitle"
@@ -217,12 +218,16 @@
                                 Text="{Binding Initials}"
                                 VerticalAlignment="Center" />
                         </Border>
-                        <StackPanel Spacing="4">
+                        <StackPanel HorizontalAlignment="Center" Spacing="4">
                             <TextBlock
                                 Classes="TTitle"
                                 Text="{Binding Name}"
+                                TextAlignment="Center"
                                 TextWrapping="Wrap" />
-                            <TextBlock Classes="TCaption" Text="{Binding Neighborhood}" />
+                            <TextBlock
+                                Classes="TCaption"
+                                Text="{Binding Neighborhood}"
+                                TextAlignment="Center" />
                         </StackPanel>
                     </StackPanel>
 
@@ -382,17 +387,19 @@
                                     Margin="18,0,0,0"
                                     Padding="0"
                                     Width="77">
-                                    <Path
-                                        Data="{StaticResource IconChevronLeft}"
+                                    <Viewbox
                                         Height="35"
                                         HorizontalAlignment="Center"
-                                        Stretch="Uniform"
-                                        Stroke="{DynamicResource InkPrimary}"
-                                        StrokeJoin="Round"
-                                        StrokeLineCap="Round"
-                                        StrokeThickness="2.4"
                                         VerticalAlignment="Center"
-                                        Width="35" />
+                                        Width="35">
+                                        <Path
+                                            Data="{StaticResource IconChevronLeft}"
+                                            Stretch="Uniform"
+                                            Stroke="{DynamicResource InkPrimary}"
+                                            StrokeJoin="Round"
+                                            StrokeLineCap="Round"
+                                            StrokeThickness="1" />
+                                    </Viewbox>
                                 </Button>
                                 <!--  The label is the way back to "Ano todo" once the arrows have moved off it.  -->
                                 <Button
@@ -414,17 +421,19 @@
                                     Margin="0,0,18,0"
                                     Padding="0"
                                     Width="77">
-                                    <Path
-                                        Data="{StaticResource IconChevronRight}"
+                                    <Viewbox
                                         Height="35"
                                         HorizontalAlignment="Center"
-                                        Stretch="Uniform"
-                                        Stroke="{DynamicResource InkPrimary}"
-                                        StrokeJoin="Round"
-                                        StrokeLineCap="Round"
-                                        StrokeThickness="2.4"
                                         VerticalAlignment="Center"
-                                        Width="35" />
+                                        Width="35">
+                                        <Path
+                                            Data="{StaticResource IconChevronRight}"
+                                            Stretch="Uniform"
+                                            Stroke="{DynamicResource InkPrimary}"
+                                            StrokeJoin="Round"
+                                            StrokeLineCap="Round"
+                                            StrokeThickness="1" />
+                                    </Viewbox>
                                 </Button>
                             </Grid>
                         </Border>

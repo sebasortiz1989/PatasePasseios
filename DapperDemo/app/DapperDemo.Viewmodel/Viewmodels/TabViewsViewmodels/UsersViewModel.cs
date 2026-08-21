@@ -103,6 +103,8 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         EditProfileCommand = new SynchronizedCommand(StartEditProfile, SynchronizationBehavior.Discard, true);
         ChoosePhotoCommand = new SynchronizedCommand(ChoosePhoto, SynchronizationBehavior.Discard, true);
         RemovePhotoCommand = new SynchronizedCommand(RemovePhoto, SynchronizationBehavior.Discard, true);
+        OpenPhotoCommand = new SynchronizedCommand(() => ViewingPhoto = HasPhoto, SynchronizationBehavior.Discard, true);
+        ClosePhotoCommand = new SynchronizedCommand(() => ViewingPhoto = false, SynchronizationBehavior.Discard, true);
         CancelProfileCommand = new SynchronizedCommand(CancelEditProfile, SynchronizationBehavior.Discard, true);
         SaveProfileCommand = new SynchronizedCommand(SaveProfile, SynchronizationBehavior.Discard, true);
         ToggleMoneyVisibleCommand = new SynchronizedCommand(ToggleMoneyVisible, SynchronizationBehavior.Discard, true);
@@ -110,11 +112,10 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         PreviousPeriodCommand = new SynchronizedCommand(() => StepPeriod(-1), SynchronizationBehavior.Discard, true);
         NextPeriodCommand = new SynchronizedCommand(() => StepPeriod(1), SynchronizationBehavior.Discard, true);
         ToggleWholeYearCommand = new SynchronizedCommand(ToggleWholeYear, SynchronizationBehavior.Discard, true);
-        ExportBackupCommand = new SynchronizedCommand(ExportBackup, SynchronizationBehavior.Discard, true);
         ImportBackupCommand = new SynchronizedCommand(ImportBackup, SynchronizationBehavior.Discard, true);
         SendCloudBackupCommand = new SynchronizedCommand(SendCloudBackup, SynchronizationBehavior.Discard, true);
         SetUpCloudBackupCommand = new SynchronizedCommand(SetUpCloudBackup, SynchronizationBehavior.Discard, true);
-        OpenSettingsCommand = new SynchronizedCommand(() => currentView.Show(settingsView, "Ajustes"), SynchronizationBehavior.Discard, true);
+        OpenSettingsCommand = new SynchronizedCommand(() => currentView.Show(settingsView), SynchronizationBehavior.Discard, true);
         DismissInvalidBackupCommand = new SynchronizedCommand(() => ShowInvalidBackupAlert = false, SynchronizationBehavior.Discard, true);
 
         // "Ano todo" first, then the twelve months — the same list TutorDetail and DogDetail pick
@@ -151,6 +152,17 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
 
     public ICommand RemovePhotoCommand { get; }
 
+    /// <summary>Gets shows the profile photo full screen, at the resolution it was stored at.</summary>
+    public ICommand OpenPhotoCommand { get; }
+
+    public ICommand ClosePhotoCommand { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the photo is open full screen. The viewer is the one place
+    /// that decodes the file at its stored size, so this staying false is what keeps the tab cheap.
+    /// </summary>
+    public bool ViewingPhoto { get; private set; }
+
     /// <summary>Gets the photo file name the editor would save; also what the read view shows.</summary>
     public string PhotoFileName { get; private set; } = string.Empty;
 
@@ -168,8 +180,6 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
 
     /// <summary>Gets saves the selected month's billing as an image.</summary>
     public ICommand ExportSummaryCommand { get; }
-
-    public ICommand ExportBackupCommand { get; }
 
     public ICommand ImportBackupCommand { get; }
 
@@ -669,32 +679,6 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     private Task<bool> AskReplaceAsync(string fileName) =>
         ReplaceRequest.AskAsync($"Já existe um arquivo chamado {fileName} nesta pasta. Substituir?");
 
-    private async Task ExportBackup()
-    {
-        BackupMsgIsError = false;
-        BackupMsg = string.Empty;
-
-        var destination = await fileExportDialog
-            .CreateAsync(BackupArchive.SuggestedFileName(), ExportFileKind.Zip, AskReplaceAsync)
-            .WithSync();
-
-        if (destination == null)
-        {
-            return;
-        }
-
-        Response result;
-        await using (destination.Content.ConfigureAwait(true))
-        {
-            result = await backupArchive.WriteToAsync(destination.Content).WithSync();
-        }
-
-        BackupMsgIsError = result != Response.Successful;
-        BackupMsg = result == Response.Successful
-            ? "Backup exportado."
-            : "Não foi possível exportar o backup.";
-    }
-
     /// <summary>
     /// Sends a backup to the automatic destination now, rather than waiting for the weekly prompt.
     /// </summary>
@@ -818,6 +802,10 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         PhotoFileName = storedPhotoFileName;
         ProfileMsg = string.Empty;
         IsEditingProfile = true;
+
+        // The viewer opens from the reading state's portrait, which the editor replaces. Leaving it
+        // open would strand a full-screen photo over a form the user can no longer reach.
+        ViewingPhoto = false;
     }
 
     private void CancelEditProfile()

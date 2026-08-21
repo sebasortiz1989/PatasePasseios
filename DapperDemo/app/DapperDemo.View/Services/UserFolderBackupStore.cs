@@ -31,17 +31,15 @@ public sealed class UserFolderBackupStore(CloudBackupState state) : CloudBackupS
     public async Task<string?> DestinationNameAsync()
     {
         var folder = await OpenDestinationAsync().WithSync();
-
-        // A picked tree can come back unnamed on Android. The path's last segment is a better
-        // answer than an empty label, and null is better than either when nothing is linked.
         if (folder == null)
         {
             return null;
         }
 
-        return string.IsNullOrWhiteSpace(folder.Name)
-            ? folder.Path?.Segments.LastOrDefault(s => !string.IsNullOrWhiteSpace(s))
-            : folder.Name;
+        var path = Describe(folder.Path);
+        return string.IsNullOrWhiteSpace(path)
+            ? (string.IsNullOrWhiteSpace(folder.Name) ? null : folder.Name)
+            : path;
     }
 
     /// <inheritdoc/>
@@ -120,6 +118,41 @@ public sealed class UserFolderBackupStore(CloudBackupState state) : CloudBackupS
             Console.WriteLine(e);
             return Response.Failed;
         }
+    }
+
+    /// <summary>
+    /// Turns a picked folder's URI into something a person recognises, like
+    /// <c>Documents/PatasEPasseios</c>.
+    /// </summary>
+    /// <remarks>
+    /// The bare folder name is not enough to tell two "Backup" folders apart, which is the whole
+    /// reason for showing it. The two shapes that arrive here are a desktop <c>file://</c> URI and
+    /// an Android storage-access <c>content://.../tree/primary%3ADocuments%2FPatas</c>; the latter
+    /// carries its readable path after a colon, once unescaped.
+    /// </remarks>
+    private static string? Describe(Uri? uri)
+    {
+        if (uri == null)
+        {
+            return null;
+        }
+
+        if (uri.IsFile)
+        {
+            return uri.LocalPath.Replace('\\', '/').TrimEnd('/');
+        }
+
+        var text = Uri.UnescapeDataString(uri.ToString());
+
+        // "primary:Documents/Patas" — the volume before the colon is an internal id, not a place
+        // the user would recognise, so only what follows it is shown.
+        var colon = text.LastIndexOf(':');
+        if (colon >= 0 && colon < text.Length - 1)
+        {
+            text = text[(colon + 1)..];
+        }
+
+        return text.Replace('\\', '/').Trim('/') is { Length: > 0 } trimmed ? trimmed : null;
     }
 
     /// <summary>

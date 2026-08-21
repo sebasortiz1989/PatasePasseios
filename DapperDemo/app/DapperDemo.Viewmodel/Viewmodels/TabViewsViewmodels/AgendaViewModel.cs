@@ -477,7 +477,7 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
     {
         session.SelectedServiceKind = kind;
         session.SelectedServiceId = serviceId;
-        currentView.Show(serviceDetailView, "Serviço");
+        currentView.Show(serviceDetailView);
         return Task.CompletedTask;
     }
 }

@@ -148,14 +148,17 @@ builder below it plus its own registrations.
 - Adding a view or view model means registering it in **both**
   `DapperDemoViewContainerBuilder` and `DapperDemoViewmodelContainerBuilder`
   (with `.WithAbstractions()`). A miss fails at runtime, not compile time.
-- Navigating is `CurrentView.Show(view, label)` — or `ShowRoot(view, label)` for a
-  tab, which also clears the back stack. `ViewShown` has no public setter, so a new
-  screen cannot forget the label. The label names **the screen being shown**, so that
-  whatever opens on top of it can put its name on the back control: pass the record's
-  own name where you have one (`dog.Name`, `tutor.Name`) and a screen name otherwise.
-  Back controls bind `Tag="{Binding Navigation.BackLabel}"` and never a literal — the
-  detail screens are reachable from several places and a constant is wrong in all but
-  one of them.
+- Navigating is `CurrentView.Show(view)` for a detail screen, `ShowRoot(view, label)`
+  for a tab. `ViewShown` has no public setter, so nothing can bypass them.
+  **Detail screens replace each other rather than stacking**: the history is never
+  deeper than one screen above a tab, and Back from any detail returns to its tab.
+  Only tabs carry a label, because only a tab is ever a back target. Back controls
+  bind `Tag="{Binding Navigation.BackLabel}"` and never a literal — a detail screen
+  opens from several tabs and a constant is wrong in all but one of them.
+  The flattening is load-bearing, not tidiness: dog → tutor → dog → tutor grew the
+  stack without bound, and because the presenters are reused singletons with the
+  selected record on `AppSession`, a stacked entry does not remember which record it
+  was showing. Walking back through one re-renders it with whatever is selected now.
 - Data-layer singletons (`DapperDatabaseService`, the repositories,
   `BackupArchive`) are registered in `DapperDemoInfrastructureContainerBuilder`.
 - `AvaloniaViewContainerBuilder` (framework) supplies the

@@ -99,9 +99,9 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
     public ICommand BackCommand { get; }
 
     /// <summary>
-    /// Gets the navigator, so the back control can read the name of the screen it actually returns
-    /// to. Not a constant in the markup: this screen is reachable from the Cachorros tab and from a
-    /// tutor's dog list, and each has to be named correctly.
+    /// Gets the navigator, so the back control can name the tab it returns to. Not a constant in
+    /// the markup: this screen opens from more than one tab, and a literal is wrong in all but one
+    /// of them.
     /// </summary>
     public CurrentView Navigation => currentView;
 
@@ -367,7 +367,7 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
     {
         session.SelectedTutorId = storedTutorId;
         tutorDetailView ??= tutorDetailFactory.Create();
-        currentView.Show(tutorDetailView, OwnerName);
+        currentView.Show(tutorDetailView);
         return Task.CompletedTask;
     }
 
@@ -375,7 +375,7 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
     {
         session.SelectedServiceKind = kind;
         session.SelectedServiceId = serviceId;
-        currentView.Show(serviceDetailView, "Serviço");
+        currentView.Show(serviceDetailView);
         return Task.CompletedTask;
     }
 

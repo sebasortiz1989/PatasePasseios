@@ -75,37 +75,46 @@
                     IsVisible="{Binding IsViewingProfile}"
                     Margin="35,14,35,0"
                     Spacing="14">
-                    <Panel
-                        Height="168"
-                        HorizontalAlignment="Left"
-                        Width="168">
-                        <Image
-                            imaging:ImageLoader.Path="{Binding PhotoPath}"
-                            IsVisible="{Binding HasPhoto}"
-                            Stretch="UniformToFill">
-                            <Image.Clip>
-                                <EllipseGeometry Rect="0,0,168,168" />
-                            </Image.Clip>
-                        </Image>
-                        <Border
-                            Background="{DynamicResource SurfaceControl}"
-                            CornerRadius="84"
-                            IsVisible="{Binding NoPhoto}">
-                            <TextBlock
-                                Classes="TTitle"
-                                HorizontalAlignment="Center"
-                                Text="{Binding Initials}"
-                                VerticalAlignment="Center" />
-                        </Border>
-                    </Panel>
+                    <!--  Tapping opens the photo full screen, the same as the dog screen.  -->
+                    <Button
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Command="{Binding OpenPhotoCommand}"
+                        HorizontalAlignment="Center"
+                        Padding="0">
+                        <Panel Height="168" Width="168">
+                            <Image
+                                imaging:ImageLoader.Path="{Binding PhotoPath}"
+                                IsVisible="{Binding HasPhoto}"
+                                Stretch="UniformToFill">
+                                <Image.Clip>
+                                    <EllipseGeometry Rect="0,0,168,168" />
+                                </Image.Clip>
+                            </Image>
+                            <Border
+                                Background="{DynamicResource SurfaceControl}"
+                                CornerRadius="84"
+                                IsVisible="{Binding NoPhoto}">
+                                <TextBlock
+                                    Classes="TTitle"
+                                    HorizontalAlignment="Center"
+                                    Text="{Binding Initials}"
+                                    VerticalAlignment="Center" />
+                            </Border>
+                        </Panel>
+                    </Button>
 
-                    <StackPanel Spacing="4">
+                    <StackPanel HorizontalAlignment="Center" Spacing="4">
                         <TextBlock
                             Classes="TTitle"
                             Text="{Binding CurrentUserName}"
+                            TextAlignment="Center"
                             TextWrapping="Wrap" />
-                        <TextBlock Classes="TCaption" Text="{Binding Email}" />
-                        <StackPanel Orientation="Horizontal">
+                        <TextBlock
+                            Classes="TCaption"
+                            Text="{Binding Email}"
+                            TextAlignment="Center" />
+                        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                             <TextBlock Classes="TCaption" Text="Nascimento " />
                             <TextBlock Classes="TCaption" Text="{Binding BirthDateLabel}" />
                             <TextBlock Classes="TCaption" Text="  ·  Pix " />
@@ -132,17 +141,19 @@
                                     Margin="18,0,0,0"
                                     Padding="0"
                                     Width="77">
-                                    <Path
-                                        Data="{StaticResource IconChevronLeft}"
+                                    <Viewbox
                                         Height="35"
                                         HorizontalAlignment="Center"
-                                        Stretch="Uniform"
-                                        Stroke="{DynamicResource InkPrimary}"
-                                        StrokeJoin="Round"
-                                        StrokeLineCap="Round"
-                                        StrokeThickness="2.4"
                                         VerticalAlignment="Center"
-                                        Width="35" />
+                                        Width="35">
+                                        <Path
+                                            Data="{StaticResource IconChevronLeft}"
+                                            Stretch="Uniform"
+                                            Stroke="{DynamicResource InkPrimary}"
+                                            StrokeJoin="Round"
+                                            StrokeLineCap="Round"
+                                            StrokeThickness="1" />
+                                    </Viewbox>
                                 </Button>
                                 <!--  The label is the way back to "Ano todo" once the arrows have moved off it.  -->
                                 <Button
@@ -164,17 +175,19 @@
                                     Margin="0,0,18,0"
                                     Padding="0"
                                     Width="77">
-                                    <Path
-                                        Data="{StaticResource IconChevronRight}"
+                                    <Viewbox
                                         Height="35"
                                         HorizontalAlignment="Center"
-                                        Stretch="Uniform"
-                                        Stroke="{DynamicResource InkPrimary}"
-                                        StrokeJoin="Round"
-                                        StrokeLineCap="Round"
-                                        StrokeThickness="2.4"
                                         VerticalAlignment="Center"
-                                        Width="35" />
+                                        Width="35">
+                                        <Path
+                                            Data="{StaticResource IconChevronRight}"
+                                            Stretch="Uniform"
+                                            Stroke="{DynamicResource InkPrimary}"
+                                            StrokeJoin="Round"
+                                            StrokeLineCap="Round"
+                                            StrokeThickness="1" />
+                                    </Viewbox>
                                 </Button>
                             </Grid>
                         </Border>
@@ -390,24 +403,7 @@
                                 <TextBlock
                                     Classes="TBody"
                                     Margin="28,21"
-                                    Text="Enviar uma cópia agora" />
-                            </Button>
-
-                            <Border Classes="RowRule" />
-                            <Button
-                                Background="Transparent"
-                                BorderThickness="0"
-                                Command="{Binding ExportBackupCommand}"
-                                HorizontalAlignment="Stretch"
-                                HorizontalContentAlignment="Stretch"
-                                Padding="0">
-                                <StackPanel Margin="28,21" Spacing="7">
-                                    <TextBlock Classes="TBody" Text="Salvar backup em outro lugar" />
-                                    <TextBlock
-                                        Classes="TCaption"
-                                        Text="Escolhe o destino desta vez só. Não altera a pasta do backup automático."
-                                        TextWrapping="Wrap" />
-                                </StackPanel>
+                                    Text="Atualizar backup agora" />
                             </Button>
 
                             <Border Classes="RowRule" />
@@ -576,36 +572,76 @@
                                 <CalendarDatePicker Classes="Field" SelectedDate="{Binding EditBirthDate}" />
                             </StackPanel>
                             <Border Classes="RowRule" />
-                            <Grid ColumnDefinitions="*,Auto" Margin="28,21">
-                                <StackPanel Spacing="7" VerticalAlignment="Center">
-                                    <TextBlock Classes="TBody" Text="Foto" />
-                                    <Button
-                                        Classes="TextLink"
-                                        Command="{Binding RemovePhotoCommand}"
-                                        Content="Remover"
-                                        HorizontalAlignment="Left"
-                                        IsVisible="{Binding HasPhoto}" />
-                                </StackPanel>
-                                <Button
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    Command="{Binding ChoosePhotoCommand}"
-                                    Grid.Column="1"
-                                    Padding="0">
-                                    <Border
-                                        BorderBrush="{DynamicResource StrokeRaised}"
-                                        BorderThickness="1"
-                                        CornerRadius="14"
+                            <!--
+                                The whole row is the tap target, not just the thumbnail. It was the
+                                thumbnail alone, and with no photo that is a bare 70px outline with
+                                nothing in it — which reads as a placeholder rather than a control,
+                                so the photo looked uneditable. The caption underneath says what
+                                tapping does either way.
+                            -->
+                            <Button
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Command="{Binding ChoosePhotoCommand}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                Padding="0">
+                                <Grid ColumnDefinitions="*,Auto" Margin="28,21">
+                                    <StackPanel Spacing="7" VerticalAlignment="Center">
+                                        <TextBlock Classes="TBody" Text="Foto" />
+                                        <TextBlock
+                                            Classes="TCaption"
+                                            IsVisible="{Binding NoPhoto}"
+                                            Text="Nenhuma escolhida. Toque para escolher." />
+                                        <TextBlock
+                                            Classes="TCaption"
+                                            IsVisible="{Binding HasPhoto}"
+                                            Text="Toque para trocar." />
+                                    </StackPanel>
+                                    <Panel
+                                        Grid.Column="1"
                                         Height="70"
                                         Width="70">
-                                        <Image
-                                            imaging:ImageLoader.DecodeWidth="192"
-                                            imaging:ImageLoader.Path="{Binding PhotoPath}"
-                                            IsVisible="{Binding HasPhoto}"
-                                            Stretch="UniformToFill" />
-                                    </Border>
-                                </Button>
-                            </Grid>
+                                        <Border
+                                            BorderBrush="{DynamicResource StrokeRaised}"
+                                            BorderThickness="1"
+                                            CornerRadius="14"
+                                            ClipToBounds="True">
+                                            <Image
+                                                imaging:ImageLoader.DecodeWidth="192"
+                                                imaging:ImageLoader.Path="{Binding PhotoPath}"
+                                                IsVisible="{Binding HasPhoto}"
+                                                Stretch="UniformToFill" />
+                                        </Border>
+                                        <!--  An empty frame says nothing; the initials say whose photo is missing.  -->
+                                        <TextBlock
+                                            Classes="TCaption Muted"
+                                            HorizontalAlignment="Center"
+                                            IsVisible="{Binding NoPhoto}"
+                                            Text="{Binding Initials}"
+                                            VerticalAlignment="Center" />
+                                    </Panel>
+                                </Grid>
+                            </Button>
+
+                            <!--
+                                Remover is its own row: nesting a button inside the row-wide tap
+                                target above would make one of the two unreachable.
+                            -->
+                            <Border Classes="RowRule" IsVisible="{Binding HasPhoto}" />
+                            <Button
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Command="{Binding RemovePhotoCommand}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                IsVisible="{Binding HasPhoto}"
+                                Padding="0">
+                                <TextBlock
+                                    Classes="TBody Owed"
+                                    Margin="28,21"
+                                    Text="Remover foto" />
+                            </Button>
                         </StackPanel>
                     </Border>
 
@@ -636,6 +672,11 @@
                 <Border Height="168" />
             </StackPanel>
         </ScrollViewer>
+
+        <components:PhotoViewer
+            CloseCommand="{Binding ClosePhotoCommand}"
+            IsOpen="{Binding ViewingPhoto}"
+            Path="{Binding PhotoPath}" />
 
         <components:ConfirmDialog
             ConfirmCommand="{Binding DismissInvalidBackupCommand}"
