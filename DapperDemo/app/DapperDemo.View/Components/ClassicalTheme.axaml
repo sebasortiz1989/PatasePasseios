@@ -154,6 +154,49 @@
             </Setter>
         </ControlTheme>
 
+        <!--
+            The switch, sized for the 720 canvas. Fluent's own is drawn for device pixels, so on a
+            canvas this wide it came out about a third of the size of the text beside it. Colours
+            come from the palette too: the stock one derives its on-state from Fluent's accent.
+        -->
+        <ControlTheme TargetType="ToggleSwitch" x:Key="{x:Type ToggleSwitch}">
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border
+                        Background="{DynamicResource SurfaceControl}"
+                        BorderBrush="{DynamicResource StrokeControl}"
+                        BorderThickness="1"
+                        CornerRadius="28"
+                        Height="56"
+                        Name="PART_Track"
+                        Width="98">
+                        <Panel
+                            HorizontalAlignment="Left"
+                            Margin="7,0"
+                            Name="PART_MovingKnobs"
+                            VerticalAlignment="Center">
+                            <Panel Height="40" Name="PART_SwitchKnob" Width="40">
+                                <Ellipse Fill="{DynamicResource InkSecondary}" Name="Knob" />
+                            </Panel>
+                        </Panel>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+
+            <Style Selector="^:checked /template/ Border#PART_Track">
+                <Setter Property="Background" Value="{DynamicResource AccentTint}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource AccentStrong}" />
+            </Style>
+            <Style Selector="^:checked /template/ Ellipse#Knob">
+                <Setter Property="Fill" Value="{DynamicResource AccentStrong}" />
+            </Style>
+            <Style Selector="^:checked /template/ Panel#PART_MovingKnobs">
+                <Setter Property="HorizontalAlignment" Value="Right" />
+            </Style>
+        </ControlTheme>
+
         <FontFamily x:Key="FontHeading">Times New Roman,Georgia,serif</FontFamily>
         <FontFamily x:Key="FontBody">Georgia,Times New Roman,serif</FontFamily>
 
@@ -321,6 +364,7 @@
         <Setter Property="Background" Value="{DynamicResource SurfaceRaised}" />
         <Setter Property="CornerRadius" Value="21" />
         <Setter Property="Margin" Value="35,0" />
+        <Setter Property="ClipToBounds" Value="True" />
     </Style>
 
     <!--  A separator between two rows of one group. Inset to the row's text edge, never at an outer edge.  -->
@@ -404,11 +448,13 @@
     </Style>
 
     <!--
-        A list of rows in one group. The separator is drawn at the top of every row and hidden on
-        the first, because a group's own edge is its fill and radius — never a hairline.
+        A list of rows in one group. Every row draws a separator above it; the list is nudged up by
+        one pixel so the first row's separator lands under the group's edge and is clipped away by
+        the corner radius. Index-free on purpose — a nth-child selector stops being reliable once
+        the panel virtualizes and starts recycling containers.
     -->
-    <Style Selector="ItemsControl.RowGroup &gt; ContentPresenter:nth-child(1) Border.RowRule">
-        <Setter Property="IsVisible" Value="False" />
+    <Style Selector="ItemsControl.RowGroup">
+        <Setter Property="Margin" Value="0,-1,0,0" />
     </Style>
 
     <!--
@@ -452,6 +498,81 @@
         <Setter Property="FontSize" Value="{DynamicResource TypeUi}" />
         <Setter Property="Foreground" Value="{DynamicResource AccentStrong}" />
         <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <!--
+        A date or time picker inside a group row, dressed like TextBox.Field beside it. The stock
+        drop-down button is a miniature calendar built out of Borders with an accent fill — sized
+        and coloured for the old bordered field, and conspicuous inside a borderless row. It is
+        retemplated down to one stroked chevron, the same glyph every other row uses to say
+        "this opens".
+    -->
+    <Style Selector="CalendarDatePicker.Field">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeBody}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+
+    <Style Selector="CalendarDatePicker.Field /template/ TextBox#PART_TextBox">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeBody}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
+    </Style>
+
+    <Style Selector="CalendarDatePicker.Field /template/ Button#PART_Button">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Width" Value="56" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="Transparent">
+                    <Path
+                        Data="{StaticResource IconChevronDown}"
+                        Height="28"
+                        HorizontalAlignment="Center"
+                        Stretch="Uniform"
+                        Stroke="{DynamicResource InkSecondary}"
+                        StrokeJoin="Round"
+                        StrokeLineCap="Round"
+                        StrokeThickness="2.4"
+                        VerticalAlignment="Center"
+                        Width="28" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <!--  The time picker gets the same treatment; its own chrome is a three-cell button row.  -->
+    <Style Selector="TimePicker.Field">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="{DynamicResource TypeBody}" />
+        <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
+    </Style>
+
+    <Style Selector="TimePicker.Field /template/ Button#PART_FlyoutButton">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>
 
     <!--  Headings / labels  -->

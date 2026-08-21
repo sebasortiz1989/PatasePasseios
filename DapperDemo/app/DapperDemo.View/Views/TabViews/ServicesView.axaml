@@ -5,7 +5,6 @@
     x:Class="DapperDemo.View.Views.TabViews.ServicesView"
     x:DataType="tabViewsViewmodels:ServicesViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:buttons="using:AvaloniaFramework.Controls.Buttons"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:inputs="using:AvaloniaFramework.Controls.Inputs"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -13,445 +12,284 @@
     xmlns:utils="clr-namespace:DapperDemo.Viewmodel.Viewmodels.Utils;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Background="{DynamicResource ColorBg}" Width="720">
-        <ScrollViewer>
-            <StackPanel Spacing="0">
-                <StackPanel Margin="32,32,32,16" Spacing="2">
-                    <TextBlock
-                        Classes="Heading1"
-                        FontSize="68"
-                        Text="Novo serviço" />
-                    <TextBlock Classes="Kicker" Text="Agendar" />
-                </StackPanel>
+    <UserControl.Resources>
+        <!--  One time of day. Each row carries its own remove, and the last one cannot be removed.  -->
+        <DataTemplate DataType="utils:ServiceTimeSlot" x:Key="TimeSlotTemplate">
+            <StackPanel>
+                <Border Classes="RowRule" />
+                <Grid ColumnDefinitions="*,Auto" Margin="28,14">
+                    <TimePicker Classes="Field" ClockIdentifier="24HourClock" SelectedTime="{Binding Time}" />
+                    <Button
+                        Classes="TextLink"
+                        Command="{Binding RemoveCommand}"
+                        Content="Remover"
+                        Grid.Column="1"
+                        IsVisible="{Binding CanRemove}"
+                        VerticalAlignment="Center" />
+                </Grid>
+            </StackPanel>
+        </DataTemplate>
 
-                <!--  Nothing can be scheduled without a dog, so say so instead of showing an empty picker  -->
-                <Border
-                    BorderBrush="{DynamicResource ColorDivider}"
-                    BorderThickness="0,2,0,0"
-                    IsVisible="{Binding HasNoDogs}"
-                    Margin="32,16,32,0"
-                    Padding="32,64">
-                    <TextBlock
-                        FontFamily="{StaticResource FontBody}"
-                        FontSize="32"
-                        FontStyle="Italic"
-                        Foreground="{DynamicResource ColorTextMuted45}"
-                        HorizontalAlignment="Center"
-                        Text="Cadastre um tutor e um cachorro antes de agendar."
-                        TextAlignment="Center"
-                        TextWrapping="Wrap" />
+        <DataTemplate DataType="utils:ServiceDateSlot" x:Key="DateSlotTemplate">
+            <StackPanel>
+                <Border Classes="RowRule" />
+                <Grid ColumnDefinitions="*,Auto" Margin="28,14">
+                    <CalendarDatePicker Classes="Field" SelectedDate="{Binding Date}" />
+                    <Button
+                        Classes="TextLink"
+                        Command="{Binding RemoveCommand}"
+                        Content="Remover"
+                        Grid.Column="1"
+                        IsVisible="{Binding CanRemove}"
+                        VerticalAlignment="Center" />
+                </Grid>
+            </StackPanel>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid Background="{DynamicResource SurfacePrimary}" RowDefinitions="Auto,*">
+
+        <TextBlock Classes="TTitle" Grid.Row="0" Margin="35,14,35,0" Text="Agendar" />
+
+        <ScrollViewer Grid.Row="1" Margin="0,28,0,0">
+            <StackPanel>
+
+                <!--  What kind. Four peers, one true — the same segmented shape as everywhere else.  -->
+                <TextBlock Classes="TMicro" Margin="35,0,35,14" Text="TIPO" />
+                <Border Classes="Group">
+                    <Grid ColumnDefinitions="*,Auto,*,Auto,*,Auto,*" Height="77">
+                        <Button
+                            Classes="SegOption"
+                            Classes.Active="{Binding IsTypeWalk}"
+                            Command="{Binding SetTypeWalk}"
+                            Content="Passeio"
+                            CornerRadius="21,0,0,21" />
+                        <Border Classes="SegRule" Grid.Column="1" />
+                        <Button
+                            Classes="SegOption"
+                            Classes.Active="{Binding IsTypeSitting}"
+                            Command="{Binding SetTypeSitting}"
+                            Content="Pet sitting"
+                            Grid.Column="2" />
+                        <Border Classes="SegRule" Grid.Column="3" />
+                        <Button
+                            Classes="SegOption"
+                            Classes.Active="{Binding IsTypeHotel}"
+                            Command="{Binding SetTypeHotel}"
+                            Content="Hospedagem"
+                            Grid.Column="4" />
+                        <Border Classes="SegRule" Grid.Column="5" />
+                        <Button
+                            Classes="SegOption"
+                            Classes.Active="{Binding IsTypeDayCare}"
+                            Command="{Binding SetTypeDayCare}"
+                            Content="Creche"
+                            CornerRadius="0,21,21,0"
+                            Grid.Column="6" />
+                    </Grid>
                 </Border>
 
-                <StackPanel
-                    IsVisible="{Binding HasDogs}"
-                    Margin="32,16,32,48"
-                    Spacing="24">
-                    <!--  Service type — segmented control  -->
-                    <StackPanel Spacing="10">
-                        <TextBlock
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="28"
-                            Foreground="{DynamicResource ColorTextMuted70}"
-                            Text="Tipo de serviço" />
-                        <!--
-                            Two by two rather than one row of four: at a quarter of the canvas
-                            "Pet sitting" no longer fits inside its own segment.
-                        -->
-                        <Border
-                            BorderBrush="{DynamicResource ColorDivider}"
-                            BorderThickness="2"
-                            CornerRadius="7">
-                            <Grid ColumnDefinitions="*,2,*" RowDefinitions="Auto,2,Auto">
-                                <Button
-                                    Classes="SegOption"
-                                    Classes.Active="{Binding IsTypeWalk}"
-                                    Command="{Binding SetTypeWalk}"
-                                    Content="Passeio"
-                                    HorizontalAlignment="Stretch"
-                                    HorizontalContentAlignment="Center" />
-                                <Border Background="{DynamicResource ColorDivider}" Grid.Column="1" />
-                                <Button
-                                    Classes="SegOption"
-                                    Classes.Active="{Binding IsTypeSitting}"
-                                    Command="{Binding SetTypeSitting}"
-                                    Content="Pet sitting"
-                                    Grid.Column="2"
-                                    HorizontalAlignment="Stretch"
-                                    HorizontalContentAlignment="Center" />
+                <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="CACHORRO" />
+                <Border Classes="Group">
+                    <StackPanel>
+                        <StackPanel Margin="28,21" Spacing="7">
+                            <inputs:VSearchableComboBox
+                                Classes="FieldPicker"
+                                IsVisible="{Binding HasDogs}"
+                                ItemsSource="{Binding DogOptions}"
+                                PlaceholderText="Selecione…"
+                                SelectedItem="{Binding SelectedDog}" />
+                            <TextBlock
+                                Classes="TBody Muted"
+                                IsVisible="{Binding HasNoDogs}"
+                                Text="Cadastre um cachorro primeiro." />
+                        </StackPanel>
+                        <Border Classes="RowRule" IsVisible="{Binding HasSelectedTutor}" />
+                        <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding HasSelectedTutor}" Margin="28,21">
+                            <TextBlock Classes="TBody" Text="Tutor" />
+                            <TextBlock Classes="TBody Muted" Grid.Column="1" Text="{Binding SelectedTutorName}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
 
-                                <Border
-                                    Background="{DynamicResource ColorDivider}"
-                                    Grid.ColumnSpan="3"
-                                    Grid.Row="1" />
+                <!--  Hotel: a span. Everything else: one date, a range, or a list of days.  -->
+                <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="QUANDO" />
 
-                                <Button
-                                    Classes="SegOption"
-                                    Classes.Active="{Binding IsTypeHotel}"
-                                    Command="{Binding SetTypeHotel}"
-                                    Content="Hotel"
-                                    Grid.Row="2"
-                                    HorizontalAlignment="Stretch"
-                                    HorizontalContentAlignment="Center" />
-                                <Border
-                                    Background="{DynamicResource ColorDivider}"
+                <Border Classes="Group" IsVisible="{Binding SvcIsHotel}">
+                    <StackPanel>
+                        <StackPanel Margin="28,21" Spacing="7">
+                            <TextBlock Classes="TCaption" Text="Entrada" />
+                            <CalendarDatePicker Classes="Field" SelectedDate="{Binding SvcDatePart}" />
+                            <TimePicker Classes="Field" ClockIdentifier="24HourClock" SelectedTime="{Binding SvcTimePart}" />
+                        </StackPanel>
+                        <Border Classes="RowRule" />
+                        <StackPanel Margin="28,21" Spacing="7">
+                            <TextBlock Classes="TCaption" Text="Saída" />
+                            <CalendarDatePicker Classes="Field" SelectedDate="{Binding SvcEndDatePart}" />
+                            <TimePicker Classes="Field" ClockIdentifier="24HourClock" SelectedTime="{Binding SvcEndTimePart}" />
+                        </StackPanel>
+                        <Border Classes="RowRule" />
+                        <Grid ColumnDefinitions="*,Auto" Margin="28,14">
+                            <TextBlock Classes="TUi" Text="Passeios incluídos" VerticalAlignment="Center" />
+                            <ToggleSwitch
+                                Grid.Column="1"
+                                IsChecked="{Binding SvcRequiresWalking}"
+                                OffContent=""
+                                OnContent=""
+                                VerticalAlignment="Center" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <StackPanel IsVisible="{Binding !SvcIsHotel}">
+                    <Border Classes="Group">
+                        <StackPanel>
+                            <Grid ColumnDefinitions="*,Auto" Margin="28,14">
+                                <TextBlock Classes="TUi" Text="Repetir num período" VerticalAlignment="Center" />
+                                <ToggleSwitch
                                     Grid.Column="1"
-                                    Grid.Row="2" />
-                                <Button
-                                    Classes="SegOption"
-                                    Classes.Active="{Binding IsTypeDayCare}"
-                                    Command="{Binding SetTypeDayCare}"
-                                    Content="Day-Care"
-                                    Grid.Column="2"
-                                    Grid.Row="2"
-                                    HorizontalAlignment="Stretch"
-                                    HorizontalContentAlignment="Center" />
+                                    IsChecked="{Binding SvcUseDateRange}"
+                                    OffContent=""
+                                    OnContent=""
+                                    VerticalAlignment="Center" />
                             </Grid>
+
+                            <Border Classes="RowRule" IsVisible="{Binding SvcIsSingleDate}" />
+                            <StackPanel IsVisible="{Binding SvcIsSingleDate}" Margin="28,21" Spacing="7">
+                                <TextBlock Classes="TCaption" Text="Data" />
+                                <CalendarDatePicker Classes="Field" SelectedDate="{Binding SvcDatePart}" />
+                            </StackPanel>
+
+                            <Border Classes="RowRule" IsVisible="{Binding SvcUseDateRange}" />
+                            <StackPanel IsVisible="{Binding SvcUseDateRange}" Margin="28,21" Spacing="7">
+                                <TextBlock Classes="TCaption" Text="De" />
+                                <CalendarDatePicker Classes="Field" SelectedDate="{Binding SvcRangeFromPart}" />
+                                <TextBlock Classes="TCaption" Text="Até" />
+                                <CalendarDatePicker Classes="Field" SelectedDate="{Binding SvcRepeatUntilPart}" />
+                            </StackPanel>
+
+                            <Border Classes="RowRule" IsVisible="{Binding SvcIsDayCare}" />
+                            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding SvcIsDayCare}" Margin="28,14">
+                                <TextBlock Classes="TUi" Text="Passeios incluídos" VerticalAlignment="Center" />
+                                <ToggleSwitch
+                                    Grid.Column="1"
+                                    IsChecked="{Binding SvcRequiresWalking}"
+                                    OffContent=""
+                                    OnContent=""
+                                    VerticalAlignment="Center" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!--  Several days, chosen one at a time. Expands inline; never a calendar popup.  -->
+                    <StackPanel IsVisible="{Binding SvcUsesDateList}">
+                        <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="DIAS" />
+                        <Border Classes="Group">
+                            <StackPanel>
+                                <ItemsControl
+                                    Classes="RowGroup"
+                                    ItemTemplate="{StaticResource DateSlotTemplate}"
+                                    ItemsSource="{Binding SvcDates}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+                                <Border Classes="RowRule" />
+                                <Button
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Command="{Binding AddDateCommand}"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Stretch"
+                                    Padding="0">
+                                    <TextBlock Classes="TBody Owed" Margin="28,21" Text="+ Adicionar dia" />
+                                </Button>
+                            </StackPanel>
                         </Border>
                     </StackPanel>
 
-                    <!--  Dog picker  -->
-                    <StackPanel Spacing="10">
-                        <TextBlock
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="28"
-                            Foreground="{DynamicResource ColorTextMuted70}"
-                            Text="Cachorro" />
-                        <!--  Typeable: the dog list grows, and scrolling it to find a name does not.  -->
-                        <inputs:VSearchableComboBox
-                            Classes="FormInput"
-                            ItemsSource="{Binding DogOptions}"
-                            PlaceholderText="Selecione…"
-                            SelectedItem="{Binding SelectedDog}" />
-
-                        <!--  Confirms which tutor the booking is with, derived from the chosen dog.  -->
-                        <StackPanel
-                            IsVisible="{Binding HasSelectedTutor}"
-                            Orientation="Horizontal"
-                            Spacing="10">
-                            <TextBlock
-                                Classes="Kicker"
-                                Text="Tutor"
-                                VerticalAlignment="Center" />
-                            <TextBlock
-                                FontFamily="{StaticResource FontBody}"
-                                FontSize="30"
-                                Foreground="{DynamicResource ColorText}"
-                                Text="{Binding SelectedTutorName}"
-                                VerticalAlignment="Center" />
-                        </StackPanel>
-                    </StackPanel>
-
-                    <!--  Hotel: check-in / check-out / walks / price per day  -->
-                    <StackPanel IsVisible="{Binding SvcIsHotel}" Spacing="24">
-                        <StackPanel Spacing="10">
-                            <TextBlock
-                                FontFamily="{StaticResource FontBody}"
-                                FontSize="28"
-                                Foreground="{DynamicResource ColorTextMuted70}"
-                                Text="Entrada" />
-                            <Grid ColumnDefinitions="*,16,Auto">
-                                <CalendarDatePicker
+                    <!--  A visit is often twice daily, so the times are a list rather than one field.  -->
+                    <StackPanel IsVisible="{Binding SvcUsesTimes}">
+                        <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="HORÁRIOS" />
+                        <Border Classes="Group">
+                            <StackPanel>
+                                <ItemsControl
+                                    Classes="RowGroup"
+                                    ItemTemplate="{StaticResource TimeSlotTemplate}"
+                                    ItemsSource="{Binding SvcTimes}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+                                <Border Classes="RowRule" />
+                                <Button
                                     Background="Transparent"
-                                    BorderBrush="{DynamicResource ColorDivider}"
-                                    BorderThickness="2"
-                                    CornerRadius="7"
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="32"
-                                    Foreground="{DynamicResource ColorText}"
-                                    MinHeight="74"
-                                    SelectedDate="{Binding SvcDatePart}" />
-                                <TimePicker
-                                    ClockIdentifier="24HourClock"
-                                    Grid.Column="2"
-                                    MinHeight="74"
-                                    SelectedTime="{Binding SvcTimePart}" />
-                            </Grid>
-                        </StackPanel>
-
-                        <StackPanel Spacing="10">
-                            <TextBlock
-                                FontFamily="{StaticResource FontBody}"
-                                FontSize="28"
-                                Foreground="{DynamicResource ColorTextMuted70}"
-                                Text="Saída" />
-                            <Grid ColumnDefinitions="*,16,Auto">
-                                <CalendarDatePicker
-                                    Background="Transparent"
-                                    BorderBrush="{DynamicResource ColorDivider}"
-                                    BorderThickness="2"
-                                    CornerRadius="7"
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="32"
-                                    Foreground="{DynamicResource ColorText}"
-                                    MinHeight="74"
-                                    SelectedDate="{Binding SvcEndDatePart}" />
-                                <TimePicker
-                                    ClockIdentifier="24HourClock"
-                                    Grid.Column="2"
-                                    MinHeight="74"
-                                    SelectedTime="{Binding SvcEndTimePart}" />
-                            </Grid>
-                        </StackPanel>
-
-                        <CheckBox
-                            Content="Inclui passeios diários"
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="32"
-                            Foreground="{DynamicResource ColorTextMuted70}"
-                            IsChecked="{Binding SvcRequiresWalking}"
-                            Theme="{StaticResource ClassicCheckBox}" />
-
-                        <StackPanel Spacing="10">
-                            <TextBlock
-                                FontFamily="{StaticResource FontBody}"
-                                FontSize="28"
-                                Foreground="{DynamicResource ColorTextMuted70}"
-                                Text="Preço por dia (R$)" />
-                            <TextBox
-                                Background="Transparent"
-                                BorderBrush="{DynamicResource ColorDivider}"
-                                BorderThickness="2"
-                                CaretBrush="{DynamicResource ColorAccent}"
-                                CornerRadius="7"
-                                FontFamily="{StaticResource FontBody}"
-                                FontSize="34"
-                                Foreground="{DynamicResource ColorText}"
-                                MinHeight="74"
-                                Padding="18,0"
-                                PlaceholderText="0,00"
-                                Text="{Binding SvcPricePerDay}"
-                                VerticalContentAlignment="Center" />
-                        </StackPanel>
-                    </StackPanel>
-
-                    <!--  Walk / pet sitting: single date + price  -->
-                    <StackPanel IsVisible="{Binding SvcIsSingleDate}" Spacing="24">
-                        <StackPanel Spacing="10">
-                            <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="28"
-                                    Foreground="{DynamicResource ColorTextMuted70}"
-                                    Text="Datas"
-                                    VerticalAlignment="Center" />
-                                <buttons:VButton
-                                    Classes="BtnGhost"
-                                    Command="{Binding AddDateCommand}"
-                                    Grid.Column="1"
-                                    Height="62"
-                                    IsVisible="{Binding SvcUsesDateList}"
-                                    VText="+ Data" />
-                            </Grid>
-
-                            <CheckBox
-                                Content="Usar intervalo de datas"
-                                FontFamily="{StaticResource FontBody}"
-                                FontSize="30"
-                                Foreground="{DynamicResource ColorTextMuted70}"
-                                IsChecked="{Binding SvcUseDateRange}"
-                                Theme="{StaticResource ClassicCheckBox}" />
-
-                            <!--  Individual days: the 1st, 3rd and 10th rather than a run.  -->
-                            <ItemsControl IsVisible="{Binding SvcUsesDateList}" ItemsSource="{Binding SvcDates}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate DataType="utils:ServiceDateSlot">
-                                        <Grid ColumnDefinitions="*,12,Auto" Margin="0,0,0,12">
-                                            <CalendarDatePicker
-                                                Background="Transparent"
-                                                BorderBrush="{DynamicResource ColorDivider}"
-                                                BorderThickness="2"
-                                                CornerRadius="7"
-                                                FontFamily="{StaticResource FontBody}"
-                                                FontSize="32"
-                                                Foreground="{DynamicResource ColorText}"
-                                                HorizontalAlignment="Stretch"
-                                                MinHeight="74"
-                                                SelectedDate="{Binding Date}" />
-                                            <buttons:VButton
-                                                Classes="BtnGhost"
-                                                Command="{Binding RemoveCommand}"
-                                                Grid.Column="2"
-                                                Height="81"
-                                                IsVisible="{Binding CanRemove}"
-                                                VText="Remover"
-                                                Width="150" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-
-                            <!--  Continuous range: every day from one date through another.  -->
-                            <StackPanel IsVisible="{Binding SvcUseDateRange}" Spacing="10">
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="28"
-                                    Foreground="{DynamicResource ColorTextMuted70}"
-                                    Text="De" />
-                                <CalendarDatePicker
-                                    Background="Transparent"
-                                    BorderBrush="{DynamicResource ColorDivider}"
-                                    BorderThickness="2"
-                                    CornerRadius="7"
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="32"
-                                    Foreground="{DynamicResource ColorText}"
+                                    BorderThickness="0"
+                                    Command="{Binding AddTimeCommand}"
                                     HorizontalAlignment="Stretch"
-                                    MinHeight="74"
-                                    SelectedDate="{Binding SvcRangeFromPart}" />
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="28"
-                                    Foreground="{DynamicResource ColorTextMuted70}"
-                                    Text="Até" />
-                                <CalendarDatePicker
-                                    Background="Transparent"
-                                    BorderBrush="{DynamicResource ColorDivider}"
-                                    BorderThickness="2"
-                                    CornerRadius="7"
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="32"
-                                    Foreground="{DynamicResource ColorText}"
-                                    HorizontalAlignment="Stretch"
-                                    MinHeight="74"
-                                    SelectedDate="{Binding SvcRepeatUntilPart}" />
+                                    HorizontalContentAlignment="Stretch"
+                                    Padding="0">
+                                    <TextBlock Classes="TBody Owed" Margin="28,21" Text="+ Adicionar horário" />
+                                </Button>
                             </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+
+                <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="VALOR" />
+                <Border Classes="Group">
+                    <StackPanel>
+                        <StackPanel IsVisible="{Binding SvcIsHotel}" Margin="28,21" Spacing="7">
+                            <TextBlock Classes="TCaption" Text="Preço por dia (R$)" />
+                            <TextBox Classes="Field" Text="{Binding SvcPricePerDay}" PlaceholderText="0,00" />
                         </StackPanel>
+                        <StackPanel IsVisible="{Binding !SvcIsHotel}" Margin="28,21" Spacing="7">
+                            <TextBlock Classes="TCaption" Text="Preço (R$)" />
+                            <TextBox Classes="Field" Text="{Binding SvcPrice}" PlaceholderText="0,00" />
+                        </StackPanel>
+
+                        <Border Classes="RowRule" />
 
                         <!--
-                            Extra times of day — a sitting often runs morning and night. Hidden for
-                            day-care, which is booked for the day rather than for a time.
+                            Outside the kind panels: a discount applies to every kind, and a repeat
+                            applies it to every occurrence it creates.
                         -->
-                        <StackPanel IsVisible="{Binding SvcUsesTimes}" Spacing="10">
-                            <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock
-                                    FontFamily="{StaticResource FontBody}"
-                                    FontSize="28"
-                                    Foreground="{DynamicResource ColorTextMuted70}"
-                                    Text="Horários por dia"
-                                    VerticalAlignment="Center" />
-                                <buttons:VButton
-                                    Classes="BtnGhost"
-                                    Command="{Binding AddTimeCommand}"
-                                    Grid.Column="1"
-                                    Height="62"
-                                    VText="+ Horário" />
-                            </Grid>
-
-                            <ItemsControl ItemsSource="{Binding SvcTimes}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate DataType="utils:ServiceTimeSlot">
-                                        <Grid ColumnDefinitions="*,12,Auto" Margin="0,0,0,12">
-                                            <TimePicker
-                                                ClockIdentifier="24HourClock"
-                                                HorizontalAlignment="Stretch"
-                                                MinHeight="74"
-                                                SelectedTime="{Binding Time}" />
-                                            <!--  Hidden on the last remaining row: the form needs at least one time.  -->
-                                            <buttons:VButton
-                                                Classes="BtnGhost"
-                                                Command="{Binding RemoveCommand}"
-                                                Grid.Column="2"
-                                                Height="81"
-                                                IsVisible="{Binding CanRemove}"
-                                                VText="Remover"
-                                                Width="150" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </StackPanel>
-
-                        <!--  Day-care bundles walks the same way a hotel stay does.  -->
-                        <CheckBox
-                            Content="Inclui passeios"
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="32"
-                            Foreground="{DynamicResource ColorTextMuted70}"
-                            IsChecked="{Binding SvcRequiresWalking}"
-                            IsVisible="{Binding SvcIsDayCare}"
-                            Theme="{StaticResource ClassicCheckBox}" />
-
-                        <TextBlock
-                            Classes="Kicker"
-                            IsVisible="{Binding HasSvcOccurrenceSummary}"
-                            Text="{Binding SvcOccurrenceSummary}" />
-
-                        <StackPanel Spacing="10">
-                            <TextBlock
-                                FontFamily="{StaticResource FontBody}"
-                                FontSize="28"
-                                Foreground="{DynamicResource ColorTextMuted70}"
-                                Text="Preço (R$)" />
-                            <TextBox
-                                Background="Transparent"
-                                BorderBrush="{DynamicResource ColorDivider}"
-                                BorderThickness="2"
-                                CaretBrush="{DynamicResource ColorAccent}"
-                                CornerRadius="7"
-                                FontFamily="{StaticResource FontBody}"
-                                FontSize="34"
-                                Foreground="{DynamicResource ColorText}"
-                                MinHeight="74"
-                                Padding="18,0"
-                                PlaceholderText="0,00"
-                                Text="{Binding SvcPrice}"
-                                VerticalContentAlignment="Center" />
+                        <StackPanel Margin="28,21" Spacing="7">
+                            <TextBlock Classes="TCaption" Text="Desconto (%)" />
+                            <TextBox Classes="Field" Text="{Binding SvcDiscount}" PlaceholderText="ex.: 10 para 10% de desconto" />
                         </StackPanel>
                     </StackPanel>
+                </Border>
 
-                    <!--
-                        Outside both kind panels above: a discount applies to every kind, and a
-                        repeat applies it to every occurrence it creates — a standing discount for
-                        a regular tutor is agreed once, not per visit.
-                    -->
-                    <StackPanel Spacing="10">
-                        <TextBlock
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="28"
-                            Foreground="{DynamicResource ColorTextMuted70}"
-                            Text="Desconto (%)" />
-                        <TextBox
-                            Background="Transparent"
-                            BorderBrush="{DynamicResource ColorDivider}"
-                            BorderThickness="2"
-                            CaretBrush="{DynamicResource ColorAccent}"
-                            CornerRadius="7"
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="34"
-                            Foreground="{DynamicResource ColorText}"
-                            MinHeight="74"
-                            Padding="18,0"
-                            PlaceholderText="ex.: 10 para 10% de desconto"
-                            Text="{Binding SvcDiscount}"
-                            VerticalContentAlignment="Center" />
-                        <TextBlock
-                            FontFamily="{StaticResource FontBody}"
-                            FontSize="25"
-                            FontStyle="Italic"
-                            Foreground="{DynamicResource ColorTextMuted45}"
-                            Text="Deixe em branco para cobrar o preço cheio."
-                            TextWrapping="Wrap" />
-                    </StackPanel>
+                <TextBlock
+                    Classes="TUi Muted"
+                    IsVisible="{Binding HasSvcOccurrenceSummary}"
+                    Margin="35,21,35,0"
+                    Text="{Binding SvcOccurrenceSummary}"
+                    TextWrapping="Wrap" />
 
-                    <TextBlock
-                        Classes="FormMsg"
-                        Classes.Error="{Binding SvcMsgIsError}"
-                        FontFamily="{StaticResource FontBody}"
-                        FontSize="31"
-                        FontStyle="Italic"
-                        HorizontalAlignment="Center"
-                        IsVisible="{Binding HasSvcMsg}"
-                        Text="{Binding SvcMsg}"
-                        TextAlignment="Center"
-                        TextWrapping="Wrap" />
+                <TextBlock
+                    Classes="TCaption"
+                    Classes.Owed="{Binding SvcMsgIsError}"
+                    IsVisible="{Binding HasSvcMsg}"
+                    Margin="35,14,35,0"
+                    Text="{Binding SvcMsg}"
+                    TextWrapping="Wrap" />
 
-                    <buttons:VButton
-                        Classes="BtnPrimary"
-                        Command="{Binding CreateServiceCommand}"
-                        Height="88"
-                        HorizontalAlignment="Stretch"
-                        VText="Agendar serviço" />
-                </StackPanel>
+                <Border Classes="ControlRing" Margin="30,28,30,0">
+                    <Border Classes="FloatingControl">
+                        <Button Classes="Submit" Command="{Binding CreateServiceCommand}">
+                            <TextBlock Classes="TBody" Text="Agendar" />
+                        </Button>
+                    </Border>
+                </Border>
+
+                <!--  Clearance for the floating tab bar, which content scrolls under.  -->
+                <Border Height="168" />
             </StackPanel>
         </ScrollViewer>
     </Grid>

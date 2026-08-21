@@ -107,6 +107,8 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         SaveProfileCommand = new SynchronizedCommand(SaveProfile, SynchronizationBehavior.Discard, true);
         ToggleMoneyVisibleCommand = new SynchronizedCommand(ToggleMoneyVisible, SynchronizationBehavior.Discard, true);
         ExportSummaryCommand = new SynchronizedCommand(ExportSummary, SynchronizationBehavior.Discard, true);
+        PreviousPeriodCommand = new SynchronizedCommand(() => StepPeriod(-1), SynchronizationBehavior.Discard, true);
+        NextPeriodCommand = new SynchronizedCommand(() => StepPeriod(1), SynchronizationBehavior.Discard, true);
         ExportBackupCommand = new SynchronizedCommand(ExportBackup, SynchronizationBehavior.Discard, true);
         ImportBackupCommand = new SynchronizedCommand(ImportBackup, SynchronizationBehavior.Discard, true);
         SendCloudBackupCommand = new SynchronizedCommand(SendCloudBackup, SynchronizationBehavior.Discard, true);
@@ -271,6 +273,15 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
 
     /// <summary>Gets the years worth offering: every year with a service, plus this one.</summary>
     public ObservableCollection<int> YearOptions { get; } = [];
+
+    /// <summary>Gets the period as one line, e.g. "Agosto 2026".</summary>
+    public string PeriodLabel => ServicePeriod.Label(SelectedMonth, SelectedYear);
+
+    /// <summary>Gets the command stepping the period back one month.</summary>
+    public ICommand PreviousPeriodCommand { get; private set; } = null!;
+
+    /// <summary>Gets the command stepping the period forward one month.</summary>
+    public ICommand NextPeriodCommand { get; private set; } = null!;
 
     public MonthOption? SelectedMonth { get; set; }
 
@@ -440,8 +451,8 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         IncomeBreakdown.Clear();
         IncomeBreakdown.Add(new IncomeRow("Passeio", Money(income.Walk)));
         IncomeBreakdown.Add(new IncomeRow("Pet sitting", Money(income.Sitting)));
-        IncomeBreakdown.Add(new IncomeRow("Hotel", Money(income.Hotel)));
-        IncomeBreakdown.Add(new IncomeRow("Day-Care", Money(income.DayCare)));
+        IncomeBreakdown.Add(new IncomeRow("Hospedagem", Money(income.Hotel)));
+        IncomeBreakdown.Add(new IncomeRow("Creche", Money(income.DayCare)));
 
         RefreshMonthDetail();
     }
@@ -566,7 +577,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         received.RightAligned.Add(true);
         received.Rows.Add(new ReportRow("Passeio", AppSession.Money(income.Walk)));
         received.Rows.Add(new ReportRow("Pet sitting", AppSession.Money(income.Sitting)));
-        received.Rows.Add(new ReportRow("Hotel", AppSession.Money(income.Hotel)));
+        received.Rows.Add(new ReportRow("Hospedagem", AppSession.Money(income.Hotel)));
         received.Totals.Add(new ReportField("Total recebido", AppSession.Money(income.Total), true));
         report.Sections.Add(received);
 
@@ -923,5 +934,22 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
             : "Este arquivo não é um backup do Patas & Passeios. Escolha um .zip exportado por este aplicativo. Nada foi alterado neste aparelho.";
 
         ShowInvalidBackupAlert = true;
+    }
+
+    /// <summary>
+    /// Moves the billing period, replacing the two drop-downs this screen used to carry.
+    /// </summary>
+    /// <param name="delta">−1 or +1.</param>
+    private void StepPeriod(int delta)
+    {
+        var (month, year) = ServicePeriod.Step(SelectedMonth, SelectedYear, delta);
+
+        if (!YearOptions.Contains(year))
+        {
+            YearOptions.Add(year);
+        }
+
+        SelectedYear = year;
+        SelectedMonth = MonthOptions.FirstOrDefault(m => m.Number == month) ?? SelectedMonth;
     }
 }

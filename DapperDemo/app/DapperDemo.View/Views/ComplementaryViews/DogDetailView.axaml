@@ -25,7 +25,7 @@
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
                     Padding="0">
-                    <StackPanel Margin="28,21" Spacing="4">
+                    <StackPanel Margin="28,21" Spacing="7">
                         <TextBlock Classes="TBody" Text="{Binding DateLabel}" />
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Classes="TCaption" IsVisible="{Binding ShowsDogName}" Text="{Binding DogName}" />
@@ -283,17 +283,17 @@
 
                     <Border Classes="Group">
                         <StackPanel>
-                            <StackPanel Margin="28,21" Spacing="4">
+                            <StackPanel Margin="28,21" Spacing="7">
                                 <TextBlock Classes="TCaption" Text="Nome" />
                                 <TextBox Classes="Field" Text="{Binding EditName}" />
                             </StackPanel>
                             <Border Classes="RowRule" />
-                            <StackPanel Margin="28,21" Spacing="4">
+                            <StackPanel Margin="28,21" Spacing="7">
                                 <TextBlock Classes="TCaption" Text="Raça" />
                                 <TextBox Classes="Field" Text="{Binding EditBreed}" />
                             </StackPanel>
                             <Border Classes="RowRule" />
-                            <StackPanel Margin="28,21" Spacing="4">
+                            <StackPanel Margin="28,21" Spacing="7">
                                 <TextBlock Classes="TCaption" Text="Tutor" />
                                 <inputs:VSearchableComboBox
                                     Classes="FieldPicker"
@@ -302,7 +302,7 @@
                                     SelectedItem="{Binding EditTutor}" />
                             </StackPanel>
                             <Border Classes="RowRule" />
-                            <StackPanel Margin="28,21" Spacing="4">
+                            <StackPanel Margin="28,21" Spacing="7">
                                 <TextBlock Classes="TCaption" Text="Descrição" />
                                 <TextBox
                                     AcceptsReturn="True"
@@ -312,7 +312,7 @@
                             </StackPanel>
                             <Border Classes="RowRule" />
                             <Grid ColumnDefinitions="*,Auto" Margin="28,21">
-                                <StackPanel Spacing="4" VerticalAlignment="Center">
+                                <StackPanel Spacing="7" VerticalAlignment="Center">
                                     <TextBlock Classes="TBody" Text="Foto" />
                                     <Button
                                         Classes="TextLink"

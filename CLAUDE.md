@@ -194,10 +194,10 @@ Say what is real — several things here are not. Verified 2026-08-20.
   Android lag, but the *files* are still full-size, so the backup zip carries them at
   full resolution and photos go into it uncompressed. Downscaling on save is the
   other half and has not been done.
-- **The lists are not virtualized.** `ItemsControl` inside a `StackPanel` inside a
-  `ScrollViewer` realizes every row, so every dog photo decodes whether or not it is
-  on screen. Fine at tens of dogs; the fix is structural (make the list the scrolling
-  element) rather than a setting.
+- **Only Cachorros and Tutores virtualize.** Their group is the scroll host, so a long
+  list realizes only the rows on screen. Every other list is still an `ItemsControl`
+  inside a page-level `StackPanel`, which is unbounded and realizes everything — fine
+  where the lists are short, and the same restructure is the fix if one grows.
 - **`RepositoryBase` is a full CRUD contract with unimplemented overrides.**
   `RepositoryDogs`, `RepositoryTutors` and `RepositoryPetSitter` throw
   `NotImplementedException` from ten overrides between them. Check before calling;

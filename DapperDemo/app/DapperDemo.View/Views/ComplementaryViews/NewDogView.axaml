@@ -27,22 +27,22 @@
 
                 <Border Classes="Group">
                     <StackPanel>
-                        <StackPanel Margin="28,21" Spacing="4">
+                        <StackPanel Margin="28,21" Spacing="7">
                             <TextBlock Classes="TCaption" Text="Nome" />
-                            <TextBox Classes="Field" Text="{Binding Name}" Watermark="Toby" />
+                            <TextBox Classes="Field" Text="{Binding Name}" PlaceholderText="Toby" />
                         </StackPanel>
 
                         <Border Classes="RowRule" />
 
-                        <StackPanel Margin="28,21" Spacing="4">
+                        <StackPanel Margin="28,21" Spacing="7">
                             <TextBlock Classes="TCaption" Text="Raça" />
-                            <TextBox Classes="Field" Text="{Binding Breed}" Watermark="Golden Retriever" />
+                            <TextBox Classes="Field" Text="{Binding Breed}" PlaceholderText="Golden Retriever" />
                         </StackPanel>
 
                         <Border Classes="RowRule" />
 
                         <!--  Typeable: the tutor list grows, and scrolling it to find a name does not.  -->
-                        <StackPanel Margin="28,21" Spacing="4">
+                        <StackPanel Margin="28,21" Spacing="7">
                             <TextBlock Classes="TCaption" Text="Tutor" />
                             <inputs:VSearchableComboBox
                                 Classes="FieldPicker"
@@ -58,14 +58,14 @@
 
                         <Border Classes="RowRule" />
 
-                        <StackPanel Margin="28,21" Spacing="4">
+                        <StackPanel Margin="28,21" Spacing="7">
                             <TextBlock Classes="TCaption" Text="Descrição" />
                             <TextBox
                                 AcceptsReturn="True"
                                 Classes="Field"
                                 Text="{Binding Description}"
                                 TextWrapping="Wrap"
-                                Watermark="Temperamento, cuidados, rotina…" />
+                                PlaceholderText="Temperamento, cuidados, rotina…" />
                         </StackPanel>
 
                         <Border Classes="RowRule" />
@@ -75,7 +75,7 @@
                             when unset, with no glyph and no plus. Tapping the row chooses one.
                         -->
                         <Grid ColumnDefinitions="*,Auto" Margin="28,21">
-                            <StackPanel Spacing="4" VerticalAlignment="Center">
+                            <StackPanel Spacing="7" VerticalAlignment="Center">
                                 <TextBlock Classes="TBody" Text="Foto" />
                                 <TextBlock
                                     Classes="TCaption"

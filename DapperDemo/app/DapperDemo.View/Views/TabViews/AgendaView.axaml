@@ -25,7 +25,7 @@
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Stretch"
                 Padding="0">
-                <StackPanel Margin="28,21" Spacing="4">
+                <StackPanel Margin="28,21" Spacing="7">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Classes="TBody" Text="{Binding TypeLabel}" />
                         <TextBlock Classes="TBody Muted" Text=" · " />
@@ -129,7 +129,7 @@
     <Grid Background="{DynamicResource SurfacePrimary}" RowDefinitions="Auto,*">
 
         <StackPanel Grid.Row="0">
-            <StackPanel Margin="35,14,35,0" Spacing="4">
+            <StackPanel Margin="35,21,35,0" Spacing="8">
                 <TextBlock Classes="TTitle" Text="Agenda" />
                 <TextBlock Classes="TCaption" Text="{Binding TodayLabel}" />
             </StackPanel>
@@ -138,7 +138,7 @@
                 The date range. A segmented group rather than three loose chips: the three are one
                 mutually exclusive question, and sharing a surface says so.
             -->
-            <Border Classes="Group" Margin="35,28,35,0">
+            <Border Classes="Group" Margin="35,35,35,0">
                 <Grid ColumnDefinitions="*,Auto,*,Auto,*" Height="77">
                     <Button
                         Classes="SegOption"
@@ -172,7 +172,7 @@
             <Border
                 Classes="ControlRing"
                 IsVisible="{Binding ShowDatePicker}"
-                Margin="30,16,30,0">
+                Margin="30,21,30,0">
             <Border Classes="FloatingControl" Height="77">
                 <Grid ColumnDefinitions="77,*,77">
                     <Button
@@ -220,37 +220,37 @@
                 cells across the measure leaves "Pet sitting" no room, and the row is allowed to
                 break where a segmented group cannot.
             -->
-            <WrapPanel Margin="35,28,35,0">
+            <WrapPanel Margin="35,35,35,0">
                 <Button
                     Classes="Chip"
                     Classes.Active="{Binding IsTypeTodos}"
                     Command="{Binding SetTypeTodos}"
                     Content="Tudo"
-                    Margin="0,0,14,12" />
+                    Margin="0,0,16,14" />
                 <Button
                     Classes="Chip"
                     Classes.Active="{Binding IsTypeWalk}"
                     Command="{Binding SetTypeWalk}"
                     Content="Passeio"
-                    Margin="0,0,14,12" />
+                    Margin="0,0,16,14" />
                 <Button
                     Classes="Chip"
                     Classes.Active="{Binding IsTypeSitting}"
                     Command="{Binding SetTypeSitting}"
                     Content="Pet sitting"
-                    Margin="0,0,14,12" />
+                    Margin="0,0,16,14" />
                 <Button
                     Classes="Chip"
                     Classes.Active="{Binding IsTypeHotel}"
                     Command="{Binding SetTypeHotel}"
                     Content="Hospedagem"
-                    Margin="0,0,14,12" />
+                    Margin="0,0,16,14" />
                 <Button
                     Classes="Chip"
                     Classes.Active="{Binding IsTypeDayCare}"
                     Command="{Binding SetTypeDayCare}"
                     Content="Creche"
-                    Margin="0,0,14,12" />
+                    Margin="0,0,16,14" />
             </WrapPanel>
 
             <!--
@@ -258,8 +258,8 @@
                 refresh reads this way, and the old square was the last control on the screen still
                 drawing its own box on the page.
             -->
-            <Border Classes="Group" Margin="35,28,35,0">
-                <Grid ColumnDefinitions="*,Auto" Margin="28,14">
+            <Border Classes="Group" Margin="35,21,35,0">
+                <Grid ColumnDefinitions="*,Auto" Margin="28,18">
                     <TextBlock
                         Classes="TUi"
                         Text="Mostrar serviços já feitos"
@@ -276,7 +276,7 @@
 
         <ScrollViewer
             Grid.Row="1"
-            Margin="0,35,0,0"
+            Margin="0,42,0,0"
             VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <!--  One sentence at the text margin. No illustration, no button.  -->

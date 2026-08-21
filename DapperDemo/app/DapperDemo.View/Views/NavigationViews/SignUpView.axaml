@@ -28,21 +28,21 @@
 
                     <Border Classes="Group">
                         <StackPanel>
-                            <StackPanel Margin="28,21" Spacing="4">
+                            <StackPanel Margin="28,21" Spacing="7">
                                 <TextBlock Classes="TCaption" Text="Nome" />
-                                <TextBox Classes="Field" Text="{Binding Name}" Watermark="Larissa Lopes" />
+                                <TextBox Classes="Field" Text="{Binding Name}" PlaceholderText="Larissa Lopes" />
                             </StackPanel>
 
                             <Border Classes="RowRule" />
 
-                            <StackPanel Margin="28,21" Spacing="4">
+                            <StackPanel Margin="28,21" Spacing="7">
                                 <TextBlock Classes="TCaption" Text="E-mail" />
-                                <TextBox Classes="Field" Text="{Binding Email}" Watermark="voce@exemplo.com" />
+                                <TextBox Classes="Field" Text="{Binding Email}" PlaceholderText="voce@exemplo.com" />
                             </StackPanel>
 
                             <Border Classes="RowRule" />
 
-                            <StackPanel Margin="28,21" Spacing="4">
+                            <StackPanel Margin="28,21" Spacing="7">
                                 <TextBlock Classes="TCaption" Text="Senha" />
                                 <TextBox Classes="Field" PasswordChar="•" Text="{Binding Password}" />
                             </StackPanel>
@@ -54,7 +54,7 @@
                                 content is short and uses theme-default sizes rather than
                                 canvas-derived ones — see the styling reference.
                             -->
-                            <StackPanel Margin="28,21" Spacing="4">
+                            <StackPanel Margin="28,21" Spacing="7">
                                 <TextBlock Classes="TCaption" Text="Data de nascimento" />
                                 <CalendarDatePicker
                                     Classes="FormInput"
@@ -65,7 +65,7 @@
                             <Border Classes="RowRule" />
 
                             <Grid ColumnDefinitions="*,Auto" Margin="28,21">
-                                <StackPanel Spacing="4" VerticalAlignment="Center">
+                                <StackPanel Spacing="7" VerticalAlignment="Center">
                                     <TextBlock Classes="TBody" Text="Foto" />
                                     <TextBlock
                                         Classes="TCaption"

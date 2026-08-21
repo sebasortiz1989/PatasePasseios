@@ -24,17 +24,17 @@
 
                     <Border Classes="Group" Margin="35,56,35,0">
                         <StackPanel>
-                            <StackPanel Margin="28,21" Spacing="4">
+                            <StackPanel Margin="28,21" Spacing="7">
                                 <TextBlock Classes="TCaption" Text="E-mail" />
                                 <TextBox
                                     Classes="Field"
                                     Text="{Binding Email}"
-                                    Watermark="voce@exemplo.com" />
+                                    PlaceholderText="voce@exemplo.com" />
                             </StackPanel>
 
                             <Border Classes="RowRule" />
 
-                            <StackPanel Margin="28,21" Spacing="4">
+                            <StackPanel Margin="28,21" Spacing="7">
                                 <TextBlock Classes="TCaption" Text="Senha" />
                                 <TextBox
                                     Classes="Field"

@@ -23,7 +23,7 @@
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
                     Padding="0">
-                    <StackPanel Margin="28,21" Spacing="4">
+                    <StackPanel Margin="28,21" Spacing="7">
                         <TextBlock Classes="TBody" Text="{Binding DateLabel}" />
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Classes="TCaption" IsVisible="{Binding ShowsDogName}" Text="{Binding DogName}" />
@@ -212,7 +212,7 @@
 
                             <StackPanel IsVisible="{Binding IsRegisteringPayment}" Margin="28,21" Spacing="14">
                                 <TextBlock Classes="TCaption" Text="Valor recebido" />
-                                <TextBox Classes="Field" Text="{Binding PaymentAmount}" Watermark="0,00" />
+                                <TextBox Classes="Field" Text="{Binding PaymentAmount}" PlaceholderText="0,00" />
                                 <TextBlock
                                     Classes="TCaption"
                                     IsVisible="{Binding HasPaymentPreview}"
@@ -322,7 +322,7 @@
                     <Border Classes="Group" IsVisible="{Binding IsEditingPayment}" Margin="35,0,35,21">
                         <StackPanel Margin="28,21" Spacing="14">
                             <TextBlock Classes="TCaption" Text="Novo valor do pagamento" />
-                            <TextBox Classes="Field" Text="{Binding EditPaymentAmount}" Watermark="0,00" />
+                            <TextBox Classes="Field" Text="{Binding EditPaymentAmount}" PlaceholderText="0,00" />
                             <TextBlock
                                 Classes="TCaption Owed"
                                 IsVisible="{Binding HasEditPaymentError}"
@@ -402,17 +402,17 @@
                     <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="DADOS" />
                     <Border Classes="Group">
                         <StackPanel>
-                            <StackPanel Margin="28,21" Spacing="4">
+                            <StackPanel Margin="28,21" Spacing="7">
                                 <TextBlock Classes="TCaption" Text="Nome completo" />
                                 <TextBox Classes="Field" Text="{Binding EditName}" />
                             </StackPanel>
                             <Border Classes="RowRule" />
-                            <StackPanel Margin="28,21" Spacing="4">
+                            <StackPanel Margin="28,21" Spacing="7">
                                 <TextBlock Classes="TCaption" Text="Telefone" />
                                 <TextBox Classes="Field" Text="{Binding EditPhone}" />
                             </StackPanel>
                             <Border Classes="RowRule" />
-                            <StackPanel Margin="28,21" Spacing="4">
+                            <StackPanel Margin="28,21" Spacing="7">
                                 <TextBlock Classes="TCaption" Text="Endereço" />
                                 <TextBox Classes="Field" Text="{Binding EditAddress}" />
                             </StackPanel>

@@ -167,7 +167,7 @@
                         <Border Classes="RowRule" />
 
                         <!--  The preview, at whatever the ramp is currently set to.  -->
-                        <StackPanel Margin="28,21" Spacing="4">
+                        <StackPanel Margin="28,21" Spacing="7">
                             <TextBlock
                                 Classes="TBody"
                                 Text="Toby tem um passeio hoje às 09:00."

@@ -25,23 +25,23 @@
 
                 <Border Classes="Group">
                     <StackPanel>
-                        <StackPanel Margin="28,21" Spacing="4">
+                        <StackPanel Margin="28,21" Spacing="7">
                             <TextBlock Classes="TCaption" Text="Nome completo" />
-                            <TextBox Classes="Field" Text="{Binding Name}" Watermark="Marina Alves" />
+                            <TextBox Classes="Field" Text="{Binding Name}" PlaceholderText="Marina Alves" />
                         </StackPanel>
 
                         <Border Classes="RowRule" />
 
-                        <StackPanel Margin="28,21" Spacing="4">
+                        <StackPanel Margin="28,21" Spacing="7">
                             <TextBlock Classes="TCaption" Text="Telefone" />
-                            <TextBox Classes="Field" Text="{Binding Phone}" Watermark="(11) 98221-4432" />
+                            <TextBox Classes="Field" Text="{Binding Phone}" PlaceholderText="(11) 98221-4432" />
                         </StackPanel>
 
                         <Border Classes="RowRule" />
 
-                        <StackPanel Margin="28,21" Spacing="4">
+                        <StackPanel Margin="28,21" Spacing="7">
                             <TextBlock Classes="TCaption" Text="Endereço" />
-                            <TextBox Classes="Field" Text="{Binding Neighborhood}" Watermark="Vila Madalena" />
+                            <TextBox Classes="Field" Text="{Binding Neighborhood}" PlaceholderText="Vila Madalena" />
                         </StackPanel>
                     </StackPanel>
                 </Border>

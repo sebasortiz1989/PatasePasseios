@@ -54,7 +54,7 @@
                         <StackPanel
                             Grid.Column="1"
                             Margin="21,0,14,0"
-                            Spacing="4"
+                            Spacing="7"
                             VerticalAlignment="Center">
                             <TextBlock Classes="TBody" Text="{Binding Name}" />
                             <TextBlock Classes="TCaption" Text="{Binding Subtitle}" />
@@ -77,7 +77,7 @@
         </DataTemplate>
     </UserControl.Resources>
 
-    <Grid Background="{DynamicResource SurfacePrimary}" RowDefinitions="Auto,*">
+    <Grid Background="{DynamicResource SurfacePrimary}" RowDefinitions="Auto,Auto,*">
 
         <Grid ColumnDefinitions="*,Auto" Grid.Row="0" Margin="35,14,30,0">
             <TextBlock Classes="TTitle" Text="Cachorros" VerticalAlignment="Center" />
@@ -95,37 +95,46 @@
             </Border>
         </Grid>
 
-        <ScrollViewer Grid.Row="1" Margin="0,28,0,0">
-            <StackPanel>
-                <TextBlock
-                    Classes="TMicro"
-                    IsVisible="{Binding !IsEmpty}"
-                    Margin="35,0,35,14"
-                    Text="{Binding DogCountLabel}" />
+        <TextBlock
+            Classes="TMicro"
+            Grid.Row="1"
+            IsVisible="{Binding !IsEmpty}"
+            Margin="35,28,35,14"
+            Text="{Binding DogCountLabel}" />
 
-                <TextBlock
-                    Classes="TUi Muted"
-                    IsVisible="{Binding IsEmpty}"
-                    Margin="35,0"
-                    Text="Nenhum cachorro cadastrado ainda."
-                    TextWrapping="Wrap" />
+        <TextBlock
+            Classes="TUi Muted"
+            Grid.Row="1"
+            IsVisible="{Binding IsEmpty}"
+            Margin="35,28,35,0"
+            Text="Nenhum cachorro cadastrado ainda."
+            TextWrapping="Wrap" />
 
-                <Border Classes="Group" IsVisible="{Binding !IsEmpty}">
-                    <ItemsControl
-                        Classes="RowGroup"
-                        ItemTemplate="{StaticResource DogRowTemplate}"
-                        ItemsSource="{Binding DogsCollection}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
-                </Border>
+        <!--
+            The group is the scroll host rather than a block inside a page-level ScrollViewer, so
+            the list has a bounded viewport and can virtualize: with dozens of dogs only the rows
+            on screen are realized, and only their photos decode. Inside a StackPanel the height is
+            unbounded, every row is realized, and every photo decodes whether or not it is visible.
 
-                <!--  Clearance for the floating tab bar, which content scrolls under.  -->
-                <Border Height="168" />
-            </StackPanel>
-        </ScrollViewer>
+            The group runs to the bottom of the screen and content passes under the tab bar; the
+            padding is what lets the last row clear it.
+        -->
+        <Border
+            Classes="Group"
+            Grid.Row="2"
+            IsVisible="{Binding !IsEmpty}">
+            <ScrollViewer Padding="0,0,0,168">
+                <ItemsControl
+                    Classes="RowGroup"
+                    ItemTemplate="{StaticResource DogRowTemplate}"
+                    ItemsSource="{Binding DogsCollection}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </ScrollViewer>
+        </Border>
     </Grid>
 </UserControl>
