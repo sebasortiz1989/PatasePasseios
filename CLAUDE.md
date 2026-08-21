@@ -233,13 +233,13 @@ Say what is real — several things here are not. Verified 2026-08-21.
   Nothing inside a tab can get above it: `ZIndex` orders siblings within one panel
   and the bar is in a different parent. Avalonia's `OverlayLayer` would, but it sits
   on the TopLevel and therefore outside DesignCanvas' scale, which is the same reason
-  this app has no popups. So `ConfirmDialog`, `PhotoViewer` and `ReportPreview` each
-  report their open state to `Components/ScreenOverlay`, and `MainView` hides the bar
-  while anything is covering. A new overlay component has to do the same or it will
-  render with the tab bar sitting on top of it.
+  this app has no popups. So `ConfirmDialog`, `VPhotoViewer` and `VReportPreview` each
+  report their open state to the framework's `Hosting/ScreenOverlay`, and `MainView`
+  hides the bar while anything is covering. A new overlay component has to do the same
+  or it will render with the tab bar sitting on top of it.
 - **A report is shown before it is saved.** Exporting no longer opens a save dialog:
   `ReportExporter.RenderAsync` writes the PNG to the temporary folder, the
-  `ReportPreview` component puts it on screen, and Compartilhar / Salvar sit beneath
+  `VReportPreview` control puts it on screen, and Compartilhar / Salvar sit beneath
   it — the order a phone uses for a screenshot. Sharing needs nothing saved, because
   the file already exists in the cache by the time the sheet opens. The preview
   deletes its file on close. Render and save are the whole contract — the older
@@ -256,7 +256,7 @@ Say what is real — several things here are not. Verified 2026-08-21.
   the tag and a photo that kept it would be turned twice. And a photo already within
   1280 and already upright is passed through byte-for-byte, so picking a small image
   costs it no generation loss.
-- **Photos are decoded off the UI thread, through `Imaging/ImageLoader`.** Bind
+- **Photos are decoded off the UI thread, through `AvaloniaFramework.Imaging`.** Bind
   `imaging:ImageLoader.Path` (plus `DecodeWidth` where the display size is small),
   never `Image.Source` through a converter: a converter has to return the bitmap
   inside the layout pass, which put a file read and a JPEG decode on the UI thread
@@ -264,6 +264,23 @@ Say what is real — several things here are not. Verified 2026-08-21.
   path *and* width, and hands back a cached one in the same frame so a row scrolled
   back does not blank and refill. `ImagePathConverter` was deleted; `ExifOrientation`
   survives and is used by `PhotoCache`.
+- **The shared components live in the framework, not here** — moved 2026-08-21, because
+  they are not about pet-sitting. `AvaloniaFramework.Imaging` has the four above;
+  `Hosting/ScreenOverlay`; `Controls/Overlays/VPhotoViewer` and `VReportPreview`;
+  `Controls/Pickers/VPeriodPicker` with its `Presentation.PeriodPicker` /
+  `PeriodScope` / `PeriodCell` / `MonthOption`. Two consequences that bite.
+  **They cannot see this app's tokens.** A framework control never writes
+  `{DynamicResource InkPrimary}` — it takes `V*` properties, and the three style
+  blocks at the end of `ClassicalTheme.axaml` are where the roles are mapped onto
+  them. Restyling one of these controls means editing that block, not the control.
+  **Their Portuguese lives at the usage site**, not in the control: `VHint`,
+  `VShareText` and `VSaveText` are set on the tags in `DogDetailView`, `UsersView`
+  and `TutorDetailView`, and a control whose caption is left unset renders an empty
+  button rather than an English word. `ServicePeriod` stays here — it depends on the
+  DTOs — and supplies the pt-BR month abbreviations to each `new PeriodPicker(this,
+  ServicePeriod.ShortMonthName)`; the framework's own default is the culture's, which
+  is not the same three lower-case letters. `ConfirmDialog` and `DesignCanvas` are
+  still local and are the obvious next candidates.
 - **Virtualization needs a bounded viewport, not just the panel.** **Cachorros,
   Tutores and Agenda** virtualize: the list is the direct child of a `ScrollViewer`
   sitting in a star-sized grid row, with `VirtualizingStackPanel` as its `ItemsPanel`

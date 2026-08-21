@@ -94,7 +94,10 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
         SetTypeDayCare = new SynchronizedCommand(() => SetType(ServiceKind.DayCare), SynchronizationBehavior.Discard, true);
         PreviousPeriodCommand = new SynchronizedCommand(() => StepPeriod(-1), SynchronizationBehavior.Discard, true);
         NextPeriodCommand = new SynchronizedCommand(() => StepPeriod(1), SynchronizationBehavior.Discard, true);
-        Picker = new PeriodPicker(this);
+
+        // The abbreviations come from the app, not the culture: the framework default is the
+        // culture's, which are not the three lower-case letters this design lays out four to a row.
+        Picker = new PeriodPicker(this, ServicePeriod.ShortMonthName);
 
         TodayLabel = FormatToday();
         HomeRange = HomeRangeFilter.Semana;

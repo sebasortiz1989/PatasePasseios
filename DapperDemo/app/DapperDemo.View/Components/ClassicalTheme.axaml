@@ -1,6 +1,8 @@
 <Styles
     xmlns="https://github.com/avaloniaui"
     xmlns:inputs="using:AvaloniaFramework.Controls.Inputs"
+    xmlns:overlays="using:AvaloniaFramework.Controls.Overlays"
+    xmlns:pickers="using:AvaloniaFramework.Controls.Pickers"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!--
@@ -835,6 +837,60 @@
     <Style Selector="DateTimePickerPanel &gt; ListBoxItem:selected">
         <Setter Property="Background" Value="{DynamicResource AccentTint}" />
         <Setter Property="Foreground" Value="{DynamicResource AccentDeep}" />
+    </Style>
+
+    <!--
+        The framework's three composed controls, dressed in this app's tokens.
+
+        They live in AvaloniaFramework so other apps can use them, which means they cannot reach for
+        resource keys by name — a control that looks up {DynamicResource SurfaceRaised} is quietly
+        betting that every app it lands in chose that word. They take their appearance as V*
+        properties instead, and this is where the bet is made explicit. The rest of the theme is
+        role tokens; these three blocks are the adapter between the roles and the controls.
+
+        A setter is the right place for it rather than the usage site: a DynamicResource in a setter
+        stays live, so both palettes and the whole text-size ramp keep working. The wording inside
+        the controls is not here — captions are content, and they sit with the app's other
+        Portuguese at the screens that raise them.
+    -->
+    <Style Selector="overlays|VPhotoViewer">
+        <Setter Property="VCloseIcon" Value="{StaticResource IconClose}" />
+        <Setter Property="VFontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="VHintFontSize" Value="{DynamicResource TypeUi}" />
+        <Setter Property="VInk" Value="{DynamicResource InkPrimary}" />
+        <Setter Property="VScrim" Value="{DynamicResource Scrim}" />
+        <Setter Property="VStroke" Value="{DynamicResource StrokeControl}" />
+        <Setter Property="VSurface" Value="{DynamicResource SurfaceRaised}" />
+    </Style>
+
+    <Style Selector="overlays|VReportPreview">
+        <Setter Property="VActionFontSize" Value="{DynamicResource TypeBody}" />
+        <Setter Property="VCloseIcon" Value="{StaticResource IconClose}" />
+        <Setter Property="VFontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="VInk" Value="{DynamicResource InkPrimary}" />
+        <Setter Property="VMessageFontSize" Value="{DynamicResource TypeCaption}" />
+        <Setter Property="VRule" Value="{DynamicResource StrokeRaised}" />
+        <Setter Property="VScrim" Value="{DynamicResource Scrim}" />
+        <Setter Property="VStroke" Value="{DynamicResource StrokeControl}" />
+        <Setter Property="VSurface" Value="{DynamicResource SurfaceRaised}" />
+    </Style>
+
+    <!--
+        The cells wear the chip treatment — accent on accent.tint when selected — because they are
+        the same idea as the filter chips above them, and selection has to read the same way in
+        both places.
+    -->
+    <Style Selector="pickers|VPeriodPicker">
+        <Setter Property="VAccent" Value="{DynamicResource AccentStrong}" />
+        <Setter Property="VAccentTint" Value="{DynamicResource AccentTint}" />
+        <Setter Property="VCellFontSize" Value="{DynamicResource TypeUi}" />
+        <Setter Property="VFontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="VInk" Value="{DynamicResource InkPrimary}" />
+        <Setter Property="VNextIcon" Value="{StaticResource IconChevronRight}" />
+        <Setter Property="VPreviousIcon" Value="{StaticResource IconChevronLeft}" />
+        <Setter Property="VRule" Value="{DynamicResource StrokeRaised}" />
+        <Setter Property="VSurface" Value="{DynamicResource SurfaceRaised}" />
+        <Setter Property="VYearFontSize" Value="{DynamicResource TypeBody}" />
     </Style>
 
 </Styles>

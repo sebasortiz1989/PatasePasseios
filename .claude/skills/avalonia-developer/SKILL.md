@@ -77,9 +77,19 @@ The data layer is UI-free and framework-free; the composition root
 
 **Framework controls before stock controls, stock controls before new ones.**
 Inputs and buttons come from AvaloniaFramework (`inputs:VTextBoxWithLabel`,
-`buttons:VButton`, `inputs:VSearchableComboBox`), themed via `V*` properties in
+`buttons:VButton`, `inputs:VSearchableComboBox`), as do the composed pieces
+(`overlays:VPhotoViewer`, `overlays:VReportPreview`, `pickers:VPeriodPicker`),
+the imaging helpers (`AvaloniaFramework.Imaging`) and `ScreenOverlay` — all
+moved out of this app on 2026-08-21. They are themed via `V*` properties in
 `ClassicalTheme.axaml`. Read `references/avalonia-framework.md` before adding
 any UI primitive — the docs MCP does not know these types exist.
+
+**A component with nothing pet-sitting about it belongs in the submodule**, not
+in `DapperDemo.View/Components/`. The test is whether it names a dog, a tutor or
+a service. Once it moves it cannot see this app's tokens or speak Portuguese:
+appearance becomes `V*` properties mapped in `ClassicalTheme.axaml`, and wording
+becomes a property set at the usage site. `ConfirmDialog` and `DesignCanvas` are
+the two that have not moved yet.
 
 **Every await in Viewmodel/View carries `WithSync()` or `NoSync()`** — the
 framework's intent-readable forms. The **data layer is the deliberate

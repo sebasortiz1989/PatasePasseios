@@ -1,3 +1,4 @@
+using AvaloniaFramework.Presentation;
 using DapperDemo.Repository.Dapper.Dtos;
 using System.Globalization;
 
@@ -14,8 +15,14 @@ namespace DapperDemo.Viewmodel.Viewmodels.Utils;
 /// </remarks>
 internal static class ServicePeriod
 {
-    /// <summary>The month number standing for "no month filter, just the year".</summary>
-    public const int WholeYear = 0;
+    /// <summary>
+    /// The month number standing for "no month filter, just the year".
+    /// </summary>
+    /// <remarks>
+    /// An alias, not a second definition: the framework's picker compares against its own copy of
+    /// this number, and two constants that must agree are one constant waiting to disagree.
+    /// </remarks>
+    public const int WholeYear = MonthOption.WholeYear;
 
     private static readonly CultureInfo Brazil = new("pt-BR");
 

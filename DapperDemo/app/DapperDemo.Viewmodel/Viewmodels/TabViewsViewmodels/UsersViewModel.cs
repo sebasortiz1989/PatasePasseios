@@ -111,7 +111,10 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
         ExportSummaryCommand = new SynchronizedCommand(ExportSummary, SynchronizationBehavior.Discard, true);
         PreviousPeriodCommand = new SynchronizedCommand(() => StepPeriod(-1), SynchronizationBehavior.Discard, true);
         NextPeriodCommand = new SynchronizedCommand(() => StepPeriod(1), SynchronizationBehavior.Discard, true);
-        Picker = new PeriodPicker(this);
+
+        // The abbreviations come from the app, not the culture: the framework default is the
+        // culture's, which are not the three lower-case letters this design lays out four to a row.
+        Picker = new PeriodPicker(this, ServicePeriod.ShortMonthName);
         ImportBackupCommand = new SynchronizedCommand(ImportBackup, SynchronizationBehavior.Discard, true);
         SendCloudBackupCommand = new SynchronizedCommand(SendCloudBackup, SynchronizationBehavior.Discard, true);
         SetUpCloudBackupCommand = new SynchronizedCommand(SetUpCloudBackup, SynchronizationBehavior.Discard, true);

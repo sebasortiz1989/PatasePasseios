@@ -8,6 +8,7 @@
     xmlns:components="using:DapperDemo.View.Components"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:pickers="using:AvaloniaFramework.Controls.Pickers"
     xmlns:tabViewsViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.TabViewsViewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:utils="clr-namespace:DapperDemo.Viewmodel.Viewmodels.Utils;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
@@ -240,7 +241,7 @@
                 </Border>
             </Border>
 
-            <components:PeriodPicker IsVisible="{Binding ShowDatePicker}" Picker="{Binding Picker}" />
+            <pickers:VPeriodPicker IsVisible="{Binding ShowDatePicker}" Picker="{Binding Picker}" />
 
             <!--
                 Service kinds. Chips in a WrapPanel rather than a fourth and fifth segment: five

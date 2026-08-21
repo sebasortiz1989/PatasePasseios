@@ -8,8 +8,10 @@
     xmlns:complementaryViewsViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:components="using:DapperDemo.View.Components"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:imaging="using:DapperDemo.View.Imaging"
+    xmlns:imaging="using:AvaloniaFramework.Imaging"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:overlays="using:AvaloniaFramework.Controls.Overlays"
+    xmlns:pickers="using:AvaloniaFramework.Controls.Pickers"
     xmlns:utils="clr-namespace:DapperDemo.Viewmodel.Viewmodels.Utils;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
@@ -442,7 +444,7 @@
                         </Border>
                     </Border>
 
-                    <components:PeriodPicker Picker="{Binding Picker}" />
+                    <pickers:VPeriodPicker Picker="{Binding Picker}" />
 
                     <Border Classes="Group" Margin="35,0,35,35">
                         <Grid ColumnDefinitions="*,Auto" Margin="28,14">
@@ -649,7 +651,7 @@
             Message="Os serviços quitados por ele voltam a ficar em aberto e o crédito que ele gerou é devolvido. Os serviços em si não são excluídos."
             Title="Excluir este pagamento?" />
 
-        <components:ReportPreview
+        <overlays:VReportPreview
             CanShare="{Binding Preview.CanShare}"
             CloseCommand="{Binding Preview.CloseCommand}"
             HasMessage="{Binding Preview.HasMessage}"
@@ -657,7 +659,9 @@
             IsOpen="{Binding Preview.IsOpen}"
             Message="{Binding Preview.Message}"
             SaveCommand="{Binding Preview.SaveCommand}"
-            ShareCommand="{Binding Preview.ShareCommand}" />
+            ShareCommand="{Binding Preview.ShareCommand}"
+            VSaveText="Salvar no aparelho"
+            VShareText="Compartilhar" />
 
         <components:ConfirmDialog
             CancelCommand="{Binding ReplaceRequest.CancelCommand}"

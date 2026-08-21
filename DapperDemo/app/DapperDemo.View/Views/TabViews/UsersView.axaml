@@ -7,8 +7,10 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:components="using:DapperDemo.View.Components"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:imaging="using:DapperDemo.View.Imaging"
+    xmlns:imaging="using:AvaloniaFramework.Imaging"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:overlays="using:AvaloniaFramework.Controls.Overlays"
+    xmlns:pickers="using:AvaloniaFramework.Controls.Pickers"
     xmlns:tabViewsViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.TabViewsViewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:utils="clr-namespace:DapperDemo.Viewmodel.Viewmodels.Utils;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
@@ -196,7 +198,7 @@
                         </Border>
                     </Border>
 
-                    <components:PeriodPicker Picker="{Binding Picker}" />
+                    <pickers:VPeriodPicker Picker="{Binding Picker}" />
 
                     <Border Classes="Group">
                         <StackPanel>
@@ -678,10 +680,11 @@
             </StackPanel>
         </ScrollViewer>
 
-        <components:PhotoViewer
+        <overlays:VPhotoViewer
             CloseCommand="{Binding ClosePhotoCommand}"
             IsOpen="{Binding ViewingPhoto}"
-            Path="{Binding PhotoPath}" />
+            Path="{Binding PhotoPath}"
+            VHint="Toque para fechar" />
 
         <!--  Alert form: one full-width button that only dismisses.  -->
         <components:ConfirmDialog
@@ -700,7 +703,7 @@
             ShowCancel="False"
             Title="{Binding InvalidBackupTitle}" />
 
-        <components:ReportPreview
+        <overlays:VReportPreview
             CanShare="{Binding Preview.CanShare}"
             CloseCommand="{Binding Preview.CloseCommand}"
             HasMessage="{Binding Preview.HasMessage}"
@@ -708,7 +711,9 @@
             IsOpen="{Binding Preview.IsOpen}"
             Message="{Binding Preview.Message}"
             SaveCommand="{Binding Preview.SaveCommand}"
-            ShareCommand="{Binding Preview.ShareCommand}" />
+            ShareCommand="{Binding Preview.ShareCommand}"
+            VSaveText="Salvar no aparelho"
+            VShareText="Compartilhar" />
 
         <components:ConfirmDialog
             CancelCommand="{Binding ReplaceRequest.CancelCommand}"

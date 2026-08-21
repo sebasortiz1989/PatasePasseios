@@ -7,7 +7,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:components="using:DapperDemo.View.Components"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:imaging="using:DapperDemo.View.Imaging"
+    xmlns:imaging="using:AvaloniaFramework.Imaging"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:navigationViewsViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.NavigationViewsViewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">

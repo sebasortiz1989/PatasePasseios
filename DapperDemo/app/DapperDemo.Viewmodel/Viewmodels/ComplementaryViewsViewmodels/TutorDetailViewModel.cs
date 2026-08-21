@@ -86,7 +86,10 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
         BackCommand = new SynchronizedCommand(currentView.GoBack, SynchronizationBehavior.Discard, true);
         PreviousPeriodCommand = new SynchronizedCommand(() => StepPeriod(-1), SynchronizationBehavior.Discard, true);
         NextPeriodCommand = new SynchronizedCommand(() => StepPeriod(1), SynchronizationBehavior.Discard, true);
-        Picker = new PeriodPicker(this);
+
+        // The abbreviations come from the app, not the culture: the framework default is the
+        // culture's, which are not the three lower-case letters this design lays out four to a row.
+        Picker = new PeriodPicker(this, ServicePeriod.ShortMonthName);
         AskDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = true, SynchronizationBehavior.Discard, true);
         CancelDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = false, SynchronizationBehavior.Discard, true);
         ConfirmDeleteCommand = new SynchronizedCommand(Delete, SynchronizationBehavior.Discard, true);

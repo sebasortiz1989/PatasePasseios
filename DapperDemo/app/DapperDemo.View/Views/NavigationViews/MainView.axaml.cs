@@ -1,5 +1,6 @@
 using Avalonia;
 using AvaloniaFramework.Controls;
+using AvaloniaFramework.Hosting;
 using DapperDemo.View.Components;
 using DapperDemo.Viewmodel.Viewmodels;
 using DapperDemo.Viewmodel.Viewmodels.NavigationViewsViewmodels;
