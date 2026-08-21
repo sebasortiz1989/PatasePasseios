@@ -21,12 +21,10 @@ public enum HomeRangeFilter
 }
 
 [AddINotifyPropertyChangedInterface]
-public class AgendaViewModel : PresentationModelBase<Unit, Unit>
+public class AgendaViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
 {
     /// <summary>The month number standing for "no month filter, just the year".</summary>
     private const int WholeYear = 0;
-
-    private static readonly string[] MonthsShort = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 
     private static readonly CultureInfo Brazil = new("pt-BR");
 
@@ -96,6 +94,7 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
         PreviousPeriodCommand = new SynchronizedCommand(() => StepPeriod(-1), SynchronizationBehavior.Discard, true);
         NextPeriodCommand = new SynchronizedCommand(() => StepPeriod(1), SynchronizationBehavior.Discard, true);
         ToggleWholeYearCommand = new SynchronizedCommand(ToggleWholeYear, SynchronizationBehavior.Discard, true);
+        Picker = new PeriodPicker(this);
 
         TodayLabel = FormatToday();
         HomeRange = HomeRangeFilter.Semana;
@@ -111,6 +110,7 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
         var now = DateTime.Now;
         SelectedMonth = MonthOptions.First(m => m.Number == now.Month);
         SelectedYear = now.Year;
+        Picker.Refresh();
     }
 
     public ICommand SetRangeHoje { get; }
@@ -170,6 +170,9 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
 
     /// <summary>Gets the command switching between one month and the whole year.</summary>
     public ICommand ToggleWholeYearCommand { get; private set; } = null!;
+
+    /// <summary>Gets the inline period picker: a year row over a grid of months.</summary>
+    public PeriodPicker Picker { get; }
 
     public bool IsRangeHoje => HomeRange == HomeRangeFilter.Hoje;
 
@@ -245,6 +248,8 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
     /// <summary>PropertyChanged.Fody convention hook — invoked whenever SelectedMonth changes.</summary>
     protected void OnSelectedMonthChanged()
     {
+        Picker.Refresh();
+
         if (!rebuildingOptions)
         {
             AppSession.FireAndForget(ReloadAsync());
@@ -254,6 +259,8 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
     /// <summary>PropertyChanged.Fody convention hook — invoked whenever SelectedYear changes.</summary>
     protected void OnSelectedYearChanged()
     {
+        Picker.Refresh();
+
         if (!rebuildingOptions)
         {
             AppSession.FireAndForget(ReloadAsync());
@@ -308,12 +315,9 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
     /// </summary>
     private void RebuildPeriodOptions(ServiceItem[] all)
     {
-        var years = all
-            .Select(s => s.Date.Year)
-            .Append(DateTime.Now.Year)
-            .Distinct()
-            .OrderByDescending(y => y)
-            .ToArray();
+        // Through the shared helper, like the other period screens, and passing the year on screen
+        // so a year the sitter stepped to survives this rebuild instead of snapping back.
+        var years = ServicePeriod.Years(all, null, SelectedYear);
 
         if (YearOptions.SequenceEqual(years))
         {
@@ -392,35 +396,20 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
 
     private void StepPeriod(int delta)
     {
-        var current = SelectedMonth?.Number ?? DateTime.Now.Month;
-        if (current == ServicePeriod.WholeYear)
-        {
-            current = delta > 0 ? 0 : 13;
-        }
+        // Through the shared helper, like the other three period screens. This had its own copy,
+        // written before the helper existed, and it had drifted: from "Ano todo" the arrows landed
+        // on December or January of the same year, so a whole-year view could never reach 2025.
+        var (month, year) = ServicePeriod.Step(SelectedMonth, SelectedYear, delta);
 
-        var next = current + delta;
-        var year = SelectedYear;
-
-        if (next < 1)
-        {
-            next = 12;
-            year -= 1;
-        }
-        else if (next > 12)
-        {
-            next = 1;
-            year += 1;
-        }
-
-        // The year first: both assignments raise PropertyChanged and the reload hook reads both,
-        // so setting the month last means the rebuild sees the pair it is meant to.
         if (!YearOptions.Contains(year))
         {
             YearOptions.Add(year);
         }
 
+        // The year first: both assignments raise PropertyChanged and the reload hook reads both,
+        // so setting the month last means the rebuild sees the pair it is meant to.
         SelectedYear = year;
-        SelectedMonth = MonthOptions.FirstOrDefault(m => m.Number == next) ?? SelectedMonth;
+        SelectedMonth = MonthOptions.FirstOrDefault(m => m.Number == month) ?? SelectedMonth;
     }
 
     /// <summary>Builds one agenda row. Shared so a grouped row behaves exactly like a flat one.</summary>
@@ -438,7 +427,7 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>
 
         return new ServiceRow(
             sv.Date.Day.ToString("00", CultureInfo.InvariantCulture),
-            MonthsShort[sv.Date.Month - 1],
+            ServicePeriod.ShortMonthName(sv.Date.Month),
             sv.DogName,
             AppSession.TypeLabel(sv.Kind),
             AppSession.TimeLabel(sv.Date, sv.Kind),

@@ -19,7 +19,7 @@ using System.Windows.Input;
 namespace DapperDemo.Viewmodel.Viewmodels.TabViewsViewmodels;
 
 [AddINotifyPropertyChangedInterface]
-public class UsersViewModel : PresentationModelBase<Unit, Unit>
+public class UsersViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
 {
     /// <summary>What a hidden amount reads as. Wide enough not to hint at the figure's length.</summary>
     private const string HiddenMoney = "••••••";
@@ -114,6 +114,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
         PreviousPeriodCommand = new SynchronizedCommand(() => StepPeriod(-1), SynchronizationBehavior.Discard, true);
         NextPeriodCommand = new SynchronizedCommand(() => StepPeriod(1), SynchronizationBehavior.Discard, true);
         ToggleWholeYearCommand = new SynchronizedCommand(ToggleWholeYear, SynchronizationBehavior.Discard, true);
+        Picker = new PeriodPicker(this);
         ImportBackupCommand = new SynchronizedCommand(ImportBackup, SynchronizationBehavior.Discard, true);
         SendCloudBackupCommand = new SynchronizedCommand(SendCloudBackup, SynchronizationBehavior.Discard, true);
         SetUpCloudBackupCommand = new SynchronizedCommand(SetUpCloudBackup, SynchronizationBehavior.Discard, true);
@@ -328,6 +329,9 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
     /// <summary>Gets the command switching between one month and the whole year.</summary>
     public ICommand ToggleWholeYearCommand { get; private set; } = null!;
 
+    /// <summary>Gets the inline period picker: a year row over a grid of months.</summary>
+    public PeriodPicker Picker { get; }
+
     public MonthOption? SelectedMonth { get; set; }
 
     public int SelectedYear { get; set; }
@@ -478,7 +482,16 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>
 
     private void ReloadWhenPeriodChanges(object? sender, PropertyChangedEventArgs e)
     {
-        if (reloading || (e.PropertyName != nameof(SelectedMonth) && e.PropertyName != nameof(SelectedYear)))
+        if (e.PropertyName != nameof(SelectedMonth) && e.PropertyName != nameof(SelectedYear))
+        {
+            return;
+        }
+
+        // Unguarded: the picker's highlight and its whole-year label must follow the period even
+        // while a reload is already under way.
+        Picker?.Refresh();
+
+        if (reloading)
         {
             return;
         }

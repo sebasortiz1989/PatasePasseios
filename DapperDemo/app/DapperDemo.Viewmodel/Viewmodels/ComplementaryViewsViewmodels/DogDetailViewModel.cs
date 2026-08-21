@@ -15,7 +15,7 @@ using System.Windows.Input;
 namespace DapperDemo.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;
 
 [AddINotifyPropertyChangedInterface]
-public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
+public class DogDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
 {
     private readonly RepositoryDogs repositoryDogs;
     private readonly RepositoryTutors repositoryTutors;
@@ -73,6 +73,7 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
         PreviousPeriodCommand = new SynchronizedCommand(() => StepPeriod(-1), SynchronizationBehavior.Discard, true);
         NextPeriodCommand = new SynchronizedCommand(() => StepPeriod(1), SynchronizationBehavior.Discard, true);
         ToggleWholeYearCommand = new SynchronizedCommand(ToggleWholeYear, SynchronizationBehavior.Discard, true);
+        Picker = new PeriodPicker(this);
         OpenTutorCommand = new SynchronizedCommand(OpenTutor, SynchronizationBehavior.Discard, true);
         AskDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = true, SynchronizationBehavior.Discard, true);
         CancelDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = false, SynchronizationBehavior.Discard, true);
@@ -217,6 +218,9 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
     /// <summary>Gets the command switching between one month and the whole year.</summary>
     public ICommand ToggleWholeYearCommand { get; private set; } = null!;
 
+    /// <summary>Gets the inline period picker: a year row over a grid of months.</summary>
+    public PeriodPicker Picker { get; }
+
     public ObservableCollection<ServiceTypeGroup> FutureServices { get; } = [];
 
     /// <summary>
@@ -317,6 +321,10 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
 
     private void ReloadIfIdle()
     {
+        // Unguarded: the picker's highlight and its whole-year label must follow the period even
+        // while the option lists are being rebuilt.
+        Picker?.Refresh();
+
         if (!rebuildingOptions)
         {
             AppSession.FireAndForget(ReloadAsync());
@@ -329,7 +337,7 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
     /// </summary>
     private void RefreshYearOptions(ServiceItem[] services)
     {
-        var years = ServicePeriod.Years(services);
+        var years = ServicePeriod.Years(services, null, SelectedYear);
         if (YearOptions.SequenceEqual(years))
         {
             return;

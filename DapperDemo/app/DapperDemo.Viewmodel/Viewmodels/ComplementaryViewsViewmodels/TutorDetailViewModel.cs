@@ -17,7 +17,7 @@ using System.Windows.Input;
 namespace DapperDemo.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;
 
 [AddINotifyPropertyChangedInterface]
-public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
+public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
 {
     private static readonly CultureInfo Brazil = new("pt-BR");
 
@@ -89,6 +89,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
         PreviousPeriodCommand = new SynchronizedCommand(() => StepPeriod(-1), SynchronizationBehavior.Discard, true);
         NextPeriodCommand = new SynchronizedCommand(() => StepPeriod(1), SynchronizationBehavior.Discard, true);
         ToggleWholeYearCommand = new SynchronizedCommand(ToggleWholeYear, SynchronizationBehavior.Discard, true);
+        Picker = new PeriodPicker(this);
         AskDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = true, SynchronizationBehavior.Discard, true);
         CancelDeleteCommand = new SynchronizedCommand(() => ConfirmingDelete = false, SynchronizationBehavior.Discard, true);
         ConfirmDeleteCommand = new SynchronizedCommand(Delete, SynchronizationBehavior.Discard, true);
@@ -307,6 +308,9 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
 
     /// <summary>Gets the command switching between one month and the whole year.</summary>
     public ICommand ToggleWholeYearCommand { get; private set; } = null!;
+
+    /// <summary>Gets the inline period picker: a year row over a grid of months.</summary>
+    public PeriodPicker Picker { get; }
 
     public ObservableCollection<ServiceTypeGroup> PendingServices { get; } = [];
 
@@ -771,6 +775,10 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
 
     private void ReloadIfIdle()
     {
+        // Unguarded: the picker's highlight and its whole-year label must follow the period even
+        // while the option lists are being rebuilt.
+        Picker?.Refresh();
+
         if (!rebuildingOptions)
         {
             AppSession.FireAndForget(ReloadAsync());
@@ -783,7 +791,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>
     /// </summary>
     private void RefreshYearOptions(ServiceItem[] services, IEnumerable<DateTime> paymentDates)
     {
-        var years = ServicePeriod.Years(services, paymentDates);
+        var years = ServicePeriod.Years(services, paymentDates, SelectedYear);
         if (YearOptions.SequenceEqual(years))
         {
             return;

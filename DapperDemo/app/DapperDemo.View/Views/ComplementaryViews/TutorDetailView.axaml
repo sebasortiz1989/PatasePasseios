@@ -376,7 +376,10 @@
                         The period this list is scoped to. Stepped rather than picked from a
                         drop-down: popups ignore the design canvas' scale.
                     -->
-                    <Border Classes="ControlRing" Margin="30,0,30,21">
+                    <Border
+                        Classes="ControlRing"
+                        IsVisible="{Binding !Picker.IsOpen}"
+                        Margin="30,0,30,21">
                         <Border Classes="FloatingControl">
                             <Grid ColumnDefinitions="Auto,*,Auto" Height="77">
                                 <Button
@@ -405,7 +408,7 @@
                                 <Button
                                     Background="Transparent"
                                     BorderThickness="0"
-                                    Command="{Binding ToggleWholeYearCommand}"
+                                    Command="{Binding Picker.ToggleCommand}"
                                     Grid.Column="1"
                                     HorizontalAlignment="Stretch"
                                     HorizontalContentAlignment="Center"
@@ -438,6 +441,8 @@
                             </Grid>
                         </Border>
                     </Border>
+
+                    <components:PeriodPicker Picker="{Binding Picker}" />
 
                     <Border Classes="Group" Margin="35,0,35,35">
                         <Grid ColumnDefinitions="*,Auto" Margin="28,14">

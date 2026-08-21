@@ -5,6 +5,7 @@
     x:Class="DapperDemo.View.Views.TabViews.AgendaView"
     x:DataType="tabViewsViewmodels:AgendaViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:components="using:DapperDemo.View.Components"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:tabViewsViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.TabViewsViewmodels;assembly=DapperDemo.Viewmodel"
@@ -60,7 +61,8 @@
             it holds; the chevron is the only thing that changes when it opens.
         -->
         <DataTemplate DataType="utils:DogServiceGroup" x:Key="DogGroupTemplate">
-            <Border Classes="Group" Margin="35,0,35,35">
+            <!--  Tighter than the 35 other lists use: this one repeats per dog, so the gap is the dominant rhythm of the screen.  -->
+            <Border Classes="Group" Margin="35,0,35,15">
                 <StackPanel>
                     <Button
                         Background="Transparent"
@@ -169,10 +171,13 @@
             visual root and ignores the design canvas' scale, so at phone size its list came out
             far wider than the field that opened it.
         -->
-            <Border
-                Classes="ControlRing"
-                IsVisible="{Binding ShowDatePicker}"
-                Margin="30,21,30,0">
+            <Border Classes="ControlRing" Margin="30,21,30,0">
+                <Border.IsVisible>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                        <Binding Path="ShowDatePicker" />
+                        <Binding Path="!Picker.IsOpen" />
+                    </MultiBinding>
+                </Border.IsVisible>
             <Border Classes="FloatingControl" Height="77">
                 <Grid ColumnDefinitions="Auto,*,Auto" Height="77">
                     <Button
@@ -197,11 +202,11 @@
                                 StrokeThickness="1" />
                         </Viewbox>
                     </Button>
-                    <!--  The label is the way back to "Ano todo" once the arrows have moved off it.  -->
+                    <!--  The label opens the picker; the arrows beside it still step one period at a time.  -->
                     <Button
                         Background="Transparent"
                         BorderThickness="0"
-                        Command="{Binding ToggleWholeYearCommand}"
+                        Command="{Binding Picker.ToggleCommand}"
                         Grid.Column="1"
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Center"
@@ -234,6 +239,8 @@
                 </Grid>
                 </Border>
             </Border>
+
+            <components:PeriodPicker IsVisible="{Binding ShowDatePicker}" Picker="{Binding Picker}" />
 
             <!--
                 Service kinds. Chips in a WrapPanel rather than a fourth and fifth segment: five
@@ -278,7 +285,7 @@
                 refresh reads this way, and the old square was the last control on the screen still
                 drawing its own box on the page.
             -->
-            <Border Classes="Group" Margin="35,21,35,0">
+            <Border Classes="Group" Margin="35,15,35,0">
                 <Grid ColumnDefinitions="*,Auto" Margin="28,18">
                     <TextBlock
                         Classes="TUi"
@@ -317,7 +324,7 @@
         -->
         <ScrollViewer
             Grid.Row="1"
-            Margin="0,42,0,0"
+            Margin="0,30,0,0"
             Padding="0,0,0,168"
             VerticalScrollBarVisibility="Auto">
             <ItemsControl ItemTemplate="{StaticResource DogGroupTemplate}" ItemsSource="{Binding DogGroups}">

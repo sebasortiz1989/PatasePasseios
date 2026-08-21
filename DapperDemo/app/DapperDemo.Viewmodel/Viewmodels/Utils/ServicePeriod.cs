@@ -19,6 +19,19 @@ internal static class ServicePeriod
 
     private static readonly CultureInfo Brazil = new("pt-BR");
 
+    private static readonly string[] Abbreviations = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+
+    /// <summary>
+    /// The month's three-letter abbreviation, lower case, e.g. "ago".
+    /// </summary>
+    /// <remarks>
+    /// For the places a full month name will not fit: the agenda's date column and the picker's
+    /// grid, which puts four months to a row.
+    /// </remarks>
+    /// <param name="month">Month number, 1 to 12.</param>
+    /// <returns>The abbreviation.</returns>
+    public static string ShortMonthName(int month) => Abbreviations[month - 1];
+
     /// <summary>The whole-year entry followed by the twelve months. Fixed, so it never rebuilds.</summary>
     public static IEnumerable<MonthOption> Months()
     {
@@ -102,13 +115,19 @@ internal static class ServicePeriod
     /// Extra dates that must stay reachable, such as the tutor's payments — a payment made in a
     /// year with no bookings would otherwise have no year to select it by.
     /// </param>
-    public static int[] Years(IEnumerable<ServiceItem> services, IEnumerable<DateTime>? alsoFrom = null)
+    /// <param name="alsoYear">
+    /// The year currently on screen. Included even when nothing falls in it, because the rebuild
+    /// that follows drops any selected year missing from this list — so stepping to a quiet year
+    /// snapped straight back to one with bookings, and the arrows looked broken.
+    /// </param>
+    public static int[] Years(IEnumerable<ServiceItem> services, IEnumerable<DateTime>? alsoFrom = null, int? alsoYear = null)
     {
         ArgumentNullException.ThrowIfNull(services);
 
         return [.. services
             .Select(s => s.Date.Year)
             .Concat(alsoFrom?.Select(d => d.Year) ?? [])
+            .Concat(alsoYear is { } year ? new[] { year } : [])
             .Append(DateTime.Now.Year)
             .Distinct()
             .OrderByDescending(year => year)];
