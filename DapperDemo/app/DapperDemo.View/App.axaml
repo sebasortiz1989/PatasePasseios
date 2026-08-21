@@ -2,7 +2,6 @@
     RequestedThemeVariant="Light"
     x:Class="DapperDemo.View.App"
     xmlns="https://github.com/avaloniaui"
-    xmlns:converters="using:DapperDemo.View.Converters"
     xmlns:framework="using:AvaloniaFramework"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!--
@@ -35,9 +34,6 @@
             <x:Double x:Key="TypeCaption">25</x:Double>
             <x:Double x:Key="TypeMicro">21</x:Double>
 
-            <!--  Dog photos arrive as a file path through a binding, which Avalonia cannot turn into an image on its own.  -->
-            <converters:ImagePathConverter x:Key="ImagePathConverter" />
-
             <Color x:Key="SystemAccentColor">#B68235</Color>
             <Color x:Key="SystemAccentColorLight1">#C28D41</Color>
             <Color x:Key="SystemAccentColorLight2">#E1AD66</Color>
@@ -54,4 +50,4 @@
         <StyleInclude Source="Components/ClassicalTheme.axaml" />
     </Application.Styles>
 
-</Application>
+</Application>

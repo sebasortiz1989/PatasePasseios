@@ -82,6 +82,8 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
         SaveEditCommand = new SynchronizedCommand(SaveEdit, SynchronizationBehavior.Discard, true);
         ChoosePhotoCommand = new SynchronizedCommand(ChoosePhoto, SynchronizationBehavior.Discard, true);
         RemovePhotoCommand = new SynchronizedCommand(RemovePhoto, SynchronizationBehavior.Discard, true);
+        OpenPhotoCommand = new SynchronizedCommand(() => ViewingPhoto = HasPhoto, SynchronizationBehavior.Discard, true);
+        ClosePhotoCommand = new SynchronizedCommand(() => ViewingPhoto = false, SynchronizationBehavior.Discard, true);
 
         foreach (var month in ServicePeriod.Months())
         {
@@ -115,8 +117,23 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
 
     public ICommand RemovePhotoCommand { get; }
 
+    /// <summary>Gets shows the photo full screen, at the resolution it was stored at.</summary>
+    public ICommand OpenPhotoCommand { get; }
+
+    public ICommand ClosePhotoCommand { get; }
+
     /// <summary>Gets a value indicating whether deleting takes two taps: the button swaps for a confirm/cancel pair.</summary>
     public bool ConfirmingDelete { get; private set; }
+
+    /// <summary>
+    /// Gets a value indicating whether the photo is open full screen.
+    /// </summary>
+    /// <remarks>
+    /// The viewer decodes the file at its stored size, which is the one place in the app that does.
+    /// Everywhere else decodes down to the size it draws at, so this staying false is what keeps
+    /// the screen cheap.
+    /// </remarks>
+    public bool ViewingPhoto { get; private set; }
 
     /// <summary>
     /// Gets a value indicating whether the screen is in edit mode. The same fields are shown
@@ -210,6 +227,7 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
         IsEditing = false;
         EditError = string.Empty;
         ConfirmingDelete = false;
+        ViewingPhoto = false;
 
         if (session.SelectedDogId is not int dogId)
         {
@@ -423,6 +441,10 @@ public class DogDetailViewModel : PresentationModelBase<Unit, Unit>
         PhotoFileName = storedPhotoFileName;
         EditError = string.Empty;
         IsEditing = true;
+
+        // The viewer is opened from the reading state's photo, which the editor replaces. Leaving
+        // it open would strand a full-screen photo over a form the user can no longer reach.
+        ViewingPhoto = false;
         return Task.CompletedTask;
     }
 

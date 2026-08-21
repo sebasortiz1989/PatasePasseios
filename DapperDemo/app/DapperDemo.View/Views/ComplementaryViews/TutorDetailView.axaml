@@ -7,8 +7,8 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:complementaryViewsViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:components="using:DapperDemo.View.Components"
-    xmlns:converters="using:DapperDemo.View.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:imaging="using:DapperDemo.View.Imaging"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:utils="clr-namespace:DapperDemo.Viewmodel.Viewmodels.Utils;assembly=DapperDemo.Viewmodel"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
@@ -115,8 +115,9 @@
                     <Grid ColumnDefinitions="Auto,*,Auto" Margin="28,21">
                         <Panel Height="70" Width="70">
                             <Image
+                                imaging:ImageLoader.DecodeWidth="192"
+                                imaging:ImageLoader.Path="{Binding ImagePath}"
                                 IsVisible="{Binding HasImage}"
-                                Source="{Binding ImagePath, Converter={StaticResource ImagePathConverter}, ConverterParameter=192}"
                                 Stretch="UniformToFill">
                                 <Image.Clip>
                                     <EllipseGeometry Rect="0,0,70,70" />

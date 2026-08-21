@@ -6,8 +6,8 @@
     x:DataType="complementaryViewsViewmodels:NewDogViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:complementaryViewsViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;assembly=DapperDemo.Viewmodel"
-    xmlns:converters="using:DapperDemo.View.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:imaging="using:DapperDemo.View.Imaging"
     xmlns:inputs="using:AvaloniaFramework.Controls.Inputs"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
@@ -101,8 +101,9 @@
                                     Height="70"
                                     Width="70">
                                     <Image
+                                        imaging:ImageLoader.DecodeWidth="192"
+                                        imaging:ImageLoader.Path="{Binding PhotoPath}"
                                         IsVisible="{Binding HasPhoto}"
-                                        Source="{Binding PhotoPath, Converter={StaticResource ImagePathConverter}, ConverterParameter=192}"
                                         Stretch="UniformToFill" />
                                 </Border>
                             </Button>

@@ -7,8 +7,8 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:complementaryViewsViewmodels="clr-namespace:DapperDemo.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;assembly=DapperDemo.Viewmodel"
     xmlns:components="using:DapperDemo.View.Components"
-    xmlns:converters="using:DapperDemo.View.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:imaging="using:DapperDemo.View.Imaging"
     xmlns:inputs="using:AvaloniaFramework.Controls.Inputs"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:utils="clr-namespace:DapperDemo.Viewmodel.Viewmodels.Utils;assembly=DapperDemo.Viewmodel"
@@ -111,26 +111,38 @@
 
                 <!--  Identity: the photo, the name, the breed. Not a group — this is the page's head.  -->
                 <StackPanel IsVisible="{Binding !IsEditing}" Margin="35,28,35,0" Spacing="14">
-                    <Panel Height="168" HorizontalAlignment="Left" Width="168">
-                        <Image
-                            IsVisible="{Binding HasPhoto}"
-                            Source="{Binding PhotoPath, Converter={StaticResource ImagePathConverter}}"
-                            Stretch="UniformToFill">
-                            <Image.Clip>
-                                <EllipseGeometry Rect="0,0,168,168" />
-                            </Image.Clip>
-                        </Image>
-                        <Border
-                            Background="{DynamicResource SurfaceControl}"
-                            CornerRadius="84"
-                            IsVisible="{Binding NoPhoto}">
-                            <TextBlock
-                                Classes="TTitle"
-                                HorizontalAlignment="Center"
-                                Text="{Binding Initials}"
-                                VerticalAlignment="Center" />
-                        </Border>
-                    </Panel>
+                    <!--
+                        The photo opens full screen when tapped. The button wraps the initials
+                        fallback too, but OpenPhotoCommand does nothing when there is no photo, so
+                        a dog without one has no dead affordance.
+                    -->
+                    <Button
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Command="{Binding OpenPhotoCommand}"
+                        HorizontalAlignment="Left"
+                        Padding="0">
+                        <Panel Height="168" Width="168">
+                            <Image
+                                imaging:ImageLoader.Path="{Binding PhotoPath}"
+                                IsVisible="{Binding HasPhoto}"
+                                Stretch="UniformToFill">
+                                <Image.Clip>
+                                    <EllipseGeometry Rect="0,0,168,168" />
+                                </Image.Clip>
+                            </Image>
+                            <Border
+                                Background="{DynamicResource SurfaceControl}"
+                                CornerRadius="84"
+                                IsVisible="{Binding NoPhoto}">
+                                <TextBlock
+                                    Classes="TTitle"
+                                    HorizontalAlignment="Center"
+                                    Text="{Binding Initials}"
+                                    VerticalAlignment="Center" />
+                            </Border>
+                        </Panel>
+                    </Button>
 
                     <StackPanel Spacing="4">
                         <TextBlock Classes="TTitle" Text="{Binding Name}" TextWrapping="Wrap" />
@@ -345,8 +357,9 @@
                                         Height="70"
                                         Width="70">
                                         <Image
+                                            imaging:ImageLoader.DecodeWidth="192"
+                                            imaging:ImageLoader.Path="{Binding PhotoPath}"
                                             IsVisible="{Binding HasPhoto}"
-                                            Source="{Binding PhotoPath, Converter={StaticResource ImagePathConverter}, ConverterParameter=192}"
                                             Stretch="UniformToFill" />
                                     </Border>
                                 </Button>
@@ -381,6 +394,11 @@
                 <Border Height="168" />
             </StackPanel>
         </ScrollViewer>
+
+        <components:PhotoViewer
+            CloseCommand="{Binding ClosePhotoCommand}"
+            IsOpen="{Binding ViewingPhoto}"
+            Path="{Binding PhotoPath}" />
 
         <components:ConfirmDialog
             CancelCommand="{Binding CancelDeleteCommand}"

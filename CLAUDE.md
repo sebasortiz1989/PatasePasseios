@@ -172,32 +172,45 @@ framework's convention.
 
 ## Current state and known gaps
 
-Say what is real — several things here are not. Verified 2026-08-20.
+Say what is real — several things here are not. Verified 2026-08-21.
 
-- **A visual refresh is half-applied.** `DesignDocs/2026-08-20_dapperdemo-visual-refresh/`
+- **The visual refresh is complete.** `DesignDocs/2026-08-20_dapperdemo-visual-refresh/`
   holds the brief and the delivered design; `delivery/corrections.md` lists where the
-  design disagrees with the app and the app is right. Ported so far: **Agenda,
-  Cachorros, Tutores**, plus the new **Ajustes**. The other ten screens still use
-  their old layout and hardcoded font sizes — they render, and they pick up both
-  palettes, because `ClassicalTheme` keeps the old token names (`ColorBg`,
-  `ColorText`…) alive as aliases onto the new roles. Port a screen by moving it to
-  the `T*` type classes and the `Border.Group` treatment; do not add new `FontSize`
-  literals to anything.
+  design disagrees with the app and the app is right. Every screen is on the `T*` type
+  classes and the `Border.Group` treatment, and the old token aliases (`ColorBg`,
+  `ColorText`…) and the pre-refresh style classes (`Heading1`, `BtnPrimary`, `Card`,
+  `Tag`, `TagSign`, `FormInput`, `ClassicCheckBox`…) were deleted from
+  `ClassicalTheme` along with them. There is one token vocabulary now — the roles.
+  Do not add `FontSize` literals to anything.
 - **`Seguir o tamanho do sistema` does nothing yet.** Avalonia exposes no portable
   read of the OS text scale, so `AvaloniaDisplaySettings.SystemTextSizeStep` returns
   the default step. The switch, the inert-slider readout and the persistence are
   real; the platform value is the seam, and it needs per-head code for iOS Dynamic
   Type and Android's font scale.
 - **Dog photos are stored at the camera's own size.** `DogImageStore.SaveAsync`
-  copies the stream untouched. `ImagePathConverter` now decodes to the size the
-  binding asks for — 192px in the dogs list, 512 elsewhere — which is what fixed the
-  Android lag, but the *files* are still full-size, so the backup zip carries them at
-  full resolution and photos go into it uncompressed. Downscaling on save is the
-  other half and has not been done.
-- **Only Cachorros and Tutores virtualize.** Their group is the scroll host, so a long
-  list realizes only the rows on screen. Every other list is still an `ItemsControl`
-  inside a page-level `StackPanel`, which is unbounded and realizes everything — fine
-  where the lists are short, and the same restructure is the fix if one grows.
+  copies the stream untouched, so the *files* are still full-size: the backup zip
+  carries them at full resolution and uncompressed. Downscaling on save is the other
+  half and has not been done. Display no longer depends on it — see below — but the
+  backup does.
+- **Photos are decoded off the UI thread, through `Imaging/ImageLoader`.** Bind
+  `imaging:ImageLoader.Path` (plus `DecodeWidth` where the display size is small),
+  never `Image.Source` through a converter: a converter has to return the bitmap
+  inside the layout pass, which put a file read and a JPEG decode on the UI thread
+  every time a row scrolled into view. `PhotoCache` holds 64 decodes, LRU, keyed by
+  path *and* width, and hands back a cached one in the same frame so a row scrolled
+  back does not blank and refill. `ImagePathConverter` was deleted; `ExifOrientation`
+  survives and is used by `PhotoCache`.
+- **Virtualization needs a bounded viewport, not just the panel.** **Cachorros,
+  Tutores and Agenda** virtualize: the list is the direct child of a `ScrollViewer`
+  sitting in a star-sized grid row, with `VirtualizingStackPanel` as its `ItemsPanel`
+  and the tab-bar clearance moved to the ScrollViewer's `Padding`. Setting the panel
+  on a list nested in a page-level `StackPanel` does nothing — the height is
+  unbounded, so every row is realized regardless. The remaining lists are sections of
+  a scrolling page (the two detail screens, Usuários) or hand-entered form rows
+  (Serviços' DIAS/HORÁRIOS); making one of those the scroll host would mean a
+  scrollable list inside a scrolling page. They are bounded by data instead — one
+  dog's services, one tutor's dogs — and their rows are text now that photos load
+  asynchronously.
 - **`RepositoryBase` is a full CRUD contract with unimplemented overrides.**
   `RepositoryDogs`, `RepositoryTutors` and `RepositoryPetSitter` throw
   `NotImplementedException` from ten overrides between them. Check before calling;

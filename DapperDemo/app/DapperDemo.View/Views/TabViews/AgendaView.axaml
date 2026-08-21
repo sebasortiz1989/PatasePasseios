@@ -284,32 +284,39 @@
             </Border>
         </StackPanel>
 
+        <!--  One sentence at the text margin. No illustration, no button.  -->
+        <TextBlock
+            Classes="TUi Muted"
+            Grid.Row="1"
+            IsVisible="{Binding HasNoServices}"
+            Margin="35,42,35,0"
+            Text="Nenhum serviço neste filtro."
+            TextWrapping="Wrap"
+            VerticalAlignment="Top" />
+
+        <!--
+            The list is the scroll host, the same way the dogs and tutors groups are: its viewport
+            is bounded by the star row, so the panel realizes only the dog groups on screen. Wrapped
+            in a StackPanel — which is what this was — the height is unbounded, every group is
+            realized on every refresh, and the panel below cannot virtualize whatever it is told to.
+
+            The empty-state line moved out for the same reason: it and the trailing spacer made the
+            ItemsControl one child of three, so it could not be the ScrollViewer's content. The
+            spacer became the ScrollViewer's own bottom padding, which is what lets the last group
+            clear the floating tab bar.
+        -->
         <ScrollViewer
             Grid.Row="1"
             Margin="0,42,0,0"
+            Padding="0,0,0,168"
             VerticalScrollBarVisibility="Auto">
-            <StackPanel>
-                <!--  One sentence at the text margin. No illustration, no button.  -->
-                <TextBlock
-                    Classes="TUi Muted"
-                    IsVisible="{Binding HasNoServices}"
-                    Margin="35,0"
-                    Text="Nenhum serviço neste filtro."
-                    TextWrapping="Wrap" />
-
-                <ItemsControl
-                    ItemTemplate="{StaticResource DogGroupTemplate}"
-                    ItemsSource="{Binding DogGroups}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
-
-                <!--  Clearance for the floating tab bar, which content scrolls under.  -->
-                <Border Height="168" />
-            </StackPanel>
+            <ItemsControl ItemTemplate="{StaticResource DogGroupTemplate}" ItemsSource="{Binding DogGroups}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
         </ScrollViewer>
     </Grid>
 </UserControl>
