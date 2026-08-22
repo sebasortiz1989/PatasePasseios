@@ -56,6 +56,20 @@ the new-service form — where it sits outside both kind panels, because it appl
 every kind and to every occurrence a repeat creates — or afterwards on the service
 detail screen.
 
+## A stay's money belongs to the month it ends
+
+`ServiceItem.BillingDate` is `EndDate ?? Date`. A stay running 29 July to 2 August is
+one piece of work, billed once, and all of it counts as **August's** money — not split
+across the two months, and not July's because that is when the dog arrived.
+
+Everything that attributes money to a period goes through it: `GetMonthlyIncomeAsync`,
+`ServicePeriod.Matches(ServiceItem, …)` — which is what the per-dog breakdown and both
+detail screens filter on — and the tutor report's month grouping.
+
+**The agenda deliberately does not.** It scopes by `Date`, because a stay starting on the
+29th is something the sitter has to turn up for on the 29th. Scheduling and billing are
+different questions and this is the one place they disagree.
+
 ## Settling never reprices
 
 Each service carries `AmountSettled` (how much has been paid against it) and

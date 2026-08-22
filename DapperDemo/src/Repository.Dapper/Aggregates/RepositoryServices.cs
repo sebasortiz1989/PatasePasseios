@@ -330,8 +330,10 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
         // Settled, not "paid": a service can now be part-settled, and what came in is that partial
         // amount rather than nothing. A fully paid service settled before this column existed has
         // AmountSettled 0, so ServicePaid falls back to its full total.
+        // BillingDate, not Date: a stay finishing in August is August's money even though it
+        // started in July. See ServiceItem.BillingDate.
         var thisMonth = services
-            .Where(s => s.Date.Year == year && (month <= 0 || s.Date.Month == month))
+            .Where(s => s.BillingDate.Year == year && (month <= 0 || s.BillingDate.Month == month))
             .ToArray();
 
         decimal Received(ServiceKind kind) => thisMonth

@@ -135,7 +135,9 @@ internal static class ServicePeriod
     {
         ArgumentNullException.ThrowIfNull(service);
 
-        return Matches(service.Date, month, year);
+        // BillingDate rather than Date, so a stay is counted in the month it finished — the same
+        // month its money is reported in. See ServiceItem.BillingDate.
+        return Matches(service.BillingDate, month, year);
     }
 
     /// <summary>

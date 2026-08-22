@@ -913,7 +913,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
 
         var scopedServices = tutorServices.Where(s => ServicePeriod.Matches(s, SelectedMonth, SelectedYear)).ToArray();
 
-        foreach (var month in scopedServices.GroupBy(s => new DateTime(s.Date.Year, s.Date.Month, 1)).OrderByDescending(g => g.Key))
+        foreach (var month in scopedServices.GroupBy(s => new DateTime(s.BillingDate.Year, s.BillingDate.Month, 1)).OrderByDescending(g => g.Key))
         {
             var monthName = Brazil.DateTimeFormat.GetMonthName(month.Key.Month);
             var section = new ReportSection

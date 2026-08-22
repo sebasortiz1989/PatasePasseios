@@ -348,16 +348,34 @@
                                     IsVisible="{Binding HasPaymentError}"
                                     Text="{Binding PaymentError}"
                                     TextWrapping="Wrap" />
-                                <StackPanel Orientation="Horizontal" Spacing="28">
+                                <Border Classes="RowRule" Margin="0,7,0,0" />
+                                <Grid ColumnDefinitions="*,Auto,*" Height="84">
                                     <Button
-                                        Classes="TextLink"
-                                        Command="{Binding ConfirmPaymentCommand}"
-                                        Content="Confirmar" />
-                                    <Button
-                                        Classes="TextLink"
+                                        Background="Transparent"
+                                        BorderThickness="0"
                                         Command="{Binding CancelPaymentCommand}"
-                                        Content="Cancelar" />
-                                </StackPanel>
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Center"
+                                        VerticalAlignment="Stretch"
+                                        VerticalContentAlignment="Center">
+                                        <TextBlock Classes="TBody" Text="Cancelar" />
+                                    </Button>
+                                    <Border Classes="SegRule" Grid.Column="1" />
+                                    <Button
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Command="{Binding ConfirmPaymentCommand}"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Center"
+                                        VerticalAlignment="Stretch"
+                                        VerticalContentAlignment="Center">
+                                        <TextBlock
+                                            Classes="TBody Owed"
+                                            FontWeight="SemiBold"
+                                            Text="Confirmar" />
+                                    </Button>
+                                </Grid>
                             </StackPanel>
                         </StackPanel>
                     </Border>
@@ -500,16 +518,34 @@
                                 IsVisible="{Binding HasEditPaymentError}"
                                 Text="{Binding EditPaymentError}"
                                 TextWrapping="Wrap" />
-                            <StackPanel Orientation="Horizontal" Spacing="28">
+                            <Border Classes="RowRule" Margin="0,7,0,0" />
+                            <Grid ColumnDefinitions="*,Auto,*" Height="84">
                                 <Button
-                                    Classes="TextLink"
-                                    Command="{Binding SavePaymentEditCommand}"
-                                    Content="Salvar" />
-                                <Button
-                                    Classes="TextLink"
+                                    Background="Transparent"
+                                    BorderThickness="0"
                                     Command="{Binding CancelPaymentEditCommand}"
-                                    Content="Cancelar" />
-                            </StackPanel>
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalAlignment="Stretch"
+                                    VerticalContentAlignment="Center">
+                                    <TextBlock Classes="TBody" Text="Cancelar" />
+                                </Button>
+                                <Border Classes="SegRule" Grid.Column="1" />
+                                <Button
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Command="{Binding SavePaymentEditCommand}"
+                                    Grid.Column="2"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalAlignment="Stretch"
+                                    VerticalContentAlignment="Center">
+                                    <TextBlock
+                                        Classes="TBody Owed"
+                                        FontWeight="SemiBold"
+                                        Text="Salvar" />
+                                </Button>
+                            </Grid>
                         </StackPanel>
                     </Border>
 

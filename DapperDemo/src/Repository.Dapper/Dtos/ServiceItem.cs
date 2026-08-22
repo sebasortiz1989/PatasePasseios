@@ -99,6 +99,22 @@ public sealed class ServiceItem
     public int Nights => EndDate is DateTime finish ? Math.Max((finish.Date - Date.Date).Days, 1) : 1;
 
     /// <summary>
+    /// Gets the date this service's money belongs to.
+    /// </summary>
+    /// <remarks>
+    /// The check-out for a stay, the date itself for everything else. A stay that runs 29 July to
+    /// 2 August is one piece of work that finishes in August, and it is billed once — so all of it
+    /// counts as August's money rather than being split across two months or landing in July
+    /// because that is when the dog arrived.
+    /// <para>
+    /// This is for <b>attributing money to a period</b> — the monthly income, the per-dog
+    /// breakdown, the tutor's bill by month. The agenda keeps using <see cref="Date"/>, because a
+    /// stay starting on the 29th is something the sitter has to turn up for on the 29th.
+    /// </para>
+    /// </remarks>
+    public DateTime BillingDate => EndDate ?? Date;
+
+    /// <summary>
     /// Gets what this service costs before any discount. A hotel stay's <see cref="Price"/> is a
     /// nightly rate so it multiplies out; everything else is a one-off fee.
     /// </summary>

@@ -18,14 +18,15 @@ public class ServiceItemTests
         decimal settled = 0m,
         decimal credit = 0m,
         decimal discount = 0m,
-        decimal extra = 0m) => new()
+        decimal extra = 0m,
+        DateTime? start = null) => new()
         {
             ServiceId = 1,
             Kind = kind,
             DogId = 1,
             DogName = "Toby",
             TutorName = "Ana",
-            Date = new DateTime(2026, 8, 1, 9, 0, 0),
+            Date = start ?? new DateTime(2026, 8, 1, 9, 0, 0),
             EndDate = end,
             Price = price,
             ExtraCharge = extra,
@@ -263,5 +264,42 @@ public class ServiceItemTests
 
         Assert.Equal(0m, service.Outstanding);
         Assert.Equal(0m, service.AmountDue);
+    }
+
+    [Fact]
+    public void AFlatFeeServiceIsBilledOnItsOwnDate()
+    {
+        var service = Service(ServiceKind.Walk, 60m);
+
+        Assert.Equal(service.Date, service.BillingDate);
+    }
+
+    [Fact]
+    public void AStayIsBilledOnItsCheckOut()
+    {
+        // 29 July to 2 August is one piece of work that finishes in August, billed once. All of it
+        // is August's money — not split across the two months, and not July's because that is when
+        // the dog arrived.
+        var service = Service(
+            ServiceKind.Hotel,
+            100m,
+            end: new DateTime(2026, 8, 2, 10, 0, 0),
+            start: new DateTime(2026, 7, 29, 9, 0, 0));
+
+        Assert.Equal(8, service.BillingDate.Month);
+        Assert.Equal(2026, service.BillingDate.Year);
+    }
+
+    [Fact]
+    public void AStayCrossingNewYearIsBilledInTheYearItEnds()
+    {
+        var service = Service(
+            ServiceKind.Hotel,
+            100m,
+            end: new DateTime(2027, 1, 3, 10, 0, 0),
+            start: new DateTime(2026, 12, 28, 9, 0, 0));
+
+        Assert.Equal(2027, service.BillingDate.Year);
+        Assert.Equal(1, service.BillingDate.Month);
     }
 }
