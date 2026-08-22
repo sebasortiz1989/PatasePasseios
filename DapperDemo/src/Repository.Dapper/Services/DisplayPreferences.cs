@@ -32,7 +32,7 @@ public sealed record DisplayPreferences(AppTheme Theme, int TextSizeStep, bool F
     public const int StepCount = 6;
 
     /// <summary>
-    /// What a device that has never opened Ajustes uses: the system's palette, the system's size.
+    /// Gets what a device that has never opened Ajustes uses: the system's palette, the system's size.
     /// </summary>
     public static DisplayPreferences Default { get; } = new(AppTheme.System, DefaultStep, true);
 

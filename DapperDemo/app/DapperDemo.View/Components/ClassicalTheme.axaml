@@ -367,13 +367,19 @@
     <!--
         A field inside a group row. No box of its own: the group is the container, the separator
         between rows is the only line, and the label above it says what it is.
+
+        Same 60-unit minimum as the date and time fields, so a form that mixes them does not step
+        up and down row by row. It is a minimum: a field with AcceptsReturn grows past it, and
+        those two set VerticalContentAlignment back to Top at the usage site — centring is right
+        for one line and wrong for a paragraph.
     -->
     <Style Selector="TextBox.Field">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="CornerRadius" Value="0" />
         <Setter Property="Padding" Value="0" />
-        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="MinHeight" Value="60" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
         <Setter Property="FontSize" Value="{DynamicResource TypeBody}" />
         <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
@@ -415,10 +421,36 @@
         <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
     </Style>
 
-    <!--  The same for the date picker's inner text box, which is a TextBox with its own template.  -->
-    <Style Selector="CalendarDatePicker.Field /template/ TextBox#PART_TextBox /template/ Border#PART_BorderElement">
+    <!--
+        The date picker's box is its own, not its inner text box's, and it is not template-bound:
+        Fluent's CalendarDatePicker template is a Panel holding a Border named Background, and the
+        theme's own state styles write that border's fill, brush and thickness straight from
+        TextControl*Focused — so setting Background and BorderThickness on the picker changes
+        nothing, which is why the focused field stayed a filled box with an accent ring through two
+        attempts at it. The border element is one /template/ hop away and can be styled directly;
+        the inner TextBox is transparent and borderless already and needs nothing.
+
+        Note the pseudo-class: a click lands in the text box, so the picker gets :focus-within and
+        never :focus. The three states carry the same vocabulary as TextBox.Field — no fill ever,
+        and a 1px rule along the bottom, invisible at rest.
+    -->
+    <Style Selector="CalendarDatePicker.Field /template/ Border#Background">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+        <Setter Property="CornerRadius" Value="0" />
+    </Style>
+
+    <Style Selector="CalendarDatePicker.Field:pointerover /template/ Border#Background">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource StrokeRaised}" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+    </Style>
+
+    <Style Selector="CalendarDatePicker.Field:focus-within /template/ Border#Background">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
     </Style>
 
     <!--  The one control that submits a form: full measure, and the only thing below the fields.  -->
@@ -448,13 +480,21 @@
         and coloured for the old bordered field, and conspicuous inside a borderless row. It is
         retemplated down to one stroked chevron, the same glyph every other row uses to say
         "this opens".
+
+        The 60 is a minimum, not a fixed height. Without it the field is exactly one line of body
+        text — around 25dp on a phone once the canvas is scaled down — which is half a comfortable
+        tap target, and the
+        chevron that actually opens the calendar is the only part of it that responds. The text box
+        and the chevron both stretch into that height rather than centring inside it, so the whole
+        field is live rather than a line of text floating in a taller box.
     -->
     <Style Selector="CalendarDatePicker.Field">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="CornerRadius" Value="0" />
         <Setter Property="Padding" Value="0" />
-        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="MinHeight" Value="60" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
         <Setter Property="FontSize" Value="{DynamicResource TypeBody}" />
         <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
@@ -466,6 +506,8 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="MinHeight" Value="0" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="FontSize" Value="{DynamicResource TypeBody}" />
         <Setter Property="Foreground" Value="{DynamicResource InkPrimary}" />
     </Style>
@@ -475,11 +517,13 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="Width" Value="56" />
-        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <!--  Off the row's right edge, so the glyph is inside the field rather than on its rule.  -->
+        <Setter Property="Margin" Value="0,0,14,0" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
             <ControlTemplate>
-                <Border Background="Transparent">
+                <Border Background="Transparent" VerticalAlignment="Stretch">
                     <Path
                         Data="{StaticResource IconChevronDown}"
                         Height="28"
@@ -502,7 +546,7 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="CornerRadius" Value="0" />
         <Setter Property="Padding" Value="0" />
-        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="MinHeight" Value="60" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
         <Setter Property="FontSize" Value="{DynamicResource TypeBody}" />
@@ -513,7 +557,7 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="0" />
-        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="MinHeight" Value="60" />
         <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>
 

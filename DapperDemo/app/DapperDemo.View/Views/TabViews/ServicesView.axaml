@@ -18,13 +18,23 @@
             <StackPanel>
                 <Border Classes="RowRule" />
                 <Grid ColumnDefinitions="*,Auto" Margin="28,14">
-                    <TimePicker Classes="Field" ClockIdentifier="24HourClock" SelectedTime="{Binding Time}" />
+                    <TimePicker
+                        Classes="Field"
+                        ClockIdentifier="24HourClock"
+                        Margin="0,0,35,0"
+                        SelectedTime="{Binding Time}" />
+                    <!--
+                        The gap and the padding are both about the thumb, not the eye: the field
+                        stretches to the column edge, so without them Remover began where the field
+                        ended and a tap aimed at one landed on the other.
+                    -->
                     <Button
                         Classes="TextLink"
                         Command="{Binding RemoveCommand}"
                         Content="Remover"
                         Grid.Column="1"
                         IsVisible="{Binding CanRemove}"
+                        Padding="0,16"
                         VerticalAlignment="Center" />
                 </Grid>
             </StackPanel>
@@ -34,13 +44,15 @@
             <StackPanel>
                 <Border Classes="RowRule" />
                 <Grid ColumnDefinitions="*,Auto" Margin="28,14">
-                    <CalendarDatePicker Classes="Field" SelectedDate="{Binding Date}" />
+                    <CalendarDatePicker Classes="Field" Margin="0,0,35,0" SelectedDate="{Binding Date}" />
+                    <!--  Spaced off the field for the same reason as the hour rows above.  -->
                     <Button
                         Classes="TextLink"
                         Command="{Binding RemoveCommand}"
                         Content="Remover"
                         Grid.Column="1"
                         IsVisible="{Binding CanRemove}"
+                        Padding="0,16"
                         VerticalAlignment="Center" />
                 </Grid>
             </StackPanel>

@@ -107,7 +107,7 @@ public class SettingsViewModel : PresentationModelBase<Unit, Unit>
     public string StepCountLabel =>
         $"{EffectiveStep.ToString(System.Globalization.CultureInfo.InvariantCulture)} de {DisplayPreferences.StepCount.ToString(System.Globalization.CultureInfo.InvariantCulture)}";
 
-    /// <summary>The step actually in force, which is the system's while the switch is on.</summary>
+    /// <summary>Gets the step actually in force, which is the system's while the switch is on.</summary>
     private int EffectiveStep => FollowSystemTextSize ? display.SystemTextSizeStep : (int)Math.Round(SelectedStep);
 
     /// <summary>

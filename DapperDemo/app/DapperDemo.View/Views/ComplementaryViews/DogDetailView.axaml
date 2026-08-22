@@ -359,7 +359,8 @@
                                     AcceptsReturn="True"
                                     Classes="Field"
                                     Text="{Binding EditDescription}"
-                                    TextWrapping="Wrap" />
+                                    TextWrapping="Wrap"
+                                    VerticalContentAlignment="Top" />
                             </StackPanel>
                             <Border Classes="RowRule" />
                             <!--

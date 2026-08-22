@@ -1149,7 +1149,6 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
     /// size the month list came out several times wider than the field that opened it. Stepping
     /// keeps the whole interaction inside ordinary layout.
     /// </remarks>
-    /// <param name="delta">−1 or +1.</param>
     /// <summary>Opens one of this tutor's dogs, the same way the Cachorros tab does.</summary>
     /// <param name="dogId">Which dog to show.</param>
     private void OpenDog(int dogId)

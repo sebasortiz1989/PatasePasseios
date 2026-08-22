@@ -65,6 +65,7 @@
                                 Classes="Field"
                                 Text="{Binding Description}"
                                 TextWrapping="Wrap"
+                                VerticalContentAlignment="Top"
                                 PlaceholderText="Temperamento, cuidados, rotina…" />
                         </StackPanel>
 
