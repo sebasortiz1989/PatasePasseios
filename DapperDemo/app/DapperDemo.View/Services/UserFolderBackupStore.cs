@@ -36,10 +36,16 @@ public sealed class UserFolderBackupStore(CloudBackupState state) : CloudBackupS
             return null;
         }
 
-        var path = Describe(folder.Path);
-        return string.IsNullOrWhiteSpace(path)
-            ? (string.IsNullOrWhiteSpace(folder.Name) ? null : folder.Name)
-            : path;
+        // A file path is worth showing in full — on a desktop the whole path is how someone finds
+        // the folder again. A content:// tree URI is not: Drive's looks like
+        // "com.google.android.apps.docs.storage/tree/acc=5;doc=encoded=LQHdXUv…", which names
+        // nothing. There the picker's own display name is the folder's real name, so it wins.
+        if (folder.Path is { IsFile: true } file)
+        {
+            return Describe(file) ?? NameOrNull(folder.Name);
+        }
+
+        return NameOrNull(folder.Name) ?? Describe(folder.Path);
     }
 
     /// <inheritdoc/>
@@ -130,6 +136,9 @@ public sealed class UserFolderBackupStore(CloudBackupState state) : CloudBackupS
     /// an Android storage-access <c>content://.../tree/primary%3ADocuments%2FPatas</c>; the latter
     /// carries its readable path after a colon, once unescaped.
     /// </remarks>
+    private static string? NameOrNull(string? name) =>
+        string.IsNullOrWhiteSpace(name) ? null : name;
+
     private static string? Describe(Uri? uri)
     {
         if (uri == null)

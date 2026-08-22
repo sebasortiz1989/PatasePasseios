@@ -66,7 +66,15 @@ public sealed class DesignCanvas : Decorator
         var scale = ScaleFor(availableSize);
         var canvas = CanvasFor(availableSize, scale);
         child.Measure(canvas);
-        return new Size(canvas.Width * scale, canvas.Height * scale);
+
+        // Report the space we were given, not what the child wanted. A canvas fills its host by
+        // definition, and reporting the child's scaled height was what produced the short page:
+        // a measure pass with no height — which Android's soft-keyboard handling produces — makes
+        // CanvasFor fall back to DesignHeight, so the canvas asked for 1560 units' worth and the
+        // rest of the screen stayed the shell's black. Only an unbounded axis falls back.
+        return new Size(
+            double.IsInfinity(availableSize.Width) ? canvas.Width * scale : availableSize.Width,
+            double.IsInfinity(availableSize.Height) ? canvas.Height * scale : availableSize.Height);
     }
 
     /// <inheritdoc/>
@@ -79,6 +87,11 @@ public sealed class DesignCanvas : Decorator
 
         var scale = ScaleFor(finalSize);
         var canvas = CanvasFor(finalSize, scale);
+
+        // Measured again against the canvas it is about to be arranged on. Measure may have run
+        // with no height and sized the child for 1560 units; arranging it taller without a second
+        // measure leaves its content laid out for a canvas that is no longer the one it is on.
+        child.Measure(canvas);
 
         // Arranging at full design size and scaling afterwards — the mechanism Viewbox uses — keeps
         // every measurement inside the child in design units, so the authored pixel values still
