@@ -7,7 +7,7 @@ built in .NET 10 and Avalonia over Dapper/SQLite.
 
 <img src="images/screenshots/login.png" alt="Login — Patas & Passeios" width="280">
 
-**139 C# files · ~16,500 lines · 150 tests · five platform heads from one View**
+**139 C# files · ~16,500 lines · 180 tests · five platform heads from one View**
 
 </div>
 
