@@ -137,6 +137,21 @@ dotnet run --project app/DapperDemo.Desktop/DapperDemo.Desktop.csproj
 dotnet test tests/Tests.Dapper/Tests.Dapper.csproj
 ```
 
+### Demo data
+
+The app starts empty apart from the seeded login, which makes every screen look
+like nothing works. To fill it:
+
+```bash
+Scripts/seed-demo.sh          # run the app once first, so the schema exists
+```
+
+Four tutors, eight dogs, and 22 services across all four types — settled, done
+but unpaid, and upcoming — plus one tutor carrying credit so the payment ledger
+is visible rather than theoretical. Dates are generated relative to today, so
+the agenda always straddles now. It **deletes every record** in the target
+database and asks before doing it; never point it at real data.
+
 Prefer building the **Desktop** head on Linux/CI: the iOS/Android/MacOS projects need mobile workloads a plain SDK image does not have. Stop a running head before rebuilding — it locks `bin/` (`MSB3027` / `MSB3021`).
 
 ---
