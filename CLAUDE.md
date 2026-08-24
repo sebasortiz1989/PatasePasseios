@@ -164,7 +164,10 @@ builder below it plus its own registrations.
   literal.
   **Every `Show` must pass a label naming the record, not the screen type** — "Jony",
   never "Cachorro" — because it is what the back control of anything opened from there
-  will read.
+  will read. The `BackControl` theme in `ClassicalTheme.axaml` is the one place that
+  renders it — `MaxWidth` 480 with `TextTrimming="CharacterEllipsis"`, so a long name
+  shows as much as the row affords and then trails off. Every pushed screen uses that
+  theme; Ajustes hand-rolled a copy until 2026-08-24 and so missed the trimming.
   What makes stacking work is `Selection`: the presenters are reused singletons and the
   record each shows lives on `AppSession`, so an entry that remembered only "the dog
   screen" did not remember *which dog*, and walking back re-rendered it with whatever was

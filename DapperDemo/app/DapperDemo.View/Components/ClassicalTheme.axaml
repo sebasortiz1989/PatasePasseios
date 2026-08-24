@@ -105,11 +105,21 @@
                                         StrokeThickness="2.4"
                                         VerticalAlignment="Center"
                                         Width="30" />
+                                    <!--
+                                        The whole name where it fits, an ellipsis where it does not.
+                                        480 is what the row affords: the control sits alone at
+                                        Margin 30 and its own chrome — ring, padding, chevron and
+                                        the gap after it — takes 99, so 30 + 99 + 480 leaves 111
+                                        units of air at the right edge of the 720 canvas. That is
+                                        about 33 characters at the default type size and 20 at the
+                                        largest, which is the measure narrowing as the type grows —
+                                        the same trade every other screen makes.
+                                    -->
                                     <TextBlock
                                         FontFamily="{StaticResource FontBody}"
                                         FontSize="{DynamicResource TypeUi}"
                                         Foreground="{DynamicResource InkPrimary}"
-                                        MaxWidth="350"
+                                        MaxWidth="480"
                                         Text="{TemplateBinding Tag}"
                                         TextTrimming="CharacterEllipsis"
                                         VerticalAlignment="Center" />
