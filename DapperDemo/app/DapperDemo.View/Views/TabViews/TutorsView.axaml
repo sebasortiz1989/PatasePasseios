@@ -104,7 +104,7 @@
             Classes="Group"
             Grid.Row="2"
             IsVisible="{Binding !IsEmpty}">
-            <ScrollViewer Padding="0,0,0,168">
+            <ScrollViewer Padding="0,0,0,234">
                 <ItemsControl
                     Classes="RowGroup"
                     ItemTemplate="{StaticResource TutorRowTemplate}"

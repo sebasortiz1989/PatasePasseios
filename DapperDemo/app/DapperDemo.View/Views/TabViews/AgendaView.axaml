@@ -326,7 +326,7 @@
         <ScrollViewer
             Grid.Row="1"
             Margin="0,30,0,0"
-            Padding="0,0,0,168"
+            Padding="0,0,0,234"
             VerticalScrollBarVisibility="Auto">
             <ItemsControl ItemTemplate="{StaticResource DogGroupTemplate}" ItemsSource="{Binding DogGroups}">
                 <ItemsControl.ItemsPanel>

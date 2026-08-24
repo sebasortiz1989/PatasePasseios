@@ -141,6 +141,22 @@ internal static class ServicePeriod
     }
 
     /// <summary>
+    /// The first moment of the selected period.
+    /// </summary>
+    /// <remarks>
+    /// For splitting "before this bill" from "in it" — a tutor's exported bill is scoped to a
+    /// period but settled in one transfer, so what is still owed from earlier has to be told apart
+    /// from what is owed from later. January the first when the whole year is chosen.
+    /// </remarks>
+    /// <param name="month">The selected month, or the whole-year entry.</param>
+    /// <param name="year">The selected year.</param>
+    /// <returns>The period's first day, at midnight.</returns>
+    public static DateTime Start(MonthOption? month, int year) =>
+        month is { Number: not WholeYear } chosen
+            ? new DateTime(year, chosen.Number, 1)
+            : new DateTime(year, 1, 1);
+
+    /// <summary>
     /// Whether a date falls inside the selected period. The tutor screen scopes its payment list
     /// with the same pickers it scopes its service list with, and a payment is only a date.
     /// </summary>

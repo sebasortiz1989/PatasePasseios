@@ -319,7 +319,7 @@
                 </StackPanel>
 
                 <!--  Clearance for the floating tab bar, which content scrolls under.  -->
-                <Border Height="168" />
+                <Border Height="234" />
             </StackPanel>
         </ScrollViewer>
 

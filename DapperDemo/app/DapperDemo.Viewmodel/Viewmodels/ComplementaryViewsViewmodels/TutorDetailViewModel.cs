@@ -994,7 +994,22 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
         // AmountUpcoming needs it unset — so their sum counts nothing twice.
         var chargeableTotal = tutorServices.Sum(s => s.AmountDue);
         var upcomingTotal = tutorServices.Sum(s => s.AmountUpcoming);
-        await AddPaymentSectionAsync(report, chargeableTotal, upcomingTotal).WithSync();
+
+        // What is still owed from outside the period this bill covers, split at the period's first
+        // day. The total has always been the tutor's whole history — a bill is settled in one
+        // transfer, not one per month — but nothing on the page said so, so a month section
+        // totalling R$ 468,00 could sit above a total of R$ 488,00 with the difference nowhere.
+        // AmountDue plus AmountUpcoming rather than a ServicePaid filter, per the money rules:
+        // together they are what is unsettled, whether or not it may be charged yet.
+        var periodStart = ServicePeriod.Start(SelectedMonth, SelectedYear);
+        var owedBefore = tutorServices
+            .Where(s => s.BillingDate < periodStart)
+            .Sum(s => s.AmountDue + s.AmountUpcoming);
+        var owedAfter = tutorServices
+            .Where(s => s.BillingDate >= periodStart && !ServicePeriod.Matches(s, SelectedMonth, SelectedYear))
+            .Sum(s => s.AmountDue + s.AmountUpcoming);
+
+        await AddPaymentSectionAsync(report, chargeableTotal, upcomingTotal, owedBefore, owedAfter).WithSync();
 
         var slug = new string([.. Name.ToLowerInvariant().Select(c => char.IsLetterOrDigit(c) ? c : '-')]).Trim('-');
 
@@ -1041,7 +1056,17 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
     /// <param name="report">The report being built.</param>
     /// <param name="chargeable">What has been carried out and not yet paid for, across every month.</param>
     /// <param name="upcoming">What is booked, unpaid and not yet carried out, across every month.</param>
-    private async Task AddPaymentSectionAsync(ReportDocument report, decimal chargeable, decimal upcoming)
+    /// <param name="owedBefore">
+    /// The part of those two that predates the period this bill is headed with — the balance
+    /// carried in. Named on its own line so the total's arithmetic is visible.
+    /// </param>
+    /// <param name="owedAfter">The part booked after that period, named for the same reason.</param>
+    private async Task AddPaymentSectionAsync(
+        ReportDocument report,
+        decimal chargeable,
+        decimal upcoming,
+        decimal owedBefore,
+        decimal owedAfter)
     {
         var petSitter = await repositoryPetSitter.GetAsync(session.CurrentPetSitterId).WithSync();
         var payable = chargeable + upcoming;
@@ -1062,6 +1087,23 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
         if (!string.IsNullOrWhiteSpace(petSitter?.Pix))
         {
             payment.Fields.Add(new ReportField("Chave Pix", petSitter.Pix, true));
+        }
+
+        // Named rather than folded silently into the total. A bill headed "Agosto de 2026" whose
+        // month section reads "A pagar R$ 468,00" and whose total says R$ 488,00 owes the tutor an
+        // account of where the other twenty came from — and a sitter chasing an old debt wants it
+        // said out loud rather than buried in one figure.
+        if (owedBefore > 0m)
+        {
+            payment.Fields.Add(new ReportField("Saldo de meses anteriores", AppSession.Money(owedBefore)));
+        }
+
+        // The other side of the same split: work booked after the period this bill is headed with.
+        // Rare — it takes exporting a past month while later bookings are still unsettled — but the
+        // total counts it, so the page has to say it does.
+        if (owedAfter > 0m)
+        {
+            payment.Fields.Add(new ReportField("Saldo de meses seguintes", AppSession.Money(owedAfter)));
         }
 
         // Said outright when part of the figure is for work that has not happened yet, so a tutor
