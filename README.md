@@ -124,12 +124,8 @@ Each service row carries independent **`ServiceDone`** (work happened) and **`Se
 
 ## Getting started
 
-> **The `external/AvaloniaFramework` submodule is a private repository.**
-> A recursive clone will fail on it unless you have access. The application
-> code here is complete and readable without it; only a local build needs it.
-
 ```bash
-git clone --recursive git@github.com:sebasortiz1989/DapperDemo.git
+git clone --recursive https://github.com/sebasortiz1989/DapperDemo.git
 cd DapperDemo
 
 # if the clone was not recursive:
