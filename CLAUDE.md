@@ -235,13 +235,15 @@ Say what is real — several things here are not. Verified 2026-08-21.
   constant string "pasta escolhida", which named nothing. The manual "Salvar backup em
   outro lugar" is a deliberately separate one-off and says so; it does not touch the
   automatic destination.
-- **The navigation bar sits 96 units off the bottom, and every screen clears 234.** Raised from
+- **The navigation bar sits 120 units off the bottom, and every screen clears 258.** Raised from
   30/168 on 2026-08-24: the app draws to the edge of the screen, 30 units is 15dp on a phone, and
-  the bar was landing inside Android's own navigation bar — reaching for Perfil pressed Back. The
-  two numbers are one number: 96 (margin) + 108 (bar and its ring) + 30 (cushion) = 234, and the
-  clearance is repeated in eleven `.axaml` files as a `Border Height` or a ScrollViewer `Padding`.
-  Move the bar and move all of them. **`234` is a clearance and `168` is a photo** — three files
-  still hold `Height="168" Width="168"` for a round portrait; do not sweep the number blindly.
+  the bar was landing 64px inside Android's own navigation bar — reaching for Perfil pressed Back.
+  A unit is half a dp on a 1080-wide phone, so 96 units is exactly the 48dp system bar; 120 is that
+  plus a 12dp gap, chosen after measuring a screenshot rather than by eye. The two numbers are one
+  number: 120 (margin) + 108 (bar and its ring) + 30 (cushion) = 258, and the clearance is repeated
+  in eleven `.axaml` files as a `Border Height` or a ScrollViewer `Padding`. Move the bar and move
+  all of them. **`258` is a clearance and `168` is a photo** — three files still hold
+  `Height="168" Width="168"` for a round portrait; do not sweep the number blindly.
   The bar takes a fixed margin rather than the real safe-area inset because `TopLevel.InsetsManager`
   reports in layout units and `DesignCanvas` does not expose the scale needed to convert.
 - **A screen-covering overlay must tell the navigation bar to hide.** The bar is a

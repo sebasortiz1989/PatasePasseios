@@ -178,7 +178,7 @@
                 </Border>
 
                 <!--  Clearance for the floating tab bar.  -->
-                <Border Height="234" />
+                <Border Height="258" />
             </StackPanel>
         </ScrollViewer>
     </Grid>
