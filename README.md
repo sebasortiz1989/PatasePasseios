@@ -5,9 +5,9 @@
 **Serviços para cães** — a cross-platform business app for a working dog sitter,
 built in .NET 10 and Avalonia over Dapper/SQLite.
 
-<img src="images/screenshots/login.png" alt="Login — Patas & Passeios" width="280">
+<img src="images/screenshots/dog-detail.png" alt="Ficha de um cachorro — Patas & Passeios" width="280">
 
-**139 C# files · ~16,500 lines · 180 tests · five platform heads from one View**
+**141 C# files · ~17,300 lines · 200 tests · five platform heads from one View**
 
 </div>
 
@@ -56,23 +56,21 @@ Seeded demo login: `test@test.com` / `8998`.
 </p>
 
 <p align="center">
-  <img src="images/screenshots/agenda.png" width="160" alt="Agenda">
-  &nbsp;
   <img src="images/screenshots/dogs.png" width="160" alt="Cachorros">
   &nbsp;
-  <img src="images/screenshots/tutors.png" width="160" alt="Tutores">
+  <img src="images/screenshots/agenda.png" width="160" alt="Agenda">
 </p>
 <p align="center">
-  <em>Agenda · Cães · Tutores</em>
+  <em>Cachorros · Agenda</em>
 </p>
 
 <p align="center">
-  <img src="images/screenshots/services.png" width="160" alt="Novo serviço">
+  <img src="images/screenshots/services.png" width="160" alt="Agendar">
   &nbsp;
-  <img src="images/screenshots/perfil.png" width="160" alt="Perfil">
+  <img src="images/screenshots/settings.png" width="160" alt="Ajustes">
 </p>
 <p align="center">
-  <em>Novo serviço · Perfil / faturamento</em>
+  <em>Agendar · Ajustes</em>
 </p>
 
 ### Tabs
