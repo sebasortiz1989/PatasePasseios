@@ -2,11 +2,11 @@
 
 The MVP, navigation, DI and control infrastructure is **AvaloniaFramework** —
 a separate repo, vendored at `external/AvaloniaFramework` as a **git submodule**
-and consumed by `ProjectReference`, not NuGet. It is listed in `DapperDemo.sln`;
+and consumed by `ProjectReference`, not NuGet. It is listed in `PatasePasseios.sln`;
 restore needs it.
 
 ```bash
-git clone --recursive git@github.com:sebasortiz1989/DapperDemo.git
+git clone --recursive git@github.com:sebasortiz1989/PatasePasseios.git
 # a non-recursive clone fails restore with NU1105; fix with:
 git submodule update --init --recursive
 ```
@@ -35,7 +35,7 @@ MCP knows nothing about these types — the source and the framework's `README.m
 are the documentation. Reinventing an input that already exists as a `V*`
 control is the most common wasted work on this codebase.
 
-`DapperDemo.Viewmodel` and `DapperDemo.View` declare `AvaloniaFramework` and
+`PatasePasseios.Viewmodel` and `PatasePasseios.View` declare `AvaloniaFramework` and
 `AvaloniaFramework.DependencyInjection` as **global usings** (`<Using Include=… />`)
 — that is why `Unit`, `Factory<T>` and `Container` resolve with no per-file using.
 
@@ -68,7 +68,7 @@ trade-off is that **this repo pins a framework commit**:
 3. Stage the moved pointer here: `git add external/AvaloniaFramework`, commit.
 
 Skip step 2 or 3 and other machines build the old framework. `dotnet pack` is
-only for publishing the NuGet package — never needed for DapperDemo to pick up
+only for publishing the NuGet package — never needed for PatasePasseios to pick up
 a change.
 
 The framework repo has its own `CLAUDE.md` and its own skills

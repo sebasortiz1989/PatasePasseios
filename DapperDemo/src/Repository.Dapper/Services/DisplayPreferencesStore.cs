@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
 
-namespace DapperDemo.Repository.Dapper.Services;
+namespace PatasePasseios.Repository.Dapper.Services;
 
 /// <summary>
 /// Reads and writes the <see cref="DisplayPreferences"/> this device is using.

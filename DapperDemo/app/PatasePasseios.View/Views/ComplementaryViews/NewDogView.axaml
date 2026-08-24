@@ -1,0 +1,156 @@
+<UserControl
+    d:DesignHeight="1460"
+    d:DesignWidth="720"
+    mc:Ignorable="d"
+    x:Class="PatasePasseios.View.Views.ComplementaryViews.NewDogView"
+    x:DataType="complementaryViewsViewmodels:NewDogViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:complementaryViewsViewmodels="clr-namespace:PatasePasseios.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;assembly=PatasePasseios.Viewmodel"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:imaging="using:AvaloniaFramework.Imaging"
+    xmlns:inputs="using:AvaloniaFramework.Controls.Inputs"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Background="{DynamicResource SurfacePrimary}" Width="720">
+        <ScrollViewer>
+            <StackPanel>
+                <Button
+                    Command="{Binding BackCommand}"
+                    Margin="30,30,0,0"
+                    Tag="{Binding Navigation.BackLabel}"
+                    Theme="{StaticResource BackControl}" />
+
+                <TextBlock Classes="TTitle" Margin="35,28,35,0" Text="Novo cachorro" />
+
+                <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="DADOS" />
+
+                <Border Classes="Group">
+                    <StackPanel>
+                        <StackPanel Margin="28,21" Spacing="7">
+                            <TextBlock Classes="TCaption" Text="Nome" />
+                            <TextBox Classes="Field" Text="{Binding Name}" PlaceholderText="Toby" />
+                        </StackPanel>
+
+                        <Border Classes="RowRule" />
+
+                        <StackPanel Margin="28,21" Spacing="7">
+                            <TextBlock Classes="TCaption" Text="Raça" />
+                            <TextBox Classes="Field" Text="{Binding Breed}" PlaceholderText="Golden Retriever" />
+                        </StackPanel>
+
+                        <Border Classes="RowRule" />
+
+                        <!--  Typeable: the tutor list grows, and scrolling it to find a name does not.  -->
+                        <StackPanel Margin="28,21" Spacing="7">
+                            <TextBlock Classes="TCaption" Text="Tutor" />
+                            <inputs:VSearchableComboBox
+                                Classes="FieldPicker"
+                                IsVisible="{Binding HasTutors}"
+                                ItemsSource="{Binding TutorOptions}"
+                                PlaceholderText="Selecione…"
+                                SelectedItem="{Binding SelectedTutor}" />
+                            <TextBlock
+                                Classes="TBody Muted"
+                                IsVisible="{Binding HasNoTutors}"
+                                Text="Cadastre um tutor primeiro." />
+                        </StackPanel>
+
+                        <Border Classes="RowRule" />
+
+                        <StackPanel Margin="28,21" Spacing="7">
+                            <TextBlock Classes="TCaption" Text="Descrição" />
+                            <TextBox
+                                AcceptsReturn="True"
+                                Classes="Field"
+                                Text="{Binding Description}"
+                                TextWrapping="Wrap"
+                                VerticalContentAlignment="Top"
+                                PlaceholderText="Temperamento, cuidados, rotina…" />
+                        </StackPanel>
+
+                        <Border Classes="RowRule" />
+
+                        <!--
+                            The photo row's trailing edge is the picture itself — an empty square
+                            when unset, with no glyph and no plus. The whole row is the tap target,
+                            which is what the caption promises; the thumbnail alone was 70px of it.
+                        -->
+                        <Button
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Command="{Binding ChoosePhotoCommand}"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            Padding="0">
+                            <Grid ColumnDefinitions="*,Auto" Margin="28,21">
+                                <StackPanel Spacing="7" VerticalAlignment="Center">
+                                    <TextBlock Classes="TBody" Text="Foto" />
+                                    <TextBlock
+                                        Classes="TCaption"
+                                        IsVisible="{Binding NoPhoto}"
+                                        Text="Nenhuma escolhida. Toque para escolher." />
+                                    <TextBlock
+                                        Classes="TCaption"
+                                        IsVisible="{Binding HasPhoto}"
+                                        Text="Toque para trocar." />
+                                </StackPanel>
+                                <Border
+                                    BorderBrush="{DynamicResource StrokeRaised}"
+                                    BorderThickness="1"
+                                    ClipToBounds="True"
+                                    CornerRadius="14"
+                                    Grid.Column="1"
+                                    Height="70"
+                                    Width="70">
+                                    <Image
+                                        imaging:ImageLoader.DecodeWidth="192"
+                                        imaging:ImageLoader.Path="{Binding PhotoPath}"
+                                        IsVisible="{Binding HasPhoto}"
+                                        Stretch="UniformToFill" />
+                                </Border>
+                            </Grid>
+                        </Button>
+
+                        <!--
+                            Remover is its own row: nesting a button inside the row-wide tap target
+                            above would make one of the two unreachable.
+                        -->
+                        <Border Classes="RowRule" IsVisible="{Binding HasPhoto}" />
+                        <Button
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Command="{Binding RemovePhotoCommand}"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            IsVisible="{Binding HasPhoto}"
+                            Padding="0">
+                            <TextBlock
+                                Classes="TBody Owed"
+                                Margin="28,21"
+                                Text="Remover foto" />
+                        </Button>
+                    </StackPanel>
+                </Border>
+
+                <TextBlock
+                    Classes="TCaption Owed"
+                    IsVisible="{Binding HasError}"
+                    Margin="35,14,35,0"
+                    Text="{Binding ErrorMessage}"
+                    TextWrapping="Wrap" />
+
+                <Border Classes="ControlRing" Margin="30,28,30,0">
+                    <Border Classes="FloatingControl">
+                        <Button Classes="Submit" Command="{Binding SaveCommand}">
+                            <TextBlock Classes="TBody" Text="Salvar cachorro" />
+                        </Button>
+                    </Border>
+                </Border>
+
+                <!--  Clearance for the floating tab bar, which content scrolls under.  -->
+                <Border Height="258" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

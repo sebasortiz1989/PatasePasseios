@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace DapperDemo.Repository.Dapper;
+namespace PatasePasseios.Repository.Dapper;
 
 /// <summary>
 /// The outcome of an operation, returned instead of throwing for anything the user can cause.

@@ -1,4 +1,4 @@
-namespace DapperDemo.Repository.Dapper.Services;
+namespace PatasePasseios.Repository.Dapper.Services;
 
 /// <summary>
 /// Where a dog's photo lives on disk.

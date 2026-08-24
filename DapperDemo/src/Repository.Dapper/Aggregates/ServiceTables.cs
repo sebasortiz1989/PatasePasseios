@@ -1,6 +1,6 @@
-using DapperDemo.Repository.Dapper.Dtos;
+using PatasePasseios.Repository.Dapper.Dtos;
 
-namespace DapperDemo.Repository.Dapper.Aggregates;
+namespace PatasePasseios.Repository.Dapper.Aggregates;
 
 /// <summary>
 /// Which table and key column each <see cref="ServiceKind"/> lives in.

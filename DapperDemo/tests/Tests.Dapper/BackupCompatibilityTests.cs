@@ -1,6 +1,6 @@
 using System.IO.Compression;
-using DapperDemo.Repository.Dapper;
-using DapperDemo.Repository.Dapper.Services;
+using PatasePasseios.Repository.Dapper;
+using PatasePasseios.Repository.Dapper.Services;
 using Microsoft.Data.Sqlite;
 using Xunit;
 
@@ -15,11 +15,11 @@ public sealed class BackupCompatibilityTests : IDisposable
 {
     private readonly string archivePath = Path.Combine(
         Path.GetTempPath(),
-        $"dapperdemo-oldbackup-{Guid.NewGuid():N}.zip");
+        $"patasepasseios-oldbackup-{Guid.NewGuid():N}.zip");
 
     private readonly string oldDatabasePath = Path.Combine(
         Path.GetTempPath(),
-        $"dapperdemo-oldbackup-{Guid.NewGuid():N}.db");
+        $"patasepasseios-oldbackup-{Guid.NewGuid():N}.db");
 
     /// <summary>
     /// Builds a database the way a build before the discount column would have left it, and packs
@@ -154,7 +154,7 @@ public sealed class BackupCompatibilityTests : IDisposable
     {
         using var live = new TestDatabase();
         var (petSitterId, _, dogId) = await live.SeedAccountAsync();
-        await live.Services.AddSittingAsync(new DapperDemo.Repository.Dapper.Dtos.PetSittingService
+        await live.Services.AddSittingAsync(new PatasePasseios.Repository.Dapper.Dtos.PetSittingService
         {
             DogId = dogId, PetSitterId = petSitterId, Date = new DateTime(2026, 8, 1, 9, 0, 0), Price = 120m,
         });

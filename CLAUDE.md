@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Repository-specific guidance for **DapperDemo**. The personal global `CLAUDE.md`
+Repository-specific guidance for **PatasePasseios**. The personal global `CLAUDE.md`
 holds the rules that apply everywhere — layering, naming, async, DI, data access,
 testing, git. This file only adds what is true *here*: paths, commands, the
 wiring this app actually uses, and where it departs from the general rules.
@@ -44,14 +44,14 @@ level under the repo root).
 ## Commands
 
 ```bash
-dotnet build DapperDemo.sln
+dotnet build PatasePasseios.sln
 dotnet test tests/Tests.Dapper/Tests.Dapper.csproj
-dotnet run --project app/DapperDemo.Desktop/DapperDemo.Desktop.csproj
+dotnet run --project app/PatasePasseios.Desktop/PatasePasseios.Desktop.csproj
 ```
 
-`DapperDemo.Desktop` (net10.0, Windows/Linux), `DapperDemo.MacOS` (net10.0-macOS,
-AppKit), `DapperDemo.iOS`, `DapperDemo.Android` (net10.0-android) are entry
-points over the same `DapperDemo.View`. Mobile heads need the matching workload.
+`PatasePasseios.Desktop` (net10.0, Windows/Linux), `PatasePasseios.MacOS` (net10.0-macOS,
+AppKit), `PatasePasseios.iOS`, `PatasePasseios.Android` (net10.0-android) are entry
+points over the same `PatasePasseios.View`. Mobile heads need the matching workload.
 iOS pins a personal `CodesignKey` in its csproj.
 
 **Building the solution fails while a head is running** — the running process
@@ -66,7 +66,7 @@ a code error. Build the individual project you changed, or stop the app.
   .claude/skills/<skill-name>/SKILL.md   ← per-topic deep-dive skills
   external/AvaloniaFramework/     ← git submodule, ProjectReference (not NuGet)
   DapperDemo/
-    DapperDemo.sln
+    PatasePasseios.sln
     Directory.Packages.props      ← NoWarn list only; see Deviations
     Directory.Build.targets       ← imports the analyzer targets from the submodule
     Default.Analyzers.ruleset
@@ -89,26 +89,26 @@ English inside them.
 ```
 Repository.Dapper (src/Repository.Dapper)  ← DTOs, repositories, SQLite/Dapper, backup
         ↑
-DapperDemo.Viewmodel                  ← presentation models, commands, session
+PatasePasseios.Viewmodel                  ← presentation models, commands, session
         ↑
-DapperDemo.View                       ← .axaml + code-behind, theme, components
+PatasePasseios.View                       ← .axaml + code-behind, theme, components
         ↑
-DapperDemo.Infrastructure             ← composition root
+PatasePasseios.Infrastructure             ← composition root
         ↑
 Desktop / MacOS / iOS / Android
 ```
 
-Assembly and root namespaces are `DapperDemo.<Project>`; the data layer is
-`DapperDemo.Repository.Dapper` (project file `Repository.Dapper.csproj`).
+Assembly and root namespaces are `PatasePasseios.<Project>`; the data layer is
+`PatasePasseios.Repository.Dapper` (project file `Repository.Dapper.csproj`).
 
 ## AvaloniaFramework submodule
 
 The MVP, navigation, DI and control infrastructure comes from
 **AvaloniaFramework**, vendored at `external/AvaloniaFramework` and consumed by
-`ProjectReference`. It is also listed in `DapperDemo.sln`; restore needs it.
+`ProjectReference`. It is also listed in `PatasePasseios.sln`; restore needs it.
 
 ```bash
-git clone --recursive git@github.com:sebasortiz1989/DapperDemo.git
+git clone --recursive git@github.com:sebasortiz1989/PatasePasseios.git
 ```
 
 A non-recursive clone fails restore with `NU1105`. Fix with
@@ -119,7 +119,7 @@ restore. The trade-off is that this repo pins a framework commit: after changing
 framework source, commit and push there, then stage the moved pointer here
 (`git add external/AvaloniaFramework`), or other machines build the old code.
 
-`DapperDemo.Viewmodel` and `DapperDemo.View` declare `AvaloniaFramework` and
+`PatasePasseios.Viewmodel` and `PatasePasseios.View` declare `AvaloniaFramework` and
 `AvaloniaFramework.DependencyInjection` as global usings (`<Using Include=... />`),
 which is why `Unit`, `Factory<T>` and `Container` resolve with no per-file using.
 
@@ -129,13 +129,39 @@ helpers, which is the one place in the repo where that is correct.
 
 ## Deviations from the global guidance
 
-Three, and they will bite if assumed away:
+Four, and they will bite if assumed away:
+
+- **The code is `PatasePasseios`; the runtime identity is still `DapperDemo`.**
+  Renamed 2026-08-24, owner's instruction, deliberately half-way: every project,
+  namespace, assembly and folder under `app/` became `PatasePasseios.*`, and the
+  names the app writes to disk or installs under did **not**. Those are the ones
+  that cannot change without orphaning a sitter's data:
+
+  | Stays `DapperDemo` | Where | Why |
+  |---|---|---|
+  | app data folder | `AppStorage.cs` | renaming it hides the live database and every dog photo |
+  | `DapperDemo.db` | `DapperDatabaseService` | the live database file |
+  | `DapperDemo.db` zip entry | `BackupArchive.DatabaseEntry` | `RestoreFromAsync` returns `Failed` on any archive without it — every backup taken so far |
+  | `"app": "DapperDemo"` | `BackupArchive` manifest | same archive format |
+  | `com.CompanyName.DapperDemo` | Android `ApplicationId` | a new id installs as a *different app*, with empty storage and no upgrade path |
+  | `companyName.DapperDemo` | iOS `CFBundleIdentifier` | same |
+  | `com.dapperdemo.app` | MacOS `ApplicationId` | same |
+
+  `Scripts/seed-demo.sh` points at that same data path and is correct as written.
+  Do not "finish the rename" by sweeping these — the inconsistency is the point.
+  Changing any of them is a migration, not a rename, and needs code to move the
+  old folder aside and to accept both zip entry names on restore.
+
+  Two folders also kept the old name: the repo root and the solution directory
+  one level under it are both still `DapperDemo/`, so a fresh clone lands in
+  `PatasePasseios/` and then wants `cd DapperDemo`. Only the `.sln` inside it was
+  renamed.
 
 - **Central package management is not in use.** `Directory.Packages.props` exists
   but declares no `PackageVersion` items and does not set
   `ManagePackageVersionsCentrally`. It carries a long `NoWarn` list and nothing
   else. **Package versions live in each `.csproj`** — including
-  `Avalonia 12.1.1` in `DapperDemo.View`. Adding a package means adding the
+  `Avalonia 12.1.1` in `PatasePasseios.View`. Adding a package means adding the
   version where the reference is.
 - **There is no `stylecop.json` at the solution root.** It ships inside
   `AvaloniaFramework.Development/build/` in the submodule and is attached as an
@@ -154,7 +180,7 @@ layer owns a `ContainerBuilder` under `DependencyInversion/` that yields the
 builder below it plus its own registrations.
 
 - Adding a view or view model means registering it in **both**
-  `DapperDemoViewContainerBuilder` and `DapperDemoViewmodelContainerBuilder`
+  `PatasePasseiosViewContainerBuilder` and `PatasePasseiosViewmodelContainerBuilder`
   (with `.WithAbstractions()`). A miss fails at runtime, not compile time.
 - Navigating is `CurrentView.Show(view, label)` for a detail screen,
   `ShowRoot(view, label)` for a tab. `ViewShown` has no public setter, so nothing can
@@ -182,15 +208,15 @@ builder below it plus its own registrations.
   tabs are the only `DataChanged` subscribers. Subscribe a detail screen to `DataChanged`
   and this becomes a background reload that can navigate underneath the user.
 - Data-layer singletons (`DapperDatabaseService`, the repositories,
-  `BackupArchive`) are registered in `DapperDemoInfrastructureContainerBuilder`.
+  `BackupArchive`) are registered in `PatasePasseiosInfrastructureContainerBuilder`.
 - `AvaloniaViewContainerBuilder` (framework) supplies the
   `SynchronizationContext` and `NavigationController`.
 
 ### Platform capability abstractions
 
 Anything needing a `TopLevel` cannot live in a view model. The established
-pattern is an interface in `DapperDemo.Viewmodel/Services/` and an Avalonia
-implementation in `DapperDemo.View/Services/`, registered
+pattern is an interface in `PatasePasseios.Viewmodel/Services/` and an Avalonia
+implementation in `PatasePasseios.View/Services/`, registered
 `CreateSingleton<Impl>().WithAbstractions()` in the View builder:
 
 | Abstraction | Implementation | Used for |
@@ -207,10 +233,10 @@ framework's convention.
 `ShareSheet` is the pattern for a capability **one head has and the others do not**,
 which is different from the rows above. The View layer registers the do-nothing
 implementation so every head resolves something, and `DroidContainerBuilder` yields
-its own builder *after* `DapperDemoInfrastructureContainerBuilder` to replace it —
+its own builder *after* `PatasePasseiosInfrastructureContainerBuilder` to replace it —
 the framework's container takes the later registration for a service type. Screens
 ask `CanShare` and hide the button rather than offering one that fails. Put the next
-phone-only capability in `DapperDemo.Android` and register it the same way.
+phone-only capability in `PatasePasseios.Android` and register it the same way.
 
 ## Current state and known gaps
 
@@ -347,7 +373,7 @@ Say what is real — several things here are not. Verified 2026-08-21.
 - **Tests cover the data layer only.** `tests/Tests.Dapper` has real coverage of the
   repositories, the migrations, the money rules, backup compatibility and the display
   preference — 176 tests; run them before touching any of those. The view models have
-  none, so anything in `DapperDemo.Viewmodel` is verified only by running the app.
+  none, so anything in `PatasePasseios.Viewmodel` is verified only by running the app.
 - **Walk and pet-sitting bookings have no stored duration.** The Google Calendar
   export assumes one hour (`ServiceDetailViewModel`, `Date.AddHours(1)`).
 - The dog screen lists **upcoming unpaid services only**, so past unpaid work is

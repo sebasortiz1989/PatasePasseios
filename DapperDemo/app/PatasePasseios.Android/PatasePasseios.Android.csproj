@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net10.0-android</TargetFramework>
+        <SupportedOSPlatformVersion>23</SupportedOSPlatformVersion>
+        <Nullable>enable</Nullable>
+        <ApplicationId>com.CompanyName.DapperDemo</ApplicationId>
+
+        <!--
+            android:versionCode. A build counter, not the release number: Google Play requires it to
+            increase on every upload and it has to stay an integer, so it cannot be derived from
+            VersionPrefix and is bumped by hand when a build is published.
+        -->
+        <ApplicationVersion>1</ApplicationVersion>
+
+        <!--
+            android:versionName — the version a user sees in Settings → Apps. Taken from
+            VersionPrefix in Directory.Packages.props, which is the one place the release number is
+            written; the screens read the same number back off the assembly.
+        -->
+        <ApplicationDisplayVersion>$(VersionPrefix)</ApplicationDisplayVersion>
+        <AndroidPackageFormat>apk</AndroidPackageFormat>
+        <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+        <!--
+            Release trims this head, and TreatWarningsAsErrors would turn every IL2xxx trim-analysis
+            warning into a build failure. Most come from third-party assemblies (Avalonia, Dapper)
+            and are not actionable here. AvaloniaFramework's reflection-based container also trips
+            IL2060/IL2070 — a real limitation documented in that repo's README, to be fixed there
+            with DynamicallyAccessedMembers annotations rather than papered over from this project.
+        -->
+        <EnsureCodeQualityWarningsAsErrors>false</EnsureCodeQualityWarningsAsErrors>
+
+        <!--
+            The Android SDK caps the JDK at 21.0.99 (Xamarin.Android.Common.props) and fails with
+            XA0030 on anything newer. This machine has only JDK 23, so the ceiling is raised to
+            let it through. The property is declared with a condition in the SDK precisely so it
+            can be overridden here.
+
+            This is a version *check*, not a compatibility shim: nothing about JDK 23 is being
+            adapted, the guard is only being told to allow it. If javac, d8 or r8 later break on
+            a JDK the SDK was never tested against, the fix is to install JDK 21 and point
+            JavaSdkDirectory at it rather than to push this number higher.
+        -->
+        <LatestSupportedJavaVersion>23.0.99</LatestSupportedJavaVersion>
+        <AssemblyName>PatasePasseios.Android</AssemblyName>
+        <RootNamespace>PatasePasseios.Android</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia.Android" Version="12.1.1" />
+        <PackageReference Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.14" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\PatasePasseios.Infrastructure\PatasePasseios.Infrastructure.csproj" />
+    </ItemGroup>
+</Project>
+
+<!-- "$LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe" install -r "app/PatasePasseios.Android/bin/Release/net10.0-android/com.CompanyName.DapperDemo-Signed.apk" -->
+<!--        dotnet build app/PatasePasseios.Android/PatasePasseios.Android.csproj -c Release -t:Install-->

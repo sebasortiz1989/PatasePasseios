@@ -1,4 +1,4 @@
-namespace DapperDemo.Repository.Dapper.Services;
+namespace PatasePasseios.Repository.Dapper.Services;
 
 /// <summary>
 /// When this device last uploaded a backup, and where backups go.
@@ -11,7 +11,16 @@ namespace DapperDemo.Repository.Dapper.Services;
 /// knows it is an Avalonia bookmark. On Android it also carries the SAF permission grant, which is
 /// what lets a later launch write to that folder without asking again.
 /// </param>
-public sealed record CloudBackupSchedule(DateTime? LastUploadUtc, DateTime? LastAttemptUtc = null, string? Destination = null)
+/// <param name="LastPromptUtc">
+/// When the sitter was last asked to choose a folder, or null if they never have been. Only ever
+/// consulted while <see cref="HasDestination"/> is false — once a folder exists the asking is over
+/// for good, so this stamp stops mattering rather than being cleared.
+/// </param>
+public sealed record CloudBackupSchedule(
+    DateTime? LastUploadUtc,
+    DateTime? LastAttemptUtc = null,
+    string? Destination = null,
+    DateTime? LastPromptUtc = null)
 {
     /// <summary>
     /// The local time of day the daily copy is taken at.
@@ -35,7 +44,7 @@ public sealed record CloudBackupSchedule(DateTime? LastUploadUtc, DateTime? Last
     public static readonly TimeSpan RetryAfter = TimeSpan.FromHours(1);
 
     /// <summary>Gets the state of a device that has never uploaded and has no folder chosen.</summary>
-    public static CloudBackupSchedule Empty { get; } = new(null, null, null);
+    public static CloudBackupSchedule Empty { get; } = new(null, null, null, null);
 
     /// <summary>Gets a value indicating whether a destination has been chosen.</summary>
     public bool HasDestination => !string.IsNullOrWhiteSpace(Destination);
@@ -83,6 +92,45 @@ public sealed record CloudBackupSchedule(DateTime? LastUploadUtc, DateTime? Last
         }
 
         return last > now || last < LastRunDue(now);
+    }
+
+    /// <summary>
+    /// Gets a value indicating whether the sitter should be asked to choose a backup folder.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Until a folder is chosen nothing can be backed up, and the daily run has no way to say so —
+    /// it is silent by design. This is the one thing that speaks up, and it stops for good the
+    /// moment a destination exists: <see cref="HasDestination"/> is the first question asked.
+    /// </para>
+    /// <para>
+    /// A chosen folder that has since become unreachable does <em>not</em> bring the asking back.
+    /// The sitter already answered this question, and a deleted folder or a revoked permission is
+    /// reported where the state of backups is on show — in Perfil — rather than by reopening a
+    /// dialog they have dismissed once.
+    /// </para>
+    /// <para>
+    /// Once per calendar day rather than per <see cref="RunAt"/> window, because this is a
+    /// question for a person: asked at 07:00 and again at 09:00 the same morning, the second one
+    /// reads as the app having forgotten. A stamp ahead of the clock counts as due, for the same
+    /// reason it does in <see cref="IsDue"/>.
+    /// </para>
+    /// </remarks>
+    /// <param name="now">The device's local time.</param>
+    /// <returns>True when no folder is set and none has been asked for today.</returns>
+    public bool IsPromptDue(DateTime now)
+    {
+        if (HasDestination)
+        {
+            return false;
+        }
+
+        if (Local(LastPromptUtc) is not { } asked)
+        {
+            return true;
+        }
+
+        return asked > now || asked.Date < now.Date;
     }
 
     /// <summary>

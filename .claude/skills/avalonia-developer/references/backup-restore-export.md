@@ -15,6 +15,12 @@ invalid archive leaves the device untouched. Open validation connections with
 `Pooling = false` — a pooled connection holds the file handle past `Dispose` and
 leaks a full copy of the database per import.
 
+**The entry is still called `DapperDemo.db` after the 2026-08-24 rename to
+`PatasePasseios`, and it must stay that way.** `RestoreFromAsync` looks the entry up by
+name and returns `Failed` when it is absent, so renaming it makes every archive taken so
+far unrestorable. The `"app": "DapperDemo"` value in `backup.json` is fixed for the same
+reason. See the deviations table in the root `CLAUDE.md`.
+
 ## A restore keeps what it replaced
 
 Before the copy lands, `RestoreFromAsync` copies the live database to

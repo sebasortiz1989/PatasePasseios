@@ -125,15 +125,15 @@ Each service row carries independent **`ServiceDone`** (work happened) and **`Se
 ## Getting started
 
 ```bash
-git clone --recursive https://github.com/sebasortiz1989/DapperDemo.git
-cd DapperDemo
+git clone --recursive https://github.com/sebasortiz1989/PatasePasseios.git
+cd PatasePasseios
 
 # if the clone was not recursive:
 git submodule update --init --recursive
 
-cd DapperDemo
-dotnet build app/DapperDemo.Desktop/DapperDemo.Desktop.csproj
-dotnet run --project app/DapperDemo.Desktop/DapperDemo.Desktop.csproj
+cd DapperDemo                  # the solution dir kept its old name
+dotnet build app/PatasePasseios.Desktop/PatasePasseios.Desktop.csproj
+dotnet run --project app/PatasePasseios.Desktop/PatasePasseios.Desktop.csproj
 dotnet test tests/Tests.Dapper/Tests.Dapper.csproj
 ```
 
@@ -166,10 +166,10 @@ Prefer building the **Desktop** head on Linux/CI: the iOS/Android/MacOS projects
   external/AvaloniaFramework/   ← git submodule
   DapperDemo/
     src/Repository.Dapper/  ← SQLite schema, DTOs, repositories, backup
-    app/DapperDemo.Viewmodel/
-    app/DapperDemo.View/    ← .axaml screens (pt-BR)
-    app/DapperDemo.Infrastructure/
-    app/DapperDemo.Desktop|MacOS|iOS|Android/
+    app/PatasePasseios.Viewmodel/
+    app/PatasePasseios.View/    ← .axaml screens (pt-BR)
+    app/PatasePasseios.Infrastructure/
+    app/PatasePasseios.Desktop|MacOS|iOS|Android/
     tests/Tests.Dapper/     ← data-layer tests
 ```
 

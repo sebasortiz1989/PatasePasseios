@@ -1,4 +1,4 @@
-namespace DapperDemo.Repository.Dapper.Dtos;
+namespace PatasePasseios.Repository.Dapper.Dtos;
 
 /// <summary>
 /// The four service tables are stored separately but the app presents them as one agenda,

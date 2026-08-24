@@ -1,4 +1,4 @@
-using DapperDemo.Repository.Dapper.Services;
+using PatasePasseios.Repository.Dapper.Services;
 using Xunit;
 
 namespace Tests.Dapper;
@@ -119,5 +119,82 @@ public class CloudBackupScheduleTests
             LastAttemptUtc: Midday.AddHours(-2));
 
         Assert.True(schedule.IsDue(Midday));
+    }
+
+    // ---- Asking for a folder: the rule behind the once-a-day dialog and the Perfil banner. ----
+
+    [Fact]
+    public void ADeviceWithNoFolderIsAskedOnTheFirstSignIn()
+    {
+        Assert.True(CloudBackupSchedule.Empty.IsPromptDue(Midday));
+    }
+
+    [Fact]
+    public void AskingTwiceOnTheSameDayDoesNotHappen()
+    {
+        var schedule = CloudBackupSchedule.Empty with { LastPromptUtc = EarlyMorning };
+
+        Assert.False(schedule.IsPromptDue(Midday));
+    }
+
+    [Fact]
+    public void TheQuestionComesBackTheNextDay()
+    {
+        var schedule = CloudBackupSchedule.Empty with
+        {
+            LastPromptUtc = new DateTime(2026, 8, 18, 23, 30, 0, DateTimeKind.Local),
+        };
+
+        Assert.True(schedule.IsPromptDue(EarlyMorning));
+    }
+
+    /// <summary>
+    /// A calendar day, not a rolling twenty-four hours: asked late last night, asked again this
+    /// morning. Deliberate — the alternative drifts the question later every day.
+    /// </summary>
+    [Fact]
+    public void TheDayRollsOverAtMidnightRatherThanAfterTwentyFourHours()
+    {
+        var lastNight = new DateTime(2026, 8, 18, 23, 0, 0, DateTimeKind.Local);
+        var schedule = CloudBackupSchedule.Empty with { LastPromptUtc = lastNight };
+
+        Assert.True(schedule.IsPromptDue(lastNight.AddHours(2)));
+    }
+
+    /// <summary>
+    /// The whole point of the feature: choosing a folder ends the asking permanently, whatever the
+    /// stamp says and whether or not a copy has ever been taken.
+    /// </summary>
+    [Fact]
+    public void ChoosingAFolderStopsTheAskingForGood()
+    {
+        var schedule = new CloudBackupSchedule(null, null, "bookmark://backups");
+
+        Assert.False(schedule.IsPromptDue(Midday));
+        Assert.False(schedule.IsPromptDue(Midday.AddYears(1)));
+    }
+
+    /// <summary>
+    /// A folder that has since been deleted or had its permission revoked must not reopen the
+    /// dialog. The sitter answered this question; an unreachable folder is reported in Perfil.
+    /// </summary>
+    [Fact]
+    public void AnUnreachableFolderIsStillAnAnsweredQuestion()
+    {
+        var schedule = new CloudBackupSchedule(null, null, "bookmark://gone", LastPromptUtc: null);
+
+        Assert.False(schedule.IsPromptDue(Midday));
+    }
+
+    /// <summary>
+    /// A stamp ahead of the clock counts as due, matching <c>IsDue</c>: a device whose clock jumped
+    /// forward and back must not be left permanently unasked.
+    /// </summary>
+    [Fact]
+    public void AStampFromTheFutureDoesNotSilenceTheQuestion()
+    {
+        var schedule = CloudBackupSchedule.Empty with { LastPromptUtc = Midday.AddYears(1) };
+
+        Assert.True(schedule.IsPromptDue(Midday));
     }
 }

@@ -1,4 +1,4 @@
-namespace DapperDemo.Repository.Dapper.Services;
+namespace PatasePasseios.Repository.Dapper.Services;
 
 /// <summary>Which palette the app draws in.</summary>
 public enum AppTheme

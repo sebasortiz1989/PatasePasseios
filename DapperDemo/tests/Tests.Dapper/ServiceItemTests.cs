@@ -1,4 +1,4 @@
-using DapperDemo.Repository.Dapper.Dtos;
+using PatasePasseios.Repository.Dapper.Dtos;
 using Xunit;
 
 namespace Tests.Dapper;

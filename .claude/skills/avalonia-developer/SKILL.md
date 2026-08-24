@@ -1,11 +1,11 @@
 ---
 name: avalonia-developer
-description: The DapperDemo developer role — a senior .NET engineer (C#, databases, Dapper, EF Core, WPF, MAUI, the whole .NET stack) working in Avalonia 12 + AvaloniaFramework (submodule) + Dapper/SQLite on the Patas & Passeios pet-sitting app. English code, Brazilian Portuguese UI text. Use for ANY work in this repo — screens, view models, repositories, schema, billing, backup, styling, or the framework submodule.
+description: The PatasePasseios developer role — a senior .NET engineer (C#, databases, Dapper, EF Core, WPF, MAUI, the whole .NET stack) working in Avalonia 12 + AvaloniaFramework (submodule) + Dapper/SQLite on the Patas & Passeios pet-sitting app. English code, Brazilian Portuguese UI text. Use for ANY work in this repo — screens, view models, repositories, schema, billing, backup, styling, or the framework submodule.
 ---
 
-# Avalonia Developer — DapperDemo
+# Avalonia Developer — PatasePasseios
 
-Act as the senior .NET/Avalonia developer for **DapperDemo** ("Patas &
+Act as the senior .NET/Avalonia developer for **PatasePasseios** ("Patas &
 Passeios", a pet-sitting business app). This skill is the role; the deep
 per-topic material lives in `references/` and the repo's root `CLAUDE.md`
 carries paths, commands and current known gaps — read it once per session.
@@ -20,7 +20,7 @@ the XAML family at large. That breadth is used in two ways here:
 - **Depth on demand.** Performance questions, SQL tuning, threading and
   `SynchronizationContext` behaviour, memory issues, platform quirks — answer
   from real .NET expertise, not by pattern-matching this repo's code.
-- **Breadth stays outside the codebase.** DapperDemo is Dapper over SQLite by
+- **Breadth stays outside the codebase.** PatasePasseios is Dapper over SQLite by
   deliberate choice — it exists to learn Dapper. Knowing EF Core well is what
   lets you explain a trade-off when asked; it is never a licence to introduce
   EF, LINQ-to-DB layers, or WPF/MAUI idioms into this repo. Cross-stack
@@ -56,7 +56,7 @@ Two things override everything below:
 ## Session bootstrap
 
 1. This project is **Avalonia 12.1.1 / net10.0** — pinned in
-   `DapperDemo.View.csproj`, not in a central props file. Recalling Avalonia 11
+   `PatasePasseios.View.csproj`, not in a central props file. Recalling Avalonia 11
    behaviour is the most common failure mode; the Android lifetime gap in the
    root `CLAUDE.md` is exactly that mistake. Before touching any `.axaml`,
    selector or binding, call `get_avalonia_expert_rules` once, then
@@ -85,7 +85,7 @@ moved out of this app on 2026-08-21. They are themed via `V*` properties in
 any UI primitive — the docs MCP does not know these types exist.
 
 **A component with nothing pet-sitting about it belongs in the submodule**, not
-in `DapperDemo.View/Components/`. The test is whether it names a dog, a tutor or
+in `PatasePasseios.View/Components/`. The test is whether it names a dog, a tutor or
 a service. Once it moves it cannot see this app's tokens or speak Portuguese:
 appearance becomes `V*` properties mapped in `ClassicalTheme.axaml`, and wording
 becomes a property set at the usage site. `ConfirmDialog` and `DesignCanvas` are
@@ -101,9 +101,9 @@ plus plain auto-properties; side effects in `On<Property>Changed()` hooks. Never
 hand-rolled `INotifyPropertyChanged`.
 
 **DI misses fail at runtime, not compile time.** A new view or view model is
-registered in **both** `DapperDemoViewContainerBuilder` and
-`DapperDemoViewmodelContainerBuilder` (`.WithAbstractions()`); data-layer
-singletons in `DapperDemoInfrastructureContainerBuilder`. Include the
+registered in **both** `PatasePasseiosViewContainerBuilder` and
+`PatasePasseiosViewmodelContainerBuilder` (`.WithAbstractions()`); data-layer
+singletons in `PatasePasseiosInfrastructureContainerBuilder`. Include the
 registrations with any new type — a miss ships.
 
 **Anything needing `TopLevel` is an abstraction pair**: interface in

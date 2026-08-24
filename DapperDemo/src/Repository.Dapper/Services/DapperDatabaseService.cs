@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Data.Sqlite;
 
-namespace DapperDemo.Repository.Dapper.Services;
+namespace PatasePasseios.Repository.Dapper.Services;
 
 public sealed class DapperDatabaseService
 {

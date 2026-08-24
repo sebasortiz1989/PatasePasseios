@@ -6,9 +6,9 @@
             reaches everything else on the next build:
 
               * every assembly, as AssemblyInformationalVersion — which AppVersion
-                (DapperDemo.Viewmodel/Viewmodels/Utils) reads back for the login and profile screens;
-              * android:versionName, via ApplicationDisplayVersion in DapperDemo.Android;
-              * CFBundleShortVersionString, via the same property in DapperDemo.iOS and .MacOS.
+                (PatasePasseios.Viewmodel/Viewmodels/Utils) reads back for the login and profile screens;
+              * android:versionName, via ApplicationDisplayVersion in PatasePasseios.Android;
+              * CFBundleShortVersionString, via the same property in PatasePasseios.iOS and .MacOS.
 
             The heads' ApplicationVersion is deliberately *not* wired to this: that is the integer
             build counter (versionCode / CFBundleVersion), which the stores require to increase on
@@ -30,8 +30,8 @@
 
         <!--
             Assembly and root namespaces are set per project rather than derived here: the app
-            projects are already named DapperDemo.*, and the data layer maps to
-            DapperDemo.Mensagens.Dapper.
+            projects are already named PatasePasseios.*, and the data layer maps to
+            PatasePasseios.Mensagens.Dapper.
         -->
         <IsPackable>false</IsPackable>
     </PropertyGroup>

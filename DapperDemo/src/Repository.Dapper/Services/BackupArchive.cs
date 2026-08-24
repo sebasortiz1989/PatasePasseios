@@ -3,7 +3,7 @@ using Microsoft.Data.Sqlite;
 using System.Globalization;
 using System.IO.Compression;
 
-namespace DapperDemo.Repository.Dapper.Services;
+namespace PatasePasseios.Repository.Dapper.Services;
 
 /// <summary>
 /// Packs everything the app owns into one zip, and puts it back.
@@ -50,7 +50,7 @@ public sealed class BackupArchive(DapperDatabaseService database)
     {
         ArgumentNullException.ThrowIfNull(destination);
 
-        var snapshot = Path.Combine(Path.GetTempPath(), "dapperdemo-backup-" + Guid.NewGuid().ToString("N") + ".db");
+        var snapshot = Path.Combine(Path.GetTempPath(), "patasepasseios-backup-" + Guid.NewGuid().ToString("N") + ".db");
 
         try
         {
@@ -117,7 +117,7 @@ public sealed class BackupArchive(DapperDatabaseService database)
     {
         ArgumentNullException.ThrowIfNull(source);
 
-        var work = Path.Combine(Path.GetTempPath(), "dapperdemo-restore-" + Guid.NewGuid().ToString("N"));
+        var work = Path.Combine(Path.GetTempPath(), "patasepasseios-restore-" + Guid.NewGuid().ToString("N"));
         var localCopy = work + ".zip";
         var candidate = work + ".db";
 

@@ -1,6 +1,6 @@
-﻿using DapperDemo.Repository.Dapper.Services;
+﻿using PatasePasseios.Repository.Dapper.Services;
 
-namespace DapperDemo.Repository.Dapper;
+namespace PatasePasseios.Repository.Dapper;
 
 public abstract class RepositoryBase<TEntity>(DapperDatabaseService dapperDatabaseService)
     where TEntity : class

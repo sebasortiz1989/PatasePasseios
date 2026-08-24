@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DapperDemo.Repository.Dapper.Dtos;
+namespace PatasePasseios.Repository.Dapper.Dtos;
 
 [Table("Tutors")]
 public class Tutors

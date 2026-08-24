@@ -1,6 +1,6 @@
 using System.IO.Compression;
-using DapperDemo.Repository.Dapper.Dtos;
-using DapperDemo.Repository.Dapper.Services;
+using PatasePasseios.Repository.Dapper.Dtos;
+using PatasePasseios.Repository.Dapper.Services;
 using Microsoft.Data.Sqlite;
 using Xunit;
 
@@ -19,7 +19,7 @@ public sealed class RestoreStaleReadTests : IDisposable
     private async Task<string> WriteBackupWithAccountAsync(string email)
     {
         var donor = new DapperDatabaseService(donorPath);
-        var petSitters = new DapperDemo.Repository.Dapper.Aggregates.RepositoryPetSitter(donor);
+        var petSitters = new PatasePasseios.Repository.Dapper.Aggregates.RepositoryPetSitter(donor);
         await petSitters.Add(new PetSitter
         {
             Email = email,
@@ -55,7 +55,7 @@ public sealed class RestoreStaleReadTests : IDisposable
         await using (source.ConfigureAwait(false))
         {
             Assert.Equal(
-                DapperDemo.Repository.Dapper.Response.Successful,
+                PatasePasseios.Repository.Dapper.Response.Successful,
                 await new BackupArchive(live.Database).RestoreFromAsync(source));
         }
 
@@ -86,7 +86,7 @@ public sealed class RestoreStaleReadTests : IDisposable
             await new BackupArchive(live.Database).RestoreFromAsync(source);
         }
 
-        Assert.Equal(DapperDemo.Repository.Dapper.Response.Successful, live.PetSitters.VerifyLogin(typed, "8998"));
+        Assert.Equal(PatasePasseios.Repository.Dapper.Response.Successful, live.PetSitters.VerifyLogin(typed, "8998"));
         Assert.NotNull(await live.PetSitters.GetByEmailAsync(typed));
     }
 
@@ -103,7 +103,7 @@ public sealed class RestoreStaleReadTests : IDisposable
         }
 
         Assert.Equal(
-            DapperDemo.Repository.Dapper.Response.EmailDoesNotExists,
+            PatasePasseios.Repository.Dapper.Response.EmailDoesNotExists,
             live.PetSitters.VerifyLogin("someone@else.com", "8998"));
     }
 

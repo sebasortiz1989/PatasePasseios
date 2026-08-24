@@ -1,4 +1,4 @@
-namespace DapperDemo.Repository.Dapper.Dtos;
+namespace PatasePasseios.Repository.Dapper.Dtos;
 
 /// <summary>Billing totals for one month, split the way the Perfil screen shows them.</summary>
 public sealed class MonthlyIncome

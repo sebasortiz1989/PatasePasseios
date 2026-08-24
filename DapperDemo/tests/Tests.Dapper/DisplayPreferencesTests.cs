@@ -1,5 +1,5 @@
-using DapperDemo.Repository.Dapper;
-using DapperDemo.Repository.Dapper.Services;
+using PatasePasseios.Repository.Dapper;
+using PatasePasseios.Repository.Dapper.Services;
 using Xunit;
 
 namespace Tests.Dapper;

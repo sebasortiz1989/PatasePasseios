@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Reflection;
 
-namespace DapperDemo.Repository.Dapper.Extensions;
+namespace PatasePasseios.Repository.Dapper.Extensions;
 
 public static class EnumExtensions
 {

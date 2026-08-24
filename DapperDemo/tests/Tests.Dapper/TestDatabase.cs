@@ -1,7 +1,7 @@
-using DapperDemo.Repository.Dapper;
-using DapperDemo.Repository.Dapper.Aggregates;
-using DapperDemo.Repository.Dapper.Dtos;
-using DapperDemo.Repository.Dapper.Services;
+using PatasePasseios.Repository.Dapper;
+using PatasePasseios.Repository.Dapper.Aggregates;
+using PatasePasseios.Repository.Dapper.Dtos;
+using PatasePasseios.Repository.Dapper.Services;
 
 namespace Tests.Dapper;
 
@@ -20,7 +20,7 @@ public sealed class TestDatabase : IDisposable
 
     public TestDatabase()
     {
-        path = Path.Combine(Path.GetTempPath(), $"dapperdemo-tests-{Guid.NewGuid():N}.db");
+        path = Path.Combine(Path.GetTempPath(), $"patasepasseios-tests-{Guid.NewGuid():N}.db");
         Database = new DapperDatabaseService(path);
 
         PetSitters = new RepositoryPetSitter(Database);

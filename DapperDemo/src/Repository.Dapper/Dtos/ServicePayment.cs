@@ -1,4 +1,4 @@
-namespace DapperDemo.Repository.Dapper.Dtos;
+namespace PatasePasseios.Repository.Dapper.Dtos;
 
 /// <summary>
 /// What a settlement does to one service.

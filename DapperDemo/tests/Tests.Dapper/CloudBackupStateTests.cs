@@ -1,5 +1,5 @@
-using DapperDemo.Repository.Dapper;
-using DapperDemo.Repository.Dapper.Services;
+using PatasePasseios.Repository.Dapper;
+using PatasePasseios.Repository.Dapper.Services;
 using Xunit;
 
 namespace Tests.Dapper;
@@ -12,7 +12,7 @@ public class CloudBackupStateTests : IDisposable
 {
     private readonly string path = Path.Combine(
         Path.GetTempPath(),
-        "dapperdemo-state-tests-" + Guid.NewGuid().ToString("N") + ".json");
+        "patasepasseios-state-tests-" + Guid.NewGuid().ToString("N") + ".json");
 
     [Fact]
     public async Task AMissingFileReadsAsEmpty()
@@ -38,6 +38,41 @@ public class CloudBackupStateTests : IDisposable
         Assert.Equal(written.LastUploadUtc, read.LastUploadUtc);
         Assert.Equal(written.LastAttemptUtc, read.LastAttemptUtc);
         Assert.Equal(written.Destination, read.Destination);
+    }
+
+    [Fact]
+    public async Task TheAskedStampSurvivesTheRoundTrip()
+    {
+        var state = new CloudBackupState(path);
+        var asked = new DateTime(2026, 8, 19, 7, 15, 0, DateTimeKind.Utc);
+
+        await state.WriteAsync(CloudBackupSchedule.Empty with { LastPromptUtc = asked });
+
+        Assert.Equal(asked, (await state.ReadAsync()).LastPromptUtc);
+    }
+
+    /// <summary>
+    /// A state file written before the prompt existed has no such field. It must read as "never
+    /// asked" rather than as unparseable — an upgrading device with no folder set is exactly who
+    /// the question is for.
+    /// </summary>
+    [Fact]
+    public async Task AFileFromBeforeThePromptExistedReadsAsNeverAsked()
+    {
+        await File.WriteAllTextAsync(
+            path,
+            """
+            {
+              "lastUploadUtc": null,
+              "lastAttemptUtc": null,
+              "destination": null
+            }
+            """);
+
+        var read = await new CloudBackupState(path).ReadAsync();
+
+        Assert.Null(read.LastPromptUtc);
+        Assert.True(read.IsPromptDue(DateTime.Now));
     }
 
     [Fact]

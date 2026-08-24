@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DapperDemo.Repository.Dapper.Dtos;
+namespace PatasePasseios.Repository.Dapper.Dtos;
 
 /// <summary>
 /// A day at the sitter's. Shaped like a hotel stay minus the span: one date, no check-out, and no

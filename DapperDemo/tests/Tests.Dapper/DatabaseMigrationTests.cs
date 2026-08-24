@@ -1,5 +1,5 @@
 using Dapper;
-using DapperDemo.Repository.Dapper.Services;
+using PatasePasseios.Repository.Dapper.Services;
 using Microsoft.Data.Sqlite;
 using Xunit;
 
@@ -16,7 +16,7 @@ namespace Tests.Dapper;
 /// </remarks>
 public class DatabaseMigrationTests : IDisposable
 {
-    private readonly string path = Path.Combine(Path.GetTempPath(), $"dapperdemo-migration-{Guid.NewGuid():N}.db");
+    private readonly string path = Path.Combine(Path.GetTempPath(), $"patasepasseios-migration-{Guid.NewGuid():N}.db");
 
     /// <summary>
     /// A database in the shape that shipped before Pix and HideMoney existed, with a real account
@@ -150,7 +150,7 @@ public class DatabaseMigrationTests : IDisposable
         CreateLegacyDatabase();
 
         var service = new DapperDatabaseService(path);
-        var repository = new DapperDemo.Repository.Dapper.Aggregates.RepositoryPetSitter(service);
+        var repository = new PatasePasseios.Repository.Dapper.Aggregates.RepositoryPetSitter(service);
         var account = await repository.GetByEmailAsync("antiga@test.com");
 
         Assert.NotNull(account);
@@ -170,7 +170,7 @@ public class DatabaseMigrationTests : IDisposable
         _ = new DapperDatabaseService(path);
 
         var service = new DapperDatabaseService(path);
-        var repository = new DapperDemo.Repository.Dapper.Aggregates.RepositoryPetSitter(service);
+        var repository = new PatasePasseios.Repository.Dapper.Aggregates.RepositoryPetSitter(service);
         var account = await repository.GetByEmailAsync("antiga@test.com");
 
         Assert.NotNull(account);

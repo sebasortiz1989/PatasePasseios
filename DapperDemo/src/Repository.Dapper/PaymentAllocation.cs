@@ -1,6 +1,6 @@
-using DapperDemo.Repository.Dapper.Dtos;
+using PatasePasseios.Repository.Dapper.Dtos;
 
-namespace DapperDemo.Repository.Dapper;
+namespace PatasePasseios.Repository.Dapper;
 
 /// <summary>
 /// How an amount received from a tutor is spread over what they owe.

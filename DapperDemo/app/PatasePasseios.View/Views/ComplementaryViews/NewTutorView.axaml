@@ -1,0 +1,69 @@
+<UserControl
+    d:DesignHeight="1460"
+    d:DesignWidth="720"
+    mc:Ignorable="d"
+    x:Class="PatasePasseios.View.Views.ComplementaryViews.NewTutorView"
+    x:DataType="complementaryViewsViewmodels:NewTutorViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:complementaryViewsViewmodels="clr-namespace:PatasePasseios.Viewmodel.Viewmodels.ComplementaryViewsViewmodels;assembly=PatasePasseios.Viewmodel"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Background="{DynamicResource SurfacePrimary}" Width="720">
+        <ScrollViewer>
+            <StackPanel>
+                <Button
+                    Command="{Binding BackCommand}"
+                    Margin="30,30,0,0"
+                    Tag="{Binding Navigation.BackLabel}"
+                    Theme="{StaticResource BackControl}" />
+
+                <TextBlock Classes="TTitle" Margin="35,28,35,0" Text="Novo tutor" />
+
+                <TextBlock Classes="TMicro" Margin="35,42,35,14" Text="DADOS" />
+
+                <Border Classes="Group">
+                    <StackPanel>
+                        <StackPanel Margin="28,21" Spacing="7">
+                            <TextBlock Classes="TCaption" Text="Nome completo" />
+                            <TextBox Classes="Field" Text="{Binding Name}" PlaceholderText="Marina Alves" />
+                        </StackPanel>
+
+                        <Border Classes="RowRule" />
+
+                        <StackPanel Margin="28,21" Spacing="7">
+                            <TextBlock Classes="TCaption" Text="Telefone" />
+                            <TextBox Classes="Field" Text="{Binding Phone}" PlaceholderText="(11) 98221-4432" />
+                        </StackPanel>
+
+                        <Border Classes="RowRule" />
+
+                        <StackPanel Margin="28,21" Spacing="7">
+                            <TextBlock Classes="TCaption" Text="Endereço" />
+                            <TextBox Classes="Field" Text="{Binding Neighborhood}" PlaceholderText="Vila Madalena" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <TextBlock
+                    Classes="TCaption Owed"
+                    IsVisible="{Binding HasError}"
+                    Margin="35,14,35,0"
+                    Text="{Binding ErrorMessage}"
+                    TextWrapping="Wrap" />
+
+                <Border Classes="ControlRing" Margin="30,28,30,0">
+                    <Border Classes="FloatingControl">
+                        <Button Classes="Submit" Command="{Binding SaveCommand}">
+                            <TextBlock Classes="TBody" Text="Salvar tutor" />
+                        </Button>
+                    </Border>
+                </Border>
+
+                <!--  Clearance for the floating tab bar, which content scrolls under.  -->
+                <Border Height="258" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

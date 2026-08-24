@@ -1,0 +1,92 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <LangVersion>latest</LangVersion>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AssemblyName>PatasePasseios.View</AssemblyName>
+        <RootNamespace>PatasePasseios.View</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Using Include="AvaloniaFramework" />
+        <Using Include="AvaloniaFramework.DependencyInjection" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="12.1.1" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.1" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\external\AvaloniaFramework\AvaloniaFramework\AvaloniaFramework.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\PatasePasseios.Viewmodel\PatasePasseios.Viewmodel.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Views\MainView\DogsView.axaml.cs">
+        <DependentUpon>DogsView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\MainView\HomeView.axaml.cs">
+        <DependentUpon>HomeView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\MainView\ServicesView.axaml.cs">
+        <DependentUpon>ServicesView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\MainView\TutorsView.axaml.cs">
+        <DependentUpon>TutorsView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\MainView\UsersView.axaml.cs">
+        <DependentUpon>UsersView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\MainViewViews\AgendaView.axaml.cs">
+        <DependentUpon>HomeView.axaml</DependentUpon>
+      </Compile>
+      <Compile Update="Views\NavigationViews\LoginView.axaml.cs">
+        <DependentUpon>LoginView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\NavigationViews\MainView.axaml.cs">
+        <DependentUpon>MainView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\NavigationViews\SignUpView.axaml.cs">
+        <DependentUpon>SignUpView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\ComplementaryViews\DogDetailView.axaml.cs">
+        <DependentUpon>DogDetailView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\ComplementaryViews\NewDogView.axaml.cs">
+        <DependentUpon>NewDogView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\ComplementaryViews\NewTutorView.axaml.cs">
+        <DependentUpon>NewTutorView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\ComplementaryViews\ServiceDetailView.axaml.cs">
+        <DependentUpon>ServiceDetailView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\ComplementaryViews\TutorDetailView.axaml.cs">
+        <DependentUpon>TutorDetailView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
+</Project>

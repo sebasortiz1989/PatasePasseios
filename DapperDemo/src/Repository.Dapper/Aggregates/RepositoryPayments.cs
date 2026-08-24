@@ -1,9 +1,9 @@
 using Dapper;
-using DapperDemo.Repository.Dapper.Dtos;
-using DapperDemo.Repository.Dapper.Services;
 using Microsoft.Data.Sqlite;
+using PatasePasseios.Repository.Dapper.Dtos;
+using PatasePasseios.Repository.Dapper.Services;
 
-namespace DapperDemo.Repository.Dapper.Aggregates;
+namespace PatasePasseios.Repository.Dapper.Aggregates;
 
 /// <summary>
 /// The ledger of money received from tutors, and the only place a payment is written or unwound.

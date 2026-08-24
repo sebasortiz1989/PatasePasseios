@@ -7,6 +7,10 @@ constructor, calls `SQLitePCL.Batteries.Init()`, resolves the app-data folder vi
 `SqliteConnection` per access — callers `using` and open it themselves — plus
 `DatabasePath` for backup.
 
+The namespace is `PatasePasseios.Repository.Dapper`, but the folder and the file are still
+called `DapperDemo` — deliberately, since renaming either hides a sitter's live database
+and every dog photo. See the deviations table in the root `CLAUDE.md`.
+
 **The canonical schema is the DDL in `DapperDatabaseService`.** DTOs mirror it
 and carry the matching `CREATE TABLE` in a trailing comment; keep both in step.
 

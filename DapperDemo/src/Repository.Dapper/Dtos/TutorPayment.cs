@@ -1,4 +1,4 @@
-namespace DapperDemo.Repository.Dapper.Dtos;
+namespace PatasePasseios.Repository.Dapper.Dtos;
 
 /// <summary>
 /// One amount a tutor handed over, kept as a record of its own.

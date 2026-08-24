@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
 
-namespace DapperDemo.Repository.Dapper.Services;
+namespace PatasePasseios.Repository.Dapper.Services;
 
 /// <summary>
 /// Reads and writes the <see cref="CloudBackupSchedule"/> this device keeps on disk.
@@ -68,7 +68,8 @@ public sealed class CloudBackupState
             return new CloudBackupSchedule(
                 ReadStamp(root, "lastUploadUtc"),
                 ReadStamp(root, "lastAttemptUtc"),
-                destination);
+                destination,
+                ReadStamp(root, "lastPromptUtc"));
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException or JsonException)
         {
@@ -91,7 +92,8 @@ public sealed class CloudBackupState
                 {
                   "lastUploadUtc": {{Stamp(schedule.LastUploadUtc)}},
                   "lastAttemptUtc": {{Stamp(schedule.LastAttemptUtc)}},
-                  "destination": {{Text(schedule.Destination)}}
+                  "destination": {{Text(schedule.Destination)}},
+                  "lastPromptUtc": {{Stamp(schedule.LastPromptUtc)}}
                 }
                 """;
 
