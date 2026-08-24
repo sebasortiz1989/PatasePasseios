@@ -156,17 +156,28 @@ builder below it plus its own registrations.
 - Adding a view or view model means registering it in **both**
   `DapperDemoViewContainerBuilder` and `DapperDemoViewmodelContainerBuilder`
   (with `.WithAbstractions()`). A miss fails at runtime, not compile time.
-- Navigating is `CurrentView.Show(view)` for a detail screen, `ShowRoot(view, label)`
-  for a tab. `ViewShown` has no public setter, so nothing can bypass them.
-  **Detail screens replace each other rather than stacking**: the history is never
-  deeper than one screen above a tab, and Back from any detail returns to its tab.
-  Only tabs carry a label, because only a tab is ever a back target. Back controls
-  bind `Tag="{Binding Navigation.BackLabel}"` and never a literal — a detail screen
-  opens from several tabs and a constant is wrong in all but one of them.
-  The flattening is load-bearing, not tidiness: dog → tutor → dog → tutor grew the
-  stack without bound, and because the presenters are reused singletons with the
-  selected record on `AppSession`, a stacked entry does not remember which record it
-  was showing. Walking back through one re-renders it with whatever is selected now.
+- Navigating is `CurrentView.Show(view, label)` for a detail screen,
+  `ShowRoot(view, label)` for a tab. `ViewShown` has no public setter, so nothing can
+  bypass them. **Detail screens stack** (restored 2026-08-24, owner's instruction, after
+  a spell of flattening): Davis → Jony → Davis walks back Jony → Davis → Tutores, one
+  press per hop. Back controls bind `Tag="{Binding Navigation.BackLabel}"` and never a
+  literal.
+  **Every `Show` must pass a label naming the record, not the screen type** — "Jony",
+  never "Cachorro" — because it is what the back control of anything opened from there
+  will read.
+  What makes stacking work is `Selection`: the presenters are reused singletons and the
+  record each shows lives on `AppSession`, so an entry that remembered only "the dog
+  screen" did not remember *which dog*, and walking back re-rendered it with whatever was
+  selected now. Each entry therefore carries the `Selection` current when its screen was
+  shown, and `GoBack` restores it before the screen reappears. Captured at `Show` time,
+  not at push time: by push time the caller has already selected the record for the screen
+  it is opening. Do not add an entry that skips this.
+  A record deleted while it sits on the stack is handled by the three detail view models:
+  finding it gone, their reload calls `GoBack` rather than showing a phantom, which
+  unwinds a cascade (tutor → its dogs → their bookings) one entry at a time down to the
+  tab. That is only safe because the detail screens reload from `OnLoaded` alone — the
+  tabs are the only `DataChanged` subscribers. Subscribe a detail screen to `DataChanged`
+  and this becomes a background reload that can navigate underneath the user.
 - Data-layer singletons (`DapperDatabaseService`, the repositories,
   `BackupArchive`) are registered in `DapperDemoInfrastructureContainerBuilder`.
 - `AvaloniaViewContainerBuilder` (framework) supplies the

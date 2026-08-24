@@ -41,7 +41,7 @@ public class DogsViewModel : PresentationModelBase<Unit, Unit>
 
         dogDetailView = dogDetailFactory.Create();
         newDogView = newDogFactory.Create();
-        AddDogCommand = new SynchronizedCommand(() => currentView.Show(newDogView), SynchronizationBehavior.Discard, true);
+        AddDogCommand = new SynchronizedCommand(() => currentView.Show(newDogView, "Novo cachorro"), SynchronizationBehavior.Discard, true);
     }
 
     public ICommand AddDogCommand { get; }
@@ -69,7 +69,7 @@ public class DogsViewModel : PresentationModelBase<Unit, Unit>
 
             // CA2000: ownership passes to the DogRow, which disposes the command when the list rebuilds.
 #pragma warning disable CA2000
-            var openCommand = new SynchronizedCommand(() => Open(dog.DogId), SynchronizationBehavior.Discard, true);
+            var openCommand = new SynchronizedCommand(() => Open(dog.DogId, dog.Name), SynchronizationBehavior.Discard, true);
 #pragma warning restore CA2000
             DogsCollection.Add(new DogRow(AppSession.Initials(dog.Name), dog.Name, subtitle, DogImageStore.ResolvePath(dog.Image), openCommand));
         }
@@ -95,10 +95,10 @@ public class DogsViewModel : PresentationModelBase<Unit, Unit>
         DogsCollection.Clear();
     }
 
-    private Task Open(int dogId)
+    private Task Open(int dogId, string name)
     {
         session.SelectedDogId = dogId;
-        currentView.Show(dogDetailView);
+        currentView.Show(dogDetailView, name);
         return Task.CompletedTask;
     }
 }

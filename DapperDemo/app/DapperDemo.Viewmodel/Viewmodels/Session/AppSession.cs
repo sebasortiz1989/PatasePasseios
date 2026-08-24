@@ -36,6 +36,28 @@ public class AppSession
     public int? SelectedServiceId { get; set; }
 
     /// <summary>
+    /// Gets or sets all four selections at once.
+    /// </summary>
+    /// <remarks>
+    /// For the back stack, which has to put a screen back the way it found it — see
+    /// <see cref="Selection"/>. Reading and writing them as a group rather than one at a time is
+    /// what stops a restore from half-applying: a screen showing the wrong record is worse than
+    /// one showing none.
+    /// </remarks>
+    public Selection Selection
+    {
+        get => new(SelectedDogId, SelectedTutorId, SelectedServiceKind, SelectedServiceId);
+
+        set
+        {
+            SelectedDogId = value.DogId;
+            SelectedTutorId = value.TutorId;
+            SelectedServiceKind = value.Kind;
+            SelectedServiceId = value.ServiceId;
+        }
+    }
+
+    /// <summary>
     /// Starts a reload without awaiting it, but reports failures. A bare <c>_ = SomeAsync()</c>
     /// swallows the exception, which turns a broken query into a screen that is silently blank
     /// with no clue why.

@@ -467,7 +467,11 @@ public class AgendaViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
     {
         session.SelectedServiceKind = kind;
         session.SelectedServiceId = serviceId;
-        currentView.Show(serviceDetailView);
+
+        // The booking's kind is what names it on a back control — "Hotel", "Passeio". A service
+        // has no name of its own, and the dog's is already the label of the screen this most often
+        // opens from.
+        currentView.Show(serviceDetailView, AppSession.TypeLabel(kind));
         return Task.CompletedTask;
     }
 }

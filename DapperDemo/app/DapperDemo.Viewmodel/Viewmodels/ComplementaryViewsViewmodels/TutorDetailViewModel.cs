@@ -354,6 +354,11 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
         var tutor = await repositoryTutors.GetAsync(tutorId).WithSync();
         if (tutor == null)
         {
+            // Gone while it sat on the back stack — deleted from a screen further along, or by the
+            // cascade of a tutor being removed. Stepping back rather than sitting here showing a
+            // record that no longer exists; the entry below may be gone too, in which case it does
+            // the same, and the tab at the bottom always survives.
+            currentView.GoBack();
             return;
         }
 
@@ -379,11 +384,12 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
         foreach (var dog in dogs)
         {
             var dogId = dog.DogId;
+            var dogName = dog.Name;
 
             // CA2000: ownership passes to the DogRow, which disposes the command when the list is
             // rebuilt — the same arrangement every other row list here uses.
 #pragma warning disable CA2000
-            var open = new SynchronizedCommand(() => OpenDog(dogId), SynchronizationBehavior.Discard, true);
+            var open = new SynchronizedCommand(() => OpenDog(dogId, dogName), SynchronizationBehavior.Discard, true);
 #pragma warning restore CA2000
             Dogs.Add(new DogRow(
                 AppSession.Initials(dog.Name),
@@ -767,7 +773,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
     {
         session.SelectedServiceKind = kind;
         session.SelectedServiceId = serviceId;
-        currentView.Show(serviceDetailView);
+        currentView.Show(serviceDetailView, AppSession.TypeLabel(kind));
         return Task.CompletedTask;
     }
 
@@ -1200,10 +1206,10 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
     /// </remarks>
     /// <summary>Opens one of this tutor's dogs, the same way the Cachorros tab does.</summary>
     /// <param name="dogId">Which dog to show.</param>
-    private void OpenDog(int dogId)
+    private void OpenDog(int dogId, string name)
     {
         session.SelectedDogId = dogId;
-        currentView.Show(dogDetailView);
+        currentView.Show(dogDetailView, name);
     }
 
     private void StepPeriod(int delta)

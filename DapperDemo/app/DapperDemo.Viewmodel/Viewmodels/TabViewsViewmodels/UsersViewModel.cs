@@ -118,7 +118,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
         ImportBackupCommand = new SynchronizedCommand(ImportBackup, SynchronizationBehavior.Discard, true);
         SendCloudBackupCommand = new SynchronizedCommand(SendCloudBackup, SynchronizationBehavior.Discard, true);
         SetUpCloudBackupCommand = new SynchronizedCommand(SetUpCloudBackup, SynchronizationBehavior.Discard, true);
-        OpenSettingsCommand = new SynchronizedCommand(() => currentView.Show(settingsView), SynchronizationBehavior.Discard, true);
+        OpenSettingsCommand = new SynchronizedCommand(() => currentView.Show(settingsView, "Ajustes"), SynchronizationBehavior.Discard, true);
         DismissInvalidBackupCommand = new SynchronizedCommand(() => ShowInvalidBackupAlert = false, SynchronizationBehavior.Discard, true);
         DismissBackupDoneCommand = new SynchronizedCommand(() => ShowBackupDoneAlert = false, SynchronizationBehavior.Discard, true);
 

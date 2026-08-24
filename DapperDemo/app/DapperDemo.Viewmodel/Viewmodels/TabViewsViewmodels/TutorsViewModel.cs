@@ -71,7 +71,7 @@ public class TutorsViewModel : PresentationModelBase<Unit, Unit>
 
             // CA2000: ownership passes to the TutorRow, which disposes the command when the list rebuilds.
 #pragma warning disable CA2000
-            var openCommand = new SynchronizedCommand(() => Open(tutor.TutorId), SynchronizationBehavior.Discard, true);
+            var openCommand = new SynchronizedCommand(() => Open(tutor.TutorId, tutor.Name), SynchronizationBehavior.Discard, true);
 #pragma warning restore CA2000
             TutorsCollection.Add(new TutorRow(AppSession.Initials(tutor.Name), tutor.Name, $"{neighbourhood}{dogCountLabel}", openCommand));
         }
@@ -97,16 +97,16 @@ public class TutorsViewModel : PresentationModelBase<Unit, Unit>
         TutorsCollection.Clear();
     }
 
-    private Task Open(int tutorId)
+    private Task Open(int tutorId, string name)
     {
         session.SelectedTutorId = tutorId;
-        currentView.Show(tutorDetailView);
+        currentView.Show(tutorDetailView, name);
         return Task.CompletedTask;
     }
 
     private Task OpenNewTutor()
     {
-        currentView.Show(newTutorView);
+        currentView.Show(newTutorView, "Novo tutor");
         return Task.CompletedTask;
     }
 }

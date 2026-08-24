@@ -3,27 +3,43 @@ using System.Runtime.CompilerServices;
 
 namespace DapperDemo.Viewmodel.Viewmodels.Session;
 
-public class CurrentView : INotifyPropertyChanged
+/// <summary>
+/// Which screen is on show, and the trail of screens behind it.
+/// </summary>
+/// <remarks>
+/// Detail screens stack: opening a tutor from a dog, a dog from that tutor and a tutor again
+/// leaves three entries, and Back walks them one at a time until it reaches the tab the branch
+/// started from. That is what a person expects of Back, and it is what this used to refuse to do.
+/// <para>
+/// It refused for a real reason. The presenters are reused instances and the record each one shows
+/// lives on <see cref="AppSession"/>, so an entry that remembered only "the dog screen" did not
+/// remember <em>which dog</em> — walking back into it re-rendered it with whatever was selected
+/// now, which made the history a loop rather than a path. Every entry therefore carries the
+/// <see cref="Selection"/> that was current when its screen was shown, and <see cref="GoBack"/>
+/// puts it back before the screen reappears. That is the whole trick; without it, stacking is
+/// worse than flattening.
+/// </para>
+/// </remarks>
+/// <param name="session">Where the selected records live, so an entry can capture and restore them.</param>
+public class CurrentView(AppSession session) : INotifyPropertyChanged
 {
-    /// <summary>
-    /// Screens left behind by <see cref="Show"/>, most recent first. A stack rather than a
-    /// single previous view because detail screens now open other detail screens: a service opened
-    /// from a tutor has to return to that tutor, and the tutor's own Back still has to return to
-    /// the tab underneath it.
-    /// </summary>
+    /// <summary>Screens left behind by <see cref="Show"/>, most recent first.</summary>
     private readonly Stack<Entry> history = new();
 
     private object? viewShown;
 
+    /// <summary>What the screen on show is called, which is what the screen above it goes back to.</summary>
+    private string currentLabel = string.Empty;
+
     /// <summary>
-    /// The name of the tab this branch of navigation started from.
+    /// The record the screen on show was opened with.
     /// </summary>
     /// <remarks>
-    /// Only tabs are ever pushed, so this is the label that goes on the stack with the tab and
-    /// comes back off it on the way home. Detail screens do not set it — they are never a back
-    /// target, so they are never named.
+    /// Captured when the screen is shown rather than read off the session when it is pushed. By
+    /// push time the caller has already selected the record for the screen it is opening, so
+    /// reading the session then would store the wrong one.
     /// </remarks>
-    private string currentLabel = string.Empty;
+    private Selection currentSelection;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -40,42 +56,38 @@ public class CurrentView : INotifyPropertyChanged
     /// </summary>
     /// <remarks>
     /// This is the label of the screen actually underneath, not a constant written into the
-    /// markup. A tutor opened from a dog goes back to that dog, and the label has to say so — a
+    /// markup. A tutor opened from a dog goes back to that dog and the label has to say so — a
     /// hardcoded "Tutores" was wrong in every case except the one route the author had in mind.
     /// </remarks>
     public string BackLabel => history.TryPeek(out var previous) ? previous.Label : string.Empty;
 
     /// <summary>
-    /// Shows a detail screen. Back from it returns to the tab it was opened from.
+    /// Shows a screen on top of the one already there. Back returns to it.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// Detail screens replace each other rather than stacking, so the history is never deeper than
-    /// one screen above a tab. A dog opens its tutor, whose dog list opens another dog, whose tutor
-    /// opens again — left to stack that grows without bound, and Back has to be pressed once per
-    /// hop to escape.
-    /// </para>
-    /// <para>
-    /// Depth is not the only reason. The presenters are reused instances and the selected record
-    /// lives on <see cref="AppSession"/>, so a stacked entry does not remember which dog it was
-    /// showing: walking back through one would re-render it with whatever record is selected now.
-    /// A stack of those is not history, it is a loop.
-    /// </para>
-    /// </remarks>
     /// <param name="view">The screen's presenter.</param>
-    public void Show(object? view)
+    /// <param name="label">
+    /// What this screen is called — a dog's or tutor's name, a booking's kind, a form's title. It
+    /// is what the back control of anything opened from here will read, so it names the record and
+    /// not the screen type: "Jony", never "Cachorro".
+    /// </param>
+    public void Show(object? view, string label)
     {
+        // A second tap on the same row, which would otherwise put the screen on its own stack.
         if (EqualityComparer<object?>.Default.Equals(viewShown, view))
         {
             return;
         }
 
-        // Only a tab is ever pushed. Arriving here with something already on the stack means the
-        // current screen is itself a detail, and it is replaced rather than added to.
-        if (history.Count == 0 && viewShown is { } previous)
+        if (viewShown is { } previous)
         {
-            history.Push(new Entry(previous, currentLabel));
+            history.Push(new Entry(previous, currentLabel, currentSelection));
         }
+
+        currentLabel = label;
+
+        // Now, not on the way out: the caller selected this screen's record immediately before
+        // calling, so this is the moment the session describes the screen being shown.
+        currentSelection = session.Selection;
 
         ViewShown = view;
         OnPropertyChanged(nameof(BackLabel));
@@ -92,10 +104,12 @@ public class CurrentView : INotifyPropertyChanged
     {
         history.Clear();
         currentLabel = label;
+        currentSelection = session.Selection;
         ViewShown = view;
         OnPropertyChanged(nameof(BackLabel));
     }
 
+    /// <summary>Returns to the screen underneath, showing the record it was showing.</summary>
     public void GoBack()
     {
         if (!history.TryPop(out var previous))
@@ -103,7 +117,12 @@ public class CurrentView : INotifyPropertyChanged
             return;
         }
 
+        // The record before the screen. A presenter reloads from its view's OnLoaded, which runs
+        // once it is back on the visual tree and reads whatever is selected at that moment.
+        session.Selection = previous.Selection;
+
         currentLabel = previous.Label;
+        currentSelection = previous.Selection;
         ViewShown = previous.View;
         OnPropertyChanged(nameof(BackLabel));
     }
@@ -120,6 +139,6 @@ public class CurrentView : INotifyPropertyChanged
         OnPropertyChanged(propertyName);
     }
 
-    /// <summary>One screen on the back stack, and the name the screen above it calls it by.</summary>
-    private readonly record struct Entry(object View, string Label);
+    /// <summary>One screen on the back stack: what it was, what it was called, what it was showing.</summary>
+    private readonly record struct Entry(object View, string Label, Selection Selection);
 }
