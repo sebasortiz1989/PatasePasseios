@@ -41,7 +41,7 @@ public sealed class CloudBackupService(BackupArchive archive, CloudBackupStore s
     /// Asks the user which folder backups should go to, and remembers it.
     /// </summary>
     /// <remarks>
-    /// The one setup step. Everything after it is automatic: the weekly prompt uses the same
+    /// The one setup step. Everything after it is automatic: the daily run uses the same
     /// destination, and on Android the stored bookmark carries the permission grant so later
     /// launches write there without asking again.
     /// </remarks>
@@ -56,22 +56,18 @@ public sealed class CloudBackupService(BackupArchive archive, CloudBackupStore s
         return schedule.LastUploadUtc;
     }
 
-    /// <summary>Gets a value indicating whether the user should be asked to back up now.</summary>
-    /// <returns>True when a backup is overdue and the last prompt is old enough to repeat.</returns>
+    /// <summary>
+    /// Gets a value indicating whether today's copy is still owed.
+    /// </summary>
+    /// <remarks>
+    /// Local time, not UTC: the schedule is a time of day on the sitter's clock — see
+    /// <see cref="CloudBackupSchedule.RunAt"/>.
+    /// </remarks>
+    /// <returns>True when no backup has been taken since the last scheduled run.</returns>
     public async Task<bool> IsDueAsync()
     {
         var schedule = await State.ReadAsync().NoSync();
-        return schedule.IsDue(DateTime.UtcNow);
-    }
-
-    /// <summary>
-    /// Records that the user was asked and said no, so they are not asked again straight away.
-    /// </summary>
-    /// <returns>A task that completes once the answer is stored.</returns>
-    public async Task DeferAsync()
-    {
-        var schedule = await State.ReadAsync().NoSync();
-        await State.WriteAsync(schedule with { LastPromptUtc = DateTime.UtcNow }).NoSync();
+        return schedule.IsDue(DateTime.Now);
     }
 
     /// <summary>
@@ -105,14 +101,16 @@ public sealed class CloudBackupService(BackupArchive archive, CloudBackupStore s
                 uploaded = await Store.UploadAsync(content, ArchiveName).NoSync();
             }
 
-            // The prompt stamp moves on either outcome, but the upload stamp only on success — a
-            // failed run must stay overdue, or one bad week of connectivity silently becomes a
-            // month without a backup.
+            // The attempt is recorded either way, the copy only when it landed. A failed run
+            // therefore stays owed — it must, or one bad morning silently becomes a day with no
+            // backup — while the attempt stamp keeps the retry to once an hour instead of once
+            // every check. See CloudBackupSchedule.RetryAfter.
+            var now = DateTime.UtcNow;
             var schedule = await State.ReadAsync().NoSync();
             await State.WriteAsync(schedule with
             {
-                LastUploadUtc = uploaded == Response.Successful ? DateTime.UtcNow : schedule.LastUploadUtc,
-                LastPromptUtc = DateTime.UtcNow,
+                LastUploadUtc = uploaded == Response.Successful ? now : schedule.LastUploadUtc,
+                LastAttemptUtc = now,
             }).NoSync();
 
             return uploaded;

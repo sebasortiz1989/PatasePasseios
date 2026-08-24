@@ -14,33 +14,16 @@
         <ScrollViewer>
             <StackPanel>
 
-                <Border Classes="ControlRing" HorizontalAlignment="Left" Margin="30,30,0,0">
-                    <Border Classes="FloatingControl">
-                        <Button
-                            Background="Transparent"
-                            BorderThickness="0"
-                            Command="{Binding BackCommand}"
-                            Height="77"
-                            Padding="21,0">
-                            <StackPanel Orientation="Horizontal" Spacing="10">
-                                <Path
-                                    Data="{StaticResource IconChevronLeft}"
-                                    Height="30"
-                                    Stretch="Uniform"
-                                    Stroke="{DynamicResource InkPrimary}"
-                                    StrokeJoin="Round"
-                                    StrokeLineCap="Round"
-                                    StrokeThickness="1.6"
-                                    VerticalAlignment="Center"
-                                    Width="30" />
-                                <TextBlock
-                                    Classes="TUi"
-                                    Text="{Binding Navigation.BackLabel}"
-                                    VerticalAlignment="Center" />
-                            </StackPanel>
-                        </Button>
-                    </Border>
-                </Border>
+                <!--
+                    The shared theme, not a copy of it. This screen used to hand-roll the same
+                    control and so missed everything the theme gained afterwards — including the
+                    ellipsis that keeps a long destination name inside the button.
+                -->
+                <Button
+                    Command="{Binding BackCommand}"
+                    Margin="30,30,0,0"
+                    Tag="{Binding Navigation.BackLabel}"
+                    Theme="{StaticResource BackControl}" />
 
                 <TextBlock
                     Classes="TTitle"
@@ -178,7 +161,7 @@
                 </Border>
 
                 <!--  Clearance for the floating tab bar.  -->
-                <Border Height="168" />
+                <Border Height="258" />
             </StackPanel>
         </ScrollViewer>
     </Grid>

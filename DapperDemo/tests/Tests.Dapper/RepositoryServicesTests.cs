@@ -838,4 +838,149 @@ public class RepositoryServicesTests
 
         Assert.Equal(150m, done.AmountDue);
     }
+
+    /// <summary>
+    /// The reported failure, written down: several hotel stays booked, one of them re-dated, and
+    /// every other booking still there afterwards with the values it was given.
+    /// </summary>
+    /// <remarks>
+    /// Three dogs, because the stays that went missing were a whole tutor's worth booked together
+    /// — one row per dog over the same nights, which is the shape that would be lost as a group if
+    /// an edit ever matched on anything but the primary key.
+    /// </remarks>
+    [Fact]
+    public async Task ChangingOneStaysDatesLeavesEveryOtherStayAlone()
+    {
+        using var db = new TestDatabase();
+        var petSitterId = await db.SeedPetSitterAsync();
+        var tutorId = await db.SeedTutorAsync(petSitterId, "Marcos");
+
+        var luna = await db.SeedDogAsync(tutorId, "Luna");
+        var noah = await db.SeedDogAsync(tutorId, "Noah");
+        var pipoca = await db.SeedDogAsync(tutorId, "Pipoca");
+
+        foreach (var (dogId, rate) in new[] { (luna, 50m), (noah, 90m), (pipoca, 50m) })
+        {
+            await db.Services.AddHotelAsync(new PetHotelService
+            {
+                DogId = dogId,
+                PetSitterId = petSitterId,
+                StartDate = August1,
+                EndDate = August1.AddDays(2),
+                PricePerDay = rate,
+                ExtraCharge = 25m,
+            });
+        }
+
+        var stays = await db.Services.ListForPetSitterAsync(petSitterId);
+        Assert.Equal(3, stays.Length);
+
+        var moved = stays.Single(s => s.DogId == noah);
+        var response = await db.Services.UpdateAsync(new ServiceItem
+        {
+            ServiceId = moved.ServiceId,
+            Kind = moved.Kind,
+            DogId = moved.DogId,
+            DogName = moved.DogName,
+            TutorName = moved.TutorName,
+            Date = August1.AddDays(8),
+            EndDate = August1.AddDays(10),
+            Price = moved.Price,
+            ExtraCharge = moved.ExtraCharge,
+        });
+
+        Assert.Equal(Response.Successful, response);
+
+        var after = await db.Services.ListForPetSitterAsync(petSitterId);
+        Assert.Equal(3, after.Length);
+
+        var edited = after.Single(s => s.DogId == noah);
+        Assert.Equal(August1.AddDays(8), edited.Date);
+        Assert.Equal(August1.AddDays(10), edited.EndDate);
+
+        // The two that were not edited, unchanged down to the extra charge.
+        foreach (var untouched in after.Where(s => s.DogId != noah))
+        {
+            Assert.Equal(August1, untouched.Date);
+            Assert.Equal(August1.AddDays(2), untouched.EndDate);
+            Assert.Equal(50m, untouched.Price);
+            Assert.Equal(25m, untouched.ExtraCharge);
+        }
+    }
+
+    /// <summary>The same guarantee for every kind, and across kinds: an edit is one row.</summary>
+    [Theory]
+    [InlineData(ServiceKind.Walk)]
+    [InlineData(ServiceKind.Sitting)]
+    [InlineData(ServiceKind.Hotel)]
+    [InlineData(ServiceKind.DayCare)]
+    public async Task AnEditTouchesOneBookingAndNoOther(ServiceKind kind)
+    {
+        using var db = new TestDatabase();
+        var (petSitterId, _, dogId) = await db.SeedAccountAsync();
+
+        // Two of the kind being edited, plus one of each of the others.
+        await AddOneOfEachAsync(db, petSitterId, dogId);
+        await AddOneOfEachAsync(db, petSitterId, dogId);
+
+        var before = await db.Services.ListForPetSitterAsync(petSitterId);
+        Assert.Equal(8, before.Length);
+
+        var target = before.First(s => s.Kind == kind);
+        await db.Services.UpdateAsync(new ServiceItem
+        {
+            ServiceId = target.ServiceId,
+            Kind = target.Kind,
+            DogId = target.DogId,
+            DogName = target.DogName,
+            TutorName = target.TutorName,
+            Date = August1.AddDays(20),
+            EndDate = kind == ServiceKind.Hotel ? August1.AddDays(22) : null,
+            Price = 777m,
+        });
+
+        var after = await db.Services.ListForPetSitterAsync(petSitterId);
+
+        Assert.Equal(8, after.Length);
+        Assert.Single(after, s => s.Price == 777m);
+
+        foreach (var untouched in before.Where(s => s.ServiceId != target.ServiceId || s.Kind != target.Kind))
+        {
+            var same = after.Single(s => s.Kind == untouched.Kind && s.ServiceId == untouched.ServiceId);
+            Assert.Equal(untouched.Date, same.Date);
+            Assert.Equal(untouched.Price, same.Price);
+        }
+    }
+
+    /// <summary>
+    /// Editing a booking that is no longer there is refused rather than reported as saved.
+    /// </summary>
+    /// <remarks>
+    /// It happens when the same record is open on two screens and one of them deletes it. Saying
+    /// "saved" would leave the sitter looking at values nothing kept.
+    /// </remarks>
+    [Fact]
+    public async Task EditingABookingThatIsGoneFails()
+    {
+        using var db = new TestDatabase();
+        var (petSitterId, _, dogId) = await db.SeedAccountAsync();
+        await AddOneOfEachAsync(db, petSitterId, dogId);
+
+        var walk = (await db.Services.ListForPetSitterAsync(petSitterId)).Single(s => s.Kind == ServiceKind.Walk);
+        await db.Services.DeleteAsync(ServiceKind.Walk, walk.ServiceId);
+
+        var response = await db.Services.UpdateAsync(new ServiceItem
+        {
+            ServiceId = walk.ServiceId,
+            Kind = ServiceKind.Walk,
+            DogId = walk.DogId,
+            DogName = walk.DogName,
+            TutorName = walk.TutorName,
+            Date = August1.AddDays(1),
+            Price = 60m,
+        });
+
+        Assert.Equal(Response.Failed, response);
+        Assert.Equal(3, (await db.Services.ListForPetSitterAsync(petSitterId)).Length);
+    }
 }

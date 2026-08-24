@@ -137,7 +137,10 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
     /// edit, and one that would silently break anything holding the old id.
     /// </remarks>
     /// <param name="service">The booking, carrying its new values. Kind and ServiceId locate the row.</param>
-    /// <returns>Whether the write succeeded.</returns>
+    /// <returns>
+    /// Successful when exactly one booking was changed; Failed when none was — a stale id, a row
+    /// deleted on another screen — or when the write would have touched more than one.
+    /// </returns>
     public async Task<Response> UpdateAsync(ServiceItem service)
     {
         ArgumentNullException.ThrowIfNull(service);
@@ -174,7 +177,23 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
         {
             using var connection = DapperDatabaseService.Connection;
             await connection.OpenAsync().ConfigureAwait(false);
-            await connection.ExecuteAsync(sql, param).ConfigureAwait(false);
+            using var transaction = await connection.BeginTransactionAsync().ConfigureAwait(false);
+
+            var changed = await connection.ExecuteAsync(sql, param, transaction).ConfigureAwait(false);
+
+            // One row or none. Every statement above is keyed on its table's primary key, so more
+            // than one is impossible as written — the check is here because an edit that quietly
+            // rewrote a whole table is the failure nobody notices until the records are gone, and
+            // inside a transaction it is a rollback rather than a report after the damage. Zero is
+            // worth refusing too: it means the booking being edited is no longer there, and
+            // reporting success would leave the screen showing changes nothing kept.
+            if (changed != 1)
+            {
+                await transaction.RollbackAsync().ConfigureAwait(false);
+                return Response.Failed;
+            }
+
+            await transaction.CommitAsync().ConfigureAwait(false);
             return Response.Successful;
         }
         catch (SqliteException e)

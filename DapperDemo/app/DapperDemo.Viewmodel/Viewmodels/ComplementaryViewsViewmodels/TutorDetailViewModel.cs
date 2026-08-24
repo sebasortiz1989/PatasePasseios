@@ -354,6 +354,11 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
         var tutor = await repositoryTutors.GetAsync(tutorId).WithSync();
         if (tutor == null)
         {
+            // Gone while it sat on the back stack — deleted from a screen further along, or by the
+            // cascade of a tutor being removed. Stepping back rather than sitting here showing a
+            // record that no longer exists; the entry below may be gone too, in which case it does
+            // the same, and the tab at the bottom always survives.
+            currentView.GoBack();
             return;
         }
 
@@ -379,11 +384,12 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
         foreach (var dog in dogs)
         {
             var dogId = dog.DogId;
+            var dogName = dog.Name;
 
             // CA2000: ownership passes to the DogRow, which disposes the command when the list is
             // rebuilt — the same arrangement every other row list here uses.
 #pragma warning disable CA2000
-            var open = new SynchronizedCommand(() => OpenDog(dogId), SynchronizationBehavior.Discard, true);
+            var open = new SynchronizedCommand(() => OpenDog(dogId, dogName), SynchronizationBehavior.Discard, true);
 #pragma warning restore CA2000
             Dogs.Add(new DogRow(
                 AppSession.Initials(dog.Name),
@@ -767,7 +773,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
     {
         session.SelectedServiceKind = kind;
         session.SelectedServiceId = serviceId;
-        currentView.Show(serviceDetailView);
+        currentView.Show(serviceDetailView, AppSession.TypeLabel(kind));
         return Task.CompletedTask;
     }
 
@@ -994,14 +1000,36 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
         // AmountUpcoming needs it unset — so their sum counts nothing twice.
         var chargeableTotal = tutorServices.Sum(s => s.AmountDue);
         var upcomingTotal = tutorServices.Sum(s => s.AmountUpcoming);
-        await AddPaymentSectionAsync(report, chargeableTotal, upcomingTotal).WithSync();
+
+        // What is still owed from outside the period this bill covers, split at the period's first
+        // day. The total has always been the tutor's whole history — a bill is settled in one
+        // transfer, not one per month — but nothing on the page said so, so a month section
+        // totalling R$ 468,00 could sit above a total of R$ 488,00 with the difference nowhere.
+        // AmountDue plus AmountUpcoming rather than a ServicePaid filter, per the money rules:
+        // together they are what is unsettled, whether or not it may be charged yet.
+        var periodStart = ServicePeriod.Start(SelectedMonth, SelectedYear);
+        var owedBefore = tutorServices
+            .Where(s => s.BillingDate < periodStart)
+            .Sum(s => s.AmountDue + s.AmountUpcoming);
+        var owedAfter = tutorServices
+            .Where(s => s.BillingDate >= periodStart && !ServicePeriod.Matches(s, SelectedMonth, SelectedYear))
+            .Sum(s => s.AmountDue + s.AmountUpcoming);
+
+        await AddPaymentSectionAsync(report, chargeableTotal, upcomingTotal, owedBefore, owedAfter).WithSync();
 
         var slug = new string([.. Name.ToLowerInvariant().Select(c => char.IsLetterOrDigit(c) ? c : '-')]).Trim('-');
+
+        // The period is part of the name, as it is on the Usuários report. Without it every bill
+        // for this tutor is offered under one file name, so saving August's after July's asks to
+        // replace a file that is a different document.
+        var periodSlug = SelectedMonth is { Number: > 0 } month
+            ? $"{SelectedYear.ToString(CultureInfo.InvariantCulture)}-{month.Number.ToString("00", CultureInfo.InvariantCulture)}"
+            : SelectedYear.ToString(CultureInfo.InvariantCulture);
 
         // Shown rather than saved. A tutor's bill is the report most likely to be sent straight to
         // that tutor, so the share sheet is the point of the screen.
         var shown = await Preview
-            .ShowAsync(report, $"servicos-{slug}", AskReplaceAsync)
+            .ShowAsync(report, $"servicos-{slug}-{periodSlug}", AskReplaceAsync)
             .WithSync();
 
         ExportMsg = shown == Response.Successful ? string.Empty : "Não foi possível gerar o resumo.";
@@ -1034,7 +1062,17 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
     /// <param name="report">The report being built.</param>
     /// <param name="chargeable">What has been carried out and not yet paid for, across every month.</param>
     /// <param name="upcoming">What is booked, unpaid and not yet carried out, across every month.</param>
-    private async Task AddPaymentSectionAsync(ReportDocument report, decimal chargeable, decimal upcoming)
+    /// <param name="owedBefore">
+    /// The part of those two that predates the period this bill is headed with — the balance
+    /// carried in. Named on its own line so the total's arithmetic is visible.
+    /// </param>
+    /// <param name="owedAfter">The part booked after that period, named for the same reason.</param>
+    private async Task AddPaymentSectionAsync(
+        ReportDocument report,
+        decimal chargeable,
+        decimal upcoming,
+        decimal owedBefore,
+        decimal owedAfter)
     {
         var petSitter = await repositoryPetSitter.GetAsync(session.CurrentPetSitterId).WithSync();
         var payable = chargeable + upcoming;
@@ -1055,6 +1093,23 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
         if (!string.IsNullOrWhiteSpace(petSitter?.Pix))
         {
             payment.Fields.Add(new ReportField("Chave Pix", petSitter.Pix, true));
+        }
+
+        // Named rather than folded silently into the total. A bill headed "Agosto de 2026" whose
+        // month section reads "A pagar R$ 468,00" and whose total says R$ 488,00 owes the tutor an
+        // account of where the other twenty came from — and a sitter chasing an old debt wants it
+        // said out loud rather than buried in one figure.
+        if (owedBefore > 0m)
+        {
+            payment.Fields.Add(new ReportField("Saldo de meses anteriores", AppSession.Money(owedBefore)));
+        }
+
+        // The other side of the same split: work booked after the period this bill is headed with.
+        // Rare — it takes exporting a past month while later bookings are still unsettled — but the
+        // total counts it, so the page has to say it does.
+        if (owedAfter > 0m)
+        {
+            payment.Fields.Add(new ReportField("Saldo de meses seguintes", AppSession.Money(owedAfter)));
         }
 
         // Said outright when part of the figure is for work that has not happened yet, so a tutor
@@ -1151,10 +1206,10 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
     /// </remarks>
     /// <summary>Opens one of this tutor's dogs, the same way the Cachorros tab does.</summary>
     /// <param name="dogId">Which dog to show.</param>
-    private void OpenDog(int dogId)
+    private void OpenDog(int dogId, string name)
     {
         session.SelectedDogId = dogId;
-        currentView.Show(dogDetailView);
+        currentView.Show(dogDetailView, name);
     }
 
     private void StepPeriod(int delta)

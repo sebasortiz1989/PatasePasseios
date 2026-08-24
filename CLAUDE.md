@@ -156,17 +156,31 @@ builder below it plus its own registrations.
 - Adding a view or view model means registering it in **both**
   `DapperDemoViewContainerBuilder` and `DapperDemoViewmodelContainerBuilder`
   (with `.WithAbstractions()`). A miss fails at runtime, not compile time.
-- Navigating is `CurrentView.Show(view)` for a detail screen, `ShowRoot(view, label)`
-  for a tab. `ViewShown` has no public setter, so nothing can bypass them.
-  **Detail screens replace each other rather than stacking**: the history is never
-  deeper than one screen above a tab, and Back from any detail returns to its tab.
-  Only tabs carry a label, because only a tab is ever a back target. Back controls
-  bind `Tag="{Binding Navigation.BackLabel}"` and never a literal — a detail screen
-  opens from several tabs and a constant is wrong in all but one of them.
-  The flattening is load-bearing, not tidiness: dog → tutor → dog → tutor grew the
-  stack without bound, and because the presenters are reused singletons with the
-  selected record on `AppSession`, a stacked entry does not remember which record it
-  was showing. Walking back through one re-renders it with whatever is selected now.
+- Navigating is `CurrentView.Show(view, label)` for a detail screen,
+  `ShowRoot(view, label)` for a tab. `ViewShown` has no public setter, so nothing can
+  bypass them. **Detail screens stack** (restored 2026-08-24, owner's instruction, after
+  a spell of flattening): Davis → Jony → Davis walks back Jony → Davis → Tutores, one
+  press per hop. Back controls bind `Tag="{Binding Navigation.BackLabel}"` and never a
+  literal.
+  **Every `Show` must pass a label naming the record, not the screen type** — "Jony",
+  never "Cachorro" — because it is what the back control of anything opened from there
+  will read. The `BackControl` theme in `ClassicalTheme.axaml` is the one place that
+  renders it — `MaxWidth` 480 with `TextTrimming="CharacterEllipsis"`, so a long name
+  shows as much as the row affords and then trails off. Every pushed screen uses that
+  theme; Ajustes hand-rolled a copy until 2026-08-24 and so missed the trimming.
+  What makes stacking work is `Selection`: the presenters are reused singletons and the
+  record each shows lives on `AppSession`, so an entry that remembered only "the dog
+  screen" did not remember *which dog*, and walking back re-rendered it with whatever was
+  selected now. Each entry therefore carries the `Selection` current when its screen was
+  shown, and `GoBack` restores it before the screen reappears. Captured at `Show` time,
+  not at push time: by push time the caller has already selected the record for the screen
+  it is opening. Do not add an entry that skips this.
+  A record deleted while it sits on the stack is handled by the three detail view models:
+  finding it gone, their reload calls `GoBack` rather than showing a phantom, which
+  unwinds a cascade (tutor → its dogs → their bookings) one entry at a time down to the
+  tab. That is only safe because the detail screens reload from `OnLoaded` alone — the
+  tabs are the only `DataChanged` subscribers. Subscribe a detail screen to `DataChanged`
+  and this becomes a background reload that can navigate underneath the user.
 - Data-layer singletons (`DapperDatabaseService`, the repositories,
   `BackupArchive`) are registered in `DapperDemoInfrastructureContainerBuilder`.
 - `AvaloniaViewContainerBuilder` (framework) supplies the
@@ -220,13 +234,32 @@ Say what is real — several things here are not. Verified 2026-08-21.
   was ever stored, `IsLinkedAsync` was always false, and "Enviar backup agora" could
   only fail. `SetUpCloudBackupCommand` now picks the folder, and sends the first copy
   immediately — which proves the folder is writable while the sitter is still looking
-  at it. The weekly prompt (`CloudBackupSchedule.UploadInterval`, 7 days; `RetryInterval`,
-  1 day after a "Não") fires from `MainViewModel.OfferBackupAsync` at login and returns
-  early when no folder is set. The row's caption names the actual folder, resolved from
+  at it. **The automatic copy is daily and silent** (changed 2026-08-24, owner's
+  instruction): `CloudBackupSchedule.RunAt` is 08:00 *local* time, and `IsDue` asks
+  whether anything has been copied since the last time that hour passed — a fixed time
+  of day, not a rolling twenty-four hours. `MainViewModel.WatchBackupScheduleAsync`
+  checks once at sign-in and then every 15 minutes until the run ends, so an app left
+  open across eight o'clock is covered too, and it returns early when no folder is set. A run
+  that fails stamps `LastAttemptUtc` and is left alone for `RetryAfter` (1 hour) — without that
+  floor a full destination would have the phone rebuilding the whole archive every 15 minutes.
+  There is no dialog any more: the prompt, `MainViewModel.BackupRequest` and
+  `CloudBackupSchedule.LastPromptUtc`/`RetryInterval` are gone. Only the manual "Enviar
+  backup agora" reports an outcome, and it still does. The row's caption names the actual folder, resolved from
   the stored bookmark through `DestinationNameAsync` — the old `DisplayName` was the
   constant string "pasta escolhida", which named nothing. The manual "Salvar backup em
   outro lugar" is a deliberately separate one-off and says so; it does not touch the
   automatic destination.
+- **The navigation bar sits 120 units off the bottom, and every screen clears 258.** Raised from
+  30/168 on 2026-08-24: the app draws to the edge of the screen, 30 units is 15dp on a phone, and
+  the bar was landing 64px inside Android's own navigation bar — reaching for Perfil pressed Back.
+  A unit is half a dp on a 1080-wide phone, so 96 units is exactly the 48dp system bar; 120 is that
+  plus a 12dp gap, chosen after measuring a screenshot rather than by eye. The two numbers are one
+  number: 120 (margin) + 108 (bar and its ring) + 30 (cushion) = 258, and the clearance is repeated
+  in eleven `.axaml` files as a `Border Height` or a ScrollViewer `Padding`. Move the bar and move
+  all of them. **`258` is a clearance and `168` is a photo** — three files still hold
+  `Height="168" Width="168"` for a round portrait; do not sweep the number blindly.
+  The bar takes a fixed margin rather than the real safe-area inset because `TopLevel.InsetsManager`
+  reports in layout units and `DesignCanvas` does not expose the scale needed to convert.
 - **A screen-covering overlay must tell the navigation bar to hide.** The bar is a
   child of `MainView`, added *after* the control hosting the tabs, so it paints over
   everything a tab draws — a tab's own dialogs and full-screen images included.
@@ -237,13 +270,27 @@ Say what is real — several things here are not. Verified 2026-08-21.
   report their open state to the framework's `Hosting/ScreenOverlay`, and `MainView`
   hides the bar while anything is covering. A new overlay component has to do the same
   or it will render with the tab bar sitting on top of it.
+- **The tutor bill names the balance carried in from other months.** The exported PNG is headed
+  with one period but its "Total a pagar" has always been the tutor's whole history — a bill is
+  settled in one transfer, not one per month — so a month section reading "A pagar R$ 468,00"
+  could sit above a total of R$ 488,00 with the difference nowhere on the page. `Saldo de meses
+  anteriores` and `Saldo de meses seguintes` (each shown only when non-zero) split what is owed
+  outside the period at `ServicePeriod.Start`. Built from `AmountDue + AmountUpcoming`, never a
+  `ServicePaid` filter.
 - **A report is shown before it is saved.** Exporting no longer opens a save dialog:
   `ReportExporter.RenderAsync` writes the PNG to the temporary folder, the
   `VReportPreview` control puts it on screen, and Compartilhar / Salvar sit beneath
   it — the order a phone uses for a screenshot. Sharing needs nothing saved, because
   the file already exists in the cache by the time the sheet opens. The preview
   deletes its file on close. Render and save are the whole contract — the older
-  one-shot `ExportAsync` is gone. **Untested on Android**: the FileProvider authority, the manifest
+  one-shot `ExportAsync` is gone. **Every render gets its own file name**
+  (`<suggested>-<guid>.png`, with the folder swept first), and that is not tidiness:
+  `PhotoCache` keys a decode by path and width and cannot know the bytes behind a path
+  changed, so re-rendering a tutor's bill for a different month over the same path put
+  the *previous* render on screen while the file — and so everything shared or saved —
+  was the new one. Anywhere else that rewrites an image in place has the same trap. The
+  preview **zooms** as of 2026-08-24 — pinch, double tap, drag, wheel — which lives in
+  the framework's `VReportPreview`, not here. **Untested on Android**: the FileProvider authority, the manifest
   `<provider>` and `Resources/xml/file_paths.xml` all have to agree, and none of it
   has run — see the note in `AndroidShareSheet`.
 - **Photos are reduced on save, in the picker.** `PhotoDownscaler.Reduce` caps the

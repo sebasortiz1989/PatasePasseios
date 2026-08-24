@@ -506,7 +506,7 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
 
         session.SelectedTutorId = id;
         tutorDetailView ??= tutorDetailFactory.Create();
-        currentView.Show(tutorDetailView);
+        currentView.Show(tutorDetailView, TutorName);
         return Task.CompletedTask;
     }
 
@@ -550,6 +550,11 @@ public class ServiceDetailViewModel : PresentationModelBase<Unit, Unit>
         var service = await repositoryServices.GetAsync(session.CurrentPetSitterId, kind, serviceId).WithSync();
         if (service == null)
         {
+            // Gone while it sat on the back stack — deleted from a screen further along, or by the
+            // cascade of a tutor being removed. Stepping back rather than sitting here showing a
+            // record that no longer exists; the entry below may be gone too, in which case it does
+            // the same, and the tab at the bottom always survives.
+            currentView.GoBack();
             return;
         }
 

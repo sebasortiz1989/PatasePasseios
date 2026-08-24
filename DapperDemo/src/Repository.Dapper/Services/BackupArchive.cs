@@ -24,6 +24,16 @@ public sealed class BackupArchive(DapperDatabaseService database)
 
     private const string ManifestEntry = "backup.json";
 
+    /// <summary>
+    /// What the database being replaced is kept as, beside the live one.
+    /// </summary>
+    /// <remarks>
+    /// A restore is the only thing in the app that discards every record at once, and until this
+    /// existed it did so with nothing to go back to. One file, overwritten by the next restore:
+    /// the point is to survive picking the wrong archive, not to keep a history.
+    /// </remarks>
+    private const string ReplacedSuffix = ".replaced";
+
     private DapperDatabaseService Database { get; } = database;
 
     /// <summary>
@@ -92,6 +102,11 @@ public sealed class BackupArchive(DapperDatabaseService database)
     /// Replaces the current database and photos with the archive's. Everything currently stored is
     /// discarded, which is the point: a restore is "make this device look like that backup".
     /// </summary>
+    /// <remarks>
+    /// The database being replaced is copied aside first — see <see cref="ReplacedSuffix"/>. The
+    /// archive is checked before anything is touched, so this is not about a corrupt file; it is
+    /// about the user picking last month's backup by mistake, which nothing else here can undo.
+    /// </remarks>
     /// <param name="source">The archive. Copied to a temp file first, so a non-seekable stream is fine.</param>
     /// <returns>
     /// Successful; IncompatibleVersion when the archive's schema does not match this build's; or
@@ -153,6 +168,11 @@ public sealed class BackupArchive(DapperDatabaseService database)
                 // out after the copy carries SQLite's page cache for a database that no longer
                 // exists — which reads as data the restore was supposed to bring in being absent.
                 SqliteConnection.ClearAllPools();
+
+                // What is about to be discarded, kept where the user's own data lives rather than
+                // in the temporary folder — somewhere it will still be there tomorrow if the
+                // archive turns out to have been the wrong one.
+                KeepReplacedDatabase(Database.DatabasePath);
 
                 File.Copy(candidate, Database.DatabasePath, overwrite: true);
 
@@ -295,6 +315,30 @@ public sealed class BackupArchive(DapperDatabaseService database)
               "createdUtc": "{{DateTime.UtcNow.ToString("O", CultureInfo.InvariantCulture)}}"
             }
             """);
+    }
+
+    /// <summary>
+    /// Copies the live database aside before a restore writes over it.
+    /// </summary>
+    /// <remarks>
+    /// Best effort: a restore the user asked for must not be refused because the copy could not be
+    /// made. The photos are deliberately not copied — they are the bulky half, and the records are
+    /// what cannot be reconstructed.
+    /// </remarks>
+    /// <param name="databasePath">The live database, which is about to be replaced.</param>
+    private static void KeepReplacedDatabase(string databasePath)
+    {
+        try
+        {
+            if (File.Exists(databasePath))
+            {
+                File.Copy(databasePath, databasePath + ReplacedSuffix, overwrite: true);
+            }
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+        {
+            Console.WriteLine(e);
+        }
     }
 
     private static void TryDelete(string path)

@@ -28,9 +28,21 @@
 
             <!--
                 The bar is an object on the page rather than a band welded to its bottom edge: 650
-                wide, inset 35, 35 above the safe area, with the same fill, 1px edge and 5px ring of
-                page colour every other floating control carries. Content passes underneath, which
-                is why each screen ends with its own bottom clearance.
+                wide, inset 35, with the same fill, 1px edge and 5px ring of page colour every other
+                floating control carries. Content passes underneath, which is why each screen ends
+                with its own bottom clearance — 258 units, which is this margin plus the bar's 108
+                and the same 30-unit cushion it always had. Move one and move the others.
+
+                120 units off the bottom, not the 30 it was: the app draws to the edge of the screen
+                and 30 units is 15dp on a phone, so the bar sat inside Android's own navigation bar
+                — measured on a 1080x2340 device, 64px of it — and reaching for Perfil pressed Back.
+                The canvas maps 720 units to about 360dp there, so a unit is half a dp: 96 units is
+                exactly the 48dp navigation bar and 120 leaves a 12dp gap above it, which is what it
+                takes for a thumb aimed low at Perfil to miss the Back button.
+                A fixed number rather than the real inset, because TopLevel.InsetsManager reports the
+                safe area in layout units and converting it means reading DesignCanvas' scale back
+                out, which it does not expose. Worth doing properly if this reads as too much room on
+                a device with no navigation bar at all.
             -->
             <!--
                 Hidden while a screen is covered — see ScreenOverlay. The bar is added after the
@@ -40,7 +52,7 @@
             <Border
                 Classes="ControlRing"
                 HorizontalAlignment="Center"
-                Margin="0,0,0,30"
+                Margin="0,0,0,120"
                 Name="NavigationBar"
                 VerticalAlignment="Bottom">
                 <Border Classes="FloatingControl" Height="98" Width="650">
@@ -133,21 +145,6 @@
                 </Grid>
                 </Border>
             </Border>
-
-            <!--
-                Asked shortly after login when the last backup is over a week old. It lives on this
-                screen rather than on Perfil because it has to be able to appear over whichever tab
-                the sitter actually opened; RowSpan covers the navigation bar so the question cannot
-                be walked away from by tapping another tab.
-            -->
-            <components:ConfirmDialog
-                CancelCommand="{Binding BackupRequest.CancelCommand}"
-                CancelText="Agora não"
-                ConfirmCommand="{Binding BackupRequest.ConfirmCommand}"
-                ConfirmText="Enviar"
-                IsOpen="{Binding BackupRequest.IsOpen}"
-                Message="{Binding BackupRequest.Message}"
-                Title="Backup automático" />
 
         </Grid>
     </components:DesignCanvas>
