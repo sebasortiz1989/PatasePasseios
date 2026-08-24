@@ -375,7 +375,7 @@
                         Text="BACKUP" />
                     <!--
                         Setting up the folder leads, because it is the one thing that has to happen
-                        once; everything after it is the weekly prompt doing the work. "Enviar
+                        once; everything after it is the daily run doing the work. "Enviar
                         agora" only appears once there is somewhere to send to, and the manual
                         export sits below the rule with wording that says what makes it different —
                         the two used to read as the same button twice.

@@ -94,6 +94,13 @@ public sealed class TestDatabase : IDisposable
             {
                 File.Delete(path);
             }
+
+            // A restore leaves the database it replaced beside the live one; a test that drove
+            // one should not leave that copy behind in the system temp folder.
+            if (File.Exists(path + ".replaced"))
+            {
+                File.Delete(path + ".replaced");
+            }
         }
         catch (IOException)
         {

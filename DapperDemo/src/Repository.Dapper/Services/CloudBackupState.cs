@@ -67,7 +67,7 @@ public sealed class CloudBackupState
 
             return new CloudBackupSchedule(
                 ReadStamp(root, "lastUploadUtc"),
-                ReadStamp(root, "lastPromptUtc"),
+                ReadStamp(root, "lastAttemptUtc"),
                 destination);
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException or JsonException)
@@ -90,7 +90,7 @@ public sealed class CloudBackupState
                 $$"""
                 {
                   "lastUploadUtc": {{Stamp(schedule.LastUploadUtc)}},
-                  "lastPromptUtc": {{Stamp(schedule.LastPromptUtc)}},
+                  "lastAttemptUtc": {{Stamp(schedule.LastAttemptUtc)}},
                   "destination": {{Text(schedule.Destination)}}
                 }
                 """;

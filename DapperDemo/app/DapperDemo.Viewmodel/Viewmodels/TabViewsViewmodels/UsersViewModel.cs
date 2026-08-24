@@ -710,11 +710,11 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
         ReplaceRequest.AskAsync($"Já existe um arquivo chamado {fileName} nesta pasta. Substituir?");
 
     /// <summary>
-    /// Sends a backup to the automatic destination now, rather than waiting for the weekly prompt.
+    /// Sends a backup to the automatic destination now, rather than waiting for tomorrow's run.
     /// </summary>
     /// <remarks>
-    /// Reports its outcome, unlike the prompted run at login: this one the sitter started, so
-    /// silence would read as nothing having happened.
+    /// Reports its outcome, unlike the daily run: this one the sitter started, so silence would
+    /// read as nothing having happened.
     /// </remarks>
     private async Task SendCloudBackup()
     {
@@ -745,8 +745,8 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
     /// Chooses the folder automatic backups go to, and sends the first one straight away.
     /// </summary>
     /// <remarks>
-    /// The one setup step, and the whole point of the row: after this the weekly prompt has
-    /// somewhere to write. The first backup runs immediately rather than waiting a week, both
+    /// The one setup step, and the whole point of the row: after this the daily run has somewhere
+    /// to write. The first backup runs immediately rather than waiting for tomorrow morning, both
     /// because the sitter has just asked for this and because it proves the folder is actually
     /// writable while they are still looking at the screen.
     /// </remarks>
@@ -776,7 +776,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
         if (!CloudBackupLinked)
         {
             CloudBackupTitle = "Ativar backup automático";
-            CloudBackupLabel = "Escolha uma pasta — no Drive ou no aparelho. Depois disso o app avisa toda semana para enviar uma cópia.";
+            CloudBackupLabel = "Escolha uma pasta — no Drive ou no aparelho. Depois disso o app envia uma cópia todo dia de manhã, sozinho.";
             return;
         }
 

@@ -28,28 +28,31 @@ public class CloudBackupStateTests : IDisposable
         var state = new CloudBackupState(path);
         var written = new CloudBackupSchedule(
             new DateTime(2026, 8, 12, 9, 30, 0, DateTimeKind.Utc),
-            new DateTime(2026, 8, 18, 7, 0, 0, DateTimeKind.Utc));
+            new DateTime(2026, 8, 12, 9, 31, 0, DateTimeKind.Utc),
+            "bookmark-bytes");
 
         Assert.Equal(Response.Successful, await state.WriteAsync(written));
 
         var read = await state.ReadAsync();
 
         Assert.Equal(written.LastUploadUtc, read.LastUploadUtc);
-        Assert.Equal(written.LastPromptUtc, read.LastPromptUtc);
+        Assert.Equal(written.LastAttemptUtc, read.LastAttemptUtc);
+        Assert.Equal(written.Destination, read.Destination);
     }
 
     [Fact]
     public async Task NullStampsSurviveTheRoundTrip()
     {
-        // The state after a first prompt that was declined: asked, never uploaded.
+        // The state right after a folder is chosen: a destination, nothing uploaded yet.
         var state = new CloudBackupState(path);
-        var written = new CloudBackupSchedule(null, new DateTime(2026, 8, 18, 7, 0, 0, DateTimeKind.Utc));
+        var written = new CloudBackupSchedule(null, null, "bookmark-bytes");
 
         await state.WriteAsync(written);
         var read = await state.ReadAsync();
 
         Assert.Null(read.LastUploadUtc);
-        Assert.Equal(written.LastPromptUtc, read.LastPromptUtc);
+        Assert.Null(read.LastAttemptUtc);
+        Assert.Equal(written.Destination, read.Destination);
     }
 
     [Fact]

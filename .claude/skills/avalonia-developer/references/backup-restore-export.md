@@ -15,6 +15,15 @@ invalid archive leaves the device untouched. Open validation connections with
 `Pooling = false` — a pooled connection holds the file handle past `Dispose` and
 leaks a full copy of the database per import.
 
+## A restore keeps what it replaced
+
+Before the copy lands, `RestoreFromAsync` copies the live database to
+`DapperDemo.db.replaced` beside it. A restore is the only thing in the app that discards
+every record at once, and the archive is already validated by then — so this is not about
+a corrupt file, it is about the user picking last month's backup by mistake, which nothing
+else can undo. One file, overwritten by the next restore; the photos are deliberately not
+copied, being the bulky half and the reconstructible one.
+
 ## Restoring replaces the file under a service that already migrated
 
 `DapperDatabaseService` runs its migration **in the constructor**, at launch. A restore

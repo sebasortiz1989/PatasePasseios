@@ -4,7 +4,6 @@ using AvaloniaFramework.Threading;
 using DapperDemo.Viewmodel.Services;
 using DapperDemo.Viewmodel.Viewmodels.Session;
 using DapperDemo.Viewmodel.Viewmodels.TabViewsViewmodels;
-using DapperDemo.Viewmodel.Viewmodels.Utils;
 using PropertyChanged;
 using System.Windows.Input;
 
@@ -13,6 +12,16 @@ namespace DapperDemo.Viewmodel.Viewmodels.NavigationViewsViewmodels;
 [AddINotifyPropertyChangedInterface]
 public class MainViewModel : PresentationModelBase<Unit, Unit>
 {
+    /// <summary>
+    /// How often the daily copy is looked for while the app stays open.
+    /// </summary>
+    /// <remarks>
+    /// A check is a small JSON read, so this can be frequent; the archive itself is built at most
+    /// once a day. Without the loop the schedule would only ever be honoured by whoever happened
+    /// to sign in after eight — a sitter who leaves the app open all day would never be backed up.
+    /// </remarks>
+    private static readonly TimeSpan BackupCheckInterval = TimeSpan.FromMinutes(15);
+
     private readonly AppSession session;
     private readonly CloudBackupService cloudBackup;
     private readonly EventHandler logoutHandler;
@@ -78,18 +87,13 @@ public class MainViewModel : PresentationModelBase<Unit, Unit>
 
     public CurrentView CurrentView { get; set; }
 
-    /// <summary>
-    /// Gets the "shall I back up?" question, put up shortly after login when one is overdue.
-    /// </summary>
-    public ConfirmRequest BackupRequest { get; } = new();
-
     protected override Task OnRunStarting(Unit input)
     {
         HomeViewCommand.Execute(null);
 
         // Not awaited: the archive is the whole database plus every photo, and the first screen
-        // must not wait on it. The dialog appears over whichever tab is already showing.
-        AppSession.FireAndForget(OfferBackupAsync());
+        // must not wait on it.
+        AppSession.FireAndForget(WatchBackupScheduleAsync());
         return Task.CompletedTask;
     }
 
@@ -100,36 +104,54 @@ public class MainViewModel : PresentationModelBase<Unit, Unit>
     }
 
     /// <summary>
-    /// Asks whether to back up when one is overdue, and runs it if the answer is yes.
+    /// Takes the daily copy whenever it comes due, for as long as this session lasts.
     /// </summary>
     /// <remarks>
-    /// The outcome is deliberately not reported anywhere. This runs unprompted at login, and a
-    /// sitter opening the app to check the morning's walks should not have to dismiss a notice
-    /// about a background chore that worked. Perfil is where the state of backups is on show, and
-    /// where running one by hand reports properly.
+    /// Once at sign-in — the ordinary case, where the app is opened in the morning and the copy is
+    /// taken before the day's records start changing — and then on a timer, so an app left open
+    /// across eight o'clock is backed up too. The loop ends with the screen: PresentationModelFinished
+    /// is the framework's token for exactly this — work that must not outlive the run.
     /// </remarks>
-    private async Task OfferBackupAsync()
+    private async Task WatchBackupScheduleAsync()
+    {
+        var finished = PresentationModelFinished;
+
+        await RunDailyBackupAsync().NoSync();
+
+        try
+        {
+            using var timer = new PeriodicTimer(BackupCheckInterval);
+            while (await timer.WaitForNextTickAsync(finished).NoSync())
+            {
+                await RunDailyBackupAsync().NoSync();
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Signing out. The loop only exists while someone is signed in.
+        }
+    }
+
+    /// <summary>
+    /// Sends a copy if today's is still owed, and says nothing either way.
+    /// </summary>
+    /// <remarks>
+    /// Silent on purpose. This runs unprompted, and a sitter opening the app to check the
+    /// morning's walks should not have to dismiss a notice about a background chore. Perfil is
+    /// where the state of backups is on show, and where a backup the sitter <em>asked</em> for
+    /// reports what happened.
+    /// </remarks>
+    private async Task RunDailyBackupAsync()
     {
         if (!await cloudBackup.IsDueAsync().NoSync())
         {
             return;
         }
 
-        // Nothing to offer until a folder has been chosen in Perfil. Asking first and picking a
-        // folder afterwards would put a file browser in front of someone who opened the app to
-        // check the morning's walks.
-        if (await cloudBackup.DestinationNameAsync().NoSync() is not { Length: > 0 } destination)
+        // Nothing to send until a folder has been chosen in Perfil. Checked rather than assumed:
+        // a folder can be deleted or its permission revoked between one launch and the next.
+        if (!await cloudBackup.IsLinkedAsync().NoSync())
         {
-            return;
-        }
-
-        var confirmed = await BackupRequest
-            .AskAsync($"Seu último backup tem mais de uma semana. Enviar uma cópia dos seus dados para \"{destination}\" agora?")
-            .WithSync();
-
-        if (!confirmed)
-        {
-            await cloudBackup.DeferAsync().NoSync();
             return;
         }
 

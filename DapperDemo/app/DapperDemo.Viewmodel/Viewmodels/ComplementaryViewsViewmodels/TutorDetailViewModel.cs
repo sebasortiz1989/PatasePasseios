@@ -998,10 +998,17 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
 
         var slug = new string([.. Name.ToLowerInvariant().Select(c => char.IsLetterOrDigit(c) ? c : '-')]).Trim('-');
 
+        // The period is part of the name, as it is on the Usuários report. Without it every bill
+        // for this tutor is offered under one file name, so saving August's after July's asks to
+        // replace a file that is a different document.
+        var periodSlug = SelectedMonth is { Number: > 0 } month
+            ? $"{SelectedYear.ToString(CultureInfo.InvariantCulture)}-{month.Number.ToString("00", CultureInfo.InvariantCulture)}"
+            : SelectedYear.ToString(CultureInfo.InvariantCulture);
+
         // Shown rather than saved. A tutor's bill is the report most likely to be sent straight to
         // that tutor, so the share sheet is the point of the screen.
         var shown = await Preview
-            .ShowAsync(report, $"servicos-{slug}", AskReplaceAsync)
+            .ShowAsync(report, $"servicos-{slug}-{periodSlug}", AskReplaceAsync)
             .WithSync();
 
         ExportMsg = shown == Response.Successful ? string.Empty : "Não foi possível gerar o resumo.";

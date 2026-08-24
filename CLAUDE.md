@@ -220,9 +220,17 @@ Say what is real — several things here are not. Verified 2026-08-21.
   was ever stored, `IsLinkedAsync` was always false, and "Enviar backup agora" could
   only fail. `SetUpCloudBackupCommand` now picks the folder, and sends the first copy
   immediately — which proves the folder is writable while the sitter is still looking
-  at it. The weekly prompt (`CloudBackupSchedule.UploadInterval`, 7 days; `RetryInterval`,
-  1 day after a "Não") fires from `MainViewModel.OfferBackupAsync` at login and returns
-  early when no folder is set. The row's caption names the actual folder, resolved from
+  at it. **The automatic copy is daily and silent** (changed 2026-08-24, owner's
+  instruction): `CloudBackupSchedule.RunAt` is 08:00 *local* time, and `IsDue` asks
+  whether anything has been copied since the last time that hour passed — a fixed time
+  of day, not a rolling twenty-four hours. `MainViewModel.WatchBackupScheduleAsync`
+  checks once at sign-in and then every 15 minutes until the run ends, so an app left
+  open across eight o'clock is covered too, and it returns early when no folder is set. A run
+  that fails stamps `LastAttemptUtc` and is left alone for `RetryAfter` (1 hour) — without that
+  floor a full destination would have the phone rebuilding the whole archive every 15 minutes.
+  There is no dialog any more: the prompt, `MainViewModel.BackupRequest` and
+  `CloudBackupSchedule.LastPromptUtc`/`RetryInterval` are gone. Only the manual "Enviar
+  backup agora" reports an outcome, and it still does. The row's caption names the actual folder, resolved from
   the stored bookmark through `DestinationNameAsync` — the old `DisplayName` was the
   constant string "pasta escolhida", which named nothing. The manual "Salvar backup em
   outro lugar" is a deliberately separate one-off and says so; it does not touch the
@@ -243,7 +251,14 @@ Say what is real — several things here are not. Verified 2026-08-21.
   it — the order a phone uses for a screenshot. Sharing needs nothing saved, because
   the file already exists in the cache by the time the sheet opens. The preview
   deletes its file on close. Render and save are the whole contract — the older
-  one-shot `ExportAsync` is gone. **Untested on Android**: the FileProvider authority, the manifest
+  one-shot `ExportAsync` is gone. **Every render gets its own file name**
+  (`<suggested>-<guid>.png`, with the folder swept first), and that is not tidiness:
+  `PhotoCache` keys a decode by path and width and cannot know the bytes behind a path
+  changed, so re-rendering a tutor's bill for a different month over the same path put
+  the *previous* render on screen while the file — and so everything shared or saved —
+  was the new one. Anywhere else that rewrites an image in place has the same trap. The
+  preview **zooms** as of 2026-08-24 — pinch, double tap, drag, wheel — which lives in
+  the framework's `VReportPreview`, not here. **Untested on Android**: the FileProvider authority, the manifest
   `<provider>` and `Resources/xml/file_paths.xml` all have to agree, and none of it
   has run — see the note in `AndroidShareSheet`.
 - **Photos are reduced on save, in the picker.** `PhotoDownscaler.Reduce` caps the

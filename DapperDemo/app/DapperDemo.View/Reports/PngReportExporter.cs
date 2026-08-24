@@ -67,11 +67,25 @@ public sealed class PngReportExporter(FileExportDialog fileExportDialog) : Repor
         // A folder of our own inside the temporary one, so cleaning up a stale preview cannot
         // reach anything else the system keeps there.
         var folder = Path.Combine(Path.GetTempPath(), "dapperdemo-reports");
-        var path = Path.Combine(folder, Path.GetFileName(suggestedFileName) + ".png");
+
+        // A new file name per render, not one per report. The preview draws through PhotoCache,
+        // which keys a decoded bitmap by path and width and has no way to notice that the bytes
+        // behind a path changed. Re-rendering a tutor's bill for a different month wrote over the
+        // same path, so the screen kept showing the *previous* render while the file — and so
+        // everything shared or saved from it — was the new one.
+        var path = Path.Combine(
+            folder,
+            Path.GetFileName(suggestedFileName) + "-" + Guid.NewGuid().ToString("N") + ".png");
 
         try
         {
             Directory.CreateDirectory(folder);
+
+            // Unique names mean nothing overwrites the last render, so the last render has to be
+            // swept up instead. The preview deletes its own file before asking for another, so
+            // anything still here was abandoned — a preview whose file the Image still had open,
+            // or a run that ended before it closed.
+            DiscardPrevious(folder);
 
             using var bitmap = Render(report);
             var file = File.Create(path);
@@ -120,6 +134,29 @@ public sealed class PngReportExporter(FileExportDialog fileExportDialog) : Repor
         {
             Console.WriteLine(e);
             return null;
+        }
+    }
+
+    /// <summary>
+    /// Removes whatever renders are still sitting in the reports folder.
+    /// </summary>
+    /// <remarks>
+    /// Best effort, one file at a time: Windows will not delete a PNG an <c>Image</c> still has
+    /// open, and a preview that could not clean up after itself is no reason to fail the render
+    /// the user just asked for. The folder is the app's own, so nothing else is at risk.
+    /// </remarks>
+    private static void DiscardPrevious(string folder)
+    {
+        foreach (var stale in Directory.EnumerateFiles(folder, "*.png"))
+        {
+            try
+            {
+                File.Delete(stale);
+            }
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+            {
+                Console.WriteLine(e);
+            }
         }
     }
 
