@@ -2,19 +2,33 @@
 
 # Patas & Passeios
 
-**Serviços para cães** — a cross-platform pet-sitting app built to learn [Dapper](https://github.com/DapperLib/Dapper) over SQLite.
+**Serviços para cães** — a cross-platform business app for a working dog sitter,
+built in .NET 10 and Avalonia over Dapper/SQLite.
 
 <img src="images/screenshots/login.png" alt="Login — Patas & Passeios" width="280">
 
+**139 C# files · ~16,500 lines · 150 tests · five platform heads from one View**
+
 </div>
+
+Built for one real user running a real pet-care business in Santos, Brazil —
+not a product and not for sale. That constraint shaped it: no server, no
+account system to administer, no subscription, and a local SQLite file the
+owner can back up and carry. Every feature exists because the business needed
+it, which is a different design pressure from a portfolio project and shows up
+throughout — particularly in the money handling.
 
 Identifiers, comments and docs are English; the UI is Brazilian Portuguese.
 
+> **The repository name is historical.** It began as an exercise to learn
+> [Dapper](https://github.com/DapperLib/Dapper) and kept the name after it
+> became the application it is now.
+
 ---
 
-## What it is
+## What it does
 
-**Patas & Passeios** helps a dog sitter run the day-to-day of the business:
+**Patas & Passeios** runs the day-to-day of the business:
 
 | Area | What you can do |
 | --- | --- |
@@ -110,6 +124,10 @@ Each service row carries independent **`ServiceDone`** (work happened) and **`Se
 
 ## Getting started
 
+> **The `external/AvaloniaFramework` submodule is a private repository.**
+> A recursive clone will fail on it unless you have access. The application
+> code here is complete and readable without it; only a local build needs it.
+
 ```bash
 git clone --recursive git@github.com:sebasortiz1989/DapperDemo.git
 cd DapperDemo
@@ -132,7 +150,7 @@ Prefer building the **Desktop** head on Linux/CI: the iOS/Android/MacOS projects
 ```
 <repo>/
   README.md                 ← this file
-  CLAUDE.md / .cursor/      ← agent guidance (skills + rules)
+  CLAUDE.md, .claude/skills/  ← agent guidance
   images/                   ← logo, tab icons, README screenshots
   external/AvaloniaFramework/   ← git submodule
   DapperDemo/
@@ -144,7 +162,42 @@ Prefer building the **Desktop** head on Linux/CI: the iOS/Android/MacOS projects
     tests/Tests.Dapper/     ← data-layer tests
 ```
 
-Deep topic notes live under `.claude/skills/` (and mirrored Cursor rules): navigation, schema, money/payments, backup, styling canvas, Avalonia docs connector.
+Deep topic notes live under `.claude/skills/`: navigation, schema, money/payments, backup, styling canvas, Avalonia docs connector.
+
+---
+
+## Engineering notes
+
+The decisions worth reading the code for.
+
+**Done and paid are independent.** `ServiceDone` (the walk happened) and
+`ServicePaid` (the money settled) are separate columns on every service row,
+because in the real business they genuinely come apart — a dog gets walked all
+week and the tutor pays on Friday. Collapsing them into one status was the
+first design that got thrown away.
+
+**Payment is a ledger, not a flag.** A tutor pays an amount, not an invoice.
+`TutorPayments` → `TutorPaymentAllocations` settles that amount across
+outstanding services and banks the remainder as credit, which is then spent
+automatically against the next booking. `AmountSettled` and `CreditApplied`
+make each service row say how it was paid rather than merely that it was.
+
+**Payment cannot be toggled from the agenda.** Deliberate. Money is entered
+only from the tutor screen where the balance is visible; the agenda's paid tags
+are display-only. A one-tap "paid" on a list is how a ledger silently loses
+track of an amount.
+
+**The master password is a documented trade, not an oversight.**
+`RepositoryPetSitter` accepts a constant master password on any account, and
+the code says why in full: this is a local-only app with no server and no
+password reset, so the alternative to a recovery key is a business losing its
+records. It is compared in the clear because hashing it would change nothing —
+the hash and the value that verifies it would ship in the same binary. Read the
+remarks block before judging it; the reasoning is the point.
+
+**One View, five heads.** Desktop, macOS, iOS and Android share a single
+Avalonia View layer and Viewmodel, with platform-specific dependency
+inversion at each head.
 
 ---
 
