@@ -183,11 +183,20 @@ public sealed class UserFolderBackupStore(CloudBackupState state) : CloudBackupS
 
         try
         {
-            // Null when the folder is gone, the card was removed, or the grant was revoked. The
-            // caller treats that as "not linked", which sends the user back to the picker rather
-            // than failing a backup they thought was configured.
-            return await storageProvider.TryGetFolderFromPathAsync(bookmark).WithSync()
-                ?? await storageProvider.OpenFolderBookmarkAsync(bookmark).WithSync();
+            // The bookmark first, because that is what this string is — SaveBookmarkAsync made it.
+            // Only OpenFolderBookmarkAsync restores the SAF permission grant that came with it; on
+            // Android, TryGetFolderFromPathAsync parses the same content:// URI into a folder that
+            // looks fine and is not authorised to write. Asking it first meant the ?? never fell
+            // through, so the app reported the destination as linked and then failed every upload
+            // once the picker's temporary grant died with the activity. Desktop never showed it: a
+            // file:// bookmark is its own path, so either call returns the same usable folder.
+            //
+            // The path attempt stays as the fallback, for a destination stored before this held a
+            // bookmark. Null when the folder is gone, the card was removed, or the grant was
+            // revoked — the caller treats that as "not linked" and sends the user back to the
+            // picker rather than failing a backup they thought was configured.
+            return await storageProvider.OpenFolderBookmarkAsync(bookmark).WithSync()
+                ?? await storageProvider.TryGetFolderFromPathAsync(bookmark).WithSync();
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException or ArgumentException)
         {
