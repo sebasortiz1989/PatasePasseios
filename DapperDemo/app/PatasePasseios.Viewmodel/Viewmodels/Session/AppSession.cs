@@ -40,11 +40,11 @@ public class AppSession
     /// </summary>
     /// <remarks>
     /// For the back stack, which has to put a screen back the way it found it — see
-    /// <see cref="Selection"/>. Reading and writing them as a group rather than one at a time is
+    /// <see cref="ScreenSelection"/>. Reading and writing them as a group rather than one at a time is
     /// what stops a restore from half-applying: a screen showing the wrong record is worse than
     /// one showing none.
     /// </remarks>
-    public Selection Selection
+    public ScreenSelection Selection
     {
         get => new(SelectedDogId, SelectedTutorId, SelectedServiceKind, SelectedServiceId);
 

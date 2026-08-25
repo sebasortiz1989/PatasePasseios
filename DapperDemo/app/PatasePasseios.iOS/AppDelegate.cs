@@ -1,7 +1,7 @@
 using Avalonia;
 using Avalonia.iOS;
-using PatasePasseios.View;
 using Foundation;
+using PatasePasseios.View;
 
 namespace PatasePasseios.iOS;
 

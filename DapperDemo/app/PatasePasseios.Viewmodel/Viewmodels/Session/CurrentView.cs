@@ -15,7 +15,7 @@ namespace PatasePasseios.Viewmodel.Viewmodels.Session;
 /// lives on <see cref="AppSession"/>, so an entry that remembered only "the dog screen" did not
 /// remember <em>which dog</em> — walking back into it re-rendered it with whatever was selected
 /// now, which made the history a loop rather than a path. Every entry therefore carries the
-/// <see cref="Selection"/> that was current when its screen was shown, and <see cref="GoBack"/>
+/// <see cref="ScreenSelection"/> that was current when its screen was shown, and <see cref="GoBack"/>
 /// puts it back before the screen reappears. That is the whole trick; without it, stacking is
 /// worse than flattening.
 /// </para>
@@ -39,7 +39,7 @@ public class CurrentView(AppSession session) : INotifyPropertyChanged
     /// push time the caller has already selected the record for the screen it is opening, so
     /// reading the session then would store the wrong one.
     /// </remarks>
-    private Selection currentSelection;
+    private ScreenSelection currentSelection;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -140,5 +140,5 @@ public class CurrentView(AppSession session) : INotifyPropertyChanged
     }
 
     /// <summary>One screen on the back stack: what it was, what it was called, what it was showing.</summary>
-    private readonly record struct Entry(object View, string Label, Selection Selection);
+    private readonly record struct Entry(object View, string Label, ScreenSelection Selection);
 }

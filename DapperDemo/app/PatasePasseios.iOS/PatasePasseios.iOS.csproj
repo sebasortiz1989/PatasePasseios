@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net10.0-ios</TargetFramework>
@@ -12,6 +12,16 @@
             would keep the stale plist value rather than following VersionPrefix.
         -->
         <ApplicationDisplayVersion>$(VersionPrefix)</ApplicationDisplayVersion>
+
+        <!--
+            The same opt-out the Android head carries, and for the same reason: Release trims this
+            head, and TreatWarningsAsErrors would promote every IL2xxx trim-analysis warning to a
+            build failure. Most come from third-party assemblies (Avalonia, Dapper) and are not
+            actionable here; AvaloniaFramework's reflection-based container trips IL2060/IL2070,
+            which belongs in that repo behind DynamicallyAccessedMembers annotations rather than
+            being papered over from this project. Analyzers still run and still report.
+        -->
+        <EnsureCodeQualityWarningsAsErrors>false</EnsureCodeQualityWarningsAsErrors>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
       <CodesignKey>Apple Development: sebasortizsanta@gmail.com (FPTP4N5TLB)</CodesignKey>

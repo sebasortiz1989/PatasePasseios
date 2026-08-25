@@ -194,10 +194,10 @@ builder below it plus its own registrations.
   renders it — `MaxWidth` 480 with `TextTrimming="CharacterEllipsis"`, so a long name
   shows as much as the row affords and then trails off. Every pushed screen uses that
   theme; Ajustes hand-rolled a copy until 2026-08-24 and so missed the trimming.
-  What makes stacking work is `Selection`: the presenters are reused singletons and the
+  What makes stacking work is `ScreenSelection`: the presenters are reused singletons and the
   record each shows lives on `AppSession`, so an entry that remembered only "the dog
   screen" did not remember *which dog*, and walking back re-rendered it with whatever was
-  selected now. Each entry therefore carries the `Selection` current when its screen was
+  selected now. Each entry therefore carries the `ScreenSelection` current when its screen was
   shown, and `GoBack` restores it before the screen reappears. Captured at `Show` time,
   not at push time: by push time the caller has already selected the record for the screen
   it is opening. Do not add an entry that skips this.
