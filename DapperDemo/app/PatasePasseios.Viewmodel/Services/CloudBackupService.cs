@@ -18,12 +18,6 @@ namespace PatasePasseios.Viewmodel.Services;
 /// </remarks>
 public sealed class CloudBackupService(BackupArchive archive, CloudBackupStore store, CloudBackupState state)
 {
-    private BackupArchive Archive { get; } = archive;
-
-    private CloudBackupStore Store { get; } = store;
-
-    private CloudBackupState State { get; } = state;
-
     /// <summary>Gets how many files the automatic backup cycles through.</summary>
     /// <remarks>
     /// Surfaced so the Perfil row can say how many files the sitter will find in the folder
@@ -34,6 +28,12 @@ public sealed class CloudBackupService(BackupArchive archive, CloudBackupStore s
 
     /// <summary>Gets the file today's copy is written to.</summary>
     public static string TodaysArchiveName => CloudBackupSchedule.ArchiveNameFor(DateTime.Now);
+
+    private BackupArchive Archive { get; } = archive;
+
+    private CloudBackupStore Store { get; } = store;
+
+    private CloudBackupState State { get; } = state;
 
     /// <summary>Gets the chosen folder's name, or null when none is set up or reachable.</summary>
     /// <returns>The folder's display name, or null.</returns>
