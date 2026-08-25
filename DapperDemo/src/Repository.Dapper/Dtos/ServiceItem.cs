@@ -164,6 +164,18 @@ public sealed class ServiceItem
     /// <summary>Gets what is still unsettled, whether or not it may be charged yet.</summary>
     public decimal Outstanding => Math.Max(Total - AmountSettled, 0m);
 
+    /// <summary>Gets what has actually come in for this service.</summary>
+    /// <remarks>
+    /// Settled, not "paid". Totalling the services flagged <see cref="ServicePaid"/> at their full
+    /// <see cref="Total"/> understates a bill, because a payment that covers two services and part
+    /// of a third leaves that third unflagged and its settled part uncounted: the tutor's own
+    /// receipt then disagreed with the balance beside it. Fully paid services settled before
+    /// <see cref="AmountSettled"/> existed carry 0 in that column, so the flag falls back to the
+    /// total. The counterpart of <see cref="AmountDue"/> — together they account for
+    /// <see cref="Total"/>.
+    /// </remarks>
+    public decimal AmountReceived => ServicePaid ? Math.Max(AmountSettled, Total) : AmountSettled;
+
     /// <summary>
     /// Gets what may be charged for this service right now.
     /// </summary>

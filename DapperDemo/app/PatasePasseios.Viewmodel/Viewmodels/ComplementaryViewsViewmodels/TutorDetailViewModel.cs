@@ -1,4 +1,4 @@
-﻿using AvaloniaFramework.Presentation;
+using AvaloniaFramework.Presentation;
 using AvaloniaFramework.Presentation.UseCase;
 using AvaloniaFramework.Threading;
 using PatasePasseios.Repository.Dapper;
@@ -110,9 +110,12 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
             MonthOptions.Add(month);
         }
 
-        // "Ano todo" by default so the bill still opens showing everything owed this year, rather
-        // than only what falls in the current month.
-        SelectedMonth = MonthOptions[0];
+        // The current month by default (owner's instruction, 2026-08-24). It opened on "Ano todo"
+        // so the screen showed everything owed this year, but the figure that answers that is
+        // "A pagar" under CONTA, which is the tutor's whole history regardless of the period —
+        // the picker only scopes the lists and the exported bill, and a sitter opening a tutor is
+        // almost always asking about now.
+        SelectedMonth = MonthOptions.FirstOrDefault(x => x.Number == DateTime.Now.Month) ?? MonthOptions[0];
         SelectedYear = DateTime.Now.Year;
     }
 
@@ -456,11 +459,13 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
     }
 
     /// <summary>PropertyChanged.Fody convention hook — invoked whenever ShowPaidServices changes.</summary>
-    protected void OnShowPaidServicesChanged()
-    {
-        ReloadIfIdle();
-        SelectedMonth = ShowPaidServices ? MonthOptions.FirstOrDefault(x => x.Number == DateTime.Now.Month) : MonthOptions[0];
-    }
+    /// <remarks>
+    /// The switch no longer moves the period. It used to jump to the current month when turned on
+    /// and back to "Ano todo" when turned off, which made sense only while "Ano todo" was the
+    /// default: now that the screen opens on the current month, turning the switch off would throw
+    /// away whatever period the sitter had chosen. It filters the list; it does not navigate.
+    /// </remarks>
+    protected void OnShowPaidServicesChanged() => ReloadIfIdle();
 
     /// <summary>PropertyChanged.Fody convention hook — invoked whenever SelectedMonth changes.</summary>
     protected void OnSelectedMonthChanged() => ReloadIfIdle();
@@ -963,7 +968,10 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
             // Only executed work is billable, so the month's headline figure is what may actually
             // be asked for. Work still to come is listed separately rather than folded in, so the
             // tutor is never shown a total that includes services that have not happened.
-            var paid = month.Where(s => s.ServicePaid).Sum(s => s.Total);
+            // AmountReceived, not the flagged services' totals: a payment that settles part of a
+            // service still arrived, and counting it as nothing made "Já pago" plus "A pagar" come
+            // out short of the month — R$ 440 and R$ 445 against R$ 945 of work.
+            var paid = month.Sum(s => s.AmountReceived);
             var chargeable = month.Sum(s => s.AmountDue);
             var upcoming = month.Sum(s => s.AmountUpcoming);
             var discounted = month.Sum(s => s.DiscountAmount);

@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Microsoft.Data.Sqlite;
 using PatasePasseios.Repository.Dapper.Dtos;
 using PatasePasseios.Repository.Dapper.Services;
@@ -346,9 +346,6 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
     {
         var services = await ListForPetSitterAsync(petSitterId).ConfigureAwait(false);
 
-        // Settled, not "paid": a service can now be part-settled, and what came in is that partial
-        // amount rather than nothing. A fully paid service settled before this column existed has
-        // AmountSettled 0, so ServicePaid falls back to its full total.
         // BillingDate, not Date: a stay finishing in August is August's money even though it
         // started in July. See ServiceItem.BillingDate.
         var thisMonth = services
@@ -357,7 +354,7 @@ public sealed class RepositoryServices(DapperDatabaseService dapperDatabaseServi
 
         decimal Received(ServiceKind kind) => thisMonth
             .Where(s => s.Kind == kind)
-            .Sum(s => s.ServicePaid ? Math.Max(s.AmountSettled, s.Total) : s.AmountSettled);
+            .Sum(s => s.AmountReceived);
 
         return new MonthlyIncome
         {

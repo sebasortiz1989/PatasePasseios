@@ -663,7 +663,7 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
         {
             // Received is money actually in; AmountDue is what may still be asked for, which is
             // zero for anything unexecuted — the charging rule, not just "unpaid".
-            var receivedFromGroup = group.Where(s => s.ServicePaid).Sum(s => s.Total);
+            var receivedFromGroup = group.Sum(s => s.AmountReceived);
             var owedFromGroup = group.Sum(s => s.AmountDue);
 
             services.Rows.Add(new ReportRow(
@@ -776,16 +776,21 @@ public class UsersViewModel : PresentationModelBase<Unit, Unit>, PeriodScope
         if (!CloudBackupLinked)
         {
             CloudBackupTitle = "Ativar backup automático";
-            CloudBackupLabel = "Escolha uma pasta — no Drive ou no aparelho. Depois disso o app envia uma cópia todo dia de manhã, sozinho.";
+            CloudBackupLabel = $"Escolha uma pasta — no Drive ou no aparelho. Depois disso o app envia uma cópia todo dia de manhã, sozinho, guardando os {CloudBackupService.SlotCount} últimos dias.";
             return;
         }
 
         var last = await cloudBackup.LastUploadAsync().WithSync();
 
+        // The file count is spelled out because the folder now holds three archives rather than
+        // one, and today's is named so the sitter can tell which of them is about to change —
+        // the names are slots, not dates, so nothing else on the row would say.
+        var rotation = $"{CloudBackupService.SlotCount} arquivos, um por dia";
+
         CloudBackupTitle = "Backup automático";
         CloudBackupLabel = last == null
-            ? $"Salvando em \"{destination}\". Nenhuma cópia enviada ainda. Toque para trocar de pasta."
-            : $"Salvando em \"{destination}\". Última cópia em {last.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)}. Toque para trocar de pasta.";
+            ? $"Salvando em \"{destination}\" — {rotation}. Nenhuma cópia enviada ainda. Toque para trocar de pasta."
+            : $"Salvando em \"{destination}\" — {rotation}; hoje é o {CloudBackupService.TodaysArchiveName}. Última cópia em {last.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)}. Toque para trocar de pasta.";
     }
 
     /// <summary>

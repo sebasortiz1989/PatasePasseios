@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace PatasePasseios.Repository.Dapper.Services;
 
 /// <summary>
@@ -43,11 +45,48 @@ public sealed record CloudBackupSchedule(
     /// </remarks>
     public static readonly TimeSpan RetryAfter = TimeSpan.FromHours(1);
 
+    /// <summary>
+    /// How many files the automatic backup cycles through.
+    /// </summary>
+    /// <remarks>
+    /// One file overwritten forever keeps only the newest state, which is the wrong thing to keep
+    /// when the problem is something that already happened: a bad delete noticed the next morning
+    /// had already been copied over the only archive it could be undone from. Three gives a few
+    /// days of history while keeping the destination a fixed size rather than one that grows by a
+    /// whole database and every photo each day.
+    /// </remarks>
+    public const int SlotCount = 3;
+
     /// <summary>Gets the state of a device that has never uploaded and has no folder chosen.</summary>
     public static CloudBackupSchedule Empty { get; } = new(null, null, null, null);
 
     /// <summary>Gets a value indicating whether a destination has been chosen.</summary>
     public bool HasDestination => !string.IsNullOrWhiteSpace(Destination);
+
+    /// <summary>
+    /// The file the day's copy is written to, cycling through <see cref="SlotCount"/> names.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Counted from a fixed origin rather than from the day of the month or the day of the year,
+    /// because those restart: a cycle keyed on either would jump at a boundary and land on a file
+    /// a day early, overwriting an archive that was supposed to survive until tomorrow. Day 31 is
+    /// followed by day 1, and day 365 by day 1 in a year that is not a leap year; the day number
+    /// since year one just keeps counting, so the rotation stays a true three-day cycle forever.
+    /// </para>
+    /// <para>
+    /// Local time, like the rest of the schedule — the file that changes is the one for the
+    /// sitter's today. Every writer of the automatic backup comes through here, so "Enviar backup
+    /// agora" replaces the same file the daily run would rather than adding a fourth.
+    /// </para>
+    /// </remarks>
+    /// <param name="day">The device's local date.</param>
+    /// <returns>The bare file name, e.g. <c>patas-backup-2.zip</c>.</returns>
+    public static string ArchiveNameFor(DateTime day)
+    {
+        var slot = (DateOnly.FromDateTime(day).DayNumber % SlotCount) + 1;
+        return "patas-backup-" + slot.ToString(CultureInfo.InvariantCulture) + ".zip";
+    }
 
     /// <summary>
     /// The most recent moment a daily copy was due, in local time.

@@ -1,4 +1,5 @@
 using PatasePasseios.Repository.Dapper.Dtos;
+using System.Linq;
 using Xunit;
 
 namespace Tests.Dapper;
@@ -301,5 +302,54 @@ public class ServiceItemTests
 
         Assert.Equal(2027, service.BillingDate.Year);
         Assert.Equal(1, service.BillingDate.Month);
+    }
+
+    /// <summary>
+    /// The bug this rule exists for: a bill's "Já pago" and "A pagar" have to account for the whole
+    /// month between them. Marcos Bernardi's August 2026 bill was R$ 945,00 of work against a
+    /// R$ 500,00 payment, and the receipt read R$ 440,00 paid and R$ 445,00 owed — R$ 60,00 of his
+    /// money, the part covering a service it could not fully clear, appeared on neither line.
+    /// </summary>
+    [Fact]
+    public void ReceivedAndDueAccountForTheWholeTotal()
+    {
+        var cleared = Service(ServiceKind.Hotel, 315m, paid: true, done: true, settled: 315m);
+        var partly = Service(ServiceKind.Hotel, 125m, done: true, settled: 60m);
+        var untouched = Service(ServiceKind.Hotel, 180m, done: true);
+
+        Assert.Equal(315m, cleared.AmountReceived);
+        Assert.Equal(60m, partly.AmountReceived);
+        Assert.Equal(0m, untouched.AmountReceived);
+
+        ServiceItem[] bill = [cleared, partly, untouched];
+        Assert.Equal(bill.Sum(s => s.Total), bill.Sum(s => s.AmountReceived) + bill.Sum(s => s.AmountDue));
+    }
+
+    /// <summary>
+    /// A service settled before the AmountSettled column existed carries zero in it, so the flag
+    /// has to stand in for the money. Without the fallback every historical payment would vanish
+    /// from the bills the moment the rule started reading the column.
+    /// </summary>
+    [Fact]
+    public void APaidServiceFromBeforeTheColumnCountsItsWholeTotal()
+    {
+        var legacy = Service(ServiceKind.Walk, 60m, paid: true, done: true);
+
+        Assert.Equal(0m, legacy.AmountSettled);
+        Assert.Equal(60m, legacy.AmountReceived);
+    }
+
+    /// <summary>
+    /// Work not yet carried out is neither received nor chargeable, so it stays out of both
+    /// columns — a booking is not money, however much it will be worth.
+    /// </summary>
+    [Fact]
+    public void AnUnexecutedBookingIsNeitherReceivedNorDue()
+    {
+        var booking = Service(ServiceKind.Sitting, 90m);
+
+        Assert.Equal(0m, booking.AmountReceived);
+        Assert.Equal(0m, booking.AmountDue);
+        Assert.Equal(90m, booking.AmountUpcoming);
     }
 }

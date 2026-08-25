@@ -275,6 +275,17 @@ Say what is real — several things here are not. Verified 2026-08-21.
   constant string "pasta escolhida", which named nothing. The manual "Salvar backup em
   outro lugar" is a deliberately separate one-off and says so; it does not touch the
   automatic destination.
+  **Copies rotate through three files, one per day** (added 2026-08-24, owner's instruction):
+  `CloudBackupSchedule.ArchiveNameFor` gives `patas-backup-1.zip` … `-3.zip` from the day
+  number since year one modulo `SlotCount`, so the cycle never breaks at a month or year
+  boundary the way a day-of-month or day-of-year key would. One file overwritten forever kept
+  only the newest state, which is no help against something that already happened — a bad
+  delete noticed the next morning had already overwritten the archive it could be undone from.
+  Both the daily run and "Enviar backup agora" go through `CloudBackupService.RunAsync`, which
+  is what makes a manual copy replace *today's* file rather than become a fourth. Restore does
+  not care which file it is handed: `RestoreFromAsync` keys on the `DapperDemo.db` zip entry,
+  not the archive's name. Any `patas-backup.zip` left over from before this change is the last
+  copy the old scheme took and is still restorable; nothing writes to it any more.
 - **The navigation bar sits 120 units off the bottom, and every screen clears 258.** Raised from
   30/168 on 2026-08-24: the app draws to the edge of the screen, 30 units is 15dp on a phone, and
   the bar was landing 64px inside Android's own navigation bar — reaching for Perfil pressed Back.

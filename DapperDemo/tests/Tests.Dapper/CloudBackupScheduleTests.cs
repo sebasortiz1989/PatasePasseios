@@ -1,4 +1,5 @@
 using PatasePasseios.Repository.Dapper.Services;
+using System.Linq;
 using Xunit;
 
 namespace Tests.Dapper;
@@ -196,5 +197,58 @@ public class CloudBackupScheduleTests
         var schedule = CloudBackupSchedule.Empty with { LastPromptUtc = Midday.AddYears(1) };
 
         Assert.True(schedule.IsPromptDue(Midday));
+    }
+
+    /// <summary>
+    /// Three days, three files, and the fourth day back to the first — the whole point being that a
+    /// mistake noticed a day or two late still has an archive from before it.
+    /// </summary>
+    [Fact]
+    public void TheDaysCycleThroughThreeFiles()
+    {
+        var names = Enumerable
+            .Range(0, 6)
+            .Select(offset => CloudBackupSchedule.ArchiveNameFor(Midday.AddDays(offset)))
+            .ToArray();
+
+        Assert.Equal(3, names.Distinct().Count());
+        Assert.Equal(names[0], names[3]);
+        Assert.Equal(names[1], names[4]);
+        Assert.Equal(names[2], names[5]);
+    }
+
+    /// <summary>
+    /// The reason the rotation counts from a fixed origin: keyed on the day of the month it would
+    /// jump from 31 to 1, and on the day of the year from 365 to 1, landing on a file a day early
+    /// and destroying an archive that had another day to live.
+    /// </summary>
+    [Theory]
+    [InlineData(2026, 1, 31)]
+    [InlineData(2026, 12, 31)]
+    [InlineData(2027, 2, 28)]
+    public void TheCycleDoesNotBreakAtAMonthOrYearBoundary(int year, int month, int day)
+    {
+        var last = new DateTime(year, month, day, 12, 0, 0, DateTimeKind.Local);
+
+        var before = CloudBackupSchedule.ArchiveNameFor(last.AddDays(-1));
+        var boundary = CloudBackupSchedule.ArchiveNameFor(last);
+        var after = CloudBackupSchedule.ArchiveNameFor(last.AddDays(1));
+
+        Assert.NotEqual(before, boundary);
+        Assert.NotEqual(boundary, after);
+        Assert.NotEqual(before, after);
+    }
+
+    /// <summary>
+    /// A manual "Enviar backup agora" is today's copy, not a fourth file: the name depends only on
+    /// the day, so any number of runs in one day land on the same archive.
+    /// </summary>
+    [Fact]
+    public void EveryCopyTakenOnOneDayGoesToTheSameFile()
+    {
+        var morning = CloudBackupSchedule.ArchiveNameFor(Midday.Date.AddHours(8));
+        var night = CloudBackupSchedule.ArchiveNameFor(Midday.Date.AddHours(23).AddMinutes(59));
+
+        Assert.Equal(morning, night);
     }
 }

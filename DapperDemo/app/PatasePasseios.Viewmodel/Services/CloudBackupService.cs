@@ -11,23 +11,29 @@ namespace PatasePasseios.Viewmodel.Services;
 /// The archive is built into a temporary file and then uploaded from it, rather than written
 /// straight at the destination. A cloud upload wants a length up front and may have to start over
 /// after a dropped connection, neither of which a stream being zipped as it goes can offer.
+/// <para>
+/// Copies land in one of three files by day rather than in a single one overwritten forever — see
+/// <see cref="CloudBackupSchedule.ArchiveNameFor"/>.
+/// </para>
 /// </remarks>
 public sealed class CloudBackupService(BackupArchive archive, CloudBackupStore store, CloudBackupState state)
 {
-    /// <summary>
-    /// The single name every automatic backup is stored under, so each run replaces the last.
-    /// </summary>
-    /// <remarks>
-    /// Undated on purpose: one file that is always the newest, rather than a folder that grows by
-    /// a full database and every photo each week.
-    /// </remarks>
-    private const string ArchiveName = "patas-backup.zip";
-
     private BackupArchive Archive { get; } = archive;
 
     private CloudBackupStore Store { get; } = store;
 
     private CloudBackupState State { get; } = state;
+
+    /// <summary>Gets how many files the automatic backup cycles through.</summary>
+    /// <remarks>
+    /// Surfaced so the Perfil row can say how many files the sitter will find in the folder
+    /// without restating the number — three archives appearing where there used to be one is
+    /// otherwise a surprise, and a surprise in a backup folder invites deleting the wrong file.
+    /// </remarks>
+    public static int SlotCount => CloudBackupSchedule.SlotCount;
+
+    /// <summary>Gets the file today's copy is written to.</summary>
+    public static string TodaysArchiveName => CloudBackupSchedule.ArchiveNameFor(DateTime.Now);
 
     /// <summary>Gets the chosen folder's name, or null when none is set up or reachable.</summary>
     /// <returns>The folder's display name, or null.</returns>
@@ -100,8 +106,13 @@ public sealed class CloudBackupService(BackupArchive archive, CloudBackupStore s
     }
 
     /// <summary>
-    /// Builds an archive and sends it to the destination, replacing the one already there.
+    /// Builds an archive and sends it to the destination, replacing today's copy.
     /// </summary>
+    /// <remarks>
+    /// Which of the rotating files that is comes from <see cref="CloudBackupSchedule.ArchiveNameFor"/>.
+    /// This is the one path both the daily run and "Enviar backup agora" take, which is what makes
+    /// a manual copy overwrite today's file instead of becoming a file of its own.
+    /// </remarks>
     /// <returns>Successful, or Failed if the archive could not be built or the upload did not land.</returns>
     public async Task<Response> RunAsync()
     {
@@ -127,7 +138,7 @@ public sealed class CloudBackupService(BackupArchive archive, CloudBackupStore s
             var content = File.OpenRead(temporary);
             await using (content.ConfigureAwait(false))
             {
-                uploaded = await Store.UploadAsync(content, ArchiveName).NoSync();
+                uploaded = await Store.UploadAsync(content, CloudBackupSchedule.ArchiveNameFor(DateTime.Now)).NoSync();
             }
 
             // The attempt is recorded either way, the copy only when it landed. A failed run
