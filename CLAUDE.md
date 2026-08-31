@@ -312,8 +312,18 @@ Say what is real — several things here are not. Verified 2026-08-21.
   settled in one transfer, not one per month — so a month section reading "A pagar R$ 468,00"
   could sit above a total of R$ 488,00 with the difference nowhere on the page. `Saldo de meses
   anteriores` and `Saldo de meses seguintes` (each shown only when non-zero) split what is owed
-  outside the period at `ServicePeriod.Start`. Built from `AmountDue + AmountUpcoming`, never a
-  `ServicePaid` filter.
+  outside the period at that period's two ends. Built from `AmountDue + AmountUpcoming`, never a
+  `ServicePaid` filter. Under a custom period the two read `Saldo anterior ao período` / `Saldo
+  posterior ao período`, because a range starting on the 28th of July carries in work from July
+  itself and nobody would look for that under "meses anteriores".
+- **The tutor screen can be scoped to a run of days, not just a month or a year.** Added
+  2026-08-31. `UseCustomPeriod` hides the stepper and the month grid and shows a `De` / `Até`
+  pair; the service list, the payment list and the exported bill are all scoped by
+  `TutorDetailViewModel.CurrentPeriod()`, which resolves either kind of selection to one
+  `PeriodRange` — a half-open `[Start, End)` span, so a booking late on the last day is not
+  dropped. That method is the only place the period is decided; filtering off `SelectedMonth`
+  again anywhere on this screen would silently ignore the custom range. `ServicePeriod.Matches`
+  and the `MonthOption` path are untouched and still serve Cachorros, Agenda and Usuários.
 - **A report is shown before it is saved.** Exporting no longer opens a save dialog:
   `ReportExporter.RenderAsync` writes the PNG to the temporary folder, the
   `VReportPreview` control puts it on screen, and Compartilhar / Salvar sit beneath

@@ -117,6 +117,12 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
         // almost always asking about now.
         SelectedMonth = MonthOptions.FirstOrDefault(x => x.Number == DateTime.Now.Month) ?? MonthOptions[0];
         SelectedYear = DateTime.Now.Year;
+
+        // The month so far, which is the period the stepper opens on said as two dates. Seeded
+        // rather than left empty so switching the toggle on shows a sensible bill straight away
+        // instead of an empty list waiting for both fields to be filled in.
+        CustomFrom = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+        CustomThrough = DateTime.Now.Date;
     }
 
     public ICommand BackCommand { get; }
@@ -295,13 +301,39 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
     /// <summary>Gets or sets the year the list is scoped to.</summary>
     public int SelectedYear { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether the period is a run of days the sitter typed rather
+    /// than a month or a whole year.
+    /// </summary>
+    /// <remarks>
+    /// The stepper and the month grid answer "this month" and "this year", which is what a bill
+    /// usually covers. Neither can express a period straddling two months — a fortnight begun in
+    /// July and finished in August — and that is exactly the bill a tutor asks for after the fact.
+    /// While it is set the stepper and the month grid are hidden, because the arrows have nothing
+    /// left to step.
+    /// </remarks>
+    public bool UseCustomPeriod { get; set; }
+
+    /// <summary>Gets or sets the first day of the typed-in period. Counted as inside it.</summary>
+    public DateTime CustomFrom { get; set; }
+
+    /// <summary>Gets or sets the last day of the typed-in period. Counted as inside it.</summary>
+    /// <remarks>
+    /// Inclusive, which is what "de 28 de julho a 31 de agosto" means to the person typing it. The
+    /// half-open span the filtering actually uses is built in <see cref="ServicePeriod.Range(DateTime, DateTime)"/>,
+    /// so a booking late on the last day is not dropped off the end.
+    /// </remarks>
+    public DateTime CustomThrough { get; set; }
+
     public ObservableCollection<MonthOption> MonthOptions { get; } = [];
 
     /// <summary>Gets the years this tutor has services in, plus the current one.</summary>
     public ObservableCollection<int> YearOptions { get; } = [];
 
-    /// <summary>Gets the period as one line, e.g. "Agosto 2026".</summary>
-    public string PeriodLabel => ServicePeriod.Label(SelectedMonth, SelectedYear);
+    /// <summary>Gets the period as one line, e.g. "Agosto 2026" or "28/07/2026 a 31/08/2026".</summary>
+    public string PeriodLabel => UseCustomPeriod
+        ? ServicePeriod.Label(CustomFrom, CustomThrough)
+        : ServicePeriod.Label(SelectedMonth, SelectedYear);
 
     /// <summary>Gets the command stepping the period back one month.</summary>
     public ICommand PreviousPeriodCommand { get; private set; } = null!;
@@ -425,8 +457,12 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
         // Scoped to the chosen period, and widened to settled bookings when the user asks. The
         // totals above stay whole-account on purpose — a balance owed does not shrink because the
         // list is currently showing one month.
+        //
+        // BillingDate rather than Date, so a stay is counted in the period it finished — the same
+        // period its money is reported in. See ServiceItem.BillingDate.
+        var period = CurrentPeriod();
         var pending = tutorServices
-            .Where(s => ServicePeriod.Matches(s, SelectedMonth, SelectedYear))
+            .Where(s => period.Contains(s.BillingDate))
             .Where(s => ShowPaidServices || !s.ServicePaid)
             .OrderByDescending(s => s.Date)
             .ToArray();
@@ -473,8 +509,55 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
     /// <summary>PropertyChanged.Fody convention hook — invoked whenever SelectedYear changes.</summary>
     protected void OnSelectedYearChanged() => ReloadIfIdle();
 
+    /// <summary>PropertyChanged.Fody convention hook — invoked whenever UseCustomPeriod changes.</summary>
+    protected void OnUseCustomPeriodChanged() => ReloadIfIdle();
+
+    /// <summary>PropertyChanged.Fody convention hook — invoked whenever CustomFrom changes.</summary>
+    /// <remarks>
+    /// A first day after the last is not a period, so the other end is pulled along rather than the
+    /// screen emptying with nothing to say why. That assignment re-enters through the other hook,
+    /// which is what reloads — hence the return, so one edit does not reload twice.
+    /// </remarks>
+    protected void OnCustomFromChanged()
+    {
+        if (CustomThrough < CustomFrom)
+        {
+            CustomThrough = CustomFrom;
+            return;
+        }
+
+        ReloadIfIdle();
+    }
+
+    /// <summary>PropertyChanged.Fody convention hook — invoked whenever CustomThrough changes.</summary>
+    /// <remarks>The other half of the rule in <see cref="OnCustomFromChanged"/>.</remarks>
+    protected void OnCustomThroughChanged()
+    {
+        if (CustomThrough < CustomFrom)
+        {
+            CustomFrom = CustomThrough;
+            return;
+        }
+
+        ReloadIfIdle();
+    }
+
     private static bool TryParseAmount(string text, out decimal amount) =>
         decimal.TryParse(text?.Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out amount);
+
+    /// <summary>
+    /// The span of days everything on this screen is scoped to: the month or year the stepper
+    /// shows, or the two dates typed into the custom period.
+    /// </summary>
+    /// <remarks>
+    /// One place, because the service list, the payment list and the exported bill have to agree.
+    /// A bill covering a different stretch of days from the list it was exported from would be
+    /// wrong in a way nothing on the screen could reveal.
+    /// </remarks>
+    /// <returns>The period as a half-open span.</returns>
+    private PeriodRange CurrentPeriod() => UseCustomPeriod
+        ? ServicePeriod.Range(CustomFrom, CustomThrough)
+        : ServicePeriod.Range(SelectedMonth, SelectedYear);
 
     private Task OpenPayment()
     {
@@ -696,8 +779,9 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
     {
         ClearPayments();
 
+        var period = CurrentPeriod();
         var scoped = tutorPayments
-            .Where(p => ServicePeriod.Matches(p.Date, SelectedMonth, SelectedYear))
+            .Where(p => period.Contains(p.Date))
             .ToArray();
 
         foreach (var payment in scoped)
@@ -905,7 +989,10 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
     /// </remarks>
     private async Task Export()
     {
-        var periodLabel = $"{SelectedMonth?.Label ?? "Ano todo"} de {SelectedYear.ToString(CultureInfo.InvariantCulture)}";
+        var period = CurrentPeriod();
+        var periodLabel = UseCustomPeriod
+            ? ServicePeriod.Label(CustomFrom, CustomThrough)
+            : $"{SelectedMonth?.Label ?? "Ano todo"} de {SelectedYear.ToString(CultureInfo.InvariantCulture)}";
 
         var report = new ReportDocument
         {
@@ -922,7 +1009,7 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
 
         report.Summary.Add(new ReportField("Cachorros", DogNames));
 
-        var scopedServices = tutorServices.Where(s => ServicePeriod.Matches(s, SelectedMonth, SelectedYear)).ToArray();
+        var scopedServices = tutorServices.Where(s => period.Contains(s.BillingDate)).ToArray();
 
         foreach (var month in scopedServices.GroupBy(s => new DateTime(s.BillingDate.Year, s.BillingDate.Month, 1)).OrderByDescending(g => g.Key))
         {
@@ -999,7 +1086,12 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
             report.Sections.Add(new ReportSection
             {
                 Heading = "Serviços",
-                EmptyMessage = $"Nenhum serviço registrado para este tutor em {periodLabel.ToLower(Brazil)}.",
+
+                // "em agosto de 2026" for a month, "no período de 28/07/2026 a 31/08/2026" for a
+                // run of days — "em 28/07/2026 a 31/08/2026" is not a sentence.
+                EmptyMessage = UseCustomPeriod
+                    ? $"Nenhum serviço registrado para este tutor no período de {periodLabel}."
+                    : $"Nenhum serviço registrado para este tutor em {periodLabel.ToLower(Brazil)}.",
             });
         }
 
@@ -1015,12 +1107,11 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
         // totalling R$ 468,00 could sit above a total of R$ 488,00 with the difference nowhere.
         // AmountDue plus AmountUpcoming rather than a ServicePaid filter, per the money rules:
         // together they are what is unsettled, whether or not it may be charged yet.
-        var periodStart = ServicePeriod.Start(SelectedMonth, SelectedYear);
         var owedBefore = tutorServices
-            .Where(s => s.BillingDate < periodStart)
+            .Where(s => s.BillingDate < period.Start)
             .Sum(s => s.AmountDue + s.AmountUpcoming);
         var owedAfter = tutorServices
-            .Where(s => s.BillingDate >= periodStart && !ServicePeriod.Matches(s, SelectedMonth, SelectedYear))
+            .Where(s => s.BillingDate >= period.End)
             .Sum(s => s.AmountDue + s.AmountUpcoming);
 
         await AddPaymentSectionAsync(report, chargeableTotal, upcomingTotal, owedBefore, owedAfter).WithSync();
@@ -1030,9 +1121,11 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
         // The period is part of the name, as it is on the Usuários report. Without it every bill
         // for this tutor is offered under one file name, so saving August's after July's asks to
         // replace a file that is a different document.
-        var periodSlug = SelectedMonth is { Number: > 0 } chosen
-            ? $"{SelectedYear.ToString(CultureInfo.InvariantCulture)}-{chosen.Number.ToString("00", CultureInfo.InvariantCulture)}"
-            : SelectedYear.ToString(CultureInfo.InvariantCulture);
+        var periodSlug = UseCustomPeriod
+            ? $"{CustomFrom.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}-a-{CustomThrough.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}"
+            : SelectedMonth is { Number: > 0 } chosen
+                ? $"{SelectedYear.ToString(CultureInfo.InvariantCulture)}-{chosen.Number.ToString("00", CultureInfo.InvariantCulture)}"
+                : SelectedYear.ToString(CultureInfo.InvariantCulture);
 
         // Shown rather than saved. A tutor's bill is the report most likely to be sent straight to
         // that tutor, so the share sheet is the point of the screen.
@@ -1107,9 +1200,14 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
         // month section reads "A pagar R$ 468,00" and whose total says R$ 488,00 owes the tutor an
         // account of where the other twenty came from — and a sitter chasing an old debt wants it
         // said out loud rather than buried in one figure.
+        // "meses" is right for the stepper's month or whole year and wrong for a run of days: a
+        // period starting on the 28th of July carries in work from July itself, which no reader
+        // would look for under "meses anteriores".
         if (owedBefore > 0m)
         {
-            payment.Fields.Add(new ReportField("Saldo de meses anteriores", AppSession.Money(owedBefore)));
+            payment.Fields.Add(new ReportField(
+                UseCustomPeriod ? "Saldo anterior ao período" : "Saldo de meses anteriores",
+                AppSession.Money(owedBefore)));
         }
 
         // The other side of the same split: work booked after the period this bill is headed with.
@@ -1117,7 +1215,9 @@ public class TutorDetailViewModel : PresentationModelBase<Unit, Unit>, PeriodSco
         // total counts it, so the page has to say it does.
         if (owedAfter > 0m)
         {
-            payment.Fields.Add(new ReportField("Saldo de meses seguintes", AppSession.Money(owedAfter)));
+            payment.Fields.Add(new ReportField(
+                UseCustomPeriod ? "Saldo posterior ao período" : "Saldo de meses seguintes",
+                AppSession.Money(owedAfter)));
         }
 
         // Said outright when part of the figure is for work that has not happened yet, so a tutor

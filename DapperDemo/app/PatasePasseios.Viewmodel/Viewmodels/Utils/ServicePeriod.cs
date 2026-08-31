@@ -141,20 +141,50 @@ internal static class ServicePeriod
     }
 
     /// <summary>
-    /// The first moment of the selected period.
+    /// The span of days a month-and-year selection covers.
     /// </summary>
     /// <remarks>
-    /// For splitting "before this bill" from "in it" — a tutor's exported bill is scoped to a
-    /// period but settled in one transfer, so what is still owed from earlier has to be told apart
-    /// from what is owed from later. January the first when the whole year is chosen.
+    /// The same rule <see cref="Matches(DateTime, MonthOption?, int)"/> applies, expressed as two
+    /// dates instead of a predicate — so a screen offering a typed-in range as well as a month can
+    /// filter both through one comparison rather than branching at every call site. The two ends
+    /// are also what splits "before this bill" from "after it": a tutor's exported bill is scoped
+    /// to a period but settled in one transfer, so what is owed from outside it has to be named.
     /// </remarks>
     /// <param name="month">The selected month, or the whole-year entry.</param>
     /// <param name="year">The selected year.</param>
-    /// <returns>The period's first day, at midnight.</returns>
-    public static DateTime Start(MonthOption? month, int year) =>
+    /// <returns>The period as a half-open span.</returns>
+    public static PeriodRange Range(MonthOption? month, int year) =>
         month is { Number: not WholeYear } chosen
-            ? new DateTime(year, chosen.Number, 1)
-            : new DateTime(year, 1, 1);
+            ? new PeriodRange(new DateTime(year, chosen.Number, 1), new DateTime(year, chosen.Number, 1).AddMonths(1))
+            : new PeriodRange(new DateTime(year, 1, 1), new DateTime(year + 1, 1, 1));
+
+    /// <summary>
+    /// The span running from one day to another, both days included.
+    /// </summary>
+    /// <remarks>
+    /// The times of day are dropped and the end is pushed to the following midnight, so a booking
+    /// at five in the afternoon on the last day is still inside the period the sitter typed.
+    /// </remarks>
+    /// <param name="from">The first day, included.</param>
+    /// <param name="through">The last day, included.</param>
+    /// <returns>The period as a half-open span, empty when the days are the wrong way round.</returns>
+    public static PeriodRange Range(DateTime from, DateTime through) =>
+        through.Date < from.Date
+            ? new PeriodRange(from.Date, from.Date)
+            : new PeriodRange(from.Date, through.Date.AddDays(1));
+
+    /// <summary>
+    /// A typed-in range as one line, e.g. "28/07/2026 a 31/08/2026".
+    /// </summary>
+    /// <remarks>
+    /// Both ends spelled out rather than shortened to "28/07 a 31/08": the two dates are often in
+    /// different years, and a bill is read months after it was sent.
+    /// </remarks>
+    /// <param name="from">The first day.</param>
+    /// <param name="through">The last day.</param>
+    /// <returns>What the picker shows and what heads the exported bill.</returns>
+    public static string Label(DateTime from, DateTime through) =>
+        $"{from.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)} a {through.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)}";
 
     /// <summary>
     /// Whether a date falls inside the selected period. The tutor screen scopes its payment list

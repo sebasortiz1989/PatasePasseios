@@ -396,10 +396,13 @@
                         The period this list is scoped to. Stepped rather than picked from a
                         drop-down: popups ignore the design canvas' scale.
                     -->
-                    <Border
-                        Classes="ControlRing"
-                        IsVisible="{Binding !Picker.IsOpen}"
-                        Margin="30,0,30,21">
+                    <Border Classes="ControlRing" Margin="30,0,30,21">
+                        <Border.IsVisible>
+                            <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                <Binding Path="!Picker.IsOpen" />
+                                <Binding Path="!UseCustomPeriod" />
+                            </MultiBinding>
+                        </Border.IsVisible>
                         <Border Classes="FloatingControl">
                             <Grid ColumnDefinitions="Auto,*,Auto" Height="77">
                                 <Button
@@ -462,7 +465,38 @@
                         </Border>
                     </Border>
 
-                    <pickers:VPeriodPicker Picker="{Binding Picker}" />
+                    <pickers:VPeriodPicker IsVisible="{Binding !UseCustomPeriod}" Picker="{Binding Picker}" />
+
+                    <!--
+                        A period the stepper cannot express: any run of days, which is what a bill
+                        straddling two months needs. The switch leads so the two fields only appear
+                        once they are the thing being used, and the stepper above disappears while
+                        they are — two controls claiming to set the same period is one too many.
+                    -->
+                    <Border Classes="Group" Margin="35,0,35,21">
+                        <StackPanel>
+                            <Grid ColumnDefinitions="*,Auto" Margin="28,14">
+                                <TextBlock
+                                    Classes="TUi"
+                                    Text="Período personalizado"
+                                    VerticalAlignment="Center" />
+                                <ToggleSwitch
+                                    Grid.Column="1"
+                                    IsChecked="{Binding UseCustomPeriod}"
+                                    OffContent=""
+                                    OnContent=""
+                                    VerticalAlignment="Center" />
+                            </Grid>
+
+                            <Border Classes="RowRule" IsVisible="{Binding UseCustomPeriod}" />
+                            <StackPanel IsVisible="{Binding UseCustomPeriod}" Margin="28,21" Spacing="7">
+                                <TextBlock Classes="TCaption" Text="De" />
+                                <CalendarDatePicker Classes="Field" SelectedDate="{Binding CustomFrom}" />
+                                <TextBlock Classes="TCaption" Text="Até" />
+                                <CalendarDatePicker Classes="Field" SelectedDate="{Binding CustomThrough}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
 
                     <Border Classes="Group" Margin="35,0,35,35">
                         <Grid ColumnDefinitions="*,Auto" Margin="28,14">
