@@ -5,9 +5,9 @@
 **Serviços para cães** — a cross-platform business app for a working dog sitter,
 built in .NET 10 and Avalonia over Dapper/SQLite.
 
-<img src="images/screenshots/dog-detail.png" alt="Ficha de um cachorro — Patas & Passeios" width="280">
+<img src="images/screenshots/dark-agenda.png" alt="Agenda — Patas & Passeios" width="280">
 
-**141 C# files · ~17,300 lines · 200 tests · five platform heads from one View**
+**142 C# files · 17,652 lines · 208 tests · four platform heads from one View**
 
 </div>
 
@@ -56,22 +56,24 @@ Seeded demo login: `test@test.com` / `8998`.
 </p>
 
 <p align="center">
-  <img src="images/screenshots/dogs.png" width="160" alt="Cachorros">
+  <img src="images/screenshots/dark-dogs.png" width="160" alt="Cachorros">
   &nbsp;
-  <img src="images/screenshots/agenda.png" width="160" alt="Agenda">
+  <img src="images/screenshots/dark-tutors.png" width="160" alt="Tutores">
 </p>
 <p align="center">
-  <em>Cachorros · Agenda</em>
+  <em>Cachorros · Tutores</em>
 </p>
 
 <p align="center">
-  <img src="images/screenshots/services.png" width="160" alt="Agendar">
+  <img src="images/screenshots/dark-services.png" width="160" alt="Agendar">
   &nbsp;
-  <img src="images/screenshots/settings.png" width="160" alt="Ajustes">
+  <img src="images/screenshots/dark-tutor-ledger.png" width="160" alt="Conta do tutor">
 </p>
 <p align="center">
-  <em>Agendar · Ajustes</em>
+  <em>Agendar · Conta do tutor — a pagar, a executar, crédito</em>
 </p>
+
+<p align="center"><sub>Demo data. No real client appears in any screenshot.</sub></p>
 
 ### Tabs
 
@@ -141,8 +143,20 @@ The app starts empty apart from the seeded login, which makes every screen look
 like nothing works. To fill it:
 
 ```bash
-Scripts/seed-demo.sh          # run the app once first, so the schema exists
+# run the app once first, so the schema and the demo account exist
+Scripts/seed-demo.sh
+
+# on macOS, pass the path — the default is wrong there (see below)
+Scripts/seed-demo.sh "$HOME/Library/Application Support/DapperDemo/DapperDemo.db"
 ```
+
+> The script defaults to `~/.local/share/DapperDemo/`, which is right on Linux
+> and **wrong on macOS** — .NET maps `LocalApplicationData` to
+> `~/Library/Application Support/` there. Without an explicit path it exits with
+> *"No database at…"*.
+>
+> **Sign in as `test@test.com` / `8998`.** The demo records belong to that
+> account; signing in as any other one shows an empty agenda.
 
 Four tutors, eight dogs, and 22 services across all four types — settled, done
 but unpaid, and upcoming — plus one tutor carrying credit so the payment ledger
@@ -204,9 +218,10 @@ records. It is compared in the clear because hashing it would change nothing —
 the hash and the value that verifies it would ship in the same binary. Read the
 remarks block before judging it; the reasoning is the point.
 
-**One View, five heads.** Desktop, macOS, iOS and Android share a single
-Avalonia View layer and Viewmodel, with platform-specific dependency
-inversion at each head.
+**One View, four heads.** Desktop (Windows and Linux), macOS, iOS and Android
+share a single Avalonia View layer and Viewmodel, with platform-specific
+dependency inversion at each head. Earlier copy said *five* — that counted
+Windows and Linux as separate heads when they are one Desktop project.
 
 ---
 
