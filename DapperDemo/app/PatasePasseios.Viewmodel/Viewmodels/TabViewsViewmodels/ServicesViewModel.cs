@@ -52,6 +52,8 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
         SetTypeDayCare = new SynchronizedCommand(() => SetType(ServiceKind.DayCare), SynchronizationBehavior.Discard, true);
         CreateServiceCommand = new SynchronizedCommand(CreateService, SynchronizationBehavior.Discard, true);
 
+        DismissScheduledCommand = new SynchronizedCommand(() => ShowScheduledAlert = false, SynchronizationBehavior.Discard, true);
+
         AddTimeCommand = new SynchronizedCommand(AddTime, SynchronizationBehavior.Discard, true);
         AddDateCommand = new SynchronizedCommand(AddDate, SynchronizationBehavior.Discard, true);
 
@@ -74,6 +76,9 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
     public ICommand SetTypeDayCare { get; }
 
     public ICommand CreateServiceCommand { get; }
+
+    /// <summary>Gets the command that closes the "agendado" alert.</summary>
+    public ICommand DismissScheduledCommand { get; }
 
     public ICommand AddTimeCommand { get; }
 
@@ -190,11 +195,25 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
 
     public bool SvcRequiresWalking { get; set; }
 
+    /// <summary>
+    /// Gets or sets what went wrong, shown in the line above the Agendar button.
+    /// </summary>
+    /// <remarks>
+    /// Only failures reach this now. A booking that worked says so in the alert instead, because
+    /// the form resets on success and the line sat above a blank form describing something the
+    /// sitter could no longer see — and on a phone it was usually scrolled off anyway.
+    /// </remarks>
     public string SvcMsg { get; set; } = string.Empty;
 
     public bool HasSvcMsg => !string.IsNullOrEmpty(SvcMsg);
 
     public bool SvcMsgIsError { get; set; }
+
+    /// <summary>Gets a value indicating whether the "agendado" alert is covering the screen.</summary>
+    public bool ShowScheduledAlert { get; private set; }
+
+    /// <summary>Gets what was booked, naming the kind and the dog — "Hotel para Jony foi agendado."</summary>
+    public string ScheduledMessage { get; private set; } = string.Empty;
 
     private int DayCount => SvcUseDateRange
         ? Math.Max((SvcRepeatUntilPart.Date - SvcRangeFromPart.Date).Days + 1, 0)
@@ -371,11 +390,14 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
             // Credit is spent here, against the bookings just made — see CreditSpender.
             var creditNote = await creditSpender.SpendForDogAsync(session.CurrentPetSitterId, SelectedDog.Id).WithSync();
 
+            // Read before the reset, which clears SelectedDog: the alert names the dog that was
+            // booked for, and by the time anyone reads it the form has forgotten.
+            var bookedKind = SvcType;
+            var bookedFor = SelectedDog.Name;
+
             ResetForm();
-            SvcMsgIsError = created < occurrences.Count;
-            SvcMsg = (created == occurrences.Count
-                ? created == 1 ? "Serviço agendado." : $"{created} serviços agendados."
-                : $"{created} de {occurrences.Count} serviços agendados.") + creditNote;
+            ClearMessage();
+            Scheduled(bookedKind, bookedFor, created, occurrences.Count, creditNote);
 
             session.NotifyDataChanged();
             return;
@@ -390,9 +412,12 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
         // Same as the recurring path: the hotel stay just booked is what the credit lands on.
         var hotelCreditNote = await creditSpender.SpendForDogAsync(session.CurrentPetSitterId, SelectedDog.Id).WithSync();
 
+        var hotelKind = SvcType;
+        var hotelFor = SelectedDog.Name;
+
         ResetForm();
-        SvcMsgIsError = false;
-        SvcMsg = "Serviço agendado." + hotelCreditNote;
+        ClearMessage();
+        Scheduled(hotelKind, hotelFor, 1, 1, hotelCreditNote);
 
         session.NotifyDataChanged();
     }
@@ -537,6 +562,40 @@ public class ServicesViewModel : PresentationModelBase<Unit, Unit>
     /// Returns the form to its opening state. Called after a successful save and on every open,
     /// so the screen never shows values left over from a previous booking.
     /// </summary>
+    /// <summary>
+    /// Raises the alert naming what was just booked.
+    /// </summary>
+    /// <remarks>
+    /// The kind and the dog are in the sentence because the form is blank by the time it is read:
+    /// a bare "Serviço agendado." left the sitter opening Agenda to check what had actually been
+    /// written, which is the one thing a confirmation exists to save them. A run that only partly
+    /// succeeded reports here too rather than in the line under the button — that outcome is the
+    /// one that must not be scrolled past.
+    /// </remarks>
+    /// <param name="kind">What was booked.</param>
+    /// <param name="dogName">Who it was booked for.</param>
+    /// <param name="created">How many bookings were written.</param>
+    /// <param name="total">How many were asked for.</param>
+    /// <param name="creditNote">The credit sentence, already carrying its leading space, or empty.</param>
+    private void Scheduled(ServiceKind kind, string dogName, int created, int total, string creditNote)
+    {
+        var what = AppSession.TypeLabel(kind);
+
+        ScheduledMessage = (created < total
+            ? $"{created} de {total} serviços de {what} para {dogName} foram agendados."
+            : created == 1
+                ? $"{what} para {dogName} foi agendado."
+                : $"{created} serviços de {what} para {dogName} foram agendados.") + creditNote;
+
+        ShowScheduledAlert = true;
+    }
+
+    private void ClearMessage()
+    {
+        SvcMsg = string.Empty;
+        SvcMsgIsError = false;
+    }
+
     private void ResetForm()
     {
         SvcPrice = string.Empty;

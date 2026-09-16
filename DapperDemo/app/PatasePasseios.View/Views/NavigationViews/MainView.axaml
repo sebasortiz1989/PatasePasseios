@@ -64,7 +64,7 @@
                             Command="{Binding DogsViewCommand}"
                             Grid.Column="0"
                             GroupName="MainTabs"
-                            Tag="Cães"
+                            Tag="Pets"
                             Theme="{StaticResource NavTab}">
                             <Path
                                 Data="{StaticResource IconDogs}"

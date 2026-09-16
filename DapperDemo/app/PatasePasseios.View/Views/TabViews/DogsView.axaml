@@ -32,10 +32,10 @@
                         <!--  Photo leading, so a column of faces scans down the edge of the group.  -->
                         <Panel Height="70" Width="70">
                             <Image
-                                imaging:ImageLoader.DecodeWidth="192"
-                                imaging:ImageLoader.Path="{Binding ImagePath}"
                                 IsVisible="{Binding HasImage}"
-                                Stretch="UniformToFill">
+                                Stretch="UniformToFill"
+                                imaging:ImageLoader.DecodeWidth="192"
+                                imaging:ImageLoader.Path="{Binding ImagePath}">
                                 <Image.Clip>
                                     <EllipseGeometry Rect="0,0,70,70" />
                                 </Image.Clip>
@@ -80,9 +80,18 @@
 
     <Grid Background="{DynamicResource SurfacePrimary}" RowDefinitions="Auto,Auto,*">
 
-        <Grid ColumnDefinitions="*,Auto" Grid.Row="0" Margin="35,14,30,0">
-            <TextBlock Classes="TTitle" Text="Cachorros" VerticalAlignment="Center" />
-            <Border Classes="ControlRing" Grid.Column="1" VerticalAlignment="Center">
+        <Grid
+            ColumnDefinitions="*,Auto"
+            Grid.Row="0"
+            Margin="35,14,30,0">
+            <TextBlock
+                Classes="TTitle"
+                Text="Pets"
+                VerticalAlignment="Center" />
+            <Border
+                Classes="ControlRing"
+                Grid.Column="1"
+                VerticalAlignment="Center">
                 <Border Classes="FloatingControl">
                     <Button
                         Background="Transparent"
@@ -90,7 +99,10 @@
                         Command="{Binding AddDogCommand}"
                         Height="77"
                         Padding="28,0">
-                        <TextBlock Classes="TUi" Text="+ Novo" VerticalAlignment="Center" />
+                        <TextBlock
+                            Classes="TUi"
+                            Text="+ Novo"
+                            VerticalAlignment="Center" />
                     </Button>
                 </Border>
             </Border>
@@ -116,7 +128,7 @@
             the list has a bounded viewport and can virtualize: with dozens of dogs only the rows
             on screen are realized, and only their photos decode. Inside a StackPanel the height is
             unbounded, every row is realized, and every photo decodes whether or not it is visible.
-
+            
             The group runs to the bottom of the screen and content passes under the tab bar; the
             padding is what lets the last row clear it.
         -->

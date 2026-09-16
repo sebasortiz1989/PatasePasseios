@@ -5,6 +5,7 @@
     x:Class="PatasePasseios.View.Views.TabViews.ServicesView"
     x:DataType="tabViewsViewmodels:ServicesViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:components="using:PatasePasseios.View.Components"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:inputs="using:AvaloniaFramework.Controls.Inputs"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -304,5 +305,21 @@
                 <Border Height="258" />
             </StackPanel>
         </ScrollViewer>
+
+        <!--
+            Alert form: one button that only dismisses. RowSpan because this Grid has a title row
+            above the scroller and a scrim that covered only one of them would leave "Agendar"
+            sitting bright above it. Last child so it paints over everything else on the screen —
+            and it reports itself to ScreenOverlay, which is what hides the tab bar underneath.
+        -->
+        <components:ConfirmDialog
+            ConfirmCommand="{Binding DismissScheduledCommand}"
+            ConfirmText="Pronto"
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            IsOpen="{Binding ShowScheduledAlert}"
+            Message="{Binding ScheduledMessage}"
+            ShowCancel="False"
+            Title="Serviço agendado" />
     </Grid>
 </UserControl>
