@@ -18,6 +18,20 @@
         <PackageReference Include="Avalonia.Desktop" Version="12.1.1" />
     </ItemGroup>
 
+    <!-- Claude Code's Avalonia agent (AvaloniaMCP). Only in Debug, and only on a machine where
+         its installer created the package folder; everywhere else this project builds as before. -->
+    <PropertyGroup>
+        <AvaloniaMcpFeed Condition="'$(AvaloniaMcpFeed)' == ''">$([System.Environment]::GetFolderPath(SpecialFolder.UserProfile))/.avalonia-mcp/packages</AvaloniaMcpFeed>
+        <UseAvaloniaMcp Condition="'$(Configuration)' == 'Debug' And Exists('$(AvaloniaMcpFeed)')">true</UseAvaloniaMcp>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(UseAvaloniaMcp)' == 'true'">
+        <RestoreAdditionalProjectSources>$(RestoreAdditionalProjectSources);$(AvaloniaMcpFeed)</RestoreAdditionalProjectSources>
+        <DefineConstants>$(DefineConstants);AVALONIA_MCP</DefineConstants>
+    </PropertyGroup>
+    <ItemGroup Condition="'$(UseAvaloniaMcp)' == 'true'">
+        <PackageReference Include="SebasOrtiz.XamlMcp.Avalonia" Version="0.1.0-*" />
+    </ItemGroup>
+
     <ItemGroup>
         <ProjectReference Include="..\PatasePasseios.Infrastructure\PatasePasseios.Infrastructure.csproj" />
     </ItemGroup>
